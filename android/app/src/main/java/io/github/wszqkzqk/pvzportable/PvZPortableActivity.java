@@ -25,11 +25,14 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import org.libsdl.app.SDLActivity;
 
@@ -37,6 +40,7 @@ import java.io.File;
 
 public class PvZPortableActivity extends SDLActivity {
     private static final String TAG = "PvZPortable";
+    private OnBackInvokedCallback mBackCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +57,39 @@ public class PvZPortableActivity extends SDLActivity {
 
         super.onCreate(savedInstanceState);
         hideSystemUI();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mBackCallback = this::dispatchBackToSdl;
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                mBackCallback
+            );
+        }
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) hideSystemUI();
+    }
+
+    @Override
+    public void onBackPressed() {
+        dispatchBackToSdl();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && mBackCallback != null) {
+            getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(mBackCallback);
+            mBackCallback = null;
+        }
+        super.onDestroy();
+    }
+
+    private void dispatchBackToSdl() {
+        SDLActivity.onNativeKeyDown(KeyEvent.KEYCODE_BACK);
+        SDLActivity.onNativeKeyUp(KeyEvent.KEYCODE_BACK);
     }
 
     private void hideSystemUI() {
