@@ -1080,6 +1080,12 @@ void GameSelector::OrderInManagerChanged()
 // GOTY @Patoke: 0x44EB11
 void GameSelector::KeyDown(KeyCode theKey)
 {
+	if (theKey == KeyCode::KEYCODE_ESCAPE)
+	{
+		mApp->ConfirmQuit();
+		return;
+	}
+
 	if (mApp->mKonamiCheck->Check(theKey))
 	{
 		mApp->PlayFoley(FoleyType::FOLEY_DROP);

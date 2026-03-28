@@ -1119,15 +1119,23 @@ void SeedChooserScreen::CloseSeedChooser()
 void SeedChooserScreen::KeyDown(KeyCode theKey)
 {
 	mBoard->DoTypingCheck(theKey);
+
+	if (mChooseState == CHOOSE_VIEW_LAWN && (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN || theKey == KeyCode::KEYCODE_ESCAPE))
+	{
+		CancelLawnView();
+	}
+	else if (theKey == KeyCode::KEYCODE_ESCAPE)
+	{
+		if (mApp->mTodCheatKeys)
+			PickRandomSeeds();
+		else
+			ButtonDepress(SeedChooserScreen::SeedChooserScreen_Menu);
+	}
 }
 
 void SeedChooserScreen::KeyChar(char theChar)
 {
-	if (mChooseState == CHOOSE_VIEW_LAWN && (theChar == ' ' || theChar == '\r' || theChar == '\u001B'))
-		CancelLawnView();
-	else if (mApp->mTodCheatKeys && theChar == '\u001B')
-		PickRandomSeeds();
-	else mBoard->KeyChar(theChar);
+	mBoard->KeyChar(theChar);
 }
 
 void SeedChooserScreen::UpdateAfterPurchase()

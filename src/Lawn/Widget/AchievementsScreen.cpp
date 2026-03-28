@@ -192,6 +192,10 @@ void AchievementsWidget::KeyDown(KeyCode theKey) {
 		mScrollValue = mDefaultScrollValue;
 		mScrollDirection = -1;
 	}
+	else if (theKey == KEYCODE_ESCAPE) {
+		mApp->mGameSelector->SlideTo(0, 0);
+		mApp->mGameSelector->mWidgetManager->SetFocus(mApp->mGameSelector);
+	}
 }
 
 // GOTY @Patoke: 0x4017F0

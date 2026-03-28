@@ -462,10 +462,26 @@ void AwardScreen::Update()
 	if (mFadeInCounter > 0) mFadeInCounter--;
 }
 
-void AwardScreen::KeyChar(char theChar)
+void AwardScreen::KeyDown(KeyCode theKey)
 {
-	if (theChar == ' ' || theChar == '\r' || theChar == '\u001B')
+	if (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN)
+	{
 		StartButtonPressed();
+		return;
+	}
+
+	if (theKey == KeyCode::KEYCODE_ESCAPE)
+	{
+		if (!mMenuButton->mDisabled && !mMenuButton->mBtnNoDraw)
+		{
+			mApp->KillAwardScreen();
+			mApp->ShowGameSelector();
+		}
+		else
+		{
+			StartButtonPressed();
+		}
+	}
 }
 
 // GOTY @Patoke: 0x409530

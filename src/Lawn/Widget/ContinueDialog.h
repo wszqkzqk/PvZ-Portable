@@ -45,6 +45,7 @@ public:
 	void				Resize(int theX, int theY, int theWidth, int theHeight) override;
 	void				AddedToManager(WidgetManager* theWidgetManager) override;
 	void				RemovedFromManager(WidgetManager* theWidgetManager) override;
+	void				KeyDown(KeyCode theKey) override;
 	void				ButtonDepress(int theId) override;
 	void				RestartLoopingSounds();
 };

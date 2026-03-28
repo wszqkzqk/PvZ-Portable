@@ -645,6 +645,14 @@ void ChallengeScreen::ButtonDepress(int theId)
 	}
 }
 
+void ChallengeScreen::KeyDown(KeyCode theKey)
+{
+	if (theKey == KeyCode::KEYCODE_ESCAPE)
+	{
+		ButtonDepress(ChallengeScreen::ChallengeScreen_Back);
+	}
+}
+
 void ChallengeScreen::UpdateToolTip()
 {
 	if (!mApp->mWidgetManager->mMouseIn || !mApp->mActive)

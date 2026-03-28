@@ -99,7 +99,7 @@ public:
     void                        ButtonPress(int theId) override;
     /*inline*/ bool             IsPageShown(StorePages thePage);
     void                        ButtonDepress(int theId) override;
-    void                        KeyChar(char theChar) override;
+    void                        KeyDown(KeyCode theKey) override;
     static /*inline*/ int		GetItemCost(StoreItem theStoreItem);
     /*inline*/ bool             CanAffordItem(StoreItem theStoreItem);
     void                        PurchaseItem(StoreItem theStoreItem);

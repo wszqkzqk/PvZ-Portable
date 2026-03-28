@@ -106,6 +106,17 @@ void ContinueDialog::RemovedFromManager(WidgetManager* theWidgetManager)
     RemoveWidget(mNewGameButton);
 }
 
+void ContinueDialog::KeyDown(KeyCode theKey)
+{
+    if (theKey == KeyCode::KEYCODE_ESCAPE)
+    {
+        ButtonDepress(Dialog::ID_FOOTER);
+        return;
+    }
+
+    LawnDialog::KeyDown(theKey);
+}
+
 void ContinueDialog::RestartLoopingSounds()
 {
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_RAINING_SEEDS || mApp->IsStormyNightLevel())

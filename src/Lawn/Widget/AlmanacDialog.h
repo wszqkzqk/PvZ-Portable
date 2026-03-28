@@ -89,6 +89,7 @@ public:
 	ZombieType					ZombieHitTest(int x, int y);
 	void						MouseUp(int x, int y, int theClickCount) override;
 	void						MouseDown(int x, int y, int theClickCount) override;
+	void						KeyDown(KeyCode theKey) override;
 //	virtual void				KeyChar(char theChar);
 
 	static ZombieType			GetZombieType(int theIndex);

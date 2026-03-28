@@ -72,11 +72,12 @@ public:
     void                        AddedToManager(WidgetManager* theWidgetManager) override;
     void                        RemovedFromManager(WidgetManager* theWidgetManager) override;
     void                        ButtonPress(int theId) override;
-    void                        ButtonDownTick(int) override{}
-    void                        ButtonMouseEnter(int) override{}
-    void                        ButtonMouseLeave(int) override{}
-    void                        ButtonMouseMove(int, int, int) override{}
+    void                        ButtonDownTick(int) override {}
+    void                        ButtonMouseEnter(int) override {}
+    void                        ButtonMouseLeave(int) override {}
+    void                        ButtonMouseMove(int, int, int) override {}
     void                        ButtonDepress(int theId) override;
+    void                        KeyDown(KeyCode theKey) override;
     void                        UpdateToolTip();
     void                        MouseDown(int x, int y, int theClickCount) override;
 //  virtual void                KeyChar(char theChar);

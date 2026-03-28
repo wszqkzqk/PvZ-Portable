@@ -860,9 +860,21 @@ void StoreScreen::ButtonDepress(int theId)
     }
 }
 
-void StoreScreen::KeyChar(char theChar)
+void StoreScreen::KeyDown(KeyCode theKey)
 {
-    if (mBubbleClickToContinue && (theChar == ' ' || theChar == '\r')) AdvanceCrazyDaveDialog();
+    if (theKey == KeyCode::KEYCODE_ESCAPE)
+    {
+        ButtonDepress(StoreScreen::StoreScreen_Back);
+        return;
+    }
+
+    if (mBubbleClickToContinue && (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN))
+    {
+        AdvanceCrazyDaveDialog();
+        return;
+    }
+
+    Dialog::KeyDown(theKey);
 }
 
 int StoreScreen::GetItemCost(StoreItem theStoreItem)

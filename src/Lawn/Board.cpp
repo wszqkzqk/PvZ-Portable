@@ -7858,7 +7858,6 @@ static void TodCrash()
 	TOD_ASSERT(false, "Crash%s", "!!!!");
 }
 
-//0x41B950（原版中废弃）
 void Board::KeyChar(char theChar)
 {
 	if (!mApp->mDebugKeysEnabled)

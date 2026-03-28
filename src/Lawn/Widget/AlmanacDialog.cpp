@@ -692,6 +692,20 @@ void AlmanacDialog::MouseDown(int x, int y, int theClickCount)
 	}
 }
 
+void AlmanacDialog::KeyDown(KeyCode theKey)
+{
+	if (theKey == KeyCode::KEYCODE_ESCAPE)
+	{
+		if (mOpenPage == AlmanacPage::ALMANAC_PAGE_INDEX)
+			mApp->KillAlmanacDialog();
+		else
+			SetPage(AlmanacPage::ALMANAC_PAGE_INDEX);
+		return;
+	}
+
+	LawnDialog::KeyDown(theKey);
+}
+
 void AlmanacInitForPlayer()
 {
 	for (int i = 0; i < ZombieType::NUM_ZOMBIE_TYPES; i++)

@@ -74,7 +74,7 @@ public:
 	void				Update() override;
 	void				AddedToManager(WidgetManager* theWidgetManager) override { Widget::AddedToManager(theWidgetManager); }
 	void				RemovedFromManager(WidgetManager* theWidgetManager) override { Widget::RemovedFromManager(theWidgetManager); }
-	void				KeyChar(char theChar) override;
+	void				KeyDown(KeyCode theKey) override;
 	void				StartButtonPressed();
 	void				MouseDown(int x, int y, int theClickCount) override;
 	void				MouseUp(int x, int y, int theClickCount) override;
