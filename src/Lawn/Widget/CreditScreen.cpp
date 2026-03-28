@@ -1745,10 +1745,23 @@ void CreditScreen::PauseCredits()
 
 void CreditScreen::KeyDown(KeyCode theKey)
 {
+    if (theKey == KeyCode::KEYCODE_ESCAPE)
+    {
+        if (mCreditsPaused)
+        {
+            ButtonDepress(CreditScreen::Credits_Button_MainMenu);
+        }
+        else
+        {
+            PauseCredits();
+        }
+        return;
+    }
+
     if (mCreditsPaused)
         return;
 
-    if (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN || theKey == KeyCode::KEYCODE_ESCAPE)
+    if (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN)
     {
         PauseCredits();
     }
