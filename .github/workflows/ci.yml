@@ -442,7 +442,7 @@ jobs:
     - name: Build PvZ-Portable for WebAssembly
       run: |
         mkdir build-wasm
-        emcmake cmake -G Ninja -B build-wasm -DCMAKE_BUILD_TYPE=Release -DLIMBO_PAGE=OFF
+        emcmake cmake -G Ninja -B build-wasm -DCMAKE_BUILD_TYPE=Release
         cmake --build build-wasm -j$(nproc)
 
     - name: Upload Artifact

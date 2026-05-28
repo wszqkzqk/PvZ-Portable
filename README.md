@@ -227,7 +227,7 @@ You can customize the game features by adding options to the first `cmake` comma
 | Option | Default | Description |
 | :--- | :--- | :--- |
 | `PVZ_DEBUG` | `OFF`<br>(`ON` if `CMAKE_BUILD_TYPE` is `Debug`) | Enable **cheat keys**, debug displays and other debug features. |
-| `LIMBO_PAGE` | `ON` | Enable access to the limbo page which contains hidden levels. |
+| `LIMBO_PAGE` | `OFF` | Enable access to the limbo page which contains hidden levels. |
 | `DO_FIX_BUGS` | `OFF` | Apply community fixes for "bugs" of official 1.2.0.1073 GOTY Edition.[^1] However, these "bugs" are usually **considered "features"** by many players. |
 | `CONSOLE` | `OFF`<br>(`ON` if `CMAKE_BUILD_TYPE` is `Debug`) | Show a console window (Windows only). |
 | `BUILD_STATIC` | `OFF` | Link statically to create a standalone executable (Windows with MinGW-based toolchains only). Use a vcpkg `-static` triplet for MSVC instead. |
