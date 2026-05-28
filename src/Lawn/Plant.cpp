@@ -1499,7 +1499,7 @@ void Plant::UpdateSquash()
         {
             PlayBodyReanim("anim_jumpup", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 24.0f);
             mState = PlantState::STATE_SQUASH_PRE_LAUNCH;
-            mStateCountdown = 30;
+            mStateCountdown = 45;
         }
     }
     else if (mState == PlantState::STATE_SQUASH_PRE_LAUNCH)
