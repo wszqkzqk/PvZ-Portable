@@ -789,7 +789,7 @@ void GameSelector::Update()
 
 		// @Patoke: not from the original binaries but fixes bugs
 		mOverlayWidget->Move(aNewX, aNewY);
-		mAchievementsWidget->mY = aNewY + mApp->mHeight - 1;
+		mAchievementsWidget->mY = aNewY + mApp->mHeight;
 		mAdventureButton->SetOffset(aNewX, aNewY);
 		mMinigameButton->SetOffset(aNewX, aNewY);
 		mPuzzleButton->SetOffset(aNewX, aNewY);

@@ -84,6 +84,7 @@ AchievementsWidget::~AchievementsWidget() {
 
 // GOTY @Patoke: 0x401A10
 void AchievementsWidget::Update() {
+	MarkDirty();
 	if (mScrollValue <= 0)
 		return;
 
