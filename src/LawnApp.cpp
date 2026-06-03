@@ -316,6 +316,7 @@ void LawnApp::Shutdown()
 	if (!mLoadingThreadCompleted)
 	{
 		mLoadingFailed = true;
+		SexyAppBase::Shutdown();
 		return;
 	}
 
