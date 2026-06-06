@@ -129,7 +129,6 @@ else()
 endif()
 
 option(PVZ_DEBUG "Enable PVZ_DEBUG macro to enable cheats, hidden features, etc." ${PVZ_DEBUG_DEFAULT})
-option(LIMBO_PAGE "Enable limbo page to access hidden levels" OFF)
 option(CONSOLE "Show console on Windows" ${WIN_CONSOLE_DEFAULT})
 option(DO_FIX_BUGS "Define DO_FIX_BUGS macro (Community fixes for original game bugs of 1.2.0.1073 GOTY Edition)" OFF)
 
@@ -203,7 +202,6 @@ target_include_directories(pvz-portable PRIVATE
 )
 target_compile_definitions(pvz-portable PRIVATE
 	$<$<BOOL:${PVZ_DEBUG}>:PVZ_DEBUG>
-	$<$<BOOL:${LIMBO_PAGE}>:PVZ_LIMBO_PAGE>
 	$<$<BOOL:${DO_FIX_BUGS}>:DO_FIX_BUGS>
 )
 target_compile_features(pvz-portable PRIVATE cxx_std_20)

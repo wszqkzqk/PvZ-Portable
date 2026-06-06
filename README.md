@@ -45,6 +45,8 @@ A **cross-platform** community-driven reimplementation of Plants vs. Zombies: Ga
 - [x] Different endianness support (little-endian and big-endian)
   - [x] Save data compatibility across endianness
   - Theoretically supports big-endian platforms, but untested due to lack of hardware
+- [x] Unlockable **Hidden Limbo Page** with additional levels in the original game
+  - To unlock it, open the Mini-Games / Puzzle / Survival selection screen and tap any blank area **5 times in rapid succession**
 
 This project supports the following platforms (including but not limited to):
 
@@ -227,7 +229,6 @@ You can customize the game features by adding options to the first `cmake` comma
 | Option | Default | Description |
 | :--- | :--- | :--- |
 | `PVZ_DEBUG` | `OFF`<br>(`ON` if `CMAKE_BUILD_TYPE` is `Debug`) | Enable **cheat keys**, debug displays and other debug features. |
-| `LIMBO_PAGE` | `OFF` | Enable access to the limbo page which contains hidden levels. |
 | `DO_FIX_BUGS` | `OFF` | Apply community fixes for "bugs" of official 1.2.0.1073 GOTY Edition.[^1] However, these "bugs" are usually **considered "features"** by many players. |
 | `CONSOLE` | `OFF`<br>(`ON` if `CMAKE_BUILD_TYPE` is `Debug`) | Show a console window (Windows only). |
 | `BUILD_STATIC` | `OFF` | Link statically to create a standalone executable (Windows with MinGW-based toolchains only). Use a vcpkg `-static` triplet for MSVC instead. |

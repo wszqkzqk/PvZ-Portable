@@ -32,6 +32,7 @@
 #include "misc/Debug.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
 #include "widget/WidgetManager.h"
+#include <SDL.h>
 
 ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
 	{ GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1,              0,   ChallengePage::CHALLENGE_PAGE_SURVIVAL,    0,  0,  "[SURVIVAL_DAY_NORMAL]" },
@@ -120,6 +121,9 @@ ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 	mUnlockState = UNLOCK_OFF;
 	mUnlockChallengeIndex = -1;
 	mUnlockStateCounter = 0;
+	mLimboPageUnlocked = false;
+	mClickCount = 0;
+	mLastClickTime = 0;
 	mLoadedResourceNames.push_back("DelayLoad_ChallengeScreen");
 
 	for (std::string& resource : mLoadedResourceNames)
@@ -369,9 +373,8 @@ void ChallengeScreen::UpdateButtons()
 	{
 		ButtonWidget* aPageButton = mPageButton[aPage];
 
-#ifdef PVZ_LIMBO_PAGE
-		aPageButton->mVisible = true;
-#endif
+		if (mLimboPageUnlocked && aPage == CHALLENGE_PAGE_LIMBO)
+			aPageButton->mVisible = true;
 
 		if (aPage == mPageIndex)
 		{
@@ -714,4 +717,26 @@ void ChallengeScreen::UpdateToolTip()
 	}
 
 	mToolTip->mVisible = false;
+}
+
+void ChallengeScreen::MouseDown(int x, int y, int theClickCount)
+{
+	Widget::MouseDown(x, y, theClickCount);
+
+	if (mLimboPageUnlocked)
+		return;
+
+	constexpr int MAX_GAP_MS = 200;
+	constexpr int CLICKS_NEEDED = 5;
+
+	uint32_t aNow = SDL_GetTicks();
+	if (aNow - mLastClickTime > MAX_GAP_MS)
+		mClickCount = 0;
+	mLastClickTime = aNow;
+	mClickCount++;
+	if (mClickCount >= CLICKS_NEEDED)
+	{
+		mLimboPageUnlocked = true;
+		UpdateButtons();
+	}
 }

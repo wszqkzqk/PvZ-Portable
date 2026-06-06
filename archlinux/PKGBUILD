@@ -45,7 +45,6 @@ pkgver() {
 build() {
     cmake -B build -S "${pkgname}" \
         -DCMAKE_BUILD_TYPE='Release' \
-        -DLIMBO_PAGE=ON \
         -DCMAKE_INSTALL_PREFIX='/usr'
     cmake --build build
 }

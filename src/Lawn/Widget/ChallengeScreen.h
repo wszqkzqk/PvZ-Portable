@@ -54,6 +54,9 @@ public:
     int                         mUnlockChallengeIndex;
     float                       mLockShakeX;
     float                       mLockShakeY;
+    bool                        mLimboPageUnlocked;
+    int                         mClickCount;
+    uint32_t                    mLastClickTime;
 
 public:
     ChallengeScreen(LawnApp* theApp, ChallengePage thePage);
@@ -75,6 +78,7 @@ public:
     virtual void                ButtonMouseMove(int, int, int){}
     virtual void                ButtonDepress(int theId);
     void                        UpdateToolTip();
+    virtual void                MouseDown(int x, int y, int theClickCount);
 //  virtual void                KeyChar(char theChar);
 
     /*inline*/ bool             IsScaryPotterLevel(GameMode theGameMode);
