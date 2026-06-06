@@ -2376,6 +2376,7 @@ void Zombie::UpdateZombieJalapenoHead()
             }
         }
 #endif
+        DieNoLoot();
     }
 }
 
