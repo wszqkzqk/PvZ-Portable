@@ -30,7 +30,6 @@ echo "--- Building PvZ-Portable ---"
 cmake -B "$BUILD_DIR/game" -S "$PROJECT_ROOT" \
     -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
     -DVCPKG_TARGET_TRIPLET=arm64-ios \
-    -DVCPKG_OVERLAY_PORTS="$PROJECT_ROOT/ios/ports" \
     -DCMAKE_SYSTEM_NAME=iOS \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 \
     -DCMAKE_OSX_ARCHITECTURES=arm64 \
