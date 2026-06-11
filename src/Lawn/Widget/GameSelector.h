@@ -30,6 +30,7 @@
 
 class LawnApp;
 class ToolTipWidget;
+class ZombatarWidget;
 namespace Sexy
 {
     class DialogButton;
@@ -109,7 +110,7 @@ public:
     int                         mStartY;                    //+GOTY @Patoke: 0x15C
     int                         mDestX;                     //+GOTY @Patoke: 0x160
     int                         mDestY;                     //+GOTY @Patoke: 0x164
-    //ZombatarWidget*           mZombatarWidget;            //+GOTY @Patoke: 0x168
+    ZombatarWidget*             mZombatarWidget;            //+GOTY @Patoke: 0x168
     AchievementsWidget*         mAchievementsWidget;        //+GOTY @Patoke: 0x16C
 
 public:
@@ -141,6 +142,7 @@ public:
     void                        AddPreviewProfiles();
     // @Patoke: implement functions
     /*inline*/ void             SlideTo(int theX, int theY);
+    void                        ShowZombatarScreen();
     void                        ShowAchievementsScreen(); // @Patoke: unofficial name
 };
 

@@ -959,6 +959,7 @@ enum ReanimationType : uint32_t {
     REANIM_CREDITS_WEARETHEUNDEAD,
     REANIM_CREDITS_DISCOLIGHTS,
     REANIM_FLAG,
+    REANIM_ZOMBATAR_HEAD,
     NUM_REANIMS
 };
 enum ReanimLoopType : int32_t

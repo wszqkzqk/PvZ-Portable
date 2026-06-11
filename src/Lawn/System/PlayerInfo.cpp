@@ -60,6 +60,25 @@ static inline void PottedPlantFromLE(PottedPlant& p)
 // ToLE is identical to FromLE for byte swapping (both swap on big-endian, no-op on little-endian)
 static inline void PottedPlantToLE(PottedPlant& p) { PottedPlantFromLE(p); }
 
+static int32_t ReadZombatarIndexFromTrailingBlock(const unsigned char* theTrailingBlock, uint32_t theHeadCount)
+{
+	if (theHeadCount == 0)
+		return -1;
+
+	uint32_t aRawIndex = 0;
+	memcpy(&aRawIndex, theTrailingBlock, sizeof(aRawIndex));
+	aRawIndex = FromLE32(aRawIndex);
+	if (aRawIndex >= theHeadCount)
+		return static_cast<int32_t>(theHeadCount - 1);
+	return static_cast<int32_t>(aRawIndex);
+}
+
+static void WriteZombatarIndexToTrailingBlock(unsigned char* theTrailingBlock, int32_t theIndex)
+{
+	uint32_t aRawIndex = ToLE32(theIndex < 0 ? 0U : static_cast<uint32_t>(theIndex));
+	memcpy(theTrailingBlock, &aRawIndex, sizeof(aRawIndex));
+}
+
 PlayerInfo::PlayerInfo()
 {
 	Reset();
@@ -142,22 +161,72 @@ void PlayerInfo::SyncDetails(DataSync& theSync)
 		}
 	}
 
-	// Zombatar is not supported: ignore any stored data on load.
 	if (theSync.GetReader())
 	{
-		mZombatarAccepted = 0;
-		mZombatarHeadCount = 0;
-		mZombatarData.clear();
-		memset(mZombatarTrailingUnknown, 0, sizeof(mZombatarTrailingUnknown));
-		mZombatarCreatedBefore = 0;
+		try
+		{
+			uint8_t aZombatarAccepted = 0;
+			theSync.SyncUInt8(aZombatarAccepted);
+			mZombatarAccepted = aZombatarAccepted ? 1 : 0;
+
+			uint32_t aZombatarHeadCount = 0;
+			theSync.SyncUInt32(aZombatarHeadCount);
+			if (aZombatarHeadCount > MAX_ZOMBATAR_HEADS)
+			{
+				throw DataReaderException();
+			}
+
+			mZombatarHeadCount = aZombatarHeadCount;
+			mZombatarData.resize(static_cast<size_t>(mZombatarHeadCount) * ZOMBATAR_RECORD_SIZE);
+			if (!mZombatarData.empty())
+			{
+				theSync.SyncBytes(mZombatarData.data(), static_cast<uint32_t>(mZombatarData.size()));
+			}
+			theSync.SyncBytes(mZombatarTrailingUnknown, sizeof(mZombatarTrailingUnknown));
+			mZombatarIndex = ReadZombatarIndexFromTrailingBlock(mZombatarTrailingUnknown, mZombatarHeadCount);
+
+			uint8_t aZombatarCreatedBefore = 0;
+			theSync.SyncUInt8(aZombatarCreatedBefore);
+			mZombatarCreatedBefore = aZombatarCreatedBefore ? 1 : 0;
+		}
+		catch (DataReaderException&)
+		{
+			mZombatarAccepted = 0;
+			mZombatarHeadCount = 0;
+			mZombatarData.clear();
+			mZombatarIndex = -1;
+			memset(mZombatarTrailingUnknown, 0, sizeof(mZombatarTrailingUnknown));
+			mZombatarCreatedBefore = 0;
+		}
 		return;
 	}
 
-	// Write a minimal, safe layout (no Zombatars).
-	theSync.SyncUInt8(mZombatarAccepted);
+	uint8_t aZombatarAccepted = mZombatarAccepted ? 1 : 0;
+	theSync.SyncUInt8(aZombatarAccepted);
+	mZombatarAccepted = aZombatarAccepted;
+
+	mZombatarHeadCount = static_cast<uint32_t>(mZombatarData.size() / ZOMBATAR_RECORD_SIZE);
+	if (mZombatarHeadCount > MAX_ZOMBATAR_HEADS)
+	{
+		mZombatarHeadCount = MAX_ZOMBATAR_HEADS;
+		mZombatarData.resize(static_cast<size_t>(mZombatarHeadCount) * ZOMBATAR_RECORD_SIZE);
+	}
+	if (mZombatarHeadCount == 0)
+		mZombatarIndex = -1;
+	else if (mZombatarIndex < 0 || mZombatarIndex >= static_cast<int32_t>(mZombatarHeadCount))
+		mZombatarIndex = static_cast<int32_t>(mZombatarHeadCount - 1);
+	uint32_t aZombatarDataBytes = mZombatarHeadCount * ZOMBATAR_RECORD_SIZE;
 	theSync.SyncUInt32(mZombatarHeadCount);
+	if (aZombatarDataBytes > 0)
+	{
+		theSync.SyncBytes(mZombatarData.data(), aZombatarDataBytes);
+	}
+	WriteZombatarIndexToTrailingBlock(mZombatarTrailingUnknown, mZombatarIndex);
 	theSync.SyncBytes(mZombatarTrailingUnknown, sizeof(mZombatarTrailingUnknown));
-	theSync.SyncUInt8(mZombatarCreatedBefore);
+
+	uint8_t aZombatarCreatedBefore = mZombatarCreatedBefore ? 1 : 0;
+	theSync.SyncUInt8(aZombatarCreatedBefore);
+	mZombatarCreatedBefore = aZombatarCreatedBefore;
 }
 
 void PlayerInfo::LoadDetails()
@@ -200,6 +269,10 @@ void PlayerInfo::DeleteUserFiles()
 {
 	std::string aFilename = GetAppDataPath(StrFormat("userdata/user%d.dat", mId));
 	gSexyAppBase->EraseFile(aFilename);
+	for (int i = 1; i <= MAX_ZOMBATAR_HEADS; i++)
+	{
+		gSexyAppBase->EraseFile(GetAppDataPath(StrFormat("userdata/Zombatar_%d_%d.png", mId, i)));
+	}
 
 	for (int i = 0; i < static_cast<int>(GameMode::NUM_GAME_MODES); i++)
 	{
@@ -244,6 +317,7 @@ void PlayerInfo::Reset()
 	mZombatarAccepted = 0;
 	mZombatarHeadCount = 0;
 	mZombatarData.clear();
+	mZombatarIndex = -1;
 	memset(mZombatarTrailingUnknown, 0, sizeof(mZombatarTrailingUnknown));
 	mZombatarCreatedBefore = 0;
 }

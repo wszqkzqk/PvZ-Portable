@@ -30,6 +30,8 @@
 #include "Projectile.h"
 #include "../LawnApp.h"
 #include "../Resources.h"
+#include "System/PlayerInfo.h"
+#include "System/Zombatar.h"
 #include "System/Music.h"
 #include "Widget/AlmanacDialog.h"
 #include "../Sexy.TodLib/TodFoley.h"
@@ -39,7 +41,10 @@
 #include "../Sexy.TodLib/Attachment.h"
 #include "../Sexy.TodLib/TodParticle.h"
 
-#include <climits>
+static std::string ZombatarTrackPrefix(const char* thePrefix, int theIndex)
+{
+    return Sexy::StrFormat("%s%02d", thePrefix, theIndex + 1);
+}
 
 constinit const ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES] = {
     { .mZombieType = ZOMBIE_NORMAL, .mReanimationType = REANIM_ZOMBIE, .mZombieValue = 1, .mStartingLevel = 1, .mFirstAllowedWave = 1, .mPickWeight = 4000, .mZombieName = "ZOMBIE" },
@@ -542,6 +547,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
         ReanimatorTrackInstance* aTrackInstance = aBodyReanim->GetTrackInstanceByName("Zombie_flaghand");
         AttachReanim(aTrackInstance->mAttachmentID, aFlagReanim, 0.0f, 0.0f);
         aBodyReanim->mFrameBasePose = 0;
+        SetupZombatarFlagReanim();
 
         mPosX = WIDE_BOARD_WIDTH;
         break;
@@ -3330,6 +3336,88 @@ void Zombie::DropFlag()
     TodParticleSystem* aParticle = mApp->AddTodParticle(aFlagPosX + 6.0f, aFlagPosY - 45.0f, mRenderOrder + 1, ParticleEffect::PARTICLE_ZOMBIE_FLAG);
     OverrideParticleColor(aParticle);
     OverrideParticleScale(aParticle);
+}
+
+void Zombie::SetupZombatarFlagReanim()
+{
+    PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
+    if (!aPlayerInfo || aPlayerInfo->mZombatarData.empty())
+        return;
+
+    int aCount = static_cast<int>(aPlayerInfo->mZombatarData.size() / ZOMBATAR_RECORD_SIZE);
+    if (aCount <= 0)
+        return;
+
+    int aIndex = aPlayerInfo->mZombatarIndex;
+    if (aIndex < 0 || aIndex >= aCount)
+    {
+        aIndex = aCount - 1;
+        aPlayerInfo->mZombatarIndex = aIndex;
+    }
+
+    const unsigned char* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(aIndex) * ZOMBATAR_RECORD_SIZE;
+    Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
+    if (!aBodyReanim)
+        return;
+
+    ReanimatorTrackInstance* aTrackInstance = aBodyReanim->GetTrackInstanceByName("anim_head1");
+    aTrackInstance->mImageOverride = IMAGE_BLANK;
+    aBodyReanim->AssignRenderGroupToPrefix("anim_head", RENDER_GROUP_HIDDEN);
+    aBodyReanim->AssignRenderGroupToPrefix("anim_hair", RENDER_GROUP_HIDDEN);
+    aBodyReanim->mFrameBasePose = 0;
+
+    auto AddZombatarHeadReanim = [&](const char* theVisiblePrefix, int theColorSlot) -> Reanimation*
+    {
+        Reanimation* aHeadReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_ZOMBATAR_HEAD);
+        aHeadReanim->PlayReanim("anim_head1", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
+        aHeadReanim->AssignRenderGroupToPrefix("hats_", RENDER_GROUP_HIDDEN);
+        aHeadReanim->AssignRenderGroupToPrefix("hair_", RENDER_GROUP_HIDDEN);
+        aHeadReanim->AssignRenderGroupToPrefix("facialHair_", RENDER_GROUP_HIDDEN);
+        aHeadReanim->AssignRenderGroupToPrefix("accessories_", RENDER_GROUP_HIDDEN);
+        aHeadReanim->AssignRenderGroupToPrefix("eyeWear_", RENDER_GROUP_HIDDEN);
+        aHeadReanim->AssignRenderGroupToPrefix("tidBits_", RENDER_GROUP_HIDDEN);
+        aHeadReanim->AssignRenderGroupToPrefix("anim_hair", RENDER_GROUP_HIDDEN);
+        aHeadReanim->mColorOverride = ZombatarGetColor(ZombatarReadSignedRecordSlot(aRecord, theColorSlot));
+        if (theVisiblePrefix)
+        {
+            aHeadReanim->AssignRenderGroupToPrefix(theVisiblePrefix, RENDER_GROUP_NORMAL);
+        }
+
+        AttachEffect* aAttachEffect = AttachReanim(aTrackInstance->mAttachmentID, aHeadReanim, 0.0f, 0.0f);
+        TodScaleRotateTransformMatrix(aAttachEffect->mOffset, -20.0f, 0.0f, 0.2f, 1.0f, 1.0f);
+        return aHeadReanim;
+    };
+
+    AddZombatarHeadReanim(nullptr, ZOMBATAR_SLOT_SKIN_COLOR);
+
+    struct RuntimePart
+    {
+        int mPartSlot;
+        int mColorSlot;
+        int mMaxCount;
+        const char* mPrefix;
+        bool mRemapAccessory;
+    };
+
+    static const RuntimePart aRuntimeParts[] =
+    {
+        { ZOMBATAR_SLOT_HATS, ZOMBATAR_SLOT_HATS_COLOR, 14, "hats_", false },
+        { ZOMBATAR_SLOT_HAIR, ZOMBATAR_SLOT_HAIR_COLOR, 16, "hair_", false },
+        { ZOMBATAR_SLOT_TIDBITS, ZOMBATAR_SLOT_TIDBITS_COLOR, 14, "tidBits_", false },
+        { ZOMBATAR_SLOT_EYEWEAR, ZOMBATAR_SLOT_EYEWEAR_COLOR, 16, "eyeWear_", false },
+        { ZOMBATAR_SLOT_ACCESSORY, ZOMBATAR_SLOT_ACCESSORY_COLOR, 15, "accessories_", true },
+        { ZOMBATAR_SLOT_FACIAL_HAIR, ZOMBATAR_SLOT_FACIAL_HAIR_COLOR, 24, "facialHair_", false }
+    };
+
+    for (const RuntimePart& aPart : aRuntimeParts)
+    {
+        int aPartIndex = ZombatarReadSignedRecordSlot(aRecord, aPart.mPartSlot);
+        if (aPartIndex < 0 || aPartIndex >= aPart.mMaxCount)
+            continue;
+        int aTrackIndex = aPart.mRemapAccessory ? ZombatarRemapAccessoryForRuntime(aPartIndex) : aPartIndex;
+        std::string aPrefix = ZombatarTrackPrefix(aPart.mPrefix, aTrackIndex);
+        AddZombatarHeadReanim(aPrefix.c_str(), aPart.mColorSlot);
+    }
 }
 
 void Zombie::DropPole()

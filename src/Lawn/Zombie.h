@@ -382,6 +382,7 @@ public:
     void                            MowDown();
     void                            UpdateMowered();
     void                            DropFlag();
+    void                            SetupZombatarFlagReanim();
     void                            DropPole();
     void                            DrawBossBackArm(Graphics* g, const ZombieDrawPosition& theDrawPos);
     static void                     PreloadZombieResources(ZombieType theZombieType);

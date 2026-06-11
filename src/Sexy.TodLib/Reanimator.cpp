@@ -181,6 +181,7 @@ constinit const ReanimationParams gLawnReanimationArray[ReanimationType::NUM_REA
 	{ .mReanimationType = ReanimationType::REANIM_CREDITS_WEARETHEUNDEAD, .mReanimFileName = "reanim/Credits_WeAreTheUndead.reanim", .mReanimParamFlags = 1 },
 	{ .mReanimationType = ReanimationType::REANIM_CREDITS_DISCOLIGHTS, .mReanimFileName = "reanim/Credits_DiscoLights.reanim", .mReanimParamFlags = 1 },
 	{ .mReanimationType = ReanimationType::REANIM_FLAG, .mReanimFileName = "reanim/Zombie_FlagPole.reanim", .mReanimParamFlags = 0 },
+	{ .mReanimationType = ReanimationType::REANIM_ZOMBATAR_HEAD, .mReanimFileName = "reanim/zombatar_zombie_head.reanim", .mReanimParamFlags = 0 },
 };
 
 ReanimatorTransform::ReanimatorTransform() :
