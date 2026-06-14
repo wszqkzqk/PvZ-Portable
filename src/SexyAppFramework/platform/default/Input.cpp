@@ -482,6 +482,16 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 			case SDL_KEYDOWN:
 			{
 				mLastUserInputTick = mLastTimerTime;
+
+				if (mAllowAltEnter &&
+					event.key.repeat == 0 &&
+					(event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER) &&
+					(event.key.keysym.mod & KMOD_ALT))
+				{
+					SwitchScreenMode(!mIsWindowed);
+					break;
+				}
+
 				mWidgetManager->KeyDown(SDLKeyToKeyCode(event.key.keysym.sym));
 
 				char aSynthesizedChar = 0;
