@@ -379,32 +379,10 @@ Image* GetGIFImage(const std::string& theFileName)
 			}
 			case 0xfe:
 			{
-				char* comments;
-				int length;
-
 				/*
-				Read Comment extension.
+				Read/Discard Comment extension.
 				*/
-				comments = (char*)nullptr;
-				for (; ; )
-				{
-					length = ReadBlobBlock(fp, (char*)header);
-					if (length <= 0)
-						break;
-					if (comments == nullptr)
-					{
-						comments = new char[length + 1];
-						if (comments != (char*)nullptr)
-							*comments = '\0';
-					}
-
-					header[length] = '\0';
-					strcat(comments, (char*)header);
-				}
-				if (comments == (char*)nullptr)
-					break;
-
-				delete[] comments;
+				while (ReadBlobBlock(fp, (char*)header) > 0);
 				break;
 			}
 			case 0xff:
@@ -613,6 +591,16 @@ Image* GetGIFImage(const std::string& theFileName)
 		Initialize GIF data stream decoder.
 		*/
 		p_fread(&data_size, sizeof(char), 1, fp);
+		if (data_size < 2 || data_size > 11)
+		{
+			delete[] pixel_stack;
+			delete[] suffix;
+			delete[] prefix;
+			delete[] packet;
+			delete[] colortable;
+			p_fclose(fp);
+			return nullptr;
+		}
 		clear = 1 << data_size;
 		end_of_information = clear + 1;
 		available = clear + 2;
