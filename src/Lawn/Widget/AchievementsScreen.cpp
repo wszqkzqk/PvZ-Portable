@@ -50,7 +50,7 @@ AchievementItem gAchievementList[MAX_ACHIEVEMENTS] = {
 	{ "Explodonator", "Take out 10 full-sized zombies with a single Cherry Bomb." },
 	{ "Morticulturalist", "Collect all 49 plants (including plants from Crazy Dave's shop)." },
 	{ "Don't Pea in the Pool", "Complete a daytime pool level without using pea shooters of any kind." },
-	{ "Roll Some Heads", "Bowl over 5 zombies with the same wall-nut." },
+	{ "Roll Some Heads", "Bowl over 5 zombies with a single Wall-Nut." },
 	{ "Grounded", "Defeat a normal roof level without using any catapult plants." },
 	{ "Zombologist", "Discover the Yeti zombie." },
 	{ "Penny Pincher", "Pick up 30 coins in a row on a single level without letting any disappear." },
