@@ -656,7 +656,7 @@ void AwardScreen::AchievementsContinuePressed() {
 		mContinueButton->mBtnNoDraw = true;
 		mShowingAchievements = false;
 		int level = mApp->mPlayerInfo->GetLevel();
-		if (level == 1 && mApp->HasFinishedAdventure()) {
+		if (mApp->IsAdventureMode() && level == 1 && mApp->HasFinishedAdventure()) {
 			mApp->KillAwardScreen();
 			mApp->ShowAwardScreen(AWARD_CREDITS_ZOMBIENOTE, false);
 		}
