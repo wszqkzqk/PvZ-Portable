@@ -1042,11 +1042,13 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
                 mApp->mSeedChooserScreen->UpdateAfterPurchase();
             }
 
-            // @Patoke: implemented
-            bool aGiveAchievement = true;
-            for (int i = STORE_ITEM_PLANT_GATLINGPEA; i <= STORE_ITEM_PLANT_IMITATER; i++) {
-                if (mApp->HasSeedType(SeedType(i)))
-                    aGiveAchievement = false;
+            // Only give the achievement if the player bought a plant and has all plants purchased
+            bool aGiveAchievement = theStoreItem >= STORE_ITEM_PLANT_GATLINGPEA && theStoreItem <= STORE_ITEM_PLANT_IMITATER;
+            if (aGiveAchievement) {
+                for (int aSeedType = SeedType::SEED_GATLINGPEA; aSeedType <= SeedType::SEED_IMITATER; aSeedType++) {
+                    if (!mApp->HasSeedType(SeedType(aSeedType)))
+                        aGiveAchievement = false;
+                }
             }
 
             if (aGiveAchievement) {

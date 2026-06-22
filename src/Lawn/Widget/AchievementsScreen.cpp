@@ -277,8 +277,8 @@ void ReportAchievement::AchievementInitForPlayer(LawnApp* theApp) {
 	}
 
 	bool aGiveAchievement = true;
-	for (int i = STORE_ITEM_PLANT_GATLINGPEA; i <= STORE_ITEM_PLANT_IMITATER; i++) {
-		if (theApp->HasSeedType(SeedType(i)))
+	for (int aSeedType = SeedType::SEED_GATLINGPEA; aSeedType <= SeedType::SEED_IMITATER; aSeedType++) {
+		if (!theApp->HasSeedType(SeedType(aSeedType)))
 			aGiveAchievement = false;
 	}
 
