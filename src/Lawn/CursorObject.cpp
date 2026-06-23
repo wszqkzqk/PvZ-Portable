@@ -43,6 +43,7 @@ CursorObject::CursorObject()
     mReanimCursorID = ReanimationID::REANIMATIONID_NULL;
     mWidth = 80;
     mHeight = 80;
+    mHammerDownCounter = 0;
 }
 
 void CursorObject::Update()

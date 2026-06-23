@@ -423,7 +423,6 @@ inline bool DefReadFromCacheString(void*& theReadPtr, const char** theString)
 {
     int aLen;
     SMemR(theReadPtr, &aLen, sizeof(int));
-    TOD_ASSERT(aLen >= 0 && aLen <= 100000);
     if (aLen == 0)
         *theString = "";
     else
@@ -440,9 +439,8 @@ inline bool DefReadFromCacheImage(void*& theReadPtr, Image** theImage)
 {
     int aLen;
     SMemR(theReadPtr, &aLen, sizeof(int));  // 读取贴图标签字符数组的长度
-    char* aImageName = (char*)alloca(aLen + 1);  // 在栈上分配贴图标签字符数组的内存空间
-    SMemR(theReadPtr, aImageName, aLen);  // 读取贴图标签字符数组
-    aImageName[aLen] = '\0';
+    std::string aImageName(aLen, '\0');
+    SMemR(theReadPtr, aImageName.data(), aLen);  // 读取贴图标签字符数组
 
     *theImage = nullptr;
     return aImageName[0] == '\0' || DefinitionLoadImage(theImage, aImageName);
@@ -452,10 +450,9 @@ inline bool DefReadFromCacheFont(void*& theReadPtr, _Font** theFont)
 {
     int aLen;
     SMemR(theReadPtr, &aLen, sizeof(int));  // 读取字体标签字符数组的长度
-    char* aFontName = (char*)alloca(aLen + 1);  // 在栈上分配字体标签字符数组的内存空间
-    SMemR(theReadPtr, aFontName, aLen);  // 读取字体标签字符数组
-    aFontName[aLen] = '\0';
-    
+    std::string aFontName(aLen, '\0');
+    SMemR(theReadPtr, aFontName.data(), aLen);  // 读取字体标签字符数组
+
     *theFont = nullptr;
     return aFontName[0] == '\0' || DefinitionLoadFont(theFont, aFontName);
 }

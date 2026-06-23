@@ -2590,7 +2590,7 @@ static bool LawnLoadGameV4(Board* theBoard, const std::string& theFilePath)
 		return false;
 	if (aHeader.mVersion != SAVE_FILE_V4_VERSION)
 		return false;
-	if (aHeader.mPayloadSize + sizeof(SaveFileHeaderV4) > static_cast<uint32_t>(aBuffer.GetDataLen()))
+	if (aHeader.mPayloadSize > static_cast<uint32_t>(aBuffer.GetDataLen()) - sizeof(SaveFileHeaderV4))
 		return false;
 
 	unsigned char* aPayload = (unsigned char*)aBuffer.GetDataPtr() + sizeof(SaveFileHeaderV4);

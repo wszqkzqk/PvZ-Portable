@@ -34,11 +34,13 @@ MessageWidget::MessageWidget(LawnApp* theApp)
 {
 	mApp = theApp;
 	mDuration = 0;
+	mDisplayTime = 0;
 	mLabel[0] = '\0';
 	mMessageStyle = MessageStyle::MESSAGE_STYLE_OFF;
 	mLabelNext[0] = '\0';
 	mMessageStyleNext = MessageStyle::MESSAGE_STYLE_OFF;
 	mSlideOffTime = 100;
+	mReanimType = ReanimationType::REANIM_NONE;
 	memset(mTextReanimID, static_cast<int>(ReanimationID::REANIMATIONID_NULL), MAX_MESSAGE_LENGTH);
 }
 

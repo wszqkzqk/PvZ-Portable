@@ -866,13 +866,13 @@ bool ResourceManager::DoLoadFont(FontRes* theRes)
 
 		if (!theRes->mTags.empty())
 		{
-			char aBuf[1024];
-			strcpy(aBuf,theRes->mTags.c_str());
-			const char *aPtr = strtok(aBuf,", \r\n\t");
-			while (aPtr != nullptr)
+			const char* aDelim = ", \r\n\t";
+			size_t aPos = theRes->mTags.find_first_not_of(aDelim);
+			while (aPos != std::string::npos)
 			{
-				anImageFont->AddTag(aPtr);
-				aPtr = strtok(nullptr,", \r\n\t");
+				size_t aEnd = theRes->mTags.find_first_of(aDelim, aPos);
+				anImageFont->AddTag(theRes->mTags.substr(aPos, aEnd - aPos));
+				aPos = theRes->mTags.find_first_not_of(aDelim, aEnd);
 			}
 			anImageFont->Prepare();
 		}
