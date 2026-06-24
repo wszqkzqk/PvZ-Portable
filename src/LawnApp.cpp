@@ -749,6 +749,7 @@ void LawnApp::DoContinueDialog()
 	ContinueDialog* aDialog = new ContinueDialog(this);
 	CenterDialog(aDialog, aDialog->mWidth, aDialog->mHeight);
 	AddDialog(Dialogs::DIALOG_CONTINUE, aDialog);
+	mWidgetManager->SetFocus(aDialog);
 }
 
 void LawnApp::DoPauseDialog()

@@ -1562,11 +1562,13 @@ void CutScene::UpdateZombiesWon()
 			std::string aStr = TodReplaceString("[SURVIVAL_DEATH_MESSAGE]", "{FLAGS}", aFlagsStr);
 			GameOverDialog* aDialog = new GameOverDialog(aStr, true);
 			mApp->AddDialog(Dialogs::DIALOG_GAME_OVER, aDialog);
+			mApp->mWidgetManager->SetFocus(aDialog);
 		}
 		else
 		{
 			GameOverDialog* aDialog = new GameOverDialog("", false);
 			mApp->AddDialog(Dialogs::DIALOG_GAME_OVER, aDialog);
+			mApp->mWidgetManager->SetFocus(aDialog);
 		}
 	}
 }

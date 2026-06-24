@@ -114,6 +114,12 @@ void ContinueDialog::KeyDown(KeyCode theKey)
         return;
     }
 
+    if (theKey == KeyCode::KEYCODE_RETURN || theKey == KeyCode::KEYCODE_SPACE)
+    {
+        ButtonDepress(ContinueDialog::ContinueDialog_Continue);
+        return;
+    }
+
     LawnDialog::KeyDown(theKey);
 }
 
