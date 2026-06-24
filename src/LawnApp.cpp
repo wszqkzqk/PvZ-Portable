@@ -59,6 +59,7 @@
 #include "Lawn/System/ReanimationLawn.h"
 #include "Lawn/Widget/ChallengeScreen.h"
 #include "Lawn/Widget/NewOptionsDialog.h"
+#include "Lawn/Widget/ZombatarTOS.h"
 #include "Lawn/Widget/SeedChooserScreen.h"
 #include "widget/WidgetManager.h"
 #include "misc/ResourceManager.h"
@@ -723,6 +724,14 @@ void LawnApp::DoNewOptions(bool theFromGameSelector)
 	NewOptionsDialog* aDialog = new NewOptionsDialog(this, theFromGameSelector);
 	CenterDialog(aDialog, IMAGE_OPTIONS_MENUBACK->mWidth, IMAGE_OPTIONS_MENUBACK->mHeight);
 	AddDialog(Dialogs::DIALOG_NEWOPTIONS, aDialog);
+	mWidgetManager->SetFocus(aDialog);
+}
+
+void LawnApp::ShowZombatarTOS()
+{
+	ZombatarTOS* aDialog = new ZombatarTOS(this);
+	CenterDialog(aDialog, aDialog->mWidth, aDialog->mHeight);
+	AddDialog(Dialogs::DIALOG_ZOMBATAR_TOS, aDialog);
 	mWidgetManager->SetFocus(aDialog);
 }
 
