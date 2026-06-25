@@ -62,8 +62,7 @@ public:
 		ZOMBATAR_BTN_VIEW,
 		ZOMBATAR_BTN_FINISHED,
 		ZOMBATAR_BTN_NEW,
-		ZOMBATAR_BTN_EDIT,
-		ZOMBATAR_BTN_DELETE,
+		ZOMBATAR_BTN_CONFIRM_BACK,
 		ZOMBATAR_BTN_PREV_PORTRAIT,
 		ZOMBATAR_BTN_NEXT_PORTRAIT,
 		ZOMBATAR_BTN_PREV_PAGE,
@@ -77,10 +76,11 @@ public:
 	ZombatarWidgetState			mState;
 	ZombatarPage				mPage;
 	int							mCurrentIndex;
-	int							mEditingIndex;
-	int							mFacialHairPage;
+	int							mSubPage;
+	int							mMaxSubPages;
 	int							mMouseX;
 	int							mMouseY;
+	bool						mDeleteHover;
 	int							mPart[NUM_ZOMBATAR_PAGES];
 	int							mColor[NUM_ZOMBATAR_PAGES];
 
@@ -88,8 +88,7 @@ public:
 	NewLawnButton*				mViewButton;
 	NewLawnButton*				mFinishedButton;
 	NewLawnButton*				mNewButton;
-	NewLawnButton*				mEditButton;
-	NewLawnButton*				mDeleteButton;
+	NewLawnButton*				mConfirmBackButton;
 	NewLawnButton*				mPrevPortraitButton;
 	NewLawnButton*				mNextPortraitButton;
 	NewLawnButton*				mPrevPageButton;
@@ -135,6 +134,7 @@ private:
 	Rect						GetCategoryRect(int theIndex) const;
 	Rect						GetItemRect(int theIndex) const;
 	Rect						GetColorRect(int theIndex) const;
+	int							GetTotalItemsForPage(ZombatarPage thePage) const;
 	int							GetItemCountForPage() const;
 	bool						PageAllowsNone() const;
 	bool						PageAllowsColors() const;
@@ -150,7 +150,6 @@ private:
 	void						EncodeRecord(unsigned char* theRecord) const;
 	void						BackToSelector();
 	void						ShowMaxHeadsMessage();
-	void						BeginEditCurrent();
 	void						HandleGridClick(int x, int y);
 	void						HandleColorClick(int x, int y);
 	void						UpdateButtonState();

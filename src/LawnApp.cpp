@@ -1754,6 +1754,7 @@ void LawnApp::LoadingThreadProc()
 		return;
 
 	TodStringListLoad("Properties/LawnStrings.txt");
+	TodStringListLoad("Properties/ZombatarTOS.txt");
 
 	// Load localized properties AFTER LawnStrings so they can override string values
 	LoadProperties("properties/default.xml", false, false);

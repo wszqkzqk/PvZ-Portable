@@ -27,6 +27,7 @@
 #include "../../LawnApp.h"
 #include "../../Resources.h"
 #include "../../GameConstants.h"
+#include "../../Sexy.TodLib/TodStringFile.h"
 #include "graphics/Graphics.h"
 #include "graphics/MemoryImage.h"
 #include "graphics/Font.h"
@@ -39,7 +40,71 @@
 #include <cstring>
 #include <vector>
 
-static const int ZOMBATAR_DEFAULT_COLOR = 17;
+constexpr int ZOMBATAR_COLOR_NONE = -1;
+constexpr int ZOMBATAR_PART_COLOR_BASE = 12;
+constexpr int ZOMBATAR_PART_COLOR_NONE_SWATCH = 17;
+
+constexpr int ZOMBATAR_PANEL_X = 25;
+constexpr int ZOMBATAR_PANEL_Y = 25;
+constexpr int ZOMBATAR_PANEL_W = 560;
+constexpr int ZOMBATAR_INNER_X = 152;
+constexpr int ZOMBATAR_INNER_Y = 125;
+constexpr int ZOMBATAR_COLORS_X = 196;
+constexpr int ZOMBATAR_COLORS_Y = 310;
+constexpr int ZOMBATAR_PREVIEW_X = 592;
+constexpr int ZOMBATAR_PREVIEW_Y = 115;
+
+constexpr int ZOMBATAR_TABS_X = 58;
+constexpr int ZOMBATAR_TABS_Y0 = 128;
+
+constexpr int ZOMBATAR_GRID_COLS = 6;
+constexpr int ZOMBATAR_GRID_ROWS = 3;
+constexpr int ZOMBATAR_GRID_PAGE = ZOMBATAR_GRID_COLS * ZOMBATAR_GRID_ROWS;
+constexpr int ZOMBATAR_GRID_GAP = -4;
+constexpr int ZOMBATAR_GRID_BIAS_X = 50;
+
+constexpr int ZOMBATAR_COLOR_COLS = 9;
+constexpr int ZOMBATAR_COLOR_GAP = 4;
+constexpr int ZOMBATAR_COLOR_X = 213;
+constexpr int ZOMBATAR_COLOR_Y = 342;
+
+constexpr int ZOMBATAR_BACK_X = 278;
+constexpr int ZOMBATAR_BACK_Y = 528;
+constexpr int ZOMBATAR_VIEW_X = 65;
+constexpr int ZOMBATAR_VIEW_Y = 472;
+constexpr int ZOMBATAR_FINISHED_X = 445;
+constexpr int ZOMBATAR_FINISHED_Y = 472;
+constexpr int ZOMBATAR_ACCEPT_X = 155;
+constexpr int ZOMBATAR_CONFIRM_BACK_X = 385;
+constexpr int ZOMBATAR_CONFIRM_BTN_Y = 345;
+constexpr int ZOMBATAR_NEW_X = 195;
+constexpr int ZOMBATAR_NEW_Y = 395;
+constexpr int ZOMBATAR_PREV_PORTRAIT_X = 120;
+constexpr int ZOMBATAR_NEXT_PORTRAIT_X = 467;
+constexpr int ZOMBATAR_PORTRAIT_BTN_Y = 398;
+constexpr int ZOMBATAR_PREV_PAGE_X = 175;
+constexpr int ZOMBATAR_NEXT_PAGE_X = 497;
+constexpr int ZOMBATAR_PAGE_BTN_Y = 372;
+
+constexpr int ZOMBATAR_LIST_PORTRAIT_Y = 175;
+constexpr int ZOMBATAR_LIST_CUR_X = 239;
+constexpr int ZOMBATAR_LIST_PREV_X = 57;
+constexpr int ZOMBATAR_LIST_NEXT_X = 421;
+constexpr int ZOMBATAR_LIST_COUNTER_X = 221;
+constexpr int ZOMBATAR_LIST_COUNTER_Y = 161;
+constexpr int ZOMBATAR_LIST_DELETE_X = 351;
+constexpr int ZOMBATAR_LIST_DELETE_Y = 161;
+constexpr int ZOMBATAR_LIST_DELETE_RECT_X = 346;
+constexpr int ZOMBATAR_LIST_DELETE_RECT_Y = 146;
+constexpr int ZOMBATAR_LIST_DELETE_RECT_W = 60;
+constexpr int ZOMBATAR_LIST_DELETE_RECT_H = 20;
+
+constexpr int ZOMBATAR_CONFIRM_HEADER_X = 305;
+constexpr int ZOMBATAR_CONFIRM_HEADER_Y = 185;
+constexpr int ZOMBATAR_CONFIRM_TEXT_X = 60;
+constexpr int ZOMBATAR_CONFIRM_TEXT_Y = 225;
+constexpr int ZOMBATAR_CONFIRM_TEXT_W = 500;
+constexpr int ZOMBATAR_CONFIRM_TEXT_H = 100;
 
 static int ClampRange(int theValue, int theMin, int theMax)
 {
@@ -86,54 +151,47 @@ ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 	mState = ZOMBATAR_STATE_CREATE;
 	mPage = ZOMBATAR_PAGE_SKIN;
 	mCurrentIndex = 0;
-	mEditingIndex = -1;
-	mFacialHairPage = 0;
+	mSubPage = 0;
+	mMaxSubPages = 0;
 	mMouseX = -1;
 	mMouseY = -1;
+	mDeleteHover = false;
 
 	mBackButton = MakeNewButton(ZOMBATAR_BTN_BACK, this, "", nullptr,
-		IMAGE_ZOMBATAR_BACK_BUTTON, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT);
-	mBackButton->Resize(30, 510, 160, 62);
+		IMAGE_ZOMBATAR_BACK_BUTTON, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT, nullptr);
+	mBackButton->Resize(ZOMBATAR_BACK_X, ZOMBATAR_BACK_Y, 98, 26);
 
 	mViewButton = MakeNewButton(ZOMBATAR_BTN_VIEW, this, "", nullptr,
-		IMAGE_ZOMBATAR_VIEW_BUTTON, IMAGE_ZOMBATAR_VIEW_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_VIEW_BUTTON_HIGHLIGHT);
-	mViewButton->Resize(346, 522, 160, 62);
+		IMAGE_ZOMBATAR_VIEW_BUTTON, IMAGE_ZOMBATAR_VIEW_BUTTON_HIGHLIGHT, nullptr);
+	mViewButton->Resize(ZOMBATAR_VIEW_X, ZOMBATAR_VIEW_Y, 115, 26);
 
 	mFinishedButton = MakeNewButton(ZOMBATAR_BTN_FINISHED, this, "", nullptr,
-		IMAGE_ZOMBATAR_FINISHED_BUTTON, IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT);
-	mFinishedButton->Resize(554, 522, 210, 62);
+		IMAGE_ZOMBATAR_FINISHED_BUTTON, IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT, nullptr);
+	mFinishedButton->Resize(ZOMBATAR_FINISHED_X, ZOMBATAR_FINISHED_Y, 103, 26);
 
 	mNewButton = MakeNewButton(ZOMBATAR_BTN_NEW, this, "", nullptr,
-		IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON, IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON_HIGHLIGHT);
-	mNewButton->Resize(250, 440, 230, 70);
+		IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON, IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON_HIGHLIGHT, nullptr);
+	mNewButton->Resize(ZOMBATAR_NEW_X, ZOMBATAR_NEW_Y, 234, 39);
 
-	mEditButton = MakeNewButton(ZOMBATAR_BTN_EDIT, this, "Edit", FONT_DWARVENTODCRAFT12,
-		IMAGE_BLANK, IMAGE_BLANK, IMAGE_BLANK);
-	mEditButton->Resize(500, 440, 130, 44);
-	mEditButton->SetColor(ButtonWidget::COLOR_LABEL, Color::White);
-	mEditButton->SetColor(ButtonWidget::COLOR_LABEL_HILITE, Color(0, 255, 40));
-
-	mDeleteButton = MakeNewButton(ZOMBATAR_BTN_DELETE, this, "Delete", FONT_DWARVENTODCRAFT12,
-		IMAGE_BLANK, IMAGE_BLANK, IMAGE_BLANK);
-	mDeleteButton->Resize(500, 490, 130, 44);
-	mDeleteButton->SetColor(ButtonWidget::COLOR_LABEL, Color(255, 96, 96));
-	mDeleteButton->SetColor(ButtonWidget::COLOR_LABEL_HILITE, Color(255, 180, 180));
+	mConfirmBackButton = MakeNewButton(ZOMBATAR_BTN_CONFIRM_BACK, this, "", nullptr,
+		IMAGE_ZOMBATAR_BACK_BUTTON, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT, nullptr);
+	mConfirmBackButton->Resize(ZOMBATAR_CONFIRM_BACK_X, ZOMBATAR_CONFIRM_BTN_Y, 98, 26);
 
 	mPrevPortraitButton = MakeNewButton(ZOMBATAR_BTN_PREV_PORTRAIT, this, "", nullptr,
-		IMAGE_ZOMBATAR_PREV_BUTTON, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT);
-	mPrevPortraitButton->Resize(164, 250, 80, 80);
+		IMAGE_ZOMBATAR_PREV_BUTTON, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT, nullptr);
+	mPrevPortraitButton->Resize(ZOMBATAR_PREV_PORTRAIT_X, ZOMBATAR_PORTRAIT_BTN_Y, 33, 38);
 
 	mNextPortraitButton = MakeNewButton(ZOMBATAR_BTN_NEXT_PORTRAIT, this, "", nullptr,
-		IMAGE_ZOMBATAR_NEXT_BUTTON, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT);
-	mNextPortraitButton->Resize(588, 250, 80, 80);
+		IMAGE_ZOMBATAR_NEXT_BUTTON, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT, nullptr);
+	mNextPortraitButton->Resize(ZOMBATAR_NEXT_PORTRAIT_X, ZOMBATAR_PORTRAIT_BTN_Y, 33, 38);
 
 	mPrevPageButton = MakeNewButton(ZOMBATAR_BTN_PREV_PAGE, this, "", nullptr,
-		IMAGE_ZOMBATAR_PREV_BUTTON, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT);
-	mPrevPageButton->Resize(366, 392, 80, 60);
+		IMAGE_ZOMBATAR_PREV_BUTTON, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT, nullptr);
+	mPrevPageButton->Resize(ZOMBATAR_PREV_PAGE_X, ZOMBATAR_PAGE_BTN_Y, 33, 38);
 
 	mNextPageButton = MakeNewButton(ZOMBATAR_BTN_NEXT_PAGE, this, "", nullptr,
-		IMAGE_ZOMBATAR_NEXT_BUTTON, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT);
-	mNextPageButton->Resize(646, 392, 80, 60);
+		IMAGE_ZOMBATAR_NEXT_BUTTON, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT, nullptr);
+	mNextPageButton->Resize(ZOMBATAR_NEXT_PAGE_X, ZOMBATAR_PAGE_BTN_Y, 33, 38);
 
 	Resize(800, 0, BOARD_WIDTH, BOARD_HEIGHT);
 	ResetDraft();
@@ -146,8 +204,7 @@ ZombatarWidget::~ZombatarWidget()
 	delete mViewButton;
 	delete mFinishedButton;
 	delete mNewButton;
-	delete mEditButton;
-	delete mDeleteButton;
+	delete mConfirmBackButton;
 	delete mPrevPortraitButton;
 	delete mNextPortraitButton;
 	delete mPrevPageButton;
@@ -161,8 +218,7 @@ void ZombatarWidget::AddedToManager(WidgetManager* theWidgetManager)
 	AddWidget(mViewButton);
 	AddWidget(mFinishedButton);
 	AddWidget(mNewButton);
-	AddWidget(mEditButton);
-	AddWidget(mDeleteButton);
+	AddWidget(mConfirmBackButton);
 	AddWidget(mPrevPortraitButton);
 	AddWidget(mNextPortraitButton);
 	AddWidget(mPrevPageButton);
@@ -176,8 +232,7 @@ void ZombatarWidget::RemovedFromManager(WidgetManager* theWidgetManager)
 	RemoveWidget(mViewButton);
 	RemoveWidget(mFinishedButton);
 	RemoveWidget(mNewButton);
-	RemoveWidget(mEditButton);
-	RemoveWidget(mDeleteButton);
+	RemoveWidget(mConfirmBackButton);
 	RemoveWidget(mPrevPortraitButton);
 	RemoveWidget(mNextPortraitButton);
 	RemoveWidget(mPrevPageButton);
@@ -195,10 +250,10 @@ void ZombatarWidget::Open()
 	if (!mApp->mPlayerInfo)
 		return;
 
-	// Re-sync with the active profile so switching users never shows a stale draft.
-	mEditingIndex = -1;
-	mFacialHairPage = 0;
+	mSubPage = 0;
+	mMaxSubPages = 0;
 	mPage = ZOMBATAR_PAGE_SKIN;
+	mDeleteHover = false;
 	mCurrentIndex = mApp->mPlayerInfo->mZombatarIndex;
 	ClampCurrentIndex();
 
@@ -226,13 +281,13 @@ void ZombatarWidget::ResetDraft()
 	for (int i = 0; i < NUM_ZOMBATAR_PAGES; i++)
 	{
 		mPart[i] = -1;
-		mColor[i] = ZOMBATAR_DEFAULT_COLOR;
+		mColor[i] = ZOMBATAR_COLOR_NONE;
 	}
 
 	mPart[ZOMBATAR_PAGE_SKIN] = 0;
 	mColor[ZOMBATAR_PAGE_SKIN] = 0;
 	mPart[ZOMBATAR_PAGE_BACKDROPS] = 4;
-	mColor[ZOMBATAR_PAGE_BACKDROPS] = ZOMBATAR_DEFAULT_COLOR;
+	mColor[ZOMBATAR_PAGE_BACKDROPS] = ZOMBATAR_COLOR_NONE;
 }
 
 int ZombatarWidget::GetHeadCount() const
@@ -274,7 +329,7 @@ void ZombatarWidget::DecodeRecord(const unsigned char* theRecord, int* thePart, 
 	for (int i = 0; i < NUM_ZOMBATAR_PAGES; i++)
 	{
 		thePart[i] = -1;
-		theColor[i] = ZOMBATAR_DEFAULT_COLOR;
+		theColor[i] = ZOMBATAR_COLOR_NONE;
 	}
 
 	thePart[ZOMBATAR_PAGE_SKIN] = 0;
@@ -283,27 +338,19 @@ void ZombatarWidget::DecodeRecord(const unsigned char* theRecord, int* thePart, 
 	for (int i = ZOMBATAR_PAGE_HAIR; i < NUM_ZOMBATAR_PAGES; i++)
 	{
 		ZombatarPage aPage = static_cast<ZombatarPage>(i);
-		int aItemCount = 0;
-		switch (aPage)
-		{
-		case ZOMBATAR_PAGE_HAIR: aItemCount = 16; break;
-		case ZOMBATAR_PAGE_FACIAL_HAIR: aItemCount = 24; break;
-		case ZOMBATAR_PAGE_TIDBITS: aItemCount = 14; break;
-		case ZOMBATAR_PAGE_EYEWEAR: aItemCount = 16; break;
-		case ZOMBATAR_PAGE_CLOTHES: aItemCount = 12; break;
-		case ZOMBATAR_PAGE_ACCESSORY: aItemCount = 15; break;
-		case ZOMBATAR_PAGE_HATS: aItemCount = 14; break;
-		case ZOMBATAR_PAGE_BACKDROPS: aItemCount = 5; break;
-		default: break;
-		}
-
+		int aItemCount = GetTotalItemsForPage(aPage);
 		int aPart = ZombatarReadSignedRecordSlot(theRecord, SlotForPart(aPage));
 		int aColor = ZombatarReadSignedRecordSlot(theRecord, SlotForColor(aPage));
+
 		if (aPage == ZOMBATAR_PAGE_BACKDROPS)
 			thePart[i] = ClampRange(aPart, 0, aItemCount - 1);
 		else
 			thePart[i] = (aPart >= 0 && aPart < aItemCount) ? aPart : -1;
-		theColor[i] = ClampRange(aColor, 0, 17);
+
+		if (aColor < 0)
+			theColor[i] = ZOMBATAR_COLOR_NONE;
+		else
+			theColor[i] = std::min(aColor, 47);
 	}
 }
 
@@ -316,7 +363,7 @@ void ZombatarWidget::EncodeRecord(unsigned char* theRecord) const
 	{
 		ZombatarPage aPage = static_cast<ZombatarPage>(i);
 		ZombatarWriteRecordSlot(theRecord, SlotForPart(aPage), mPart[i]);
-		ZombatarWriteRecordSlot(theRecord, SlotForColor(aPage), ClampRange(mColor[i], 0, 17));
+		ZombatarWriteRecordSlot(theRecord, SlotForColor(aPage), mColor[i]);
 	}
 
 	ZombatarWriteRecordSlot(theRecord, ZOMBATAR_SLOT_RESERVED, 0);
@@ -338,38 +385,20 @@ void ZombatarWidget::LoadCurrentToDraft()
 bool ZombatarWidget::SaveDraft()
 {
 	PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
-	if (!aPlayerInfo)
-		return false;
-	if (mEditingIndex < 0 && !CanSaveNewHead())
+	if (!aPlayerInfo || !CanSaveNewHead())
 		return false;
 
-	size_t aOffset;
-	int aExportIndex;
-	if (mEditingIndex >= 0)
-	{
-		aOffset = static_cast<size_t>(mEditingIndex) * ZOMBATAR_RECORD_SIZE;
-		if (aOffset + ZOMBATAR_RECORD_SIZE > aPlayerInfo->mZombatarData.size())
-			return false;
-		EncodeRecord(aPlayerInfo->mZombatarData.data() + aOffset);
-		aExportIndex = mEditingIndex + 1;
-	}
-	else
-	{
-		aOffset = aPlayerInfo->mZombatarData.size();
-		aPlayerInfo->mZombatarData.resize(aOffset + ZOMBATAR_RECORD_SIZE);
-		EncodeRecord(aPlayerInfo->mZombatarData.data() + aOffset);
-		aPlayerInfo->mZombatarCreatedBefore = 1;
-		aExportIndex = static_cast<int>(aOffset / ZOMBATAR_RECORD_SIZE) + 1;
-	}
-
+	size_t aOffset = aPlayerInfo->mZombatarData.size();
+	aPlayerInfo->mZombatarData.resize(aOffset + ZOMBATAR_RECORD_SIZE);
+	EncodeRecord(aPlayerInfo->mZombatarData.data() + aOffset);
 	aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
+	aPlayerInfo->mZombatarCreatedBefore = 1;
 	mCurrentIndex = static_cast<int>(aOffset / ZOMBATAR_RECORD_SIZE);
 	aPlayerInfo->mZombatarIndex = mCurrentIndex;
 
-	if (!ExportAvatarPNG(aPlayerInfo->mZombatarData.data() + aOffset, aExportIndex))
+	if (!ExportAvatarPNG(aPlayerInfo->mZombatarData.data() + aOffset, mCurrentIndex + 1))
 	{
-		if (mEditingIndex < 0)
-			aPlayerInfo->mZombatarData.resize(aOffset);
+		aPlayerInfo->mZombatarData.resize(aOffset);
 		aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
 		ClampCurrentIndex();
 		mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Export Failed", "The Zombatar image could not be written.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
@@ -377,9 +406,9 @@ bool ZombatarWidget::SaveDraft()
 	}
 
 	aPlayerInfo->SaveDetails();
-	mEditingIndex = -1;
 	ResetDraft();
 	mPage = ZOMBATAR_PAGE_SKIN;
+	mSubPage = 0;
 	return true;
 }
 
@@ -431,39 +460,45 @@ void ZombatarWidget::DeleteCurrent()
 	aPlayerInfo->SaveDetails();
 }
 
-void ZombatarWidget::BeginEditCurrent()
-{
-	if (GetHeadCount() <= 0)
-		return;
-	ClampCurrentIndex();
-	mEditingIndex = mCurrentIndex;
-	LoadCurrentToDraft();
-	mFacialHairPage = 0;
-	ChangeState(ZOMBATAR_STATE_CREATE);
-}
-
 Rect ZombatarWidget::GetCategoryRect(int theIndex) const
 {
-	return Rect(368 + (theIndex % 3) * 124, 96 + (theIndex / 3) * 46, 112, 38);
+	Image* aImage = GetCategoryImage(static_cast<ZombatarPage>(theIndex), false, false);
+	int aTabH = aImage ? aImage->mHeight : 39;
+	int aTabW = aImage ? aImage->mWidth : 104;
+	int aStep = std::max(8, aTabH - 3);
+	return Rect(ZOMBATAR_TABS_X, ZOMBATAR_TABS_Y0 + theIndex * aStep, aTabW, aTabH);
 }
 
 Rect ZombatarWidget::GetItemRect(int theIndex) const
 {
-	return Rect(374 + (theIndex % 6) * 62, 266 + (theIndex / 6) * 58, 54, 50);
+	int aCellW = IMAGE_ZOMBATAR_ACCESSORY_BG ? IMAGE_ZOMBATAR_ACCESSORY_BG->mWidth : 67;
+	int aCellH = IMAGE_ZOMBATAR_ACCESSORY_BG ? IMAGE_ZOMBATAR_ACCESSORY_BG->mHeight : 67;
+	int aStepX = aCellW + ZOMBATAR_GRID_GAP;
+	int aStepY = aCellH + 3 + ZOMBATAR_GRID_GAP;
+	int aOriginX = ZOMBATAR_PANEL_X + (ZOMBATAR_PANEL_W - ZOMBATAR_GRID_COLS * aStepX) / 2 + ZOMBATAR_GRID_BIAS_X;
+	int aOriginY = ZOMBATAR_PANEL_Y + 2 * ZOMBATAR_GRID_GAP + 120;
+	int aCol = theIndex % ZOMBATAR_GRID_COLS;
+	int aRow = (theIndex % ZOMBATAR_GRID_PAGE) / ZOMBATAR_GRID_COLS;
+	return Rect(aOriginX + aCol * aStepX, aOriginY + aRow * aStepY, aCellW, aCellH);
 }
 
 Rect ZombatarWidget::GetColorRect(int theIndex) const
 {
-	return Rect(396 + (theIndex % 6) * 42, 474 + (theIndex / 6) * 34, 30, 28);
+	int aSwatchW = IMAGE_ZOMBATAR_COLORPICKER ? IMAGE_ZOMBATAR_COLORPICKER->mWidth : 21;
+	int aSwatchH = IMAGE_ZOMBATAR_COLORPICKER ? IMAGE_ZOMBATAR_COLORPICKER->mHeight : 20;
+	int aStep = aSwatchW + ZOMBATAR_COLOR_GAP;
+	int aCol = theIndex % ZOMBATAR_COLOR_COLS;
+	int aRow = theIndex / ZOMBATAR_COLOR_COLS;
+	return Rect(ZOMBATAR_COLOR_X + aCol * aStep, ZOMBATAR_COLOR_Y + aRow * aStep, aSwatchW, aSwatchH);
 }
 
-int ZombatarWidget::GetItemCountForPage() const
+int ZombatarWidget::GetTotalItemsForPage(ZombatarPage thePage) const
 {
-	switch (mPage)
+	switch (thePage)
 	{
-	case ZOMBATAR_PAGE_SKIN: return 12;
+	case ZOMBATAR_PAGE_SKIN: return 0;
 	case ZOMBATAR_PAGE_HAIR: return 16;
-	case ZOMBATAR_PAGE_FACIAL_HAIR: return mFacialHairPage == 0 ? 17 : 7;
+	case ZOMBATAR_PAGE_FACIAL_HAIR: return 24;
 	case ZOMBATAR_PAGE_TIDBITS: return 14;
 	case ZOMBATAR_PAGE_EYEWEAR: return 16;
 	case ZOMBATAR_PAGE_CLOTHES: return 12;
@@ -474,6 +509,13 @@ int ZombatarWidget::GetItemCountForPage() const
 	}
 }
 
+int ZombatarWidget::GetItemCountForPage() const
+{
+	int aTotal = GetTotalItemsForPage(mPage);
+	int aRemaining = aTotal - mSubPage * ZOMBATAR_GRID_PAGE;
+	return ClampRange(aRemaining, 0, ZOMBATAR_GRID_PAGE);
+}
+
 bool ZombatarWidget::PageAllowsNone() const
 {
 	return mPage != ZOMBATAR_PAGE_SKIN && mPage != ZOMBATAR_PAGE_BACKDROPS;
@@ -481,9 +523,9 @@ bool ZombatarWidget::PageAllowsNone() const
 
 bool ZombatarWidget::PageAllowsColors() const
 {
-	// The skin page already exposes its full palette in the top grid, so the
-	// bottom color picker is only shown for part pages with a selected part.
-	return mPage != ZOMBATAR_PAGE_SKIN && mPart[mPage] >= 0;
+	if (mPage == ZOMBATAR_PAGE_SKIN)
+		return true;
+	return mPart[mPage] >= 0;
 }
 
 Image* ZombatarWidget::GetCategoryImage(ZombatarPage thePage, bool theSelected, bool theOver) const
@@ -537,7 +579,6 @@ Image* ZombatarWidget::GetPartImage(ZombatarPage thePage, int theIndex) const
 	static Image* aEyewear[] = { IMAGE_ZOMBATAR_EYEWEAR_1, IMAGE_ZOMBATAR_EYEWEAR_2, IMAGE_ZOMBATAR_EYEWEAR_3, IMAGE_ZOMBATAR_EYEWEAR_4, IMAGE_ZOMBATAR_EYEWEAR_5, IMAGE_ZOMBATAR_EYEWEAR_6, IMAGE_ZOMBATAR_EYEWEAR_7, IMAGE_ZOMBATAR_EYEWEAR_8, IMAGE_ZOMBATAR_EYEWEAR_9, IMAGE_ZOMBATAR_EYEWEAR_10, IMAGE_ZOMBATAR_EYEWEAR_11, IMAGE_ZOMBATAR_EYEWEAR_12, IMAGE_ZOMBATAR_EYEWEAR_13, IMAGE_ZOMBATAR_EYEWEAR_14, IMAGE_ZOMBATAR_EYEWEAR_15, IMAGE_ZOMBATAR_EYEWEAR_16 };
 	static Image* aFacial[] = { IMAGE_ZOMBATAR_FACIALHAIR_1, IMAGE_ZOMBATAR_FACIALHAIR_2, IMAGE_ZOMBATAR_FACIALHAIR_3, IMAGE_ZOMBATAR_FACIALHAIR_4, IMAGE_ZOMBATAR_FACIALHAIR_5, IMAGE_ZOMBATAR_FACIALHAIR_6, IMAGE_ZOMBATAR_FACIALHAIR_7, IMAGE_ZOMBATAR_FACIALHAIR_8, IMAGE_ZOMBATAR_FACIALHAIR_9, IMAGE_ZOMBATAR_FACIALHAIR_10, IMAGE_ZOMBATAR_FACIALHAIR_11, IMAGE_ZOMBATAR_FACIALHAIR_12, IMAGE_ZOMBATAR_FACIALHAIR_13, IMAGE_ZOMBATAR_FACIALHAIR_14, IMAGE_ZOMBATAR_FACIALHAIR_15, IMAGE_ZOMBATAR_FACIALHAIR_16, IMAGE_ZOMBATAR_FACIALHAIR_17, IMAGE_ZOMBATAR_FACIALHAIR_18, IMAGE_ZOMBATAR_FACIALHAIR_19, IMAGE_ZOMBATAR_FACIALHAIR_20, IMAGE_ZOMBATAR_FACIALHAIR_21, IMAGE_ZOMBATAR_FACIALHAIR_22, IMAGE_ZOMBATAR_FACIALHAIR_23, IMAGE_ZOMBATAR_FACIALHAIR_24 };
 	static Image* aTidbits[] = { IMAGE_ZOMBATAR_TIDBITS_1, IMAGE_ZOMBATAR_TIDBITS_2, IMAGE_ZOMBATAR_TIDBITS_3, IMAGE_ZOMBATAR_TIDBITS_4, IMAGE_ZOMBATAR_TIDBITS_5, IMAGE_ZOMBATAR_TIDBITS_6, IMAGE_ZOMBATAR_TIDBITS_7, IMAGE_ZOMBATAR_TIDBITS_8, IMAGE_ZOMBATAR_TIDBITS_9, IMAGE_ZOMBATAR_TIDBITS_10, IMAGE_ZOMBATAR_TIDBITS_11, IMAGE_ZOMBATAR_TIDBITS_12, IMAGE_ZOMBATAR_TIDBITS_13, IMAGE_ZOMBATAR_TIDBITS_14 };
-	// Zombatar exposes 15 accessory slots; the visual sequence skips asset 7 and ends on asset 16.
 	static Image* aAccessory[] = { IMAGE_ZOMBATAR_ACCESSORY_1, IMAGE_ZOMBATAR_ACCESSORY_2, IMAGE_ZOMBATAR_ACCESSORY_3, IMAGE_ZOMBATAR_ACCESSORY_4, IMAGE_ZOMBATAR_ACCESSORY_5, IMAGE_ZOMBATAR_ACCESSORY_6, IMAGE_ZOMBATAR_ACCESSORY_8, IMAGE_ZOMBATAR_ACCESSORY_9, IMAGE_ZOMBATAR_ACCESSORY_10, IMAGE_ZOMBATAR_ACCESSORY_11, IMAGE_ZOMBATAR_ACCESSORY_12, IMAGE_ZOMBATAR_ACCESSORY_13, IMAGE_ZOMBATAR_ACCESSORY_14, IMAGE_ZOMBATAR_ACCESSORY_15, IMAGE_ZOMBATAR_ACCESSORY_16 };
 
 	if (theIndex < 0)
@@ -678,9 +719,6 @@ bool ZombatarWidget::ExportAvatarPNG(const unsigned char* theRecord, int theExpo
 	aExportImage.mHeight = aMemoryImage.mHeight;
 	aExportImage.mBits = new uint32_t[aExportImage.mWidth * aExportImage.mHeight];
 
-	// ImageLib::WritePNGImage expects native-endian 0xAARRGGBB pixels (it calls
-	// png_set_bgr), which is exactly what MemoryImage produces. Copying the bits
-	// verbatim keeps the export correct on both little- and big-endian targets.
 	uint32_t* aSourceBits = aMemoryImage.GetBits();
 	memcpy(aExportImage.mBits, aSourceBits, sizeof(uint32_t) * aExportImage.mWidth * aExportImage.mHeight);
 
@@ -724,36 +762,42 @@ void ZombatarWidget::Draw(Graphics* g)
 		DrawList(g);
 	else
 		DrawCreate(g);
+
+	if (IMAGE_ZOMBATAR_DISPLAY_WINDOW)
+		g->DrawImage(IMAGE_ZOMBATAR_DISPLAY_WINDOW, 5, 0);
 }
 
 void ZombatarWidget::DrawMain(Graphics* g)
 {
 	g->DrawImage(IMAGE_ZOMBATAR_MAIN_BG, 0, 0);
-	if (IMAGE_ZOMBATAR_LOGO)
-		g->DrawImage(IMAGE_ZOMBATAR_LOGO, 18, 18);
 }
 
 void ZombatarWidget::DrawList(Graphics* g)
 {
 	int aCount = GetHeadCount();
 	ClampCurrentIndex();
-	if (aCount > 0)
-	{
-		const unsigned char* aRecord = mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE;
-		DrawAvatar(g, 250, 112, aRecord);
-	}
+	if (aCount <= 0)
+		return;
 
-	g->SetFont(FONT_DWARVENTODCRAFT18);
+	if (mCurrentIndex > 0)
+		DrawAvatar(g, ZOMBATAR_LIST_PREV_X, ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + (mCurrentIndex - 1) * ZOMBATAR_RECORD_SIZE);
+	DrawAvatar(g, ZOMBATAR_LIST_CUR_X, ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE);
+	if (mCurrentIndex + 1 < aCount)
+		DrawAvatar(g, ZOMBATAR_LIST_NEXT_X, ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + (mCurrentIndex + 1) * ZOMBATAR_RECORD_SIZE);
+
+	g->SetFont(FONT_DWARVENTODCRAFT12);
 	g->SetColor(Color(255, 255, 255));
-	g->DrawString(Sexy::StrFormat("%d / %d", aCount > 0 ? mCurrentIndex + 1 : 0, aCount), 360, 390);
+	g->DrawString(Sexy::StrFormat("%d / %d", mCurrentIndex + 1, aCount), ZOMBATAR_LIST_COUNTER_X, ZOMBATAR_LIST_COUNTER_Y);
+
+	g->SetColor(mDeleteHover ? Color(255, 96, 96) : Color(255, 255, 255));
+	g->DrawString("Delete?", ZOMBATAR_LIST_DELETE_X, ZOMBATAR_LIST_DELETE_Y);
+	g->SetColor(Color::White);
 }
 
 void ZombatarWidget::DrawCreate(Graphics* g)
 {
-	DrawDraftAvatar(g, 70, 112);
-	g->DrawImage(IMAGE_ZOMBATAR_WIDGET_BG, 345, 74);
-	g->DrawImage(IMAGE_ZOMBATAR_WIDGET_INNER_BG, 360, 248);
-	g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, 378, 452);
+	g->DrawImage(IMAGE_ZOMBATAR_WIDGET_BG, ZOMBATAR_PANEL_X, ZOMBATAR_PANEL_Y);
+	g->DrawImage(IMAGE_ZOMBATAR_WIDGET_INNER_BG, ZOMBATAR_INNER_X, ZOMBATAR_INNER_Y);
 
 	for (int i = 0; i < NUM_ZOMBATAR_PAGES; i++)
 	{
@@ -761,29 +805,26 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 		g->DrawImage(GetCategoryImage(static_cast<ZombatarPage>(i), i == mPage, aRect.Contains(mMouseX, mMouseY)), aRect.mX, aRect.mY);
 	}
 
+	DrawDraftAvatar(g, ZOMBATAR_PREVIEW_X, ZOMBATAR_PREVIEW_Y);
+
 	int aItemCount = GetItemCountForPage();
-	int aBaseIndex = (mPage == ZOMBATAR_PAGE_FACIAL_HAIR && mFacialHairPage == 1) ? 17 : 0;
+	int aBaseIndex = mSubPage * ZOMBATAR_GRID_PAGE;
 	for (int i = 0; i < aItemCount; i++)
 	{
 		Rect aRect = GetItemRect(i);
-		bool aSelected = (mPage == ZOMBATAR_PAGE_SKIN) ? mColor[ZOMBATAR_PAGE_SKIN] == i : mPart[mPage] == aBaseIndex + i;
+		bool aSelected = mPart[mPage] == aBaseIndex + i;
 		g->DrawImage(aSelected ? IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT : IMAGE_ZOMBATAR_ACCESSORY_BG, aRect.mX, aRect.mY);
-		if (mPage == ZOMBATAR_PAGE_SKIN)
+		if (mPage == ZOMBATAR_PAGE_BACKDROPS)
 		{
-			g->SetColor(ZombatarGetColor(i));
-			g->FillRect(aRect.mX + 9, aRect.mY + 8, 34, 32);
-			g->SetColor(Color::White);
-		}
-		else if (mPage == ZOMBATAR_PAGE_BACKDROPS)
-		{
-			Image* aImage = GetBackgroundImage(i);
-			g->DrawImage(aImage, Rect(aRect.mX + 6, aRect.mY + 4, 42, 40), Rect(0, 0, aImage->mWidth, aImage->mHeight));
+			Image* aImage = GetBackgroundImage(aBaseIndex + i);
+			if (aImage)
+				g->DrawImage(aImage, Rect(aRect.mX + 6, aRect.mY + 4, std::max(8, aRect.mWidth - 12), std::max(8, aRect.mHeight - 8)), Rect(0, 0, aImage->mWidth, aImage->mHeight));
 		}
 		else
 		{
 			Image* aImage = GetPartImage(mPage, aBaseIndex + i);
 			if (aImage)
-				g->DrawImage(aImage, Rect(aRect.mX + 3, aRect.mY + 1, 48, 46), Rect(0, 0, aImage->mWidth, aImage->mHeight));
+				g->DrawImage(aImage, Rect(aRect.mX + 3, aRect.mY + 1, std::max(8, aRect.mWidth - 6), std::max(8, aRect.mHeight - 6)), Rect(0, 0, aImage->mWidth, aImage->mHeight));
 		}
 	}
 
@@ -797,24 +838,58 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 
 	if (PageAllowsColors())
 	{
-		for (int i = 0; i < 18; i++)
+		g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
+		bool aSkin = mPage == ZOMBATAR_PAGE_SKIN;
+		int aCount = aSkin ? 12 : 18;
+		for (int i = 0; i < aCount; i++)
 		{
 			Rect aRect = GetColorRect(i);
-			g->DrawImage(mColor[mPage] == i ? IMAGE_ZOMBATAR_COLORPICKER_HIGHLIGHT : (i == ZOMBATAR_DEFAULT_COLOR ? IMAGE_ZOMBATAR_COLORPICKER_NONE : IMAGE_ZOMBATAR_COLORPICKER), aRect.mX, aRect.mY);
-			if (i != ZOMBATAR_DEFAULT_COLOR)
+			bool aNone = !aSkin && i == ZOMBATAR_PART_COLOR_NONE_SWATCH;
+			bool aSelected;
+			int aPalette;
+			if (aSkin)
 			{
-				g->SetColor(ZombatarGetColor(i));
-				g->FillRect(aRect.mX + 6, aRect.mY + 5, 18, 17);
+				aSelected = mColor[ZOMBATAR_PAGE_SKIN] == i;
+				aPalette = i;
+			}
+			else if (aNone)
+			{
+				aSelected = mColor[mPage] < 0;
+				aPalette = 29;
+			}
+			else
+			{
+				aSelected = mColor[mPage] == ZOMBATAR_PART_COLOR_BASE + i;
+				aPalette = ZOMBATAR_PART_COLOR_BASE + i;
+			}
+
+			g->DrawImage(aSelected ? IMAGE_ZOMBATAR_COLORPICKER_HIGHLIGHT : (aNone ? IMAGE_ZOMBATAR_COLORPICKER_NONE : IMAGE_ZOMBATAR_COLORPICKER), aRect.mX, aRect.mY);
+			if (!aNone)
+			{
+				g->SetColor(ZombatarGetColor(aPalette));
+				g->FillRect(aRect.mX + 4, aRect.mY + 4, std::max(4, aRect.mWidth - 8), std::max(4, aRect.mHeight - 8));
 				g->SetColor(Color::White);
 			}
 		}
 	}
 
-	if (mState == ZOMBATAR_STATE_CONFIRM)
+	if (mMaxSubPages > 0)
 	{
 		g->SetFont(FONT_DWARVENTODCRAFT12);
 		g->SetColor(Color(255, 255, 255));
-		g->WriteWordWrapped(Rect(348, 220, 355, 44), "Save this Zombatar to your profile?", 18);
+		std::string aPage = Sexy::StrFormat("Page %d / %d", mSubPage + 1, mMaxSubPages + 1);
+		g->DrawString(aPage, ZOMBATAR_PANEL_X + ZOMBATAR_PANEL_W / 2 - FONT_DWARVENTODCRAFT12->StringWidth(aPage) / 2, ZOMBATAR_PAGE_BTN_Y + 40);
+	}
+
+	if (mState == ZOMBATAR_STATE_CONFIRM)
+	{
+		g->SetFont(FONT_DWARVENTODCRAFT18);
+		g->SetColor(Color(254, 227, 0));
+		std::string aHeader = TodStringTranslate("[ZOMBATAR_FINISHED_WARNING_HEADER]");
+		g->DrawString(aHeader, ZOMBATAR_CONFIRM_HEADER_X - FONT_DWARVENTODCRAFT18->StringWidth(aHeader) / 2, ZOMBATAR_CONFIRM_HEADER_Y);
+		g->SetFont(FONT_DWARVENTODCRAFT12);
+		g->SetColor(Color(255, 255, 255));
+		g->WriteWordWrapped(Rect(ZOMBATAR_CONFIRM_TEXT_X, ZOMBATAR_CONFIRM_TEXT_Y, ZOMBATAR_CONFIRM_TEXT_W, ZOMBATAR_CONFIRM_TEXT_H), TodStringTranslate("[ZOMBATAR_FINISHED_WARNING_TEXT]"), 18);
 	}
 }
 
@@ -827,7 +902,9 @@ void ZombatarWidget::ChangeState(ZombatarWidgetState theState)
 void ZombatarWidget::ChangePage(ZombatarPage thePage)
 {
 	mPage = thePage;
-	mFacialHairPage = 0;
+	mSubPage = 0;
+	int aTotal = GetTotalItemsForPage(thePage);
+	mMaxSubPages = (aTotal > ZOMBATAR_GRID_PAGE) ? (aTotal - 1) / ZOMBATAR_GRID_PAGE : 0;
 	UpdateButtonState();
 }
 
@@ -837,39 +914,38 @@ void ZombatarWidget::UpdateButtonState()
 	bool aList = mState == ZOMBATAR_STATE_LIST;
 	bool aCreate = mState == ZOMBATAR_STATE_CREATE;
 	bool aConfirm = mState == ZOMBATAR_STATE_CONFIRM;
-	bool aFacial = mPage == ZOMBATAR_PAGE_FACIAL_HAIR;
+	bool aPaged = aCreate && mMaxSubPages > 0;
 
-	mBackButton->SetVisible(true);
+	mBackButton->SetVisible(aCreate || aList);
+	mConfirmBackButton->SetVisible(aConfirm);
 	mViewButton->SetVisible(aCreate && aCount > 0);
 	mFinishedButton->SetVisible(aCreate || aConfirm);
 	mNewButton->SetVisible(aList);
-	mEditButton->SetVisible(aList && aCount > 0);
-	mDeleteButton->SetVisible(aList && aCount > 0);
 	mPrevPortraitButton->SetVisible(aList && aCount > 1);
 	mNextPortraitButton->SetVisible(aList && aCount > 1);
-	mPrevPageButton->SetVisible(aCreate && aFacial);
-	mNextPageButton->SetVisible(aCreate && aFacial);
+	mPrevPageButton->SetVisible(aPaged);
+	mNextPageButton->SetVisible(aPaged);
 
 	mNewButton->mDisabled = !CanSaveNewHead();
-	mEditButton->mDisabled = aCount <= 0;
-	mDeleteButton->mDisabled = aCount <= 0;
 	mPrevPortraitButton->mDisabled = mCurrentIndex <= 0;
 	mNextPortraitButton->mDisabled = mCurrentIndex + 1 >= aCount;
-	mPrevPageButton->mDisabled = mFacialHairPage <= 0;
-	mNextPageButton->mDisabled = mFacialHairPage >= 1;
-	mFinishedButton->mDisabled = aCreate && mEditingIndex < 0 && !CanSaveNewHead();
+	mPrevPageButton->mDisabled = mSubPage <= 0;
+	mNextPageButton->mDisabled = mSubPage >= mMaxSubPages;
+	mFinishedButton->mDisabled = aCreate && !CanSaveNewHead();
 
 	if (aConfirm)
 	{
 		mFinishedButton->mButtonImage = IMAGE_ZOMBATAR_ACCEPT_BUTTON;
 		mFinishedButton->mOverImage = IMAGE_ZOMBATAR_ACCEPT_BUTTON_HIGHLIGHT;
-		mFinishedButton->mDownImage = IMAGE_ZOMBATAR_ACCEPT_BUTTON_HIGHLIGHT;
+		mFinishedButton->mDownImage = nullptr;
+		mFinishedButton->Resize(ZOMBATAR_ACCEPT_X, ZOMBATAR_CONFIRM_BTN_Y, 98, 26);
 	}
 	else
 	{
 		mFinishedButton->mButtonImage = IMAGE_ZOMBATAR_FINISHED_BUTTON;
 		mFinishedButton->mOverImage = IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT;
-		mFinishedButton->mDownImage = IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT;
+		mFinishedButton->mDownImage = nullptr;
+		mFinishedButton->Resize(ZOMBATAR_FINISHED_X, ZOMBATAR_FINISHED_Y, 103, 26);
 	}
 }
 
@@ -877,6 +953,8 @@ void ZombatarWidget::MouseMove(int x, int y)
 {
 	mMouseX = x;
 	mMouseY = y;
+	if (mState == ZOMBATAR_STATE_LIST)
+		mDeleteHover = Rect(ZOMBATAR_LIST_DELETE_RECT_X, ZOMBATAR_LIST_DELETE_RECT_Y, ZOMBATAR_LIST_DELETE_RECT_W, ZOMBATAR_LIST_DELETE_RECT_H).Contains(x, y);
 }
 
 void ZombatarWidget::HandleGridClick(int x, int y)
@@ -885,15 +963,12 @@ void ZombatarWidget::HandleGridClick(int x, int y)
 		return;
 
 	int aItemCount = GetItemCountForPage();
-	int aBaseIndex = (mPage == ZOMBATAR_PAGE_FACIAL_HAIR && mFacialHairPage == 1) ? 17 : 0;
+	int aBaseIndex = mSubPage * ZOMBATAR_GRID_PAGE;
 	for (int i = 0; i < aItemCount; i++)
 	{
 		if (GetItemRect(i).Contains(x, y))
 		{
-			if (mPage == ZOMBATAR_PAGE_SKIN)
-				mColor[ZOMBATAR_PAGE_SKIN] = i;
-			else
-				mPart[mPage] = aBaseIndex + i;
+			mPart[mPage] = aBaseIndex + i;
 			UpdateButtonState();
 			return;
 		}
@@ -911,11 +986,16 @@ void ZombatarWidget::HandleColorClick(int x, int y)
 	if (mState != ZOMBATAR_STATE_CREATE || !PageAllowsColors())
 		return;
 
-	for (int i = 0; i < 18; i++)
+	bool aSkin = mPage == ZOMBATAR_PAGE_SKIN;
+	int aCount = aSkin ? 12 : 18;
+	for (int i = 0; i < aCount; i++)
 	{
 		if (GetColorRect(i).Contains(x, y))
 		{
-			mColor[mPage] = i;
+			if (aSkin)
+				mColor[ZOMBATAR_PAGE_SKIN] = i;
+			else
+				mColor[mPage] = (i == ZOMBATAR_PART_COLOR_NONE_SWATCH) ? ZOMBATAR_COLOR_NONE : ZOMBATAR_PART_COLOR_BASE + i;
 			return;
 		}
 	}
@@ -940,6 +1020,21 @@ void ZombatarWidget::MouseUp(int x, int y)
 		HandleGridClick(x, y);
 		HandleColorClick(x, y);
 	}
+	else if (mState == ZOMBATAR_STATE_LIST)
+	{
+		if (GetHeadCount() > 0 && Rect(ZOMBATAR_LIST_DELETE_RECT_X, ZOMBATAR_LIST_DELETE_RECT_Y, ZOMBATAR_LIST_DELETE_RECT_W, ZOMBATAR_LIST_DELETE_RECT_H).Contains(x, y))
+		{
+			int aResult = mApp->LawnMessageBox(
+				DIALOG_MESSAGE,
+				"Delete Zombatar?",
+				"Delete this saved Zombatar from this profile?",
+				"[DIALOG_BUTTON_YES]",
+				"[DIALOG_BUTTON_NO]",
+				Dialog::BUTTONS_YES_NO);
+			if (aResult == Dialog::ID_YES)
+				DeleteCurrent();
+		}
+	}
 }
 
 void ZombatarWidget::ButtonPress(int theId)
@@ -956,11 +1051,8 @@ void ZombatarWidget::ButtonDepress(int theId)
 	switch (theId)
 	{
 	case ZOMBATAR_BTN_BACK:
-		if (mState == ZOMBATAR_STATE_CONFIRM)
-			ChangeState(ZOMBATAR_STATE_CREATE);
-		else if (mState == ZOMBATAR_STATE_CREATE && GetHeadCount() > 0)
+		if (mState == ZOMBATAR_STATE_CREATE && GetHeadCount() > 0)
 		{
-			mEditingIndex = -1;
 			ClampCurrentIndex();
 			LoadCurrentToDraft();
 			ChangeState(ZOMBATAR_STATE_LIST);
@@ -969,8 +1061,11 @@ void ZombatarWidget::ButtonDepress(int theId)
 			BackToSelector();
 		break;
 
+	case ZOMBATAR_BTN_CONFIRM_BACK:
+		ChangeState(ZOMBATAR_STATE_CREATE);
+		break;
+
 	case ZOMBATAR_BTN_VIEW:
-		mEditingIndex = -1;
 		ClampCurrentIndex();
 		LoadCurrentToDraft();
 		ChangeState(ZOMBATAR_STATE_LIST);
@@ -979,7 +1074,7 @@ void ZombatarWidget::ButtonDepress(int theId)
 	case ZOMBATAR_BTN_FINISHED:
 		if (mState == ZOMBATAR_STATE_CREATE)
 		{
-			if (mEditingIndex >= 0 || CanSaveNewHead())
+			if (CanSaveNewHead())
 				ChangeState(ZOMBATAR_STATE_CONFIRM);
 			else
 				ShowMaxHeadsMessage();
@@ -994,33 +1089,14 @@ void ZombatarWidget::ButtonDepress(int theId)
 	case ZOMBATAR_BTN_NEW:
 		if (CanSaveNewHead())
 		{
-			mEditingIndex = -1;
 			ResetDraft();
 			mPage = ZOMBATAR_PAGE_SKIN;
+			mSubPage = 0;
 			ChangeState(ZOMBATAR_STATE_CREATE);
 		}
 		else
 		{
 			ShowMaxHeadsMessage();
-		}
-		break;
-
-	case ZOMBATAR_BTN_EDIT:
-		BeginEditCurrent();
-		break;
-
-	case ZOMBATAR_BTN_DELETE:
-		if (GetHeadCount() > 0)
-		{
-			int aResult = mApp->LawnMessageBox(
-				DIALOG_MESSAGE,
-				"Delete Zombatar?",
-				"Delete this saved Zombatar from this profile?",
-				"[DIALOG_BUTTON_YES]",
-				"[DIALOG_BUTTON_NO]",
-				Dialog::BUTTONS_YES_NO);
-			if (aResult == Dialog::ID_YES)
-				DeleteCurrent();
 		}
 		break;
 
@@ -1045,17 +1121,17 @@ void ZombatarWidget::ButtonDepress(int theId)
 		break;
 
 	case ZOMBATAR_BTN_PREV_PAGE:
-		if (mFacialHairPage > 0)
+		if (mSubPage > 0)
 		{
-			mFacialHairPage--;
+			mSubPage--;
 			UpdateButtonState();
 		}
 		break;
 
 	case ZOMBATAR_BTN_NEXT_PAGE:
-		if (mFacialHairPage < 1)
+		if (mSubPage < mMaxSubPages)
 		{
-			mFacialHairPage++;
+			mSubPage++;
 			UpdateButtonState();
 		}
 		break;
@@ -1070,7 +1146,6 @@ void ZombatarWidget::KeyDown(KeyCode theKey)
 			ChangeState(ZOMBATAR_STATE_CREATE);
 		else if (mState == ZOMBATAR_STATE_CREATE && GetHeadCount() > 0)
 		{
-			mEditingIndex = -1;
 			LoadCurrentToDraft();
 			ChangeState(ZOMBATAR_STATE_LIST);
 		}
@@ -1081,8 +1156,8 @@ void ZombatarWidget::KeyDown(KeyCode theKey)
 
 void ZombatarWidget::BackToSelector()
 {
-	mEditingIndex = -1;
 	mPage = ZOMBATAR_PAGE_SKIN;
+	mSubPage = 0;
 	ChangeState(GetHeadCount() > 0 ? ZOMBATAR_STATE_LIST : ZOMBATAR_STATE_CREATE);
 	ResetDraft();
 	mGameSelector->SlideTo(0, 0);

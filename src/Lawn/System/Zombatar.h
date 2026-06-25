@@ -60,21 +60,32 @@ inline void ZombatarWriteRecordSlot(unsigned char* theRecord, int theSlot, int t
 
 inline int ZombatarClampColor(int theColor)
 {
-    return std::max(0, std::min(theColor, 17));
+	if (theColor < 0)
+		return -1;
+	return std::min(theColor, 47);
 }
 
 inline Sexy::Color ZombatarGetColor(int theIndex)
 {
-    static const Sexy::Color aColors[] =
-    {
-        Sexy::Color(89, 187, 64), Sexy::Color(135, 207, 71), Sexy::Color(81, 155, 74), Sexy::Color(193, 226, 102),
-        Sexy::Color(117, 197, 183), Sexy::Color(115, 169, 214), Sexy::Color(173, 122, 196), Sexy::Color(221, 126, 185),
-        Sexy::Color(230, 112, 102), Sexy::Color(239, 162, 75), Sexy::Color(240, 218, 80), Sexy::Color(143, 105, 69),
-        Sexy::Color(82, 60, 42), Sexy::Color(32, 32, 32), Sexy::Color(112, 112, 112), Sexy::Color(190, 190, 190),
-        Sexy::Color(245, 232, 205), Sexy::Color(255, 255, 255)
-    };
+	static const Sexy::Color aColors[] =
+	{
+		Sexy::Color(134, 147, 122), Sexy::Color(79, 135, 94), Sexy::Color(127, 135, 94), Sexy::Color(120, 130, 50),
+		Sexy::Color(156, 163, 105), Sexy::Color(96, 151, 11), Sexy::Color(147, 184, 77), Sexy::Color(82, 143, 54),
+		Sexy::Color(121, 168, 99), Sexy::Color(65, 156, 74), Sexy::Color(107, 178, 114), Sexy::Color(104, 121, 90),
+		Sexy::Color(151, 33, 33), Sexy::Color(199, 53, 53), Sexy::Color(220, 112, 47), Sexy::Color(251, 251, 172),
+		Sexy::Color(240, 210, 87), Sexy::Color(165, 126, 65), Sexy::Color(106, 72, 32), Sexy::Color(72, 35, 5),
+		Sexy::Color(50, 56, 61), Sexy::Color(0, 0, 10), Sexy::Color(197, 239, 239), Sexy::Color(63, 109, 242),
+		Sexy::Color(13, 202, 151), Sexy::Color(158, 183, 19), Sexy::Color(30, 210, 64), Sexy::Color(225, 65, 230),
+		Sexy::Color(128, 47, 204), Sexy::Color(255, 255, 255), Sexy::Color(238, 19, 24), Sexy::Color(247, 89, 215),
+		Sexy::Color(239, 198, 253), Sexy::Color(160, 56, 241), Sexy::Color(86, 74, 241), Sexy::Color(74, 160, 241),
+		Sexy::Color(199, 244, 251), Sexy::Color(49, 238, 237), Sexy::Color(16, 194, 66), Sexy::Color(112, 192, 33),
+		Sexy::Color(16, 145, 52), Sexy::Color(248, 247, 41), Sexy::Color(227, 180, 20), Sexy::Color(241, 115, 25),
+		Sexy::Color(248, 247, 175), Sexy::Color(103, 85, 54), Sexy::Color(159, 17, 20), Sexy::Color(255, 255, 255)
+	};
 
-    return aColors[ZombatarClampColor(theIndex)];
+	if (theIndex < 0)
+		return Sexy::Color(255, 255, 255);
+	return aColors[std::min(theIndex, 47)];
 }
 
 inline int ZombatarRemapAccessoryForRuntime(int theIndex)
