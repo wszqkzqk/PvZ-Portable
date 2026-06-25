@@ -37,6 +37,10 @@ import java.io.File;
 
 public class PvZPortableActivity extends SDLActivity {
     private static final String TAG = "PvZPortable";
+    
+    private static final long DOUBLE_CLICK_TIMEOUT = 300; // 双击超时时间（毫秒）
+    private long lastVolumeKeyTime = 0;
+    private int lastVolumeKeyCode = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,32 @@ public class PvZPortableActivity extends SDLActivity {
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
+    }
+    
+    @Override
+    public boolean dispatchKeyEvent(android.view.KeyEvent event) {
+        int keyCode = event.getKeyCode();
+        
+        // 检查是否是音量键的按下事件，并且不是重复事件（过滤长按）
+        if (event.getAction() == android.view.KeyEvent.ACTION_DOWN && 
+            event.getRepeatCount() == 0 && 
+            (keyCode == android.view.KeyEvent.KEYCODE_VOLUME_UP || keyCode == android.view.KeyEvent.KEYCODE_VOLUME_DOWN)) {
+            long currentTime = System.currentTimeMillis();
+            
+            // 检查是否是双击
+            if (keyCode == lastVolumeKeyCode && (currentTime - lastVolumeKeyTime) < DOUBLE_CLICK_TIMEOUT) {
+                // 双击音量键，打开输入键盘
+                SDLActivity.showTextInput(0, 0, 0, 0);
+                return true; // 消费事件，防止重复处理
+            }
+            
+            // 记录本次按键信息
+            lastVolumeKeyCode = keyCode;
+            lastVolumeKeyTime = currentTime;
+        }
+        
+        // 调用父类方法，保持正常的音量调节功能
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
