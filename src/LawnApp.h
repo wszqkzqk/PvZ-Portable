@@ -176,7 +176,6 @@ public:
 	void							FinishNameError(int theId);
 	void							FinishRestartConfirmDialog();
 	void							DoConfirmSellDialog(const std::string& theMessage);
-	void							DoConfirmPurchaseDialog(const std::string& theMessage);
 	void							FinishTimesUpDialog();
 	void							KillBoard();
 	void							MakeNewBoard();
