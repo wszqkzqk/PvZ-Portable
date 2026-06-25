@@ -106,12 +106,12 @@ constexpr int ZOMBATAR_CONFIRM_TEXT_Y = 225;
 constexpr int ZOMBATAR_CONFIRM_TEXT_W = 500;
 constexpr int ZOMBATAR_CONFIRM_TEXT_H = 100;
 
-static int ClampRange(int theValue, int theMin, int theMax)
+constexpr int ClampRange(int theValue, int theMin, int theMax)
 {
 	return std::max(theMin, std::min(theValue, theMax));
 }
 
-static int SlotForPart(ZombatarPage thePage)
+constexpr int SlotForPart(ZombatarPage thePage)
 {
 	switch (thePage)
 	{
@@ -127,7 +127,7 @@ static int SlotForPart(ZombatarPage thePage)
 	}
 }
 
-static int SlotForColor(ZombatarPage thePage)
+constexpr int SlotForColor(ZombatarPage thePage)
 {
 	switch (thePage)
 	{
