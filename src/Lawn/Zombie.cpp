@@ -3397,7 +3397,11 @@ void Zombie::SetupZombatarFlagReanim()
         int aPartIndex = ZombatarReadSignedRecordSlot(aRecord, aPart.mPartSlot);
         if (aPartIndex < 0 || aPartIndex >= aPart.mMaxCount)
             continue;
-        int aTrackIndex = aPart.mRemapAccessory ? ZombatarRemapAccessoryForRuntime(aPartIndex) : aPartIndex;
+        int aTrackIndex = aPartIndex;
+        if (aTrackIndex > 16)
+            aTrackIndex -= aTrackIndex / 17;
+        if (aPart.mRemapAccessory)
+            aTrackIndex = ZombatarRemapAccessoryForRuntime(aTrackIndex);
         std::string aPrefix = ZombatarTrackPrefix(aPart.mPrefix, aTrackIndex);
 
         ReanimatorTrackInstance* aPartTrack = aHeadReanim->GetTrackInstanceByName(aPrefix.c_str());

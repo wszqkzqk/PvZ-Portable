@@ -80,6 +80,8 @@ public:
 	int							mMaxSubPages;
 	int							mMouseX;
 	int							mMouseY;
+	int							mHoverGridCell;
+	int							mHoverColorCell;
 	bool						mDeleteHover;
 	int							mPart[NUM_ZOMBATAR_PAGES];
 	int							mColor[NUM_ZOMBATAR_PAGES];

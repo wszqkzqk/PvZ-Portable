@@ -319,6 +319,7 @@ enum Dialogs : int32_t
     DIALOG_IMITATER,                            // 49：模仿者对话
     DIALOG_PURCHASE_PACKET_SLOT,                // 50：升级卡槽的格子数量
     DIALOG_ZOMBATAR_TOS,                        // 51：Zombatar 服务条款
+    DIALOG_ZOMBATAR_DELETE,                     // 52：Zombatar 删除确认
     NUM_DIALOGS
 };
 enum DebugTextMode : int32_t

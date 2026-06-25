@@ -35,16 +35,15 @@ namespace Sexy
 }
 
 // Modal Terms-of-Service dialog shown the first time a profile enters Zombatar.
-// Accepting persists the agreement into the profile and then opens the editor.
 class ZombatarTOS : public LawnDialog, public Sexy::SliderListener, public Sexy::CheckboxListener
 {
 protected:
 	enum
 	{
-		ZombatarTOS_Slider,
-		ZombatarTOS_Accept,
-		ZombatarTOS_Back,
-		ZombatarTOS_TOSCheckbox
+		ZombatarTOS_TOSCheckbox = 500,
+		ZombatarTOS_Accept = 501,
+		ZombatarTOS_Back = 502,
+		ZombatarTOS_Slider = 503
 	};
 
 public:
@@ -54,6 +53,9 @@ public:
 	Sexy::Checkbox*				mTOSCheckbox;
 	int							mTextHeight;
 	int							mClipHeight;
+	bool						mFlashArrow;
+	int							mArrowAlpha;
+	int							mArrowDir;
 
 public:
 	ZombatarTOS(LawnApp* theApp);

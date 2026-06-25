@@ -63,6 +63,9 @@ ZombatarTOS::ZombatarTOS(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_Z
 	mApp = theApp;
 	mTextHeight = 0;
 	mClipHeight = TOS_CLIP_H;
+	mFlashArrow = false;
+	mArrowAlpha = 0;
+	mArrowDir = 3;
 
 	mTOSSlider = new Slider(IMAGE_ZOMBATAR_TOS_SLIDER, IMAGE_ZOMBATAR_TOS_SLIDER_THUMB, ZombatarTOS::ZombatarTOS_Slider, this);
 	mTOSSlider->mHorizontal = false;
@@ -73,7 +76,6 @@ ZombatarTOS::ZombatarTOS(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_Z
 
 	mAcceptButton = MakeNewButton(ZombatarTOS::ZombatarTOS_Accept, this, "", nullptr,
 		IMAGE_ZOMBATAR_ACCEPT_BUTTON, IMAGE_ZOMBATAR_ACCEPT_BUTTON_HIGHLIGHT, nullptr);
-	mAcceptButton->mDisabled = true;
 
 	mTOSCheckbox = MakeNewCheckbox(ZombatarTOS::ZombatarTOS_TOSCheckbox, this, false);
 
@@ -110,12 +112,14 @@ void ZombatarTOS::Resize(int theX, int theY, int theWidth, int theHeight)
 {
 	LawnDialog::Resize(theX, theY, theWidth, theHeight);
 
-	int aBtnWidth = IMAGE_ZOMBATAR_BACK_BUTTON ? IMAGE_ZOMBATAR_BACK_BUTTON->mWidth : 98;
-	int aBtnHeight = IMAGE_ZOMBATAR_BACK_BUTTON ? IMAGE_ZOMBATAR_BACK_BUTTON->mHeight : 26;
+	int aBackWidth = IMAGE_ZOMBATAR_BACK_BUTTON ? IMAGE_ZOMBATAR_BACK_BUTTON->mWidth : 98;
+	int aBackHeight = IMAGE_ZOMBATAR_BACK_BUTTON ? IMAGE_ZOMBATAR_BACK_BUTTON->mHeight : 26;
+	int aAcceptWidth = IMAGE_ZOMBATAR_ACCEPT_BUTTON ? IMAGE_ZOMBATAR_ACCEPT_BUTTON->mWidth : aBackWidth;
+	int aAcceptHeight = IMAGE_ZOMBATAR_ACCEPT_BUTTON ? IMAGE_ZOMBATAR_ACCEPT_BUTTON->mHeight : aBackHeight;
 
 	mTOSSlider->Resize(TOS_SLIDER_X, TOS_SLIDER_Y, TOS_SLIDER_W, TOS_SLIDER_H);
-	mBackButton->Resize(TOS_BACK_X, TOS_BUTTON_Y, aBtnWidth, aBtnHeight);
-	mAcceptButton->Resize(TOS_ACCEPT_X, TOS_BUTTON_Y, aBtnWidth, aBtnHeight);
+	mBackButton->Resize(TOS_BACK_X, TOS_BUTTON_Y, aBackWidth, aBackHeight);
+	mAcceptButton->Resize(TOS_ACCEPT_X, TOS_BUTTON_Y, aAcceptWidth, aAcceptHeight);
 	mTOSCheckbox->Resize(TOS_CHECK_X, TOS_CHECK_Y, 45, 45);
 }
 
@@ -127,21 +131,42 @@ void ZombatarTOS::Draw(Graphics* g)
 	if (mTextHeight <= 0)
 		mTextHeight = TodDrawStringWrappedHelper(g, aBody, Rect(0, 0, TOS_TEXT_W, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
 
-	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_H);
+	int aMaxScroll = mTextHeight - TOS_TEXT_Y;
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 
 	g->PushState();
 	g->ClipRect(Rect(TOS_TEXT_X, TOS_TEXT_Y, TOS_TEXT_W, TOS_CLIP_H));
-	TodDrawStringWrapped(g, aBody, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_W, mTextHeight + 8), FONT_PICO129, Color(255, 255, 255), DrawStringJustification::DS_ALIGN_LEFT);
+	TodDrawStringWrapped(g, aBody, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_W, 1200), FONT_PICO129, Color(255, 255, 255), DrawStringJustification::DS_ALIGN_LEFT);
 	g->PopState();
 
-	if (mTOSCheckbox->mChecked && IMAGE_ZOMBATAR_TOS_ARROW)
+	if (mFlashArrow && IMAGE_ZOMBATAR_TOS_ARROW)
+	{
+		g->SetColorizeImages(true);
+		g->SetColor(Color(255, 255, 255, mArrowAlpha));
 		g->DrawImage(IMAGE_ZOMBATAR_TOS_ARROW, TOS_ARROW_X, TOS_ARROW_Y);
+		g->SetColorizeImages(false);
+		g->SetColor(Color::White);
+	}
 }
 
 void ZombatarTOS::Update()
 {
 	LawnDialog::Update();
+	if (mFlashArrow)
+	{
+		mArrowAlpha += mArrowDir;
+		if (mArrowAlpha >= 255)
+		{
+			mArrowAlpha = 255;
+			mArrowDir = -3;
+		}
+		else if (mArrowAlpha <= 0)
+		{
+			mArrowAlpha = 0;
+			mArrowDir = 3;
+		}
+		MarkDirty();
+	}
 }
 
 void ZombatarTOS::ButtonPress(int theId)
@@ -158,12 +183,19 @@ void ZombatarTOS::ButtonDepress(int theId)
 		mApp->KillDialog(mId);
 		break;
 	case ZombatarTOS::ZombatarTOS_Accept:
-		mApp->KillDialog(mId);
+		if (!mTOSCheckbox->mChecked)
+		{
+			mFlashArrow = true;
+			mArrowAlpha = 0;
+			mArrowDir = 3;
+			return;
+		}
 		if (mApp->mPlayerInfo)
 		{
 			mApp->mPlayerInfo->mZombatarAccepted = 1;
 			mApp->mPlayerInfo->SaveDetails();
 		}
+		mApp->KillDialog(mId);
 		if (mApp->mGameSelector && mApp->mGameSelector->mZombatarWidget)
 			mApp->mGameSelector->mZombatarWidget->Open();
 		break;
@@ -172,8 +204,11 @@ void ZombatarTOS::ButtonDepress(int theId)
 
 void ZombatarTOS::CheckboxChecked(int theId, bool checked)
 {
-	if (theId == ZombatarTOS::ZombatarTOS_TOSCheckbox)
-		mAcceptButton->mDisabled = !checked;
+	if (theId == ZombatarTOS::ZombatarTOS_TOSCheckbox && checked)
+	{
+		mFlashArrow = false;
+		mArrowAlpha = 0;
+	}
 }
 
 void ZombatarTOS::SliderVal(int theId, double theVal)
