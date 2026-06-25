@@ -54,13 +54,13 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::stri
     // @Patoke: these dialogs had the wrong local name
     if (theButtonMode == 1)
     {
-        mLawnYesButton = MakeButton(1000, this, "[DIALOG_BUTTON_YES]");
-        mLawnNoButton = MakeButton(1001, this, "[DIALOG_BUTTON_NO]");
+        mLawnYesButton = MakeButton(1000, this, mApp->GetString("BUTTON_YES", "Yes"));
+        mLawnNoButton = MakeButton(1001, this, mApp->GetString("BUTTON_NO", "No"));
     }
     else if (theButtonMode == 2)
     {
-        mLawnYesButton = MakeButton(1000, this, "[DIALOG_BUTTON_OK]");
-        mLawnNoButton = MakeButton(1001, this, "[DIALOG_BUTTON_CANCEL]");
+        mLawnYesButton = MakeButton(1000, this, mApp->GetString("BUTTON_OK", "Ok"));
+        mLawnNoButton = MakeButton(1001, this, mApp->GetString("BUTTON_CANCEL", "Cancel"));
     }
     else if (theButtonMode == 3)
     {
