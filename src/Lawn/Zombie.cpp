@@ -3404,9 +3404,9 @@ void Zombie::SetupZombatarFlagReanim()
             aTrackIndex = ZombatarRemapAccessoryForRuntime(aTrackIndex);
         std::string aPrefix = ZombatarTrackPrefix(aPart.mPrefix, aTrackIndex);
 
-        ReanimatorTrackInstance* aPartTrack = aHeadReanim->GetTrackInstanceByName(aPrefix.c_str());
-        if (!aPartTrack)
+        if (!aHeadReanim->TrackExists(aPrefix.c_str()))
             continue;
+        ReanimatorTrackInstance* aPartTrack = aHeadReanim->GetTrackInstanceByName(aPrefix.c_str());
         aHeadReanim->AssignRenderGroupToPrefix(aPrefix.c_str(), RENDER_GROUP_NORMAL);
         aPartTrack->mTrackColor = ZombatarGetColor(ZombatarReadSignedRecordSlot(aRecord, aPart.mColorSlot));
     }
