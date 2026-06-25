@@ -1191,7 +1191,7 @@ bool LawnApp::KillDialog(int theDialogId)
 {
 	if (SexyAppBase::KillDialog(theDialogId))
 	{
-		if (mDialogMap.size() == 0)
+		if (mDialogMap.size() == 0 && mWidgetManager->mFocusWidget == nullptr)
 		{
 			if (mBoard)
 			{
