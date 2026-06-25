@@ -43,7 +43,7 @@
 
 static std::string ZombatarTrackPrefix(const char* thePrefix, int theIndex)
 {
-    return Sexy::StrFormat("%s%02d", thePrefix, theIndex + 1);
+    return Sexy::StrFormat("%s%02d", thePrefix, theIndex);
 }
 
 constinit const ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES] = {
@@ -3348,47 +3348,30 @@ void Zombie::SetupZombatarFlagReanim()
     if (aCount <= 0)
         return;
 
-    int aIndex = aPlayerInfo->mZombatarIndex;
-    if (aIndex < 0 || aIndex >= aCount)
-    {
-        aIndex = aCount - 1;
-        aPlayerInfo->mZombatarIndex = aIndex;
-    }
-
+    int aIndex = Rand(aCount);
     const unsigned char* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(aIndex) * ZOMBATAR_RECORD_SIZE;
+
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
     if (!aBodyReanim)
         return;
 
     ReanimatorTrackInstance* aTrackInstance = aBodyReanim->GetTrackInstanceByName("anim_head1");
     aTrackInstance->mImageOverride = IMAGE_BLANK;
-    aBodyReanim->AssignRenderGroupToPrefix("anim_head", RENDER_GROUP_HIDDEN);
+    aBodyReanim->AssignRenderGroupToPrefix("anim_head2", RENDER_GROUP_HIDDEN);
     aBodyReanim->AssignRenderGroupToPrefix("anim_hair", RENDER_GROUP_HIDDEN);
     aBodyReanim->mFrameBasePose = 0;
 
-    auto AddZombatarHeadReanim = [&](const char* theVisiblePrefix, int theColorSlot) -> Reanimation*
-    {
-        Reanimation* aHeadReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_ZOMBATAR_HEAD);
-        aHeadReanim->PlayReanim("anim_head1", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
-        aHeadReanim->AssignRenderGroupToPrefix("hats_", RENDER_GROUP_HIDDEN);
-        aHeadReanim->AssignRenderGroupToPrefix("hair_", RENDER_GROUP_HIDDEN);
-        aHeadReanim->AssignRenderGroupToPrefix("facialHair_", RENDER_GROUP_HIDDEN);
-        aHeadReanim->AssignRenderGroupToPrefix("accessories_", RENDER_GROUP_HIDDEN);
-        aHeadReanim->AssignRenderGroupToPrefix("eyeWear_", RENDER_GROUP_HIDDEN);
-        aHeadReanim->AssignRenderGroupToPrefix("tidBits_", RENDER_GROUP_HIDDEN);
-        aHeadReanim->AssignRenderGroupToPrefix("anim_hair", RENDER_GROUP_HIDDEN);
-        aHeadReanim->mColorOverride = ZombatarGetColor(ZombatarReadSignedRecordSlot(aRecord, theColorSlot));
-        if (theVisiblePrefix)
-        {
-            aHeadReanim->AssignRenderGroupToPrefix(theVisiblePrefix, RENDER_GROUP_NORMAL);
-        }
+    Reanimation* aHeadReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_ZOMBATAR_HEAD);
+    aHeadReanim->PlayReanim("anim_head_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
+    aHeadReanim->AssignRenderGroupToPrefix("hats_", RENDER_GROUP_HIDDEN);
+    aHeadReanim->AssignRenderGroupToPrefix("hair_", RENDER_GROUP_HIDDEN);
+    aHeadReanim->AssignRenderGroupToPrefix("facialHair_", RENDER_GROUP_HIDDEN);
+    aHeadReanim->AssignRenderGroupToPrefix("accessories_", RENDER_GROUP_HIDDEN);
+    aHeadReanim->AssignRenderGroupToPrefix("eyeWear_", RENDER_GROUP_HIDDEN);
+    aHeadReanim->AssignRenderGroupToPrefix("tidBits_", RENDER_GROUP_HIDDEN);
 
-        AttachEffect* aAttachEffect = AttachReanim(aTrackInstance->mAttachmentID, aHeadReanim, 0.0f, 0.0f);
-        TodScaleRotateTransformMatrix(aAttachEffect->mOffset, -20.0f, 0.0f, 0.2f, 1.0f, 1.0f);
-        return aHeadReanim;
-    };
-
-    AddZombatarHeadReanim(nullptr, ZOMBATAR_SLOT_SKIN_COLOR);
+    AttachEffect* aAttachEffect = AttachReanim(aTrackInstance->mAttachmentID, aHeadReanim, 0.0f, 0.0f);
+    TodScaleRotateTransformMatrix(aAttachEffect->mOffset, -20.0f, -1.0f, 0.2f, 1.0f, 1.0f);
 
     struct RuntimePart
     {
@@ -3416,7 +3399,12 @@ void Zombie::SetupZombatarFlagReanim()
             continue;
         int aTrackIndex = aPart.mRemapAccessory ? ZombatarRemapAccessoryForRuntime(aPartIndex) : aPartIndex;
         std::string aPrefix = ZombatarTrackPrefix(aPart.mPrefix, aTrackIndex);
-        AddZombatarHeadReanim(aPrefix.c_str(), aPart.mColorSlot);
+
+        ReanimatorTrackInstance* aPartTrack = aHeadReanim->GetTrackInstanceByName(aPrefix.c_str());
+        if (!aPartTrack)
+            continue;
+        aHeadReanim->AssignRenderGroupToPrefix(aPrefix.c_str(), RENDER_GROUP_NORMAL);
+        aPartTrack->mTrackColor = ZombatarGetColor(ZombatarReadSignedRecordSlot(aRecord, aPart.mColorSlot));
     }
 }
 

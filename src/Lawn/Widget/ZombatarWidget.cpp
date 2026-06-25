@@ -115,6 +115,7 @@ constexpr int SlotForPart(ZombatarPage thePage)
 {
 	switch (thePage)
 	{
+	case ZOMBATAR_PAGE_SKIN: return ZOMBATAR_SLOT_SKIN_PART;
 	case ZOMBATAR_PAGE_CLOTHES: return ZOMBATAR_SLOT_CLOTHES;
 	case ZOMBATAR_PAGE_TIDBITS: return ZOMBATAR_SLOT_TIDBITS;
 	case ZOMBATAR_PAGE_ACCESSORY: return ZOMBATAR_SLOT_ACCESSORY;
@@ -123,7 +124,7 @@ constexpr int SlotForPart(ZombatarPage thePage)
 	case ZOMBATAR_PAGE_EYEWEAR: return ZOMBATAR_SLOT_EYEWEAR;
 	case ZOMBATAR_PAGE_HATS: return ZOMBATAR_SLOT_HATS;
 	case ZOMBATAR_PAGE_BACKDROPS: return ZOMBATAR_SLOT_BACKGROUND;
-	default: return ZOMBATAR_SLOT_SKIN_COLOR;
+	default: return ZOMBATAR_SLOT_SKIN_PART;
 	}
 }
 
@@ -365,8 +366,6 @@ void ZombatarWidget::EncodeRecord(unsigned char* theRecord) const
 		ZombatarWriteRecordSlot(theRecord, SlotForPart(aPage), mPart[i]);
 		ZombatarWriteRecordSlot(theRecord, SlotForColor(aPage), mColor[i]);
 	}
-
-	ZombatarWriteRecordSlot(theRecord, ZOMBATAR_SLOT_RESERVED, 0);
 }
 
 void ZombatarWidget::LoadCurrentToDraft()
