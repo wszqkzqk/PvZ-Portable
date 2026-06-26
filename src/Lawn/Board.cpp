@@ -4524,10 +4524,7 @@ void Board::MouseDown(int x, int y, int theClickCount)
 		mNextSurvivalStageCounter = 2;
 		for (int i = 0; i < MAX_GRID_SIZE_Y; i++)
 		{
-			if (mIceTimer[i] > 2)
-			{
-				mIceTimer[i] = 2;
-			}
+			mIceTimer[i] = std::min(mIceTimer[i], 2);
 		}
 	}
 
@@ -4860,10 +4857,7 @@ void Board::SpawnZombiesFromPool()
 		}
 	}
 
-	if (aGridArrayCount < 0)
-	{
-		aGridArrayCount = 0;
-	}
+	aGridArrayCount = std::max(aGridArrayCount, 0);
 	for (int i = 0; i < aCount; i++)
 	{
 		TodWeightedGridArray* aGrid = TodPickFromWeightedGridArray(aGridArray, aGridArrayCount);
@@ -4878,10 +4872,7 @@ void Board::SpawnZombiesFromPool()
 
 		aZombie->RiseFromGrave(aGrid->mX, aGrid->mY);
 		aZombiePoints -= GetZombieDefinition(aZombieType).mZombieValue;
-		if (aZombiePoints < 1)
-		{
-			aZombiePoints = 1;
-		}
+		aZombiePoints = std::max(aZombiePoints, 1);
 	}
 }
 
@@ -4938,10 +4929,7 @@ void Board::SpawnZombiesFromSky()
 	
 	BungeeDropGrid aBungeeDropGrid;
 	SetupBungeeDrop(&aBungeeDropGrid);
-	if (aCount > aBungeeDropGrid.mGridArrayCount)
-	{
-		aCount = aBungeeDropGrid.mGridArrayCount;
-	}
+	aCount = std::min(aCount, aBungeeDropGrid.mGridArrayCount);
 
 	if (aBungeeDropGrid.mGridArrayCount == 0 || aCount <= 0)
 		return;
@@ -4951,10 +4939,7 @@ void Board::SpawnZombiesFromSky()
 		ZombieType aZombieType = PickGraveRisingZombieType();
 		BungeeDropZombie(&aBungeeDropGrid, aZombieType);
 		aZombiePoints -= GetZombieDefinition(aZombieType).mZombieValue;
-		if (aZombiePoints < 1)
-		{
-			aZombiePoints = 1;
-		}
+		aZombiePoints = std::max(aZombiePoints, 1);
 	}
 }
 
@@ -8588,12 +8573,10 @@ void Board::KeyChar(char theChar)
 	if (theChar == '-')
 	{
 		mSunMoney -= 100;
-		if (mSunMoney < 0)
-		{
-			mSunMoney = 0;
-		}
+		mSunMoney = std::max(mSunMoney, 0);
 		return;
 	}
+
 	if (theChar == '%')
 	{
 		mApp->SwitchScreenMode(mApp->mIsWindowed, !mApp->Is3DAccelerated(), false);
@@ -8623,10 +8606,7 @@ void Board::KeyChar(char theChar)
 void Board::AddSunMoney(int theAmount)
 {
 	mSunMoney += theAmount;
-	if (mSunMoney > 9990)
-	{
-		mSunMoney = 9990;
-	}
+	mSunMoney = std::min(mSunMoney, 9990);
 	if (mSunMoney >= 8000)
 		// if ( !*(mApp->mPlayerInfo + 48) ) todo @Patoke: figure this out
 		ReportAchievement::GiveAchievement(mApp, SunnyDays, true);
@@ -9139,73 +9119,17 @@ Zombie* Board::ZombieTryToGet(ZombieID theZombieID)
 
 int GetRectOverlap(const Rect& rect1, const Rect& rect2)
 {
-	int xmax, rmin, rmax;
-
-	if (rect1.mX < rect2.mX)
-	{
-		rmin = rect1.mX + rect1.mWidth;
-		rmax = rect2.mX + rect2.mWidth;
-		xmax = rect2.mX;
-	}
-	else
-	{
-		rmin = rect2.mX + rect2.mWidth;
-		rmax = rect1.mX + rect1.mWidth;
-		xmax = rect1.mX;
-	}
-
-	if (rmin > xmax && rmin > rmax)
-	{
-		rmin = rmax;
-	}
-
-	return rmin - xmax;
+	return std::min(rect1.mX + rect1.mWidth, rect2.mX + rect2.mWidth) -
+		std::max(rect1.mX, rect2.mX);
 }
 
 bool GetCircleRectOverlap(int theCircleX, int theCircleY, int theRadius, const Rect& theRect)
 {
-	int dx = 0;  // 圆心与矩形较近一条纵边的横向距离
-	int dy = 0;  // 圆心与矩形较近一条横边的纵向距离
-	bool xOut = false;  // 圆心横坐标是否不在矩形范围内
-	bool yOut = false;  // 圆心纵坐标是否不在矩形范围内
-
-	if (theCircleX < theRect.mX)
-	{
-		xOut = true;
-		dx = theRect.mX - theCircleX;
-	}
-	else if (theCircleX > theRect.mX + theRect.mWidth)
-	{
-		xOut = true;
-		dx = theCircleX - theRect.mX - theRect.mWidth;
-	}
-	if (theCircleY < theRect.mY)
-	{
-		yOut = true;
-		dy = theRect.mY - theCircleY;
-	}
-	else if (theCircleY > theRect.mY + theRect.mHeight)
-	{
-		yOut = true;
-		dy = theCircleY - theRect.mY - theRect.mHeight;
-	}
-
-	if (!xOut && !yOut)  // 如果圆心在矩形内
-	{
-		return true;
-	}
-	else if (xOut && yOut)
-	{
-		return dx * dx + dy * dy <= theRadius * theRadius;
-	}
-	else if (xOut)
-	{
-		return dx <= theRadius;
-	}
-	else
-	{
-		return dy <= theRadius;
-	}
+	int aNearX = std::clamp(theCircleX, theRect.mX, theRect.mX + theRect.mWidth);
+	int aNearY = std::clamp(theCircleY, theRect.mY, theRect.mY + theRect.mHeight);
+	int dx = theCircleX - aNearX;
+	int dy = theCircleY - aNearY;
+	return dx * dx + dy * dy <= theRadius * theRadius;
 }
 
 // GOTY @Patoke: 0x41F6B0

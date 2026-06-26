@@ -279,8 +279,7 @@ void Buffer::WriteByte(uchar theByte)
 	}
 
 	mWriteBitPos += 8;
-	if (mWriteBitPos > mDataBitSize)
-		mDataBitSize = mWriteBitPos;
+	mDataBitSize = std::max(mDataBitSize, mWriteBitPos);
 }
 
 void Buffer::WriteNumBits(int theNum, int theBits)
@@ -294,8 +293,7 @@ void Buffer::WriteNumBits(int theNum, int theBits)
 		mWriteBitPos++;
 	}
 
-	if (mWriteBitPos > mDataBitSize)
-		mDataBitSize = mWriteBitPos;
+	mDataBitSize = std::max(mDataBitSize, mWriteBitPos);
 }
 
 int Buffer::GetBitsRequired(int theNum, bool isSigned)

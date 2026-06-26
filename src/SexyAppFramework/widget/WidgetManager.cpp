@@ -150,8 +150,7 @@ void WidgetManager::DoMouseUps()
 void WidgetManager::DeferOverlay(Widget* theWidget, int thePriority)
 {
 	mDeferredOverlayWidgets.push_back(std::pair<Widget*, int>(theWidget, thePriority));
-	if (thePriority < mMinDeferredOverlayPriority)
-		mMinDeferredOverlayPriority = thePriority;
+	mMinDeferredOverlayPriority = std::min(mMinDeferredOverlayPriority, thePriority);
 }
 
 void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority)
@@ -181,8 +180,7 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority)
 				}
 				else
 				{
-					if (aPriority < aNextMinPriority)
-						aNextMinPriority = aPriority;
+					aNextMinPriority = std::min(aNextMinPriority, aPriority);
 				}
 			}
 		}

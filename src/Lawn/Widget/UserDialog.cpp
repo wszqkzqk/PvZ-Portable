@@ -128,10 +128,7 @@ void UserDialog::FinishDeleteUser()
     mUserList->RemoveLine(mUserList->mSelectIdx);
 
     aSelIdx--;
-    if (aSelIdx < 0)
-    {
-        aSelIdx = 0;
-    }
+    aSelIdx = std::max(aSelIdx, 0);
     if (mUserList->GetLineCount() > 0)
     {
         mUserList->SetSelect(aSelIdx);

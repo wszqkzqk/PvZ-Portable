@@ -501,8 +501,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 
 	ushort aStrLen = 4;
 	if (!aFile.read(reinterpret_cast<char*>(&aStrLen), sizeof(aStrLen))) return false;
-	if (aStrLen > 255)
-		aStrLen = 255;
+	aStrLen = std::min<ushort>(aStrLen, 255);
 	char aStr[256];
 	if (!aFile.read(aStr, aStrLen)) return false;
 	aStr[aStrLen] = '\0';
@@ -3234,8 +3233,7 @@ void SexyAppBase::HandleCmdLineParam(const std::string& theParamName, const std:
 	else if (theParamName == "-playnum")
 	{
 		int aNum = atoi(theParamValue.c_str())-1;
-		if (aNum<0)
-			aNum=0;
+		aNum = std::max(aNum, 0);
 
 		int aDemoFileNum = GetMaxDemoFileNum(mDemoPrefix, aNum, false)-aNum;
 		mDemoFileName = StrFormat((mDemoPrefix + "%d.dmo").c_str(), aDemoFileNum);
@@ -3635,14 +3633,10 @@ void SexyAppBase::ColorizeImage(Image* theImage, const Color& theColor)
 			int aGreen = (((aColor >> 8) & 0xFF) * theColor.mGreen) / 255;
 			int aBlue = ((aColor & 0xFF) * theColor.mBlue) / 255;
 
-			if (aAlpha > 255)
-				aAlpha = 255;
-			if (aRed > 255)
-				aRed = 255;
-			if (aGreen > 255)
-				aGreen = 255;
-			if (aBlue > 255)
-				aBlue = 255;
+			aAlpha = std::min(aAlpha, 255);
+			aRed = std::min(aRed, 255);
+			aGreen = std::min(aGreen, 255);
+			aBlue = std::min(aBlue, 255);
 
 			aBits[i] = (aAlpha << 24) | (aRed << 16) | (aGreen << 8) | (aBlue);
 		}
@@ -3707,14 +3701,10 @@ GLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
 			int aGreen = (((aColor >> 8) & 0xFF) * theColor.mGreen) / 255;
 			int aBlue = ((aColor & 0xFF) * theColor.mBlue) / 255;
 
-			if (aAlpha > 255)
-				aAlpha = 255;
-			if (aRed > 255)
-				aRed = 255;
-			if (aGreen > 255)
-				aGreen = 255;
-			if (aBlue > 255)
-				aBlue = 255;
+			aAlpha = std::min(aAlpha, 255);
+			aRed = std::min(aRed, 255);
+			aGreen = std::min(aGreen, 255);
+			aBlue = std::min(aBlue, 255);
 
 			aDestBits[i] = (aAlpha << 24) | (aRed << 16) | (aGreen << 8) | (aBlue);
 		}
@@ -3842,12 +3832,10 @@ void SexyAppBase::RotateImageHue(Sexy::MemoryImage *theImage, int theDelta)
 
 		int aColorDiv = (6 * h) / 256;
 		int x = static_cast<int>(y + (v - y) * ((h - (aColorDiv * 256 / 6)) * 6) / 255);
-		if (x > 255)
-			x = 255;
+		x = std::min(x, 255);
 
 		int z = static_cast<int>(v - (v - y) * ((h - (aColorDiv * 256 / 6)) * 6) / 255);
-		if (z < 0)
-			z = 0;
+		z = std::max(z, 0);
 		
 		switch (aColorDiv)
 		{
@@ -3880,12 +3868,10 @@ uint32_t SexyAppBase::HSLToRGB(int h, int s, int l)
 
 	int aColorDiv = (6 * h) / 256;
 	int x = static_cast<int>(y + (v - y) * ((h - (aColorDiv * 256 / 6)) * 6) / 255);
-	if (x > 255)
-		x = 255;
+	x = std::min(x, 255);
 
 	int z = static_cast<int>(v - (v - y) * ((h - (aColorDiv * 256 / 6)) * 6) / 255);
-	if (z < 0)
-		z = 0;
+	z = std::max(z, 0);
 	
 	switch (aColorDiv)
 	{

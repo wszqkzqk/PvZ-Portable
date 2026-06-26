@@ -244,7 +244,7 @@ int PakInterface::FSeek(PFILE* theFile, long theOffset, int theOrigin)
 			theFile->mPos += theOffset;
 
 		// 当前指针位置不能超过整个文件的大小，且不能小于 0
-		theFile->mPos = std::max(std::min(theFile->mPos, theFile->mRecord->mSize), 0);
+		theFile->mPos = std::clamp(theFile->mPos, 0, theFile->mRecord->mSize);
 		return 0;
 	}
 	else

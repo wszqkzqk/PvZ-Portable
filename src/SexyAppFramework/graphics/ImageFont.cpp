@@ -870,10 +870,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 						for (auto anItr = aLayer->mCharDataMap.begin(); anItr != aLayer->mCharDataMap.end(); anItr++)
 						{
 							CharData& aCharData = anItr->second;
-							if (aCharData.mImageRect.mHeight + aCharData.mOffset.mY > aLayer->mDefaultHeight)
-							{
-								aLayer->mDefaultHeight = aCharData.mImageRect.mHeight + aCharData.mOffset.mY;
-							}
+							aLayer->mDefaultHeight = std::max(aLayer->mDefaultHeight, aCharData.mImageRect.mHeight + aCharData.mOffset.mY);
 						}
 					}
 					else
@@ -1314,8 +1311,7 @@ void ImageFont::GenerateActiveFontLayers()
 
 						anActiveFontLayer->mScaledCharImageRects[anItr->first] = aScaledRect;
 
-						if (aScaledRect.mHeight > aMaxHeight)
-							aMaxHeight = aScaledRect.mHeight;
+						aMaxHeight = std::max(aMaxHeight, aScaledRect.mHeight);
 
 						aCurX += aScaledRect.mWidth;
 					}
@@ -1352,20 +1348,17 @@ void ImageFont::GenerateActiveFontLayers()
 				}
 
 				int aLayerAscent = (aFontLayer->mAscent * aPointSize) / aLayerPointSize;
-				if (aLayerAscent > mAscent)
-					mAscent = aLayerAscent;
+				mAscent = std::max(mAscent, aLayerAscent);
 
 				if (aFontLayer->mHeight != 0)
 				{
 					int aLayerHeight = (aFontLayer->mHeight * aPointSize) / aLayerPointSize;
-					if (aLayerHeight > mHeight)
-						mHeight = aLayerHeight;
+					mHeight = std::max(mHeight, aLayerHeight);
 				}
 				else
 				{
 					int aLayerHeight = (aFontLayer->mDefaultHeight * aPointSize) / aLayerPointSize;
-					if (aLayerHeight > mHeight)
-						mHeight = aLayerHeight;
+					mHeight = std::max(mHeight, aLayerHeight);
 				}
 
 				int anAscentPadding = (aFontLayer->mAscentPadding * aPointSize) / aLayerPointSize;
@@ -1449,8 +1442,7 @@ int ImageFont::CharWidthKern(char32_t theChar, char32_t thePrevChar)
 
 		aLayerXPos += aCharWidth + aSpacing;
 
-		if (aLayerXPos > aMaxXPos)
-			aMaxXPos = aLayerXPos;
+		aMaxXPos = std::max(aMaxXPos, aLayerXPos);
 
 		anItr++;
 	}
@@ -1589,7 +1581,7 @@ void ImageFont::DrawStringEx(Graphics* g, int theX, int theY, const std::string&
 			aRenderCommand->mMode = anActiveFontLayer->mBaseFontLayer->mDrawMode;
 			aRenderCommand->mNext = nullptr;
 
-			int anOrderIdx = std::min(std::max(anOrder + 128, 0), 255);
+			int anOrderIdx = std::clamp(anOrder + 128, 0, 255);
 
 			if (gRenderTail[anOrderIdx] == nullptr)
 			{
@@ -1614,8 +1606,7 @@ void ImageFont::DrawStringEx(Graphics* g, int theX, int theY, const std::string&
 
 			aLayerXPos += aCharWidth + aSpacing;
 
-			if (aLayerXPos > aMaxXPos)
-				aMaxXPos = aLayerXPos;
+			aMaxXPos = std::max(aMaxXPos, aLayerXPos);
 
 			anItr++;
 			aLayerOrderOffset++;

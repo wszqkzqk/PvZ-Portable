@@ -22,6 +22,7 @@
 #include <bit>
 
 #include "DataSync.h"
+#include <algorithm>
 #include "PlayerInfo.h"
 #include "../LawnCommon.h"
 #include "../Widget/ChallengeScreen.h"
@@ -250,14 +251,7 @@ void PlayerInfo::Reset()
 void PlayerInfo::AddCoins(int theAmount)
 {
 	mCoins += theAmount;
-	if (mCoins > 99999)
-	{
-		mCoins = 99999;
-	}
-	else if (mCoins < 0)
-	{
-		mCoins = 0;
-	}
+	mCoins = std::clamp(mCoins, 0, 99999);
 }
 
 void PlayerInfo::ResetChallengeRecord(GameMode theGameMode)

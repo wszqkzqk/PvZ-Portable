@@ -1708,10 +1708,7 @@ void CutScene::MouseDown(int theX, int theY)
 	(void)theX;(void)theY;
 	if (mApp->mTodCheatKeys && mApp->mGameMode == GameMode::GAMEMODE_UPSELL)
 	{
-		if (mCrazyDaveCountDown > 1)
-		{
-			mCrazyDaveCountDown = 1;
-		}
+		mCrazyDaveCountDown = std::min(mCrazyDaveCountDown, 1);
 	}
 	else
 	{

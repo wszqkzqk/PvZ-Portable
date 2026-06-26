@@ -23,7 +23,7 @@
  */
 
 #include "EditWidget.h"
-//#include "graphics/SysFont.h"
+#include <algorithm>
 #include "graphics/ImageFont.h"
 #include "WidgetManager.h"
 #include "SexyAppBase.h"
@@ -528,10 +528,7 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 
 	EnforceMaxPixels();
 
-	if (mCursorPos < 0)
-		mCursorPos = 0;
-	else if (mCursorPos > (int) mString.length())
-		mCursorPos = mString.length();
+	mCursorPos = std::clamp(mCursorPos, 0, (int) mString.length());
 	
 	if (anOldCursorPos != mCursorPos)
 	{

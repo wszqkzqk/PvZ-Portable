@@ -88,20 +88,17 @@ void AchievementsWidget::Update() {
 	if (mScrollValue <= 0)
 		return;
 
-	if (mScrollValue > mDefaultScrollValue)
-		mScrollValue = mDefaultScrollValue;
+	mScrollValue = std::min(mScrollValue, mDefaultScrollValue);
 
 	mScrollValue -= mScrollDecay;
 
 	int aNewY = mY + mScrollValue * mScrollDirection;
-	if (aNewY >= -1)
-		aNewY = -1;
+	aNewY = std::min(aNewY, -1);
 	//if (aNewY >= mApp->mHeight)
 	//	aNewY = mApp->mHeight;
 
 	int aMaxScroll = 2 * mApp->mHeight + 50 - mHeight;
-	if (aNewY <= aMaxScroll)
-		aNewY = aMaxScroll;
+	aNewY = std::max(aNewY, aMaxScroll);
 
 	mY = aNewY;
 
@@ -109,8 +106,7 @@ void AchievementsWidget::Update() {
 	mMoreRockRect.mY += aDelta;
 	aBackButtonRect.mY += aDelta;
 
-	if (mScrollValue <= 0)
-		mScrollValue = 0;
+	mScrollValue = std::max(mScrollValue, 0);
 }
 
 // GOTY @Patoke: 0x401160

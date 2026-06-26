@@ -2749,8 +2749,7 @@ void Challenge::WhackAZombiePlaceGraves(int theGraveCount)
 		}
 	}
 
-	if (theGraveCount > aPickCount)
-		theGraveCount = aPickCount;
+	theGraveCount = std::min(theGraveCount, aPickCount);
 
 	if (aPickCount == 0 || theGraveCount <= 0)
 		return;
@@ -2861,10 +2860,7 @@ void Challenge::WhackAZombieSpawning()
 			}
 		}
 		float aMaxSpeed = TodAnimateCurve(1, 12, mBoard->mCurrentWave, 1, 3, CURVE_EASE_IN);
-		if (aZombieCount > aGridPicksCount)
-		{
-			aZombieCount = aGridPicksCount;
-		}
+		aZombieCount = std::min(aZombieCount, aGridPicksCount);
 
 		for (int i = 0; i < aZombieCount; i++)
 		{
@@ -3762,10 +3758,7 @@ void Challenge::ScaryPotterChangePotType(GridItemState thePotType, int theCount)
 			}
 		}
 	}
-	if (theCount > aPotCount)
-	{
-		theCount = aPotCount;
-	}
+	theCount = std::min(theCount, aPotCount);
 
 	for (int i = 0; i < theCount; i++)
 	{
@@ -4404,8 +4397,7 @@ void Challenge::IZombiePlacePlants(SeedType theSeedType, int theCount, int theGr
 		}
 	}
 
-	if (theCount > aGridArrayCount)
-		theCount = aGridArrayCount;
+	theCount = std::min(theCount, aGridArrayCount);
 
 	// 依次选择 theCount 个格子并在这些格子中放置植物
 	for (int i = 0; i < theCount; i++)

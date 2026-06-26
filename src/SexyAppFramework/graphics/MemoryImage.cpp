@@ -953,10 +953,7 @@ uchar* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
 
 							for (int i = aRLCount; i > 0; i--)
 							{
-								if (i >= 255)
-									*aWPtr++ = 255;
-								else
-									*aWPtr++ = i;
+								*aWPtr++ = std::min(i, 255);
 							}					
 
 							if ((aRCount == mWidth) && (aThisAClass != aLastAClass))
@@ -1008,10 +1005,7 @@ uchar* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
 
 							for (int i = aRLCount; i > 0; i--)
 							{
-								if (i >= 255)
-									*aWPtr++ = 255;
-								else
-									*aWPtr++ = i;
+								*aWPtr++ = std::min(i, 255);
 							}					
 
 							if ((aRCount == mWidth) && (aThisAClass != aLastAClass))

@@ -21,6 +21,7 @@
 
 #include "SexyAppBase.h"
 #include "TodList.h"
+#include <algorithm>
 #include "TodDebug.h"
 #include "TodCommon.h"
 #include "../LawnApp.h"
@@ -569,7 +570,7 @@ void TodDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& t
 			aRenderCommand->mUseAlphaCorrection = aLayer->mUseAlphaCorrection;
 			aRenderCommand->mNext = nullptr;
 
-			int anOrderIdx = std::min(std::max(anOrder + 128, 0), 255);
+			int anOrderIdx = std::clamp(anOrder + 128, 0, 255);
 			if (gRenderTail[anOrderIdx])
 			{
 				gRenderTail[anOrderIdx]->mNext = aRenderCommand;
@@ -586,10 +587,7 @@ void TodDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& t
 			//{
 			//	aMaxXPos = aCurXPos;
 			//}
-			if (aMaxXPos < aCurXPos + aSpacing + aCharWidth)
-			{
-				aMaxXPos = aCurXPos + aSpacing + aCharWidth;
-			}
+			aMaxXPos = std::max(aMaxXPos, aCurXPos + aSpacing + aCharWidth);
 		}
 
 		aCurXPos = aMaxXPos;

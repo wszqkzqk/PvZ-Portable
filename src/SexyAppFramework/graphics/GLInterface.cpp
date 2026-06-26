@@ -543,8 +543,8 @@ static void GetBestTextureDimensions(int &w, int &h, bool isEdge, bool usePow2, 
 			ah = ah >= gMaxTextureHeight ? gMaxTextureHeight : sGoodSizes[ah];
 		}
 	}
-	if (aw < gMinTextureWidth)  aw = gMinTextureWidth;
-	if (ah < gMinTextureHeight) ah = gMinTextureHeight;
+	aw = std::max(aw, gMinTextureWidth);
+	ah = std::max(ah, gMinTextureHeight);
 	w = aw; h = ah;
 }
 

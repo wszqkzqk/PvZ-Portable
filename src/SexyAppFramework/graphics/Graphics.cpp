@@ -356,11 +356,9 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
 		{	// draw horizontal segments 
 			// span 'tween j & j+1 is inside, span tween j+1 & j+2 is outside 
 			xl = (int) ceil(mPFActiveEdgeList[j].mX-0.5);		// left end of span 
-			if (xl<aMinX) 
-				xl = aMinX;
+			xl = std::max(xl, aMinX);
 			xr = (int) floor(mPFActiveEdgeList[j+1].mX-0.5);	// right end of span 
-			if (xr>aMaxX) 
-				xr = aMaxX;
+			xr = std::min(xr, aMaxX);
 			
 			if ((xl <= xr) && (aSpanPos < MAX_TEMP_SPANS))
 			{
@@ -1338,8 +1336,7 @@ int	Graphics::WriteWordWrapped(const Rect& theRect, const std::string& theLine, 
 				aCurPos = aDrawEnd;
 			}
 
-			if (aWrittenWidth > aMaxWidth)
-				aMaxWidth = aWrittenWidth;
+			aMaxWidth = std::max(aMaxWidth, aWrittenWidth);
 
 			aLineStartPos = aCurPos;
 			aBreakDrawLen = -1;
@@ -1357,8 +1354,7 @@ int	Graphics::WriteWordWrapped(const Rect& theRect, const std::string& theLine, 
 
 		if (aWrittenWidth>=0)
 		{
-			if (aWrittenWidth > aMaxWidth)
-				aMaxWidth = aWrittenWidth;
+			aMaxWidth = std::max(aMaxWidth, aWrittenWidth);
 
 			if (theMaxWidth!=nullptr && aWrittenWidth>*theMaxWidth)
 				*theMaxWidth = aWrittenWidth;

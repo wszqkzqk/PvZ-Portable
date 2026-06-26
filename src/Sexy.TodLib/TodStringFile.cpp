@@ -461,8 +461,7 @@ int TodDrawStringWrappedHelper(Graphics* g, const std::string& theText, const Re
 				aCurPos = aDrawEnd;
 			}
 
-			if (aLineWidth > aMaxWidth)
-				aMaxWidth = aLineWidth;
+			aMaxWidth = std::max(aMaxWidth, aLineWidth);
 			aYOffset += aLineSpacing;
 			aLineFeedPos = aCurPos;
 			aBreakDrawLen = -1;

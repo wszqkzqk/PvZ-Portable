@@ -3053,10 +3053,7 @@ bool Zombie::ZombiquariumFindClosestBrain()
             mApp->PlayFoley(FoleyType::FOLEY_SLURP);
 
             mBodyHealth += 200;
-            if (mBodyHealth > mBodyMaxHealth)
-            {
-                mBodyHealth = mBodyMaxHealth;
-            }
+            mBodyHealth = std::min(mBodyHealth, mBodyMaxHealth);
 
             PlayZombieReanim("anim_aquarium_bite", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 24.0f);
             mZombiePhase = ZombiePhase::PHASE_ZOMBIQUARIUM_BITE;
@@ -3906,10 +3903,7 @@ void Zombie::UpdateZamboni()
     {
         anIceX = std::max(anIceX, 25);
     }
-    if (anIceX < mBoard->mIceMinX[mRow])
-    {
-        mBoard->mIceMinX[mRow] = anIceX;
-    }
+    mBoard->mIceMinX[mRow] = std::min(mBoard->mIceMinX[mRow], anIceX);
     if (anIceX < 800)
     {
         mBoard->mIceTimer[mRow] = 3000;
@@ -7473,10 +7467,7 @@ int Zombie::TakeShieldDamage(int theDamage, unsigned int theDamageFlags)
     if (!TestBit(theDamageFlags, static_cast<int>(DamageFlags::DAMAGE_DOESNT_CAUSE_FLASH)))
     {
         mShieldJustGotShotCounter = 25;
-        if (mJustGotShotCounter < 0)
-        {
-            mJustGotShotCounter = 0;
-        }
+        mJustGotShotCounter = std::max(mJustGotShotCounter, 0);
     }
 
     if (!TestBit(theDamageFlags, static_cast<int>(DamageFlags::DAMAGE_DOESNT_CAUSE_FLASH)) && !TestBit(theDamageFlags, static_cast<int>(DamageFlags::DAMAGE_HITS_SHIELD_AND_BODY)))
@@ -8484,10 +8475,7 @@ void Zombie::MowDown()
     {
         RemoveIceTrap();
     }
-    if (mButteredCounter > 0)
-    {
-        mButteredCounter = 0;
-    }
+    mButteredCounter = std::min(mButteredCounter, 0);
 
     DropShield(0U);
     DropHelm(0U);
@@ -8553,10 +8541,7 @@ void Zombie::ApplyBurn()
     {
         RemoveIceTrap();
     }
-    if (mButteredCounter > 0)
-    {
-        mButteredCounter = 0;
-    }
+    mButteredCounter = std::min(mButteredCounter, 0);
 
     AttachmentDetachCrossFadeParticleType(mAttachmentID, ParticleEffect::PARTICLE_ZAMBONI_SMOKE, nullptr);
     BungeeDropPlant();
@@ -8803,10 +8788,7 @@ void Zombie::PlayDeathAnim(unsigned int theDamageFlags)
         AddAttachedParticle(75, 106, ParticleEffect::PARTICLE_ICE_TRAP_RELEASE);
         mIceTrapCounter = 0;
     }
-    if (mButteredCounter > 0)
-    {
-        mButteredCounter = 0;
-    }
+    mButteredCounter = std::min(mButteredCounter, 0);
     if (mYuckyFace)
     {
         ShowYuckyFace(false);

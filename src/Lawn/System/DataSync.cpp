@@ -478,8 +478,7 @@ void DataWriter::OpenMemory(uint32_t theReserveAmount)
 	mDataLen = 0;
 	mCapacity = 0;
 
-	if (theReserveAmount < 32)
-		theReserveAmount = 32;
+	theReserveAmount = std::max<uint32_t>(theReserveAmount, 32);
 	mData = new char[theReserveAmount];
 	mCapacity = theReserveAmount;
 }

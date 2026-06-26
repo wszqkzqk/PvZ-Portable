@@ -23,6 +23,7 @@
  */
 
 #include "ListWidget.h"
+#include <utility>
 #include "graphics/Font.h"
 #include "WidgetManager.h"
 #include "ScrollbarWidget.h"
@@ -109,13 +110,8 @@ void ListWidget::Sort(bool ascending)
 			int aComp = aKeys[j].compare(aKeys[j+1]);
 			if ((ascending && (aComp > 0)) || (!ascending && (aComp < 0)))
 			{
-				int aSwapInt = aMap[j];
-				aMap[j] = aMap[j+1];
-				aMap[j+1] = aSwapInt;
-						
-				std::string aSwapKey = aKeys[j];
-				aKeys[j] = aKeys[j+1];
-				aKeys[j+1] = aSwapKey;
+				std::swap(aMap[j], aMap[j + 1]);
+				std::swap(aKeys[j], aKeys[j + 1]);
 			}
 		}
 		
