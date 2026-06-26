@@ -1098,16 +1098,7 @@ void LawnApp::FinishTimesUpDialog()
 // GOTY @Patoke: 0x5282E0
 void LawnApp::DoConfirmSellDialog(const std::string& theMessage)
 {
-	Dialog* aConfirmDialog = DoDialog(Dialogs::DIALOG_ZEN_SELL, true, "[ZEN_SELL_HEADER]", theMessage, "", Dialog::BUTTONS_YES_NO);
-	aConfirmDialog->mYesButton->mLabel = TodStringTranslate("[DIALOG_BUTTON_YES]");
-	aConfirmDialog->mNoButton->mLabel = TodStringTranslate("[DIALOG_BUTTON_NO]");
-}
-
-void LawnApp::DoConfirmPurchaseDialog(const std::string& theMessage)
-{
-	LawnDialog* aComfirmDialog = (LawnDialog*)DoDialog(Dialogs::DIALOG_STORE_PURCHASE, true, "买下这个物品？", theMessage, "", Dialog::BUTTONS_YES_NO);
-	aComfirmDialog->mLawnYesButton->mLabel = TodStringTranslate("[DIALOG_BUTTON_YES]");
-	aComfirmDialog->mLawnNoButton->mLabel = TodStringTranslate("[DIALOG_BUTTON_NO]");
+	DoDialog(Dialogs::DIALOG_ZEN_SELL, true, "[ZEN_SELL_HEADER]", theMessage, "", Dialog::BUTTONS_YES_NO);
 }
 
 Dialog* LawnApp::NewDialog(int theDialogId, bool isModal, const std::string& theDialogHeader, const std::string& theDialogLines, const std::string& theDialogFooter, int theButtonMode)
