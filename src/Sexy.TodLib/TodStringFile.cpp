@@ -160,7 +160,7 @@ void TodStringListLoad(const char* theFileName)
 
 std::string TodStringListFind(const std::string& theName)
 {
-	std::map<std::string, std::string>::iterator anItr = gSexyAppBase->mStringProperties.find(theName);
+	auto anItr = gSexyAppBase->mStringProperties.find(theName);
 	if (anItr != gSexyAppBase->mStringProperties.end())
 	{
 		return anItr->second;

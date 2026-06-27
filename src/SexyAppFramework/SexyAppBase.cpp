@@ -3065,9 +3065,9 @@ double SexyAppBase::GetDouble(const std::string& theId, double theDefault)
 		return theDefault;
 }
 
-std::string SexyAppBase::GetString(const std::string& theId)
+std::string SexyAppBase::GetString(std::string_view theId)
 {
-	std::map<std::string, std::string>::iterator anItr = mStringProperties.find(theId);
+	auto anItr = mStringProperties.find(theId);
 	DBG_ASSERTE(anItr != mStringProperties.end());
 	
 	if (anItr != mStringProperties.end())	
@@ -3076,14 +3076,14 @@ std::string SexyAppBase::GetString(const std::string& theId)
 		return "";
 }
 
-std::string SexyAppBase::GetString(const std::string& theId, const std::string& theDefault)
+std::string SexyAppBase::GetString(std::string_view theId, std::string_view theDefault)
 {
-	std::map<std::string, std::string>::iterator anItr = mStringProperties.find(theId);
+	auto anItr = mStringProperties.find(theId);
 	
 	if (anItr != mStringProperties.end())	
 		return anItr->second;
 	else
-		return theDefault;	
+		return std::string(theDefault);	
 }
 
 std::vector<std::string> SexyAppBase::GetStringVector(const std::string& theId)
@@ -3099,7 +3099,7 @@ std::vector<std::string> SexyAppBase::GetStringVector(const std::string& theId)
 
 void SexyAppBase::SetString(const std::string& theId, const std::string& theValue)
 {
-	std::pair<std::map<std::string, std::string>::iterator, bool> aPair = mStringProperties.insert(std::map<std::string, std::string>::value_type(theId, theValue));
+	auto aPair = mStringProperties.emplace(theId, theValue);
 	if (!aPair.second) // Found it, change value
 		aPair.first->second = theValue;
 }

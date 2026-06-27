@@ -25,6 +25,7 @@
 
 #include "../../ConstEnums.h"
 #include "widget/Widget.h"
+#include <string_view>
 
 class LawnApp;
 
@@ -57,11 +58,11 @@ enum AchievementId {
 // todo @Patoke: add these
 class AchievementItem {
 public:
-    std::string name;
-    std::string description;
+    std::string_view name;
+    std::string_view description;
 };
 
-extern AchievementItem gAchievementList[MAX_ACHIEVEMENTS];
+extern const AchievementItem gAchievementList[MAX_ACHIEVEMENTS];
 
 class AchievementsWidget : public Widget {
 public:

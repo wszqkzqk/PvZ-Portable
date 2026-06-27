@@ -34,6 +34,7 @@
 #include <mutex>
 #include <thread>
 #include <set>
+#include <string_view>
 #include "graphics/SharedImage.h"
 #include "misc/Ratio.h"
 #include <atomic>
@@ -340,7 +341,7 @@ public:
 	bool					mEnableWindowAspect;
 	Ratio					mWindowAspect;
 
-	std::map<std::string, std::string>	mStringProperties;
+	std::map<std::string, std::string, std::less<>>	mStringProperties;
 	StringBoolMap			mBoolProperties;
 	StringIntMap			mIntProperties;
 	StringDoubleMap			mDoubleProperties;
@@ -537,8 +538,8 @@ public:
 	int						GetInteger(const std::string& theId, int theDefault);
 	double					GetDouble(const std::string& theId);
 	double					GetDouble(const std::string& theId, double theDefault);
-	std::string				GetString(const std::string& theId);
-	std::string				GetString(const std::string& theId, const std::string& theDefault);
+	std::string				GetString(std::string_view theId);
+	std::string				GetString(std::string_view theId, std::string_view theDefault);
 
 	std::vector<std::string>	GetStringVector(const std::string& theId);
 

@@ -41,7 +41,7 @@
 
 Rect aBackButtonRect = { 120, 35, 130, 80 };
 
-AchievementItem gAchievementList[MAX_ACHIEVEMENTS] = {
+constinit const AchievementItem gAchievementList[MAX_ACHIEVEMENTS] = {
 	{ "Home Lawn Security", "Complete Adventure Mode." },
 	{ "Nobel Peas Prize", "Get the golden sunflower trophy." },
 	{ "Better Off Dead", "Get to a streak of 10 in I, Zombie Endless" },
