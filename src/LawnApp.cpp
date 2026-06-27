@@ -694,8 +694,9 @@ void LawnApp::DoConfirmBackToMain()
 	LawnDialog* aDialog = (LawnDialog*)DoDialog(
 		Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN, 
 		true, 
-		"Leave Game?"/*"[LEAVE_GAME]"*/,
-		"Do you want to return\nto the main menu?\n\nYour game will be saved."/*"[LEAVE_GAME_HEADER]"*/, 
+		GetString("LEAVE_GAME_HEADER", "Leave Game?"),
+		GetString("LEAVE_GAME",
+			"Do you want to return\nto the main menu?\n\nYour game will be saved."), 
 		"", 
 		Dialog::BUTTONS_YES_NO
 	);
@@ -760,9 +761,9 @@ void LawnApp::DoPauseDialog()
 	LawnDialog* aDialog = (LawnDialog*)DoDialog(
 		Dialogs::DIALOG_PAUSED,
 		true,
-		"GAME PAUSED"/*"[RESUME_GAME]"*/,
-		"Click to resume game", 
-		"Resume Game"/*"[GAME_PAUSED]"*/, 
+		GetString("GAME_PAUSED", "GAME PAUSED"),
+		GetString("CLICK_TO_RESUME", "Click to resume game"),
+		GetString("RESUME_GAME", "Resume Game"), 
 		Dialog::BUTTONS_FOOTER
 	);
 
@@ -875,8 +876,9 @@ void LawnApp::FinishCreateUserDialog(bool isYes)
 		DoDialog(
 			Dialogs::DIALOG_CREATEUSERERROR,
 			true,
-			"Enter Your Name",
-			"Please enter your name to create a new user profile for storing high score data and game progress",
+			GetString("ENTER_YOUR_NAME", "Enter Your Name"),
+			GetString("USER_ERROR_MESSAGE",
+				"Please enter your name to create a new user profile for storing high score data and game progress."),
 			"[DIALOG_BUTTON_OK]",
 			Dialog::BUTTONS_FOOTER
 		);
@@ -886,8 +888,9 @@ void LawnApp::FinishCreateUserDialog(bool isYes)
 		DoDialog(
 			Dialogs::DIALOG_CREATEUSERERROR,
 			true,
-			"Enter Your Name"/*"[ENTER_YOUR_NAME]"*/,
-			"Please enter your name to create a new user profile for storing high score data and game progress"/*"[ENTER_NEW_USER]"*/,
+			GetString("ENTER_YOUR_NAME", "Enter Your Name"),
+			GetString("USER_ERROR_MESSAGE",
+				"Please enter your name to create a new user profile for storing high score data and game progress."),
 			"[DIALOG_BUTTON_OK]",
 			Dialog::BUTTONS_FOOTER
 		);
@@ -904,8 +907,9 @@ void LawnApp::FinishCreateUserDialog(bool isYes)
 			DoDialog(
 				Dialogs::DIALOG_CREATEUSERERROR,
 				true,
-				"Name Conflict"/*"[NAME_CONFLICT]"*/,
-				"The name you entered is already being used.  Please enter a unique player name"/*"[ENTER_UNIQUE_PLAYER_NAME]"*/,
+				GetString("NAME_CONFLICT", "Name Conflict"),
+				GetString("ENTER_UNIQUE_PLAYER_NAME",
+					"The name you entered is already being used.  Please enter a unique player name."),
 				"[DIALOG_BUTTON_OK]",
 				Dialog::BUTTONS_FOOTER
 			);
@@ -934,10 +938,10 @@ void LawnApp::DoConfirmDeleteUserDialog(const std::string& theName)
 	DoDialog(
 		Dialogs::DIALOG_CONFIRMDELETEUSER, 
 		true, 
-		"Are You Sure"/*"[ARE_YOU_SURE]"*/, 
-		// StrFormat(TodStringTranslate("[DELETE_USER_WARNING]").c_str(), theName)
-		// @Patoke: didn't access this as 'const char*'
-		StrFormat("This will permanently remove '%s' from the player roster!"/**/, theName.c_str()),
+		GetString("ARE_YOU_SURE", "Are You Sure?"), 
+		StrFormat(
+			GetString("DELETE_USER_WARNING", "This will permanently remove '%s' from the player roster!").c_str(),
+			theName.c_str()),
 		"", 
 		Dialog::BUTTONS_YES_NO
 	);
@@ -1022,8 +1026,9 @@ void LawnApp::FinishRenameUserDialog(bool isYes)
 		DoDialog(
 			Dialogs::DIALOG_RENAMEUSERERROR,
 			true,
-			"Name Conflict"/*"[NAME_CONFLICT]"*/,
-			"The name you entered is already being used.  Please enter a unique player name"/*"[ENTER_UNIQUE_PLAYER_NAME]"*/,
+			GetString("NAME_CONFLICT", "Name Conflict"),
+			GetString("ENTER_UNIQUE_PLAYER_NAME",
+				"The name you entered is already being used.  Please enter a unique player name."),
 			"[DIALOG_BUTTON_OK]",
 			Dialog::BUTTONS_FOOTER
 		);
@@ -1836,12 +1841,12 @@ void LawnApp::URLOpenFailed(const std::string& theURL)
 	KillDialog(Dialogs::DIALOG_OPENURL_WAIT);
 	CopyToClipboard(theURL);
 
-	std::string aString = 
-		"Please open the following URL in your browser\n\n" + 
-		theURL + 
-		"\n\nFor your convenience, this URL has already been copied to your clipboard.";
+	std::string aString =
+		StrFormat(
+			GetString("OPEN_URL", "Please open the following URL in your browser\n\n%s\n\nFor your convenience, this URL has already been copied to your clipboard.").c_str(),
+			theURL.c_str());
 
-	DoDialog(Dialogs::DIALOG_OPENURL_WAIT, true, "Open Browser", "[DIALOG_BUTTON_OK]", aString, Dialog::BUTTONS_FOOTER);
+	DoDialog(Dialogs::DIALOG_OPENURL_WAIT, true, GetString("OPEN_BROWSER", "Open Browser"), "[DIALOG_BUTTON_OK]", aString, Dialog::BUTTONS_FOOTER);
 }
 
 void LawnApp::URLOpenSucceeded(const std::string& theURL)
@@ -1855,8 +1860,8 @@ bool LawnApp::OpenURL(const std::string& theURL, bool shutdownOnOpen)
 	DoDialog(
 		Dialogs::DIALOG_OPENURL_WAIT, 
 		true, 
-		"Opening Browser", 
-		"Opening Browser", 
+		GetString("OPENING_BROWSER", "Opening Browser"),
+		GetString("OPENING_BROWSER", "Opening Browser"),
 		"", 
 		Dialog::BUTTONS_NONE
 	);
@@ -3044,7 +3049,7 @@ void LawnApp::DrawCrazyDave(Graphics* g)
 		TodDrawStringWrapped(g, aBubbleText, aRect, FONT_BRIANNETOD16, Color::Black, aWrapEnum);
 		if (clickToContinue)
 		{
-			TodDrawString(g, "click to continue", aPosX + 139, aPosY + 140, FONT_PICO129, Color::Black, DrawStringJustification::DS_ALIGN_CENTER);
+			TodDrawString(g, GetString("CLICK_TO_CONTINUE", "click to continue"), aPosX + 139, aPosY + 140, FONT_PICO129, Color::Black, DrawStringJustification::DS_ALIGN_CENTER);
 		}
 	}
 

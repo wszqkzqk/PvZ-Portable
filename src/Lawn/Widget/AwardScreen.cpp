@@ -628,7 +628,7 @@ void AwardScreen::DrawAchievements(Graphics* g) {
 
 	g->DrawImage(IMAGE_CHALLENGE_BACKGROUND, 0, 0);
 
-	TodDrawString(g, "ACHIEVEMENTS", BOARD_WIDTH / 2, 58, FONT_HOUSEOFTERROR28, Color(220, 220, 220), DS_ALIGN_CENTER);
+	TodDrawString(g, mApp->GetString("ACHIEVEMENTS_TITLE", "ACHIEVEMENTS"), BOARD_WIDTH / 2, 58, FONT_HOUSEOFTERROR28, Color(220, 220, 220), DS_ALIGN_CENTER);
 
 	for (size_t i = 0; i < mAchievementItems.size(); i++) {
 		std::string aAchievementName = gAchievementList[mAchievementItems[i].mId].name;

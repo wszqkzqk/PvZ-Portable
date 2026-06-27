@@ -203,10 +203,10 @@ void NewOptionsDialog::Draw(Sexy::Graphics* g)
     float aFontScale = static_cast<float>(mApp->GetDouble("OPTION_DLG_LABEL_FONT_SCALE", 1.0));
     if (aFontScale != 1.0f)
         g->SetScale(aFontScale, aFontScale, 0.0f, 0.0f);
-    TodDrawString(g, "Music", aSliderLabelsX, 140 + aMusicOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
-    TodDrawString(g, "Sound FX", aSliderLabelsX, 167 + aSfxOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
-    TodDrawString(g, "3D Acceleration", aCheckboxLabelsX, 197 + a3DAccelOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
-    TodDrawString(g, "Full Screen", aCheckboxLabelsX, 229 + aFullScreenOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
+    TodDrawString(g, mApp->GetString("OPTIONS_MUSIC_LABEL", "Music"), aSliderLabelsX, 140 + aMusicOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
+    TodDrawString(g, mApp->GetString("OPTIONS_SOUNDFX", "Sound FX"), aSliderLabelsX, 167 + aSfxOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
+    TodDrawString(g, mApp->GetString("OPTIONS_3D_ACCELERATION", "3D Acceleration"), aCheckboxLabelsX, 197 + a3DAccelOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
+    TodDrawString(g, mApp->GetString("OPTIONS_FULL_SCREEN", "Full Screen"), aCheckboxLabelsX, 229 + aFullScreenOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
     if (aFontScale != 1.0f)
         g->SetScale(1.0f, 1.0f, 0.0f, 0.0f);
 }
@@ -241,10 +241,11 @@ void NewOptionsDialog::CheckboxChecked(int theId, bool checked)
             mApp->DoDialog(
                 Dialogs::DIALOG_COLORDEPTH_EXP, 
                 true, 
-                "No Windowed Mode", 
-                "Windowed mode is only available if your desktop was running in either\n"
+                mApp->GetString("NO_WINDOWED_MODE", "No Windowed Mode"),
+                mApp->GetString("INVALID_WINDOWS_MODE",
+                    "Windowed mode is only available if your desktop was running in either\n"
                     "16 bit or 32 bit color mode when you started the game.\n\n"
-                    "If you'd like to run in Windowed mode then you need to quit the game and switch your desktop to 16 or 32 bit color mode.", 
+                    "If you'd like to run in Windowed mode then you need to quit the game and switch your desktop to 16 or 32 bit color mode."),
                 "[DIALOG_BUTTON_OK]", 
                 Dialog::BUTTONS_FOOTER
             );
@@ -262,12 +263,13 @@ void NewOptionsDialog::CheckboxChecked(int theId, bool checked)
                 mApp->DoDialog(
                     Dialogs::DIALOG_INFO,
                     true,
-                    "Not Supported",
-                    "Hardware Acceleration cannot be enabled on this computer.\n\n"
+                    mApp->GetString("NOT_SUPPORTED", "Not Supported"),
+                    mApp->GetString("HARDWARE_ACCELERATION_NOT_SUPPORTED",
+                        "Hardware Acceleration cannot be enabled on this computer.\n\n"
                         "Your video card does not\n"
                         "meet the minimum requirements\n"
-                        "for this game.",
-                    "[DIALOG_BUTTON_OK]",
+                        "for this game."),
+                    "[DIALOG_BUTTON_OK]", 
                     Dialog::BUTTONS_FOOTER
                 );
             }
@@ -276,10 +278,11 @@ void NewOptionsDialog::CheckboxChecked(int theId, bool checked)
                 mApp->DoDialog(
                     Dialogs::DIALOG_INFO,
                     true,
-                    "Warning",
-                    "Your video card may not fully support this feature.\n\n"
-                        "If you experience slower performance, please disable Hardware Acceleration.\n",
-                    "[DIALOG_BUTTON_OK]",
+                    mApp->GetString("DIALOG_WARNING", "Warning"),
+                    mApp->GetString("SLOW_PERFORMANCE",
+                        "Your video card may not fully support this feature.\n\n"
+                        "If you experience slower performance, please disable Hardware Acceleration."),
+                    "[DIALOG_BUTTON_OK]", 
                     Dialog::BUTTONS_FOOTER
                 );
             }
