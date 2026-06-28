@@ -29,7 +29,6 @@
 #include "../../Sexy.TodLib/TodStringFile.h"
 
 // GOTY @Patoke: 0x435E40
-// @Patoke: these dialogs don't have localizations
 ContinueDialog::ContinueDialog(LawnApp* theApp) : LawnDialog(
 	theApp, 
 	Dialogs::DIALOG_CONTINUE, 
@@ -56,6 +55,35 @@ ContinueDialog::ContinueDialog(LawnApp* theApp) : LawnDialog(
 
     mTallBottom = true;
     CalcSize(10, 60);
+
+    int aBtnLeft = IMAGE_BUTTON_LEFT->mWidth;
+    int aBtnMid = IMAGE_BUTTON_MIDDLE->mWidth;
+    int aBtnRight = IMAGE_BUTTON_RIGHT->mWidth;
+    int aBtnWidth = aBtnLeft + aBtnMid * 3 + aBtnRight;
+    int aInsetH = mContentInsets.mLeft + mContentInsets.mRight + mBackgroundInsets.mLeft + mBackgroundInsets.mRight;
+    // Min width that keeps the Continue and New Game buttons from overlapping.
+    int aMinCancelWidth = 2 * aBtnWidth - 40;
+    int aSteps = (aMinCancelWidth - aBtnLeft - aBtnRight + aBtnMid - 1) / aBtnMid;
+    int aMinWidth = aBtnLeft + aBtnRight + aSteps * aBtnMid + aInsetH - 8;
+    if (mWidth < aMinWidth)
+    {
+        int aTopMidWidth = IMAGE_DIALOG_TOPMIDDLE->mWidth;
+        int aImageWidth = IMAGE_DIALOG_TOPLEFT->mWidth + IMAGE_DIALOG_TOPRIGHT->mWidth + aTopMidWidth;
+        int aWidth = aMinWidth;
+        if (aWidth <= aImageWidth)
+        {
+            aWidth = aImageWidth;
+        }
+        else if (aTopMidWidth > 0)
+        {
+            int anExtraWidth = (aWidth - aImageWidth) % aTopMidWidth;
+            if (anExtraWidth)
+            {
+                aWidth += aTopMidWidth - anExtraWidth;
+            }
+        }
+        Resize(mX, mY, aWidth, mHeight);
+    }
 }
 
 ContinueDialog::~ContinueDialog()
@@ -75,20 +103,6 @@ void ContinueDialog::Resize(int theX, int theY, int theWidth, int theHeight)
 
     int aBtnWidth = IMAGE_BUTTON_LEFT->mWidth + IMAGE_BUTTON_MIDDLE->mWidth * 3 + IMAGE_BUTTON_RIGHT->mWidth;
     int aBtnHeight = mLawnYesButton->mHeight;
-
-    /*
-    int aContinueX = mLawnYesButton->mX - 20;
-    int aNewGameX = mLawnYesButton->mX + mLawnYesButton->mWidth - aBtnWidth + 24;
-    while (aContinueX + aBtnWidth > aNewGameX)
-    {
-        aContinueX -= 20;
-        aNewGameX += 20;
-    }
-
-    mContinueButton->Resize(aContinueX, mLawnYesButton->mY - aBtnHeight - 2, aBtnWidth, aBtnHeight);
-    mNewGameButton->Resize(aNewGameX, mContinueButton->mY, aBtnWidth, aBtnHeight);
-    mLawnYesButton->Resize(theWidth / 2 - aBtnWidth / 2, mLawnYesButton->mY, aBtnWidth, aBtnHeight);
-    */
 
     mContinueButton->Resize(mLawnYesButton->mX - 20, mLawnYesButton->mY - aBtnHeight, aBtnWidth, aBtnHeight);
     mNewGameButton->Resize(mLawnYesButton->mX + mLawnYesButton->mWidth - aBtnWidth + 20, mContinueButton->mY, aBtnWidth, aBtnHeight);
