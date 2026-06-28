@@ -1126,10 +1126,7 @@ void SeedChooserScreen::KeyDown(KeyCode theKey)
 	}
 	else if (theKey == KeyCode::KEYCODE_ESCAPE)
 	{
-		if (mApp->mTodCheatKeys)
-			PickRandomSeeds();
-		else
-			ButtonDepress(SeedChooserScreen::SeedChooserScreen_Menu);
+		ButtonDepress(SeedChooserScreen::SeedChooserScreen_Menu);
 	}
 }
 
