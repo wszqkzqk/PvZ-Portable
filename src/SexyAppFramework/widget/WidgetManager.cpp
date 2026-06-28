@@ -774,7 +774,17 @@ bool WidgetManager::KeyChar(char theChar)
 
 	if (mFocusWidget != nullptr)
 		mFocusWidget->KeyChar(theChar);
-	
+
+	return true;
+}
+
+bool WidgetManager::KeyText(std::string_view theText)
+{
+	mLastInputUpdateCnt = mUpdateCnt;
+
+	if (mFocusWidget != nullptr)
+		mFocusWidget->KeyText(theText);
+
 	return true;
 }
 

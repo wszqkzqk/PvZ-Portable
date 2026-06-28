@@ -94,15 +94,45 @@ void LawnEditWidget::KeyDown(KeyCode theKey)
         mDialog->KeyDown(KeyCode::KEYCODE_ESCAPE);
 }
 
-void LawnEditWidget::KeyChar(char theChar)
+// Uppercase ASCII letters in place; locale-independent, safe on UTF-8 bytes.
+static bool AutoCapChar(char& theChar)
 {
-    if (mAutoCapFirstLetter && isalpha(theChar))
+    if (theChar >= 'a' && theChar <= 'z')
     {
-        theChar = toupper(theChar);
-        mAutoCapFirstLetter = false;
+        theChar = theChar - 'a' + 'A';
+        return true;
     }
 
+    return theChar >= 'A' && theChar <= 'Z';
+}
+
+void LawnEditWidget::KeyChar(char theChar)
+{
+    if (mAutoCapFirstLetter && AutoCapChar(theChar))
+        mAutoCapFirstLetter = false;
+
     EditWidget::KeyChar(theChar);
+}
+
+void LawnEditWidget::KeyText(std::string_view theText)
+{
+    if (!mAutoCapFirstLetter)
+    {
+        EditWidget::KeyText(theText);
+        return;
+    }
+
+    std::string aText(theText);
+    for (char& aCh : aText)
+    {
+        if (AutoCapChar(aCh))
+        {
+            mAutoCapFirstLetter = false;
+            break;
+        }
+    }
+
+    EditWidget::KeyText(aText);
 }
 
 LawnEditWidget* CreateEditWidget(int theId, EditListener* theListener, Dialog* theDialog)

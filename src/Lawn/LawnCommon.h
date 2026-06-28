@@ -53,6 +53,7 @@ public:
 
 	void					KeyDown(KeyCode theKey) override;
 	void					KeyChar(char theChar) override;
+	void					KeyText(std::string_view theText) override;
 };
 
 // ====================================================================================================

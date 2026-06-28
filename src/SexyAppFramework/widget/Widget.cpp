@@ -237,6 +237,13 @@ void Widget::Update()
 
 void Widget::KeyChar(char){}
 
+void Widget::KeyText(std::string_view theText)
+{
+	for (const char aChar : theText) // legacy widgets get ASCII via KeyChar; non-ASCII needs an override
+		if (static_cast<unsigned char>(aChar) >= 32 && static_cast<unsigned char>(aChar) < 128)
+			KeyChar(aChar);
+}
+
 void Widget::KeyDown(KeyCode theKey)
 {
 	if (theKey == KEYCODE_TAB)

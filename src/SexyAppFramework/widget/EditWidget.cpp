@@ -48,11 +48,10 @@ EditWidget::EditWidget(int theId, EditListener* theEditListener)
 	mHadDoubleClick = false;
 	mHadFocusBeforePress = false;
 	mHilitePos = -1;
-	mLastModifyIdx = -1;
+	mLastModifyIdx = -1; // cursor position right after the last modification
 	mLeftPos = 0;
 	mUndoCursor = 0;
 	mUndoHilitePos = 0;
-	mLastModifyIdx = 0;
 	mBlinkAcc = 0;
 	mCursorPos = 0;
 	mShowingCursor = false;
@@ -111,7 +110,7 @@ std::string& EditWidget::GetDisplayString()
 		mPasswordDisplayString = std::string(mString.size(), mPasswordChar);
 		//mPasswordDisplayString.resize(mString.size());
 		//for (int i=0; i<(int)mPasswordDisplayString.length(); i++)
-		//	mPasswordDisplayString[i] = mPasswordChar; 
+		//	mPasswordDisplayString[i] = mPasswordChar;
 	}
 
 	return mPasswordDisplayString;
@@ -271,6 +270,12 @@ void EditWidget::Update()
 	}	
 }
 
+void EditWidget::EnforceMaxChars()
+{
+	if ((mMaxChars != -1) && (UTF8CodePointCount(mString) > (size_t)mMaxChars))
+		mString = mString.substr(0, UTF8ByteOffsetForCodePoint(mString, (size_t)mMaxChars));
+}
+
 void EditWidget::EnforceMaxPixels()
 {
 	if (mMaxPixels<=0 && mWidthCheckList.empty()) // no width checking in effect
@@ -279,11 +284,11 @@ void EditWidget::EnforceMaxPixels()
 	if (mWidthCheckList.empty())
 	{
 		while (mFont->StringWidth(mString) > mMaxPixels)
-			mString = mString.substr(0, mString.length()-1);
+			mString = mString.substr(0, UTF8PrevBoundary(mString, mString.length()));
 
 		return;
 	}
-		
+
 	for (WidthCheckList::iterator anItr = mWidthCheckList.begin(); anItr != mWidthCheckList.end(); ++anItr)
 	{
 		int aWidth = anItr->mWidth;
@@ -295,17 +300,17 @@ void EditWidget::EnforceMaxPixels()
 		}
 
 		while (anItr->mFont->StringWidth(mString) > aWidth)
-			mString = mString.substr(0,mString.length()-1);
-	} 
+			mString = mString.substr(0, UTF8PrevBoundary(mString, mString.length()));
+	}
 }
 
-bool EditWidget::IsPartOfWord(char theChar)
+bool EditWidget::IsPartOfWord(char32_t theChar)
 {
-	return (((theChar >= 'A') && (theChar <= 'Z')) ||
-			((theChar >= 'a') && (theChar <= 'z')) ||
-			((theChar >= '0') && (theChar <= '9')) ||
-			(((unsigned int)theChar >= (unsigned int)(L'?')) && ((unsigned int)theChar <= (unsigned int)(L'ÿ'))) ||
-			(theChar == '_'));
+	return (((theChar >= U'A') && (theChar <= U'Z')) ||
+			((theChar >= U'a') && (theChar <= U'z')) ||
+			((theChar >= U'0') && (theChar <= U'9')) ||
+			(theChar >= 0x80) ||
+			(theChar == U'_'));
 }
 
 void EditWidget::ProcessKey(KeyCode theKey, char theChar)
@@ -328,16 +333,15 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 	if ((theChar == 3) || (theChar == 24))
 	{
 		// Copy	selection
-		
+
 		if ((mHilitePos != -1) && (mHilitePos != mCursorPos))
 		{
-			if (mCursorPos < mHilitePos)
-				mWidgetManager->mApp->CopyToClipboard(GetDisplayString().substr(mCursorPos, mHilitePos));
-			else
-				mWidgetManager->mApp->CopyToClipboard(GetDisplayString().substr(mHilitePos, mCursorPos));
-		
+			int aSelStart = std::min(mCursorPos, mHilitePos);
+			int aSelLen = std::max(mCursorPos, mHilitePos) - aSelStart;
+			mWidgetManager->mApp->CopyToClipboard(GetDisplayString().substr(aSelStart, aSelLen));
+
 			if (theChar == 3)
-			{				
+			{
 				removeHilite = false;
 			}
 			else
@@ -347,43 +351,22 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 				mHilitePos = -1;
 				bigChange = true;
 			}
-		}				
+		}
 	}
 	else if (theChar == 22)
 	{
 		// Paste selection
-		
+
 		std::string aBaseString = mWidgetManager->mApp->GetClipboard();
-		
+
 		if (aBaseString.length() > 0)
-		{	
-			std::string aString;
+		{
+			size_t aLineEnd = aBaseString.find_first_of("\r\n");
+			if (aLineEnd != std::string::npos)
+				aBaseString = aBaseString.substr(0, aLineEnd);
 
-			for (ulong i = 0; i < aBaseString.length(); i++)
-			{
-				if ((aBaseString[i] == '\r') || (aBaseString[i] == '\n'))
-					break;
-
-				if (mFont->CharWidth(aBaseString[i]) != 0)
-					aString += aBaseString[i];
-			}			
-
-			if (mHilitePos == -1)
-			{
-				// Insert string where cursor is
-				mString = mString.substr(0, mCursorPos) + aString + mString.substr(mCursorPos);
-			}
-			else
-			{
-				// Replace selection with new string
-				mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) + aString + mString.substr(std::max(mCursorPos, mHilitePos));
-				mCursorPos = std::min(mCursorPos, mHilitePos);
-				mHilitePos = -1;
-			}
-		
-			mCursorPos += aString.length();
-		
-			bigChange = true;
+			InsertTextAtCursor(aBaseString);
+			bigChange = (mString != anOldString);
 		}
 	}
 	else if (theChar == 26)
@@ -411,15 +394,25 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 		if (controlDown)
 		{
 			// Get to a word
-			while ((mCursorPos > 0) && (!IsPartOfWord(mString[mCursorPos-1])))
-				   mCursorPos--;
-			
+			while (mCursorPos > 0)
+			{
+				size_t aPrev = UTF8PrevBoundary(mString, mCursorPos);
+				if (IsPartOfWord(UTF8CodePointAt(mString, aPrev)))
+					break;
+				mCursorPos = aPrev;
+			}
+
 			// Go beyond the word
-			while ((mCursorPos > 0) && (IsPartOfWord(mString[mCursorPos-1])))
-				   mCursorPos--;
+			while (mCursorPos > 0)
+			{
+				size_t aPrev = UTF8PrevBoundary(mString, mCursorPos);
+				if (!IsPartOfWord(UTF8CodePointAt(mString, aPrev)))
+					break;
+				mCursorPos = aPrev;
+			}
 		}
 		else if (shiftDown || (mHilitePos == -1))
-			mCursorPos--;
+			mCursorPos = UTF8PrevBoundary(mString, mCursorPos);
 		else
 			mCursorPos = std::min(mCursorPos, mHilitePos);
 	}
@@ -428,15 +421,23 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 		if (controlDown)
 		{
 			// Get to whitespace
-			while ((mCursorPos < (int) mString.length()-1) && (IsPartOfWord(mString[mCursorPos+1])))
-				   mCursorPos++;
-			
+			while (mCursorPos < (int)mString.length())
+			{
+				if (!IsPartOfWord(UTF8CodePointAt(mString, mCursorPos)))
+					break;
+				mCursorPos = UTF8NextBoundary(mString, mCursorPos);
+			}
+
 			// Go beyond the whitespace
-			while ((mCursorPos < (int) mString.length()-1) && (!IsPartOfWord(mString[mCursorPos+1])))
-				   mCursorPos++;
+			while (mCursorPos < (int)mString.length())
+			{
+				if (IsPartOfWord(UTF8CodePointAt(mString, mCursorPos)))
+					break;
+				mCursorPos = UTF8NextBoundary(mString, mCursorPos);
+			}
 		}
-		if (shiftDown || (mHilitePos == -1))
-			mCursorPos++;
+		else if (shiftDown || (mHilitePos == -1))
+			mCursorPos = UTF8NextBoundary(mString, mCursorPos);
 		else
 			mCursorPos = std::max(mCursorPos, mHilitePos);
 	}
@@ -457,15 +458,15 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 			{
 				// Delete char behind cursor
 				if (mCursorPos > 0)
-					mString = mString.substr(0, mCursorPos-1) + mString.substr(mCursorPos);
-				else
-					mString = mString.substr(mCursorPos);
-				mCursorPos--;
+				{
+					size_t aPrev = UTF8PrevBoundary(mString, mCursorPos);
+					if (mCursorPos != mLastModifyIdx)
+						bigChange = true;
+					mString = mString.substr(0, aPrev) + mString.substr(mCursorPos);
+					mCursorPos = aPrev;
+					mLastModifyIdx = mCursorPos;
+				}
 				mHilitePos = -1;
-				
-				if (mCursorPos != mLastModifyIdx)
-					bigChange = true;
-				mLastModifyIdx = mCursorPos-1;
 			}
 		}
 	}
@@ -485,12 +486,14 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 			else
 			{
 				// Delete char in front of cursor
-				if (mCursorPos < (int) mString.length())
-					mString = mString.substr(0, mCursorPos) + mString.substr(mCursorPos+1);
-				
-				if (mCursorPos != mLastModifyIdx)
-					bigChange = true;
-				mLastModifyIdx = mCursorPos;
+				if (mCursorPos < (int)mString.length())
+				{
+					if (mCursorPos != mLastModifyIdx)
+						bigChange = true;
+					size_t aNext = UTF8NextBoundary(mString, mCursorPos);
+					mString = mString.substr(0, mCursorPos) + mString.substr(aNext);
+					mLastModifyIdx = mCursorPos;
+				}
 			}
 		}	
 	}
@@ -508,45 +511,22 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 	}
 	else
 	{
-		std::string aString = std::string(1, theChar);
 		unsigned int uTheChar = (unsigned int)theChar;
 		unsigned int range = 127;
 		if (gSexyAppBase->mbAllowExtendedChars)
-		{
 			range = 255;
-		}
 
-		if ((uTheChar >= 32) && (uTheChar <= range) && (mFont->StringWidth(aString) > 0))
-		{				
-			if ((mHilitePos != -1) && (mHilitePos != mCursorPos))
-			{
-				// Replace selection with new character
-				mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) + std::string(1, theChar) + mString.substr(std::max(mCursorPos, mHilitePos));
-				mCursorPos = std::min(mCursorPos, mHilitePos);
-				mHilitePos = -1;
-				
-				bigChange = true;
-			}
-			else
-			{
-				// Insert character where cursor is
-				mString = mString.substr(0, mCursorPos) + std::string(1, theChar) + mString.substr(mCursorPos);
-				
-				if (mCursorPos != mLastModifyIdx+1)
-					bigChange = true;						
-				mLastModifyIdx = mCursorPos;
-				mHilitePos = -1;
-			}
-											
-			mCursorPos++;				
-			FocusCursor(false);
+		if ((uTheChar >= 32) && (uTheChar <= range))
+		{
+			KeyText(std::string_view(&theChar, 1));
+			if (mString == anOldString) // nothing renderable inserted
+				removeHilite = false;
 		}
 		else
 			removeHilite = false;
 	}
 	
-	if ((mMaxChars != -1) && ((int) mString.length() > mMaxChars))
-		mString = mString.substr(0, mMaxChars);
+	EnforceMaxChars();
 
 	EnforceMaxPixels();
 
@@ -573,6 +553,82 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 	MarkDirty();
 }
 
+void EditWidget::InsertTextAtCursor(std::string_view theText)
+{
+	if (mFont == nullptr)
+		return;
+
+	// Keep only code points the font can render.
+	std::string aInsert;
+	size_t aOffset = 0;
+	while (aOffset < theText.size())
+	{
+		size_t aCharStart = aOffset;
+		char32_t aChar = 0;
+		if (!UTF8DecodeNext(theText, aOffset, aChar))
+		{
+			aOffset = aCharStart + 1; // skip the invalid byte, keep the rest
+			continue;
+		}
+		if (aChar >= 32 && mFont->CharWidth(aChar) != 0)
+			aInsert.append(theText.data() + aCharStart, aOffset - aCharStart);
+	}
+
+	if (aInsert.empty())
+		return;
+
+	if ((mHilitePos != -1) && (mHilitePos != mCursorPos))
+	{
+		// Replace selection with inserted text.
+		mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) + aInsert + mString.substr(std::max(mCursorPos, mHilitePos));
+		mCursorPos = std::min(mCursorPos, mHilitePos);
+		mHilitePos = -1;
+	}
+	else
+	{
+		mString = mString.substr(0, mCursorPos) + aInsert + mString.substr(mCursorPos);
+	}
+
+	mCursorPos += aInsert.size();
+}
+
+void EditWidget::KeyText(std::string_view theText)
+{
+	if (theText.empty())
+		return;
+
+	std::string anOldString = mString;
+	int anOldCursorPos = mCursorPos;
+	int anOldHilitePos = mHilitePos;
+	int aPreInsertCursorPos = mCursorPos;
+	bool aHadSelection = (mHilitePos != -1) && (mHilitePos != mCursorPos);
+
+	InsertTextAtCursor(theText);
+
+	EnforceMaxChars();
+
+	EnforceMaxPixels();
+
+	mCursorPos = std::clamp(mCursorPos, 0, (int)mString.length());
+
+	if (mString != anOldString)
+	{
+		if (aHadSelection || aPreInsertCursorPos != mLastModifyIdx)
+		{
+			mUndoString = anOldString;
+			mUndoCursor = anOldCursorPos;
+			mUndoHilitePos = anOldHilitePos;
+		}
+		mLastModifyIdx = mCursorPos;
+		mHilitePos = -1;
+		mBlinkAcc = 0;
+		mShowingCursor = true;
+	}
+
+	FocusCursor(true);
+	MarkDirty();
+}
+
 void EditWidget::KeyDown(KeyCode theKey)
 {
 	if (((theKey < 'A') || (theKey >= 'Z')))
@@ -595,18 +651,20 @@ int EditWidget::GetCharAt(int x, int y)
 	int aPos = 0;
 
 	std::string &aString = GetDisplayString();
-					
-	for (int i = mLeftPos; i < (int) aString.length(); i++)
+
+	for (int i = mLeftPos; i < (int)aString.length(); )
 	{
-		std::string aLoSubStr = aString.substr(mLeftPos, i-mLeftPos);
-		std::string aHiSubStr = aString.substr(mLeftPos, i-mLeftPos+1);
-			
+		int aNext = UTF8NextBoundary(aString, i);
+		std::string_view aLoSubStr = std::string_view(aString).substr(mLeftPos, i - mLeftPos);
+		std::string_view aHiSubStr = std::string_view(aString).substr(mLeftPos, aNext - mLeftPos);
+
 		int aLoLen = mFont->StringWidth(aLoSubStr);
 		int aHiLen = mFont->StringWidth(aHiSubStr);
-		if (x >= (aLoLen+aHiLen)/2 + 5)				
-			aPos = i+1;	
-	}					
-	
+		if (x >= (aLoLen+aHiLen)/2 + 5)
+			aPos = aNext;
+		i = aNext;
+	}
+
 	return aPos;
 }
 
@@ -615,21 +673,27 @@ void EditWidget::FocusCursor(bool bigJump)
 	while (mCursorPos < mLeftPos)
 	{
 		if (bigJump)
-			mLeftPos = std::max(0, mLeftPos-10);
+		{
+			for (int i = 0; i < 10 && mLeftPos > 0; i++)
+				mLeftPos = UTF8PrevBoundary(mString, mLeftPos);
+		}
 		else
-			mLeftPos = std::max(0, mLeftPos-1);
+			mLeftPos = UTF8PrevBoundary(mString, mLeftPos);
 		MarkDirty();
-	}				
-					
+	}
+
 	if (mFont != nullptr)
 	{
 		std::string &aString = GetDisplayString();
 		while ((mWidth-8 > 0) && (mFont->StringWidth(aString.substr(0, mCursorPos)) - mFont->StringWidth(aString.substr(0, mLeftPos)) >= mWidth-8))
 		{
 			if (bigJump)
-				mLeftPos = std::min(mLeftPos + 10, (int) mString.length()-1);
+			{
+				for (int i = 0; i < 10 && mLeftPos < (int)mString.length(); i++)
+					mLeftPos = UTF8NextBoundary(mString, mLeftPos);
+			}
 			else
-				mLeftPos = std::min(mLeftPos + 1, (int) mString.length()-1);
+				mLeftPos = UTF8NextBoundary(mString, mLeftPos);
 
 			MarkDirty();
 		}
@@ -686,18 +750,25 @@ void EditWidget::HiliteWord()
 {
 	std::string &aString = GetDisplayString();
 
-	if (mCursorPos < (int) aString.length())
+	if (mCursorPos < (int)aString.length())
 	{
 		// Find first space before word
 		mHilitePos = mCursorPos;
-		while ((mHilitePos > 0) && (IsPartOfWord(aString[mHilitePos-1])))
-			mHilitePos--;
+		while (mHilitePos > 0)
+		{
+			size_t aPrev = UTF8PrevBoundary(aString, mHilitePos);
+			if (!IsPartOfWord(UTF8CodePointAt(aString, aPrev)))
+				break;
+			mHilitePos = aPrev;
+		}
 
 		// Find first space after word
-		while ((mCursorPos < (int) aString.length()-1) && (IsPartOfWord(aString[mCursorPos+1])))
-			mCursorPos++;
-		if (mCursorPos < (int) aString.length())
-			mCursorPos++;
+		while (mCursorPos < (int)aString.length())
+		{
+			if (!IsPartOfWord(UTF8CodePointAt(aString, mCursorPos)))
+				break;
+			mCursorPos = UTF8NextBoundary(aString, mCursorPos);
+		}
 	}
 }
 

@@ -37,6 +37,7 @@
 #include <string_view>
 #include <type_traits>
 #include <bit>
+#include <algorithm>
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -233,6 +234,61 @@ inline bool UTF8DecodeNext(std::string_view theString, size_t& theOffset, char32
 	theOutChar = aValue;
 	theOffset += aLength;
 	return true;
+}
+
+// Advance one code point forward. Returns the new offset clamped to size.
+inline size_t UTF8NextBoundary(std::string_view theString, size_t theOffset)
+{
+	if (theOffset >= theString.size())
+		return theString.size();
+	char32_t aChar = 0;
+	size_t aNext = theOffset;
+	if (UTF8DecodeNext(theString, aNext, aChar))
+		return aNext;
+	return theOffset + 1;
+}
+
+// Step one code point backward to its lead byte. Returns 0 if at the start.
+inline size_t UTF8PrevBoundary(std::string_view theString, size_t theOffset)
+{
+	if (theOffset == 0 || theString.empty())
+		return 0;
+	size_t aPos = std::min(theOffset, theString.size()) - 1;
+	while (aPos > 0 && (static_cast<unsigned char>(theString[aPos]) & 0xC0) == 0x80)
+		aPos--;
+	return aPos;
+}
+
+// Byte offset of the theCodePointIndex-th code point (size if fewer).
+inline size_t UTF8ByteOffsetForCodePoint(std::string_view theString, size_t theCodePointIndex)
+{
+	size_t aOffset = 0;
+	char32_t aChar = 0;
+	for (size_t i = 0; i < theCodePointIndex; i++)
+	{
+		if (!UTF8DecodeNext(theString, aOffset, aChar))
+			break;
+	}
+	return aOffset;
+}
+
+// Number of UTF-8 code points in theString.
+inline size_t UTF8CodePointCount(std::string_view theString)
+{
+	size_t aCount = 0;
+	size_t aOffset = 0;
+	char32_t aChar = 0;
+	while (UTF8DecodeNext(theString, aOffset, aChar))
+		aCount++;
+	return aCount;
+}
+
+// Code point starting at theOffset, 0 on end/error.
+inline char32_t UTF8CodePointAt(std::string_view theString, size_t theOffset)
+{
+	char32_t aChar = 0;
+	UTF8DecodeNext(theString, theOffset, aChar);
+	return aChar;
 }
 
 // Opening punctuation that must not appear at end of a line

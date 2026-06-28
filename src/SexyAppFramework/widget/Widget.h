@@ -89,6 +89,7 @@ public:
 	virtual void			GotFocus();
 	virtual void			LostFocus();	
 	virtual void			KeyChar(char theChar);
+	virtual void			KeyText(std::string_view theText);
 	virtual void			KeyDown(KeyCode theKey);
 	virtual void			KeyUp(KeyCode theKey);	
 	virtual void			MouseEnter();

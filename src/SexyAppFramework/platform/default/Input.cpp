@@ -61,10 +61,15 @@ EM_JS(void, WasmStartSoftKeyboard, (), {
 				state.pendingKeys.push(8);
 			}
 
-			for (var j = prefixLen; j < nextValue.length; ++j) {
-				var charCode = nextValue.charCodeAt(j);
+			for (const ch of nextValue.slice(prefixLen)) {
+				var charCode = ch.codePointAt(0);
 				if (charCode > 0 && charCode <= 0x7f) {
 					state.pendingChars.push(charCode);
+				} else if (charCode > 0x7f) {
+					var bytes = new TextEncoder().encode(ch);
+					for (var k = 0; k < bytes.length; ++k) {
+						state.pendingChars.push(bytes[k]);
+					}
 				}
 			}
 
@@ -546,16 +551,27 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 		int aPendingChar = WasmPopSoftKeyboardChar();
 		if (aPendingChar != 0)
 		{
+			std::string aPendingText;
+			do
+			{
+				aPendingText += static_cast<char>(aPendingChar);
+				aPendingChar = WasmPopSoftKeyboardChar();
+			}
+			while (aPendingChar != 0);
+
 			if ((mRecordingDemoBuffer) && (!mShutdown))
 			{
-				WriteDemoTimingBlock();
-				mDemoBuffer.WriteNumBits(0, 1);
-				mDemoBuffer.WriteNumBits(DEMO_KEY_CHAR, 5);
-				mDemoBuffer.WriteNumBits(0, 1);
-				mDemoBuffer.WriteNumBits(aPendingChar, 8);
+				for (const char aTextChar : aPendingText)
+				{
+					WriteDemoTimingBlock();
+					mDemoBuffer.WriteNumBits(0, 1);
+					mDemoBuffer.WriteNumBits(DEMO_KEY_CHAR, 5);
+					mDemoBuffer.WriteNumBits(0, 1);
+					mDemoBuffer.WriteNumBits(static_cast<unsigned char>(aTextChar), 8);
+				}
 			}
 			mLastUserInputTick = mLastTimerTime;
-			mWidgetManager->KeyChar(static_cast<char>(aPendingChar));
+			mWidgetManager->KeyText(aPendingText);
 			return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 		}
 	}
@@ -740,12 +756,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 
 			case SDL_TEXTINPUT:
 				mLastUserInputTick = mLastTimerTime;
-				for (const char* aTextPtr = event.text.text; *aTextPtr != 0; aTextPtr++) // IMEs may commit a whole string in one event
-				{
-					const unsigned char aChar = static_cast<unsigned char>(*aTextPtr);
-					if (aChar >= 32 && aChar < 128) // control codes arrive via keydown; non-ASCII has no legacy byte representation
-						mWidgetManager->KeyChar(*aTextPtr);
-				}
+				mWidgetManager->KeyText(std::string_view(event.text.text));
 				break;
 		}
 	}
