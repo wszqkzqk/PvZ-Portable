@@ -3581,7 +3581,7 @@ void Board::UpdateToolTip()
 	int aPlantCost = GetCurrentPlantCost(aSeedPacket->mPacketType, aSeedPacket->mImitaterType);
 	if (mApp->mEasyPlantingCheat)
 	{
-		mToolTip->SetWarningText("FREE_PLANTING_CHEAT");
+		mToolTip->SetWarningText("[FREE_PLANTING_CHEAT]");
 	}
 	else if (!aSeedPacket->mActive && (gLawnApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED || gLawnApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST))
 	{
