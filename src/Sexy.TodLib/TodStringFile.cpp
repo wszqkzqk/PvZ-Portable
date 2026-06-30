@@ -236,21 +236,23 @@ bool CharIsSpaceInFormat(char theChar, const TodStringListFormat& theCurrentForm
 int TodWriteString(Graphics* g, const std::string& theString, int theX, int theY, TodStringListFormat& theCurrentFormat, int theWidth, DrawStringJustification theJustification, bool drawString, int theOffset, int theLength)
 {
 	_Font* aFont = *theCurrentFormat.mNewFont;
-	if (drawString)  // 如果需要实际绘制
+	if (drawString)
 	{
-		int aSpareX = theWidth - TodWriteString(g, theString, theX, theY, theCurrentFormat, theWidth, DrawStringJustification::DS_ALIGN_LEFT, false, theOffset, theLength);
-		switch (theJustification)  // 根据对齐方式调整实际绘制的横坐标
+		const auto aMeasureSpareX = [&]() -> int {
+			TodStringListFormat aMeasureFormat = theCurrentFormat;
+			return theWidth - TodWriteString(g, theString, theX, theY, aMeasureFormat, theWidth, DrawStringJustification::DS_ALIGN_LEFT, false, theOffset, theLength);
+		};
+		switch (theJustification)
 		{
 		case DrawStringJustification::DS_ALIGN_RIGHT:
 		case DrawStringJustification::DS_ALIGN_RIGHT_VERTICAL_MIDDLE:
-			theX += aSpareX;
+			theX += aMeasureSpareX();
 			break;
 		case DrawStringJustification::DS_ALIGN_CENTER:
 		case DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE:
-			theX += aSpareX / 2;
+			theX += aMeasureSpareX() / 2;
 			break;
-		case DrawStringJustification::DS_ALIGN_LEFT:
-		case DrawStringJustification::DS_ALIGN_LEFT_VERTICAL_MIDDLE:
+		default:
 			break;
 		}
 	}
