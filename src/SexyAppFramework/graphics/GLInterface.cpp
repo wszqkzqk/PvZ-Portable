@@ -970,6 +970,7 @@ void TextureData::BltTransformed(const SexyMatrix3 &theTrans, const Rect& theSrc
 void TextureData::BltTriangles(const TriVertex theVertices[][3], int theNumTriangles,
                                unsigned int theColor, float tx, float ty, bool clampUv)
 {
+	glUniform1i(gUfUseTexture, 1);
 	if (mMaxTotalU <= 1.0 && mMaxTotalV <= 1.0)
 	{
 		// Single-texture fast path
@@ -986,7 +987,6 @@ void TextureData::BltTriangles(const TriVertex theVertices[][3], int theNumTrian
 		};
 		glActiveTexture(GL_TEXTURE0);
 		GfxBindTexture(piece.mTexture, uvb, clampUv);
-		glUniform1i(gUfUseTexture, 1);
 
 		GfxBegin(GL_TRIANGLES);
 		GfxAddVertices(theVertices, theNumTriangles, theColor, tx, ty, mMaxTotalU, mMaxTotalV);
