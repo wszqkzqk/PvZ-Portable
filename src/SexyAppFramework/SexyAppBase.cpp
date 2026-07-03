@@ -1879,13 +1879,17 @@ void SexyAppBase::Popup(const std::string& theString)
 
 	BeginPopup();
 	if (!mShutdown)
+	{
 		Sexy::PrintF("FATAL ERROR\n===\n%s\n", theString.c_str());
-
-#ifdef __SWITCH__
-	ErrorApplicationConfig c;
-	errorApplicationCreate(&c, "Fatal error", theString.c_str());
-	errorApplicationShow(&c);
+#if defined(__SWITCH__)
+		ErrorApplicationConfig c;
+		errorApplicationCreate(&c, "Fatal error", theString.c_str());
+		errorApplicationShow(&c);
+#elif !defined(__3DS__) && !defined(__EMSCRIPTEN__)
+		if (std::this_thread::get_id() == mPrimaryThreadId)
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "FATAL ERROR", theString.c_str(), NULL);
 #endif
+	}
 
 	EndPopup();
 }
@@ -2997,9 +3001,34 @@ void SexyAppBase::LoadResourceManifest()
 
 void SexyAppBase::ShowResourceError(bool doExit)
 {
-	Popup(mResourceManager->GetErrorText());	
+	const std::string& aError = mResourceManager->GetErrorText();
+#if defined(__IPHONEOS__)
+	// Documents folder is only shown in the Files app / iTunes once it contains a file
+	const std::filesystem::path aResourceDir(GetResourceFolder());
+	const bool aHasGameResources = !aResourceDir.empty() &&
+		std::filesystem::is_regular_file(aResourceDir / "main.pak") &&
+		std::filesystem::is_directory(aResourceDir / "properties");
+	if (!aHasGameResources)
+	{
+		const std::filesystem::path aReadmePath = aResourceDir / "README.txt";
+		if (!aResourceDir.empty() && !std::filesystem::exists(aReadmePath))
+			std::ofstream(aReadmePath, std::ios::out | std::ios::trunc)
+				<< "Place your `main.pak` and `properties/` folder here to play the game.\n";
+	}
+	std::string aMessage =
+		"Please place main.pak and the properties/ folder into the "
+		"PvZ Portable folder using the Files app or Finder/iTunes file sharing.";
+	if (!aError.empty())
+		aMessage += "\n\n(" + aError + ")";
+#else
+	std::string aMessage;
+	if (!aError.empty())
+		aMessage = aError + "\n\n";
+	aMessage += "Please place main.pak and the properties/ folder into:\n" + GetResourceFolder();
+#endif
+	Popup(aMessage);
 	if (doExit)
-		DoExit(0);
+		DoExit(1);
 }
 
 bool SexyAppBase::GetBoolean(std::string_view theId)
