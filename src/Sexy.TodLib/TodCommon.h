@@ -20,6 +20,7 @@
  */
 
 #pragma once
+#include <cstdarg>
 #include <cstdint>
 #include <stdlib.h>
 #include <cmath>

@@ -25,6 +25,7 @@
 #ifndef __SEXYAPPFRAMEWORK_COMMON_H__
 #define __SEXYAPPFRAMEWORK_COMMON_H__
 
+#include <cstdarg>
 #include <string>
 #include <cstring>
 #include <vector>
