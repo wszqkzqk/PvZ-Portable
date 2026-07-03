@@ -408,6 +408,9 @@ SexyAppBase::~SexyAppBase()
 {
 	Shutdown();
 
+	if (mLoadingThread.joinable())
+		mLoadingThread.join();
+
 	DialogMap::iterator aDialogItr = mDialogMap.begin();
 	while (aDialogItr != mDialogMap.end())
 	{
@@ -2279,7 +2282,10 @@ void SexyAppBase::StartLoadingThread()
 		LoadingThreadProcStub(this);
 #else
 		//_beginthread(LoadingThreadProcStub, 0, this);
-		std::thread(LoadingThreadProcStub, this).detach();
+		// std::thread::detach() throws on devkitA64 (pthread_detach unsupported),
+		// destroying the still-joinable temporary -> std::terminate. Keep the
+		// thread and join it in the destructor instead.
+		mLoadingThread = std::thread(LoadingThreadProcStub, this);
 #endif
 	}
 }

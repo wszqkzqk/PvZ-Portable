@@ -188,6 +188,7 @@ public:
 	DialogMap				mDialogMap;
 	DialogList				mDialogList;
 	std::thread::id			mPrimaryThreadId;
+	std::thread				mLoadingThread;
 	bool					mSEHOccured;
 	bool					mShutdown;
 	bool					mExitToTop;
