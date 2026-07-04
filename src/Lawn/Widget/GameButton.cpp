@@ -219,13 +219,14 @@ void GameButton::Resize(int theX, int theY, int theWidth, int theHeight)
 
 bool GameButton::IsMouseOver()
 {
-	return mIsOver && !mDisabled && !mBtnNoDraw;
-}
+	if (mDisabled || mBtnNoDraw)
+		return false;
 
-// GOTY @Patoke: 0x44AF50
-void GameButton::Update()
-{
 	WidgetManager* aManager = mApp->mWidgetManager;
+	bool aFocusMatches = aManager->mFocusWidget && aManager->mFocusWidget == mParentWidget;
+	if (!aFocusMatches && mApp->GetDialogCount() > 0)
+		return false;
+
 	int aMouseX = aManager->mLastMouseX, aMouseY = aManager->mLastMouseY;
 	if (mParentWidget)
 	{
@@ -233,17 +234,20 @@ void GameButton::Update()
 		aMouseX -= anAbsPos.mX;
 		aMouseY -= anAbsPos.mY;
 	}
+	return Rect(mX, mY, mWidth, mHeight).Contains(aMouseX, aMouseY);
+}
 
-	if ((aManager->mFocusWidget && aManager->mFocusWidget == mParentWidget) || mApp->GetDialogCount() <= 0)
-	{
-		mIsOver = Rect(mX, mY, mWidth, mHeight).Contains(aMouseX, aMouseY);
+// GOTY @Patoke: 0x44AF50
+void GameButton::Update()
+{
+	WidgetManager* aManager = mApp->mWidgetManager;
+	mIsOver = IsMouseOver();
+
+	bool aFocusMatches = aManager->mFocusWidget && aManager->mFocusWidget == mParentWidget;
+	if (aFocusMatches || mApp->GetDialogCount() <= 0)
 		mIsDown = aManager->mDownButtons & 5;
-	}
 	else
-	{
-		mIsOver = false;
 		mIsDown = false;
-	}
 
 	if (!mIsDown && !mIsOver && mOverAlpha > 0)
 	{

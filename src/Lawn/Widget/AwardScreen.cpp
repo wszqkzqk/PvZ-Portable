@@ -591,9 +591,6 @@ void AwardScreen::MouseDown(int x, int y, int theClickCount)
 {
 	(void)x;(void)y;
 	if (theClickCount == 1) {
-		mStartButton->Update(); // @Patoke: implemented
-		mMenuButton->Update();
-		mContinueButton->Update();
 		if (mStartButton->IsMouseOver() || mMenuButton->IsMouseOver() || mContinueButton->IsMouseOver())
 			mApp->PlaySample(Sexy::SOUND_TAP);
 	}
