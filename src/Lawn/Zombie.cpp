@@ -6337,7 +6337,7 @@ Zombie* Zombie::FindZombieTarget()
         {
             Rect aZombieRect = aZombie->GetZombieRect();
             int aOverlap = GetRectOverlap(aAttackRect, aZombieRect);
-            if (aOverlap >= 20 || (aOverlap > 0 && aZombie->mIsEating))
+            if (aOverlap >= 20 || (aOverlap >= 0 && aZombie->mIsEating))
             {
                 return aZombie;
             }
@@ -7350,7 +7350,7 @@ void Zombie::StopZombieSound()
 {
     if (mZombieType == ZombieType::ZOMBIE_DANCER || mZombieType == ZombieType::ZOMBIE_BACKUP_DANCER)
     {
-        bool aStopSound = false;
+        bool aStopSound = true;
 
         if (mBoard)
         {
@@ -7360,7 +7360,7 @@ void Zombie::StopZombieSound()
                 if (aZombie->mHasHead && !aZombie->IsDeadOrDying() && aZombie->IsOnBoard() && 
                     (aZombie->mZombieType == ZombieType::ZOMBIE_DANCER || aZombie->mZombieType == ZombieType::ZOMBIE_BACKUP_DANCER))
                 {
-                    aStopSound = true;
+                    aStopSound = false;
                     break;
                 }
             }
