@@ -83,7 +83,7 @@ void Projectile::ProjectileInitialize(int theX, int theY, int theRenderOrder, in
 	mCobTargetRow = 0;
 	mTargetZombieID = ZombieID::ZOMBIEID_NULL;
 	mOnHighGround = mBoard->mGridSquareType[aGridX][theRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND;
-	if (mBoard->StageHasRoof())
+	if (mBoard->StageHasRoof() && theX < 480)
 	{
 		mShadowY -= 12.0f;
 	}
