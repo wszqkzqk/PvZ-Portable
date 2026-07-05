@@ -188,7 +188,6 @@ LawnApp::~LawnApp()
 	if (mBoard)
 	{
 		mBoardResult = BoardResult::BOARDRESULT_QUIT_APP;
-		mBoard->TryToSaveGame();
 		WriteCurrentUserConfig();
 		KillBoard();
 	}
@@ -320,6 +319,16 @@ void LawnApp::Shutdown()
 	if (!mShutdown)
 	{
 		SexyAppBase::Shutdown();
+	}
+}
+
+void LawnApp::ShutdownHook()
+{
+	// Save mid-level game while the music is still alive, before Shutdown() stops it.
+	if (mBoard)
+	{
+		mBoardResult = BoardResult::BOARDRESULT_QUIT_APP;
+		mBoard->TryToSaveGame();
 	}
 }
 
