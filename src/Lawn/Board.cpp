@@ -5067,7 +5067,7 @@ void Board::SpawnZombieWave()
 
 	if (mCurrentWave == mNumWaves - 1 && !mApp->IsContinuousChallenge())
 	{
-		mRiseFromGraveCounter = 210;
+		mRiseFromGraveCounter = 200;
 	}
 	if (IsFlagWave(mCurrentWave))
 	{
