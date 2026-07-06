@@ -39,6 +39,10 @@ extern "C" {
 }
 #endif
 
+#ifdef __SWITCH__
+#include <switch.h>
+#endif
+
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
@@ -92,6 +96,10 @@ static void BuildUtf8ArgsFromWin32(int& argc, char**& argv)
 
 int main(int argc, char** argv)
 {
+#ifdef __SWITCH__
+	consoleDebugInit(debugDevice_SVC);
+#endif
+
 #ifdef __3DS__
 	osSetSpeedupEnable(true);
 #endif

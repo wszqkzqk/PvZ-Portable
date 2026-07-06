@@ -138,40 +138,31 @@ void TodLogString(const char* theMsg)
 	std::ofstream f(Sexy::PathFromU8(gLogFileName), std::ios::app | std::ios::binary);
 	if (!f)
 	{
-		fprintf(stderr, "Failed to open log file '%s'\n", gLogFileName);
+		Sexy::LogError("Failed to open log file '%s'", gLogFileName);
 		return;
 	}
 
 	f.write(theMsg, (std::streamsize)strlen(theMsg));
 	if (!f)
 	{
-		fprintf(stderr, "Failed to write to log file\n");
+		Sexy::LogError("Failed to write to log file");
 	}
 #endif
 }
 
 void TodTrace(const char* theFormat, ...)
 {
-	char aButter[1024];
 	va_list argList;
 	va_start(argList, theFormat);
-	int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
+	std::string aBuffer = Sexy::VFormat(theFormat, argList);
 	va_end(argList);
 
-	if (aButter[aCount - 1] != '\n')
-	{
-		if (aCount + 1 < 1024)
-		{
-			aButter[aCount] = '\n';
-			aButter[aCount + 1] = '\0';
-		}
-		else
-		{
-			aButter[aCount - 1] = '\n';
-		}
-	}
+	if (aBuffer.empty())
+		return;
+	if (aBuffer.back() != '\n')
+		aBuffer.push_back('\n');
 
-	Sexy::PrintF("%s", aButter);
+	Sexy::PrintF("%s", aBuffer.c_str());
 }
 
 void TodHesitationTrace(...)
@@ -180,27 +171,18 @@ void TodHesitationTrace(...)
 
 void TodTraceAndLog(const char* theFormat, ...)
 {
-	char aButter[1024];
 	va_list argList;
 	va_start(argList, theFormat);
-	int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
+	std::string aBuffer = Sexy::VFormat(theFormat, argList);
 	va_end(argList);
 
-	if (aButter[aCount - 1] != '\n')
-	{
-		if (aCount + 1 < 1024)
-		{
-			aButter[aCount] = '\n';
-			aButter[aCount + 1] = '\0';
-		}
-		else
-		{
-			aButter[aCount - 1] = '\n';
-		}
-	}
+	if (aBuffer.empty())
+		return;
+	if (aBuffer.back() != '\n')
+		aBuffer.push_back('\n');
 
-	Sexy::PrintF("%s", aButter);
-	TodLogString(aButter);
+	Sexy::PrintF("%s", aBuffer.c_str());
+	TodLogString(aBuffer.c_str());
 }
 
 void TodTraceWithoutSpamming(const char* theFormat, ...)
@@ -208,31 +190,21 @@ void TodTraceWithoutSpamming(const char* theFormat, ...)
 	static uint64_t gLastTraceTime = 0LL;
 	uint64_t aTime = time(nullptr);
 	if (aTime < gLastTraceTime)
-	{
 		return;
-	}
 
 	gLastTraceTime = aTime;
-	char aButter[1024];
+
 	va_list argList;
 	va_start(argList, theFormat);
-	int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
+	std::string aBuffer = Sexy::VFormat(theFormat, argList);
 	va_end(argList);
 
-	if (aButter[aCount - 1] != '\n')
-	{
-		if (aCount + 1 < 1024)
-		{
-			aButter[aCount] = '\n';
-			aButter[aCount + 1] = '\0';
-		}
-		else
-		{
-			aButter[aCount - 1] = '\n';
-		}
-	}
+	if (aBuffer.empty())
+		return;
+	if (aBuffer.back() != '\n')
+		aBuffer.push_back('\n');
 
-	Sexy::PrintF("%s", aButter);
+	Sexy::PrintF("%s", aBuffer.c_str());
 }
 
 void TodAssertInitForApp()

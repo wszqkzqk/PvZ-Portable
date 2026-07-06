@@ -36,10 +36,6 @@ bool gInAssert = false;
 // Seemingly unused
 //extern bool gSexyDumpLeakedMem = false;
 
-static FILE *gTraceFile = nullptr;
-static int gTraceFileLen = 0;
-static int gTraceFileNum = 1;
-
 using namespace Sexy;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,66 +64,6 @@ public:
 	}
 };
 static SexyAllocMap gSexyAllocMap;
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-void SexyTrace(const char *theStr)
-{
-	if (gTraceFile==nullptr)
-	{
-		gTraceFileNum = (gTraceFileNum+1)%2;
-		char aBuf[50];
-		snprintf(aBuf, sizeof(aBuf), "trace%d.txt", gTraceFileNum+1);
-		gTraceFile = fopen(aBuf,"w");
-		if (gTraceFile==nullptr)
-			return;
-	}
-
-	fprintf(gTraceFile,"%s\n",theStr);
-	fflush(gTraceFile);
-
-	gTraceFileLen += strlen(theStr);
-	if (gTraceFileLen > 100000)
-	{
-		fclose(gTraceFile);
-		gTraceFile = nullptr;
-		gTraceFileLen = 0;
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-void SexyTraceFmt(const char* fmt ...)
-{
-	// Does not append a newline by default, also takes vararg parameters
-
-	va_list argList;
-	va_start(argList, fmt);
-	std::string result = VFormat(fmt, argList);
-	va_end(argList);
-
-	
-	if (gTraceFile==nullptr)
-	{
-		gTraceFileNum = (gTraceFileNum+1)%2;
-		char aBuf[50];
-		snprintf(aBuf, sizeof(aBuf), "trace%d.txt", gTraceFileNum+1);
-		gTraceFile = fopen(aBuf,"w");
-		if (gTraceFile==nullptr)
-			return;
-	}
-
-	fprintf(gTraceFile,"%s",result.c_str());
-	fflush(gTraceFile);
-
-	gTraceFileLen += result.length();
-	if (gTraceFileLen > 100000)
-	{
-		fclose(gTraceFile);
-		gTraceFile = nullptr;
-		gTraceFileLen = 0;
-	}
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -254,16 +190,4 @@ void SexyDumpUnfreed()
 	snprintf(buf, sizeof(buf), "Total Unfreed: %d bytes (%dKB)\n\n", totalSize, totalSize / 1024);
 	Sexy::PrintF("%s", buf);
 	fprintf(f, "%s", buf);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-void OutputDebug(const char* fmt ...)
-{
-	va_list argList;
-    va_start(argList, fmt);
-	std::string result = VFormat(fmt, argList);
-    va_end(argList);
-
-	Sexy::PrintF("%s", result.c_str());
 }

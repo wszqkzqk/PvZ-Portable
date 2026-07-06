@@ -30,16 +30,6 @@
 
 extern bool gInAssert;
 
-#ifdef SEXY_TRACING_ENABLED
-void SexyTrace(const char *theStr);
-#define SEXY_TRACE(theStr) SexyTrace(theStr)
-#else
-#define SEXY_TRACE(theStr)
-#endif
-
-extern void SexyTraceFmt(const char* fmt ...);
-extern void OutputDebug(const char* fmt ...);
-
 #ifdef NDEBUG
 
 #define DBG_ASSERTE(exp)	((void)0)

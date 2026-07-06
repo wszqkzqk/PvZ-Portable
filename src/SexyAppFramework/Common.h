@@ -31,6 +31,7 @@
 #include <map>
 #include <cstdlib>
 #include <cstdint>
+#include <cstdarg>
 #include <ctime>
 #include <filesystem>
 #include <string_view>
@@ -125,6 +126,7 @@ const ulong SEXY_RAND_MAX = 0x7FFFFFFF;
 extern bool			gDebug;
 
 void				PrintF(const char *text, ...);
+void				LogError(const char* theFormat, ...);
 
 int					Rand();
 int					Rand(int range);

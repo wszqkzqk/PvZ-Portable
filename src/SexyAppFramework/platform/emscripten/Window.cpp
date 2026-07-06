@@ -67,7 +67,7 @@ void SexyAppBase::MakeWindow()
 		if (!mContext)
 		{
 			if (mWindow) { SDL_DestroyWindow((SDL_Window*)mWindow); mWindow = nullptr; }
-			fprintf(stderr, "Failed to create WebGL context.\n");
+			Sexy::LogError("Failed to create WebGL context.");
 			return;
 		}
 

@@ -31,14 +31,7 @@
 #include <chrono>
 #include <cstdarg>
 #include <cstdio>
-
-#ifdef __SWITCH__
-#include <switch.h>
-#elif defined(__3DS__)
-#include <3ds.h>
-#elif defined(__ANDROID__) && !defined(__TERMUX__)
-#include <android/log.h>
-#endif
+#include <SDL.h>
 
 #include "misc/PerfTimer.h"
 
@@ -56,22 +49,29 @@ static inline char ToLowerAscii(char c)
 	return (char)std::tolower((unsigned char)c);
 }
 
+static inline void SexyLogV(SDL_LogPriority thePriority, const char* theFormat, va_list theArgs)
+{
+	std::string aBuffer = Sexy::VFormat(theFormat, theArgs);
+	if (aBuffer.empty())
+		return;
+
+	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, thePriority, "%s", aBuffer.c_str());
+}
+
 void Sexy::PrintF(const char *text, ...)
 {
 	va_list args;
 	va_start(args, text);
-	std::string buffer = Sexy::VFormat(text, args);
+	SexyLogV(SDL_LOG_PRIORITY_INFO, text, args);
 	va_end(args);
-	if (buffer.empty())
-		return;
+}
 
-#if defined(__SWITCH__) || defined(__3DS__)
-	svcOutputDebugString(buffer.c_str(), buffer.size());
-#elif defined(__ANDROID__) && !defined(__TERMUX__)
-	__android_log_write(ANDROID_LOG_INFO, "PvZPortable", buffer.c_str());
-#endif
-
-	std::fwrite(buffer.data(), 1, buffer.size(), stdout);
+void Sexy::LogError(const char* theFormat, ...)
+{
+	va_list args;
+	va_start(args, theFormat);
+	SexyLogV(SDL_LOG_PRIORITY_ERROR, theFormat, args);
+	va_end(args);
 }
 
 int Sexy::Rand()

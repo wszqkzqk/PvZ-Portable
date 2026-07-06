@@ -21,6 +21,7 @@
 
 #pragma once
 #include <cstdint>
+#include <cstdarg>
 #include <stdlib.h>
 #include <cmath>
 #include <cfloat>

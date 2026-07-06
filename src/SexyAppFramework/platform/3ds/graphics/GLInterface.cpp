@@ -492,8 +492,7 @@ static void CopyImageToTexture565(C3D_Tex *theTex, MemoryImage *theImage, int of
 
 static void CopyImageToTexturePalette8(C3D_Tex *theTex, MemoryImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
 {
-	Sexy::PrintF("PALETTE %d %d - %d %d - %d %d\n", offx, offy, theWidth, theHeight, theDestPitch, theDestHeight);
-	fflush(stdout);
+	Sexy::PrintF("PALETTE %d %d - %d %d - %d %d", offx, offy, theWidth, theHeight, theDestPitch, theDestHeight);
 
 	uint32_t *aDest = new uint32_t[theDestPitch * theDestHeight];
 
@@ -1567,8 +1566,7 @@ bool GLInterface::RecoverBits(MemoryImage* theImage)
 	if (aData->mBitsChangedCount != theImage->mBitsChangedCount) // bits have changed since texture was created
 		return false;
 
-	Sexy::PrintF("recover\n");
-	fflush(stdout);
+	Sexy::PrintF("recover");
 	for (int aPieceRow = 0; aPieceRow < aData->mTexVecHeight; aPieceRow++)
 	{
 		for (int aPieceCol = 0; aPieceCol < aData->mTexVecWidth; aPieceCol++)

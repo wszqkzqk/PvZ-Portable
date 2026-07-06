@@ -3440,7 +3440,7 @@ void SexyAppBase::Init()
 
 	if (mGLInterface == nullptr)
 	{
-		fprintf(stderr, "FATAL: Failed to create OpenGL interface.\n");
+		Sexy::LogError("FATAL: Failed to create OpenGL interface.");
 		mShutdown = true;
 		return;
 	}
