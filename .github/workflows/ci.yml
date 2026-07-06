@@ -238,7 +238,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4
 
     - name: Install Android NDK
       run: |
@@ -407,7 +407,7 @@ jobs:
         fetch-depth: 0
 
     - name: Setup Emscripten
-      uses: mymindstorm/setup-emsdk@v14
+      uses: emscripten-core/setup-emsdk@v16
 
     - name: Install Build Tools
       run: |
