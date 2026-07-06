@@ -27,6 +27,7 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <fstream>
+#include <cstdio>
 
 using namespace Sexy;
 
@@ -88,12 +89,12 @@ void SexyApp::HandleCmdLineParam(const std::string& theParamName, const std::str
 			"Build Date: " + mBuildDate + "\n" +
 			CLI_LICENSE_SUMMARY;
 
-		Sexy::PrintF("%s\n", aVersionString.c_str());
+		std::printf("%s\n", aVersionString.c_str());
 		DoExit(0);
 	}
 	else if (theParamName == "-license" || theParamName == "-copyright")
 	{
-		Sexy::PrintF("%s", CLI_LICENSE_NOTICE);
+		std::printf("%s", CLI_LICENSE_NOTICE);
 		DoExit(0);
 	}
 	else
