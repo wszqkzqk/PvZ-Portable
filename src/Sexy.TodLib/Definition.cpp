@@ -546,7 +546,7 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
     // theCompressedBuffer 的前两个四字节存有特殊数据，此处检测其长度是否足够 8 字节（即 2 个四字节）
     if (theCompressedBufferSize < 8)
     {
-        TodTrace("Compile def too small", theCompiledFilePath.c_str());
+        TodTrace("Compile def too small: %s", theCompiledFilePath.c_str());
         return nullptr;
     }
     // 将 theCompressedBuffer 的前两个四字节视为一个 CompressedDefinitionHeader
