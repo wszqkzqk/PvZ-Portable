@@ -1272,7 +1272,7 @@ void LawnApp::Init()
 	// @Patoke: horrible debug checks, breaks the whole exe in release mode
 //#ifdef PVZ_DEBUG
 	TodAssertInitForApp();
-	TodLog("session id: %u", mSessionID);
+	TodLogLn("session id: %u", mSessionID);
 //#endif
 
 	if (!mResourceManager->ParseResourcesFile("properties/resources.xml"))

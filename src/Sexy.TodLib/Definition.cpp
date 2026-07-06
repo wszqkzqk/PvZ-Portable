@@ -701,7 +701,7 @@ void DefinitionXmlError(XMLParser* theXmlParser, const char* theFormat, ...)
 
     int aLine = theXmlParser->GetCurrentLineNum();
     std::string aFileName = theXmlParser->GetFileName();
-    TodTraceAndLog("%s(%d): XML Definition Error: %s\n", aFileName.c_str(), aLine, aFormattedMessage.c_str());
+    TodTraceAndLogLn("%s(%d): XML Definition Error: %s", aFileName.c_str(), aLine, aFormattedMessage.c_str());
 }
 
 bool DefinitionReadXMLString(XMLParser* theXmlParser, std::string& theValue)
@@ -1030,9 +1030,9 @@ bool DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack*
 
     
     /*
-    TodTraceAndLog("%s | %d", aStringChars, aFloatTrackVec.size());
+    TodTraceAndLogLn("%s | %d", aStringChars, aFloatTrackVec.size());
     for (auto &i : aFloatTrackVec) {
-        TodTraceAndLog("%f", i.mTime);
+        TodTraceAndLogLn("%f", i.mTime);
     }
     */
 

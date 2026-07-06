@@ -935,7 +935,7 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	int aDuration = std::max(aTimer.GetDuration(), 0.0);
 	if (aDuration > 20)
 	{
-		TodTraceAndLog("LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration, gGetCurrentLevelName().c_str());
+		TodTraceAndLogLn("LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration, gGetCurrentLevelName().c_str());
 	}
 }
 
@@ -1084,7 +1084,7 @@ bool TodResourceManager::TodLoadResources(const std::string& theGroup)
 	int aDuration = std::max(aTimer.GetDuration(), 0.0);
 	if (aDuration > 20)
 	{
-		TodTraceAndLog("LOADED: '%s' %d ms on %s", theGroup.c_str(), aDuration, gGetCurrentLevelName().c_str());
+		TodTraceAndLogLn("LOADED: '%s' %d ms on %s", theGroup.c_str(), aDuration, gGetCurrentLevelName().c_str());
 	}
 
 	return true;

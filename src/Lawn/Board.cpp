@@ -1231,7 +1231,7 @@ bool Board::IsZombieWaveDistributionOk()
 	{
 		if (aZombieType != ZombieType::ZOMBIE_YETI && CanZombieSpawnOnLevel(aZombieType, mLevel) && aZombieTypeCount[aZombieType] == 0)
 		{
-			TodTraceAndLog("Didn't spawn required zombie %s, level %d", GetZombieDefinition(aZombieType).mZombieName, mLevel);
+			TodTraceAndLogLn("Didn't spawn required zombie %s, level %d", GetZombieDefinition(aZombieType).mZombieName, mLevel);
 			return false;
 		}
 	}
@@ -7864,7 +7864,7 @@ void Board::KeyChar(char theChar)
 	if (!mApp->mDebugKeysEnabled)
 		return;
 
-	TodTraceAndLog("Board cheat key '%c'", theChar);
+	TodTraceAndLogLn("Board cheat key '%c'", theChar);
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN)
 	{

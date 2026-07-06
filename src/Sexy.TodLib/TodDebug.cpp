@@ -87,7 +87,7 @@ void TodAssertFailed(const char* theCondition, const char* theFile, int theLine,
 	exit(0);
 }
 
-void TodLog(const char* theFormat, ...)
+void TodLogLn(const char* theFormat, ...)
 {
 	va_list argList;
 	va_start(argList, theFormat);
@@ -95,10 +95,10 @@ void TodLog(const char* theFormat, ...)
 	va_end(argList);
 
 	if (!aBuffer.empty())
-		TodLogString(aBuffer.c_str());
+		TodLogStringLn(aBuffer.c_str());
 }
 
-void TodLogString(const char* theMsg)
+void TodLogStringLn(const char* theMsg)
 {
 #ifdef PVZ_DEBUG
 	std::ofstream f(Sexy::PathFromU8(gLogFileName), std::ios::app | std::ios::binary);
@@ -131,7 +131,7 @@ void TodHesitationTrace(...)
 {
 }
 
-void TodTraceAndLog(const char* theFormat, ...)
+void TodTraceAndLogLn(const char* theFormat, ...)
 {
 	va_list argList;
 	va_start(argList, theFormat);
@@ -142,7 +142,7 @@ void TodTraceAndLog(const char* theFormat, ...)
 		return;
 
 	Sexy::PrintF("%s", aBuffer.c_str());
-	TodLogString(aBuffer.c_str());
+	TodLogStringLn(aBuffer.c_str());
 }
 
 void TodTraceWithoutSpamming(const char* theFormat, ...)
@@ -172,5 +172,5 @@ void TodAssertInitForApp()
 	strcpy(gLogFileName + strlen(gLogFileName), "log.txt");
 	TOD_ASSERT(strlen(gLogFileName) < 512);
 
-	TodLog("Started %" PRIu64 "\n", static_cast<uint64_t>(time(nullptr)));
+	TodLogLn("Started %" PRIu64, static_cast<uint64_t>(time(nullptr)));
 }

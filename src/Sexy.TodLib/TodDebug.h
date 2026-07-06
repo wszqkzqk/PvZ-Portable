@@ -35,11 +35,11 @@ public:
 	inline void		EndBracket() { ; }
 };
 
-void				TodLog(const char* theFormat, ...);
-void				TodLogString(const char* theMsg);
+void				TodLogLn(const char* theFormat, ...);
+void				TodLogStringLn(const char* theMsg);
 void				TodTrace(const char* theFormat, ...);
 void				TodTraceMemory();
-void				TodTraceAndLog(const char* theFormat, ...);
+void				TodTraceAndLogLn(const char* theFormat, ...);
 void				TodTraceWithoutSpamming(const char* theFormat, ...);
 void				TodHesitationTrace(...);
 void				TodAssertFailed(const char* theCondition, const char* theFile, int theLine, const char* theMsg = "", ...);

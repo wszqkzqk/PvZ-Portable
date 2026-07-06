@@ -1168,7 +1168,7 @@ void GameSelector::KeyChar(char theChar)
 
 	if ((gIsPartnerBuild || mApp->mDebugKeysEnabled) && theChar == 'u' && mApp->mPlayerInfo)
 	{
-		TodTraceAndLog("Selector cheat key '%c'", theChar);
+		TodTraceAndLogLn("Selector cheat key '%c'", theChar);
 
 		mApp->mPlayerInfo->mFinishedAdventure = 2;
 		mApp->mPlayerInfo->AddCoins(50000);
@@ -1189,7 +1189,7 @@ void GameSelector::KeyChar(char theChar)
 
 	if (mApp->mDebugKeysEnabled)
 	{
-		TodTraceAndLog("Selector cheat key '%c'", theChar);
+		TodTraceAndLogLn("Selector cheat key '%c'", theChar);
 		if (theChar == 'c' || theChar == 'C')
 		{
 			mMinigamesLocked = false;
