@@ -1075,8 +1075,6 @@ void GameSelector::OrderInManagerChanged()
 	mWidgetManager->PutInfront(mChangeUserButton, this);
 	mWidgetManager->PutInfront(mZombatarButton, this); // @Patoke: z order for new widgets
 	mWidgetManager->PutInfront(mAchievementsButton, this);
-	// Keep the Zombatar editor above the selector chrome so it is never
-	// obscured while sliding in or out (it is parked off-screen otherwise).
 	mWidgetManager->BringToFront(mZombatarWidget);
 	//mWidgetManager->PutInfront(mQuickPlayButton, this);
 }

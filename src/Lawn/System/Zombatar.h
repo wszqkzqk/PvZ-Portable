@@ -2,6 +2,21 @@
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later
+ *
+ * This file is part of PvZ-Portable.
+ *
+ * PvZ-Portable is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PvZ-Portable is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __ZOMBATAR_H__
@@ -39,30 +54,23 @@ enum ZombatarRecordSlot
 
 inline uint32_t ZombatarReadRecordSlot(const unsigned char* theRecord, int theSlot)
 {
-    uint32_t aValue = 0;
-    memcpy(&aValue, theRecord + theSlot * 4, sizeof(aValue));
-    return Sexy::FromLE32(aValue);
+	uint32_t aValue = 0;
+	memcpy(&aValue, theRecord + theSlot * 4, sizeof(aValue));
+	return Sexy::FromLE32(aValue);
 }
 
 inline int ZombatarReadSignedRecordSlot(const unsigned char* theRecord, int theSlot)
 {
-    uint32_t aValue = ZombatarReadRecordSlot(theRecord, theSlot);
-    if (aValue == 0xFFFFFFFFU || aValue > static_cast<uint32_t>(INT32_MAX))
-        return -1;
-    return static_cast<int>(aValue);
+	uint32_t aValue = ZombatarReadRecordSlot(theRecord, theSlot);
+	if (aValue > static_cast<uint32_t>(INT32_MAX))
+		return -1;
+	return static_cast<int>(aValue);
 }
 
 inline void ZombatarWriteRecordSlot(unsigned char* theRecord, int theSlot, int theValue)
 {
-    uint32_t aValue = Sexy::ToLE32(static_cast<uint32_t>(theValue));
-    memcpy(theRecord + theSlot * 4, &aValue, sizeof(aValue));
-}
-
-constexpr int ZombatarClampColor(int theColor)
-{
-	if (theColor < 0)
-		return -1;
-	return std::min(theColor, 47);
+	uint32_t aValue = Sexy::ToLE32(static_cast<uint32_t>(theValue));
+	memcpy(theRecord + theSlot * 4, &aValue, sizeof(aValue));
 }
 
 constexpr Sexy::Color gZombatarColors[] =

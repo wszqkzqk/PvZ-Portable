@@ -131,7 +131,7 @@ void ZombatarTOS::Draw(Graphics* g)
 	if (mTextHeight <= 0)
 		mTextHeight = TodDrawStringWrappedHelper(g, aBody, Rect(0, 0, TOS_TEXT_W, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
 
-	int aMaxScroll = mTextHeight - TOS_TEXT_Y;
+	int aMaxScroll = std::max(0, mTextHeight - TOS_TEXT_Y);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 
 	g->PushState();
