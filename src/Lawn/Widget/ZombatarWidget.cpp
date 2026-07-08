@@ -113,6 +113,9 @@ constexpr int ZOMBATAR_CONFIRM_TEXT_X = 60;
 constexpr int ZOMBATAR_CONFIRM_TEXT_Y = 225;
 constexpr int ZOMBATAR_CONFIRM_TEXT_W = 500;
 constexpr int ZOMBATAR_CONFIRM_TEXT_H = 100;
+constexpr int ZOMBATAR_CONFIRM_ACCEPT_LABEL_X = 195;
+constexpr int ZOMBATAR_CONFIRM_BACK_LABEL_X = 435;
+constexpr int ZOMBATAR_CONFIRM_LABEL_Y = 335;
 
 constexpr int ClampRange(int theValue, int theMin, int theMax)
 {
@@ -916,6 +919,8 @@ void ZombatarWidget::Draw(Graphics* g)
 	DrawMain(g);
 	if (mState == ZOMBATAR_STATE_LIST)
 		DrawList(g);
+	else if (mState == ZOMBATAR_STATE_CONFIRM)
+		DrawConfirm(g);
 	else
 		DrawCreate(g);
 
@@ -1056,17 +1061,27 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 		std::string aPage = Sexy::StrFormat("Page %d / %d", mSubPage + 1, mMaxSubPages + 1);
 		g->DrawString(aPage, 321, 441);
 	}
+}
 
-	if (mState == ZOMBATAR_STATE_CONFIRM)
-	{
-		g->SetFont(FONT_DWARVENTODCRAFT18);
-		g->SetColor(Color(254, 227, 0));
-		std::string aHeader = TodStringTranslate("[ZOMBATAR_FINISHED_WARNING_HEADER]");
-		g->DrawString(aHeader, ZOMBATAR_CONFIRM_HEADER_X - FONT_DWARVENTODCRAFT18->StringWidth(aHeader) / 2, ZOMBATAR_CONFIRM_HEADER_Y);
-		g->SetFont(FONT_DWARVENTODCRAFT12);
-		g->SetColor(Color(255, 255, 255));
-		g->WriteWordWrapped(Rect(ZOMBATAR_CONFIRM_TEXT_X, ZOMBATAR_CONFIRM_TEXT_Y, ZOMBATAR_CONFIRM_TEXT_W, ZOMBATAR_CONFIRM_TEXT_H), TodStringTranslate("[ZOMBATAR_FINISHED_WARNING_TEXT]"), 18);
-	}
+void ZombatarWidget::DrawConfirm(Graphics* g)
+{
+	g->DrawImage(IMAGE_ZOMBATAR_WIDGET_BG, ZOMBATAR_PANEL_X, ZOMBATAR_PANEL_Y);
+
+	g->SetFont(FONT_HOUSEOFTERROR28);
+	g->SetColor(Color(254, 227, 0));
+	std::string aHeader = TodStringTranslate("[ZOMBATAR_FINISHED_WARNING_HEADER]");
+	g->DrawString(aHeader, ZOMBATAR_CONFIRM_HEADER_X - FONT_HOUSEOFTERROR28->StringWidth(aHeader) / 2, ZOMBATAR_CONFIRM_HEADER_Y);
+
+	g->SetFont(FONT_CONTINUUMBOLD14);
+	g->SetColor(Color(255, 255, 255));
+	g->WriteWordWrapped(Rect(ZOMBATAR_CONFIRM_TEXT_X, ZOMBATAR_CONFIRM_TEXT_Y, ZOMBATAR_CONFIRM_TEXT_W, ZOMBATAR_CONFIRM_TEXT_H), TodStringTranslate("[ZOMBATAR_FINISHED_WARNING_TEXT]"), 14, DS_ALIGN_CENTER);
+
+	g->SetFont(FONT_BRIANNETOD12);
+	g->SetColor(Color(255, 255, 255));
+	std::string aAccept = TodStringTranslate("[ZOMBATAR_FINISHED_BUTTON_TEXT]");
+	g->DrawString(aAccept, ZOMBATAR_CONFIRM_ACCEPT_LABEL_X - FONT_BRIANNETOD12->StringWidth(aAccept) / 2, ZOMBATAR_CONFIRM_LABEL_Y);
+	std::string aBack = TodStringTranslate("[ZOMBATAR_BACK_BUTTON_TEXT]");
+	g->DrawString(aBack, ZOMBATAR_CONFIRM_BACK_LABEL_X - FONT_BRIANNETOD12->StringWidth(aBack) / 2, ZOMBATAR_CONFIRM_LABEL_Y);
 }
 
 void ZombatarWidget::ChangeState(ZombatarWidgetState theState)
@@ -1109,20 +1124,13 @@ void ZombatarWidget::UpdateButtonState()
 	mNextPageButton->mDisabled = mSubPage >= mMaxSubPages;
 	mFinishedButton->mDisabled = aCreate && !CanSaveNewHead();
 
+	mFinishedButton->mButtonImage = IMAGE_ZOMBATAR_FINISHED_BUTTON;
+	mFinishedButton->mOverImage = IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT;
+	mFinishedButton->mDownImage = nullptr;
 	if (aConfirm)
-	{
-		mFinishedButton->mButtonImage = IMAGE_ZOMBATAR_ACCEPT_BUTTON;
-		mFinishedButton->mOverImage = IMAGE_ZOMBATAR_ACCEPT_BUTTON_HIGHLIGHT;
-		mFinishedButton->mDownImage = nullptr;
-		mFinishedButton->Resize(ZOMBATAR_ACCEPT_X, ZOMBATAR_CONFIRM_BTN_Y, 98, 26);
-	}
+		mFinishedButton->Resize(ZOMBATAR_ACCEPT_X, ZOMBATAR_CONFIRM_BTN_Y, 103, 26);
 	else
-	{
-		mFinishedButton->mButtonImage = IMAGE_ZOMBATAR_FINISHED_BUTTON;
-		mFinishedButton->mOverImage = IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT;
-		mFinishedButton->mDownImage = nullptr;
 		mFinishedButton->Resize(ZOMBATAR_FINISHED_X, ZOMBATAR_FINISHED_Y, 103, 26);
-	}
 }
 
 void ZombatarWidget::MouseMove(int x, int y)

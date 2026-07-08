@@ -130,6 +130,7 @@ private:
 	void						DrawMain(Graphics* g);
 	void						DrawList(Graphics* g);
 	void						DrawCreate(Graphics* g);
+	void						DrawConfirm(Graphics* g);
 	void						DrawAvatar(Graphics* g, int theX, int theY, const unsigned char* theRecord);
 	void						DrawDraftAvatar(Graphics* g, int theX, int theY);
 	void						DrawImageColorized(Graphics* g, Image* theImage, int theX, int theY, int theColorIndex);
