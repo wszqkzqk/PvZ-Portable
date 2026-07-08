@@ -493,6 +493,7 @@ void ZombatarWidget::DecodeRecord(const unsigned char* theRecord, int* thePart, 
 void ZombatarWidget::EncodeRecord(unsigned char* theRecord) const
 {
 	memset(theRecord, 0, ZOMBATAR_RECORD_SIZE);
+	ZombatarWriteRecordSlot(theRecord, ZOMBATAR_SLOT_SKIN_PART, ZOMBATAR_COLOR_NONE);
 	ZombatarWriteRecordSlot(theRecord, ZOMBATAR_SLOT_SKIN_COLOR, ClampRange(mColor[ZOMBATAR_PAGE_SKIN], 0, 11));
 
 	for (int i = ZOMBATAR_PAGE_HAIR; i < NUM_ZOMBATAR_PAGES; i++)
