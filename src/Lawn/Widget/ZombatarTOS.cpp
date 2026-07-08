@@ -57,12 +57,12 @@ constexpr int TOS_TEXT_W = 435;
 constexpr int TOS_CLIP_H = 160;
 constexpr int TOS_ARROW_X = 420;
 constexpr int TOS_ARROW_Y = 290;
+constexpr int TOS_CHECK_W = 45;
+constexpr int TOS_CHECK_H = 45;
 
 ZombatarTOS::ZombatarTOS(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_ZOMBATAR_TOS, true, "[ZOMBATAR_TOS_HEADER]", "", "", Dialog::BUTTONS_NONE)
 {
-	mApp = theApp;
 	mTextHeight = 0;
-	mClipHeight = TOS_CLIP_H;
 	mFlashArrow = false;
 	mArrowAlpha = 0;
 	mArrowDir = 3;
@@ -120,23 +120,24 @@ void ZombatarTOS::Resize(int theX, int theY, int theWidth, int theHeight)
 	mTOSSlider->Resize(TOS_SLIDER_X, TOS_SLIDER_Y, TOS_SLIDER_W, TOS_SLIDER_H);
 	mBackButton->Resize(TOS_BACK_X, TOS_BUTTON_Y, aBackWidth, aBackHeight);
 	mAcceptButton->Resize(TOS_ACCEPT_X, TOS_BUTTON_Y, aAcceptWidth, aAcceptHeight);
-	mTOSCheckbox->Resize(TOS_CHECK_X, TOS_CHECK_Y, 45, 45);
+	mTOSCheckbox->Resize(TOS_CHECK_X, TOS_CHECK_Y, TOS_CHECK_W, TOS_CHECK_H);
 }
 
 void ZombatarTOS::Draw(Graphics* g)
 {
 	LawnDialog::Draw(g);
 
-	std::string aBody = TodStringTranslate("[ZOMBATAR_TOS]");
+	if (mBody.empty())
+		mBody = TodStringTranslate("[ZOMBATAR_TOS]");
 	if (mTextHeight <= 0)
-		mTextHeight = TodDrawStringWrappedHelper(g, aBody, Rect(0, 0, TOS_TEXT_W, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
+		mTextHeight = TodDrawStringWrappedHelper(g, mBody, Rect(0, 0, TOS_TEXT_W, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
 
 	int aMaxScroll = std::max(0, mTextHeight - TOS_TEXT_Y);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 
 	g->PushState();
 	g->ClipRect(Rect(TOS_TEXT_X, TOS_TEXT_Y, TOS_TEXT_W, TOS_CLIP_H));
-	TodDrawStringWrapped(g, aBody, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_W, 1200), FONT_PICO129, Color(255, 255, 255), DrawStringJustification::DS_ALIGN_LEFT);
+	TodDrawStringWrapped(g, mBody, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_W, mTextHeight), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT);
 	g->PopState();
 
 	if (mFlashArrow && IMAGE_ZOMBATAR_TOS_ARROW)

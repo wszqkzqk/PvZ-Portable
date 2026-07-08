@@ -73,7 +73,7 @@ inline void ZombatarWriteRecordSlot(unsigned char* theRecord, int theSlot, int t
 	memcpy(theRecord + theSlot * 4, &aValue, sizeof(aValue));
 }
 
-constexpr Sexy::Color gZombatarColors[] =
+inline constexpr Sexy::Color gZombatarColors[] =
 {
 	Sexy::Color(134, 147, 122), Sexy::Color(79, 135, 94), Sexy::Color(127, 135, 94), Sexy::Color(120, 130, 50),
 	Sexy::Color(156, 163, 105), Sexy::Color(96, 151, 11), Sexy::Color(147, 184, 77), Sexy::Color(82, 143, 54),
@@ -93,24 +93,24 @@ constexpr Sexy::Color ZombatarGetColor(int theIndex)
 {
 	if (theIndex < 0)
 		return Sexy::Color(255, 255, 255);
-	return gZombatarColors[std::min(theIndex, 47)];
+	return gZombatarColors[std::min(theIndex, static_cast<int>(sizeof(gZombatarColors) / sizeof(gZombatarColors[0])) - 1)];
 }
 
 constexpr int ZombatarRemapAccessoryForRuntime(int theIndex)
 {
-    switch (theIndex)
-    {
-    case 5: return 14;
-    case 6: return 5;
-    case 7: return 6;
-    case 8: return 12;
-    case 9: return 7;
-    case 10: return 9;
-    case 11: return 10;
-    case 12: return 11;
-    case 14: return 8;
-    default: return theIndex;
-    }
+	switch (theIndex)
+	{
+	case 5: return 14;
+	case 6: return 5;
+	case 7: return 6;
+	case 8: return 12;
+	case 9: return 7;
+	case 10: return 9;
+	case 11: return 10;
+	case 12: return 11;
+	case 14: return 8;
+	default: return theIndex;
+	}
 }
 
 #endif

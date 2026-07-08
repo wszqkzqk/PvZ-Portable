@@ -52,10 +52,10 @@ public:
 	NewLawnButton*				mAcceptButton;
 	Sexy::Checkbox*				mTOSCheckbox;
 	int							mTextHeight;
-	int							mClipHeight;
 	bool						mFlashArrow;
 	int							mArrowAlpha;
 	int							mArrowDir;
+	std::string					mBody;
 
 public:
 	ZombatarTOS(LawnApp* theApp);

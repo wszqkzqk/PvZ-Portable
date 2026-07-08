@@ -3380,16 +3380,17 @@ void Zombie::SetupZombatarFlagReanim()
         int mMaxCount;
         const char* mPrefix;
         bool mRemapAccessory;
+        bool mCompactRange;
     };
 
-    static const RuntimePart aRuntimeParts[] =
+    static constexpr RuntimePart aRuntimeParts[] =
     {
-        { ZOMBATAR_SLOT_HATS, ZOMBATAR_SLOT_HATS_COLOR, 14, "hats_", false },
-        { ZOMBATAR_SLOT_HAIR, ZOMBATAR_SLOT_HAIR_COLOR, 16, "hair_", false },
-        { ZOMBATAR_SLOT_TIDBITS, ZOMBATAR_SLOT_TIDBITS_COLOR, 14, "tidBits_", false },
-        { ZOMBATAR_SLOT_EYEWEAR, ZOMBATAR_SLOT_EYEWEAR_COLOR, 16, "eyeWear_", false },
-        { ZOMBATAR_SLOT_ACCESSORY, ZOMBATAR_SLOT_ACCESSORY_COLOR, 15, "accessories_", true },
-        { ZOMBATAR_SLOT_FACIAL_HAIR, ZOMBATAR_SLOT_FACIAL_HAIR_COLOR, 24, "facialHair_", false }
+        { ZOMBATAR_SLOT_HATS, ZOMBATAR_SLOT_HATS_COLOR, 14, "hats_", false, false },
+        { ZOMBATAR_SLOT_HAIR, ZOMBATAR_SLOT_HAIR_COLOR, 16, "hair_", false, false },
+        { ZOMBATAR_SLOT_TIDBITS, ZOMBATAR_SLOT_TIDBITS_COLOR, 14, "tidBits_", false, false },
+        { ZOMBATAR_SLOT_EYEWEAR, ZOMBATAR_SLOT_EYEWEAR_COLOR, 16, "eyeWear_", false, false },
+        { ZOMBATAR_SLOT_ACCESSORY, ZOMBATAR_SLOT_ACCESSORY_COLOR, 15, "accessories_", true, false },
+        { ZOMBATAR_SLOT_FACIAL_HAIR, ZOMBATAR_SLOT_FACIAL_HAIR_COLOR, 24, "facialHair_", false, true }
     };
 
     for (const RuntimePart& aPart : aRuntimeParts)
@@ -3398,7 +3399,7 @@ void Zombie::SetupZombatarFlagReanim()
         if (aPartIndex < 0 || aPartIndex >= aPart.mMaxCount)
             continue;
         int aTrackIndex = aPartIndex;
-        if (aTrackIndex > 16)
+        if (aPart.mCompactRange && aTrackIndex > 16)
             aTrackIndex -= aTrackIndex / 17;
         if (aPart.mRemapAccessory)
             aTrackIndex = ZombatarRemapAccessoryForRuntime(aTrackIndex);

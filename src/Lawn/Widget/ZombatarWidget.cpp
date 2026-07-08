@@ -41,6 +41,8 @@
 #include <vector>
 
 constexpr int ZOMBATAR_COLOR_NONE = -1;
+constexpr int ZOMBATAR_SKIN_COLOR_COUNT = 12;
+constexpr int ZOMBATAR_PART_COLOR_COUNT = 18;
 constexpr int ZOMBATAR_PART_COLOR_BASE = 12;
 constexpr int ZOMBATAR_PART_COLOR_BASE_2 = 30;
 constexpr int ZOMBATAR_PART_COLOR_NONE_1 = 29;
@@ -191,7 +193,7 @@ struct ZombatarPartLayout
 	int mOffsetY;
 	int mColorOffsetX;
 	int mColorOffsetY;
-	int mZ;
+	int mDrawOrder;
 };
 
 constexpr ZombatarPartLayout gClothesLayout[12] =
@@ -271,6 +273,32 @@ const ZombatarPartLayout* GetPartLayout(ZombatarPage thePage, int theIndex)
 	default: return nullptr;
 	}
 }
+
+struct ZombatarDrawPart
+{
+	ZombatarPage mPage;
+	int mIndex;
+	int mColor;
+	int mDrawOrder;
+
+	bool operator<(const ZombatarDrawPart& theOther) const { return mDrawOrder < theOther.mDrawOrder; }
+};
+
+inline void GetPartColorRange(int theMode, int& theBase, int& theNone)
+{
+	if (theMode == ZOMBATAR_COLOR_MODE_1)
+	{
+		theBase = ZOMBATAR_PART_COLOR_BASE;
+		theNone = ZOMBATAR_PART_COLOR_NONE_1;
+	}
+	else
+	{
+		theBase = ZOMBATAR_PART_COLOR_BASE_2;
+		theNone = ZOMBATAR_PART_COLOR_NONE_2;
+	}
+}
+
+constexpr int ZOMBATAR_ITEMS_PER_PAGE[NUM_ZOMBATAR_PAGES] = { 0, 16, 24, 14, 16, 12, 15, 14, 5 };
 
 ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 {
@@ -528,7 +556,6 @@ bool ZombatarWidget::SaveDraft()
 	aPlayerInfo->mZombatarData.resize(aOffset + ZOMBATAR_RECORD_SIZE);
 	EncodeRecord(aPlayerInfo->mZombatarData.data() + aOffset);
 	aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
-	aPlayerInfo->mZombatarCreatedBefore = 1;
 	mCurrentIndex = static_cast<int>(aOffset / ZOMBATAR_RECORD_SIZE);
 	aPlayerInfo->mZombatarIndex = mCurrentIndex;
 
@@ -541,6 +568,7 @@ bool ZombatarWidget::SaveDraft()
 		return false;
 	}
 
+	aPlayerInfo->mZombatarCreatedBefore = 1;
 	aPlayerInfo->SaveDetails();
 	ResetDraft();
 	mPage = ZOMBATAR_PAGE_SKIN;
@@ -630,19 +658,7 @@ Rect ZombatarWidget::GetColorRect(int theIndex) const
 
 int ZombatarWidget::GetTotalItemsForPage(ZombatarPage thePage) const
 {
-	switch (thePage)
-	{
-	case ZOMBATAR_PAGE_SKIN: return 0;
-	case ZOMBATAR_PAGE_HAIR: return 16;
-	case ZOMBATAR_PAGE_FACIAL_HAIR: return 24;
-	case ZOMBATAR_PAGE_TIDBITS: return 14;
-	case ZOMBATAR_PAGE_EYEWEAR: return 16;
-	case ZOMBATAR_PAGE_CLOTHES: return 12;
-	case ZOMBATAR_PAGE_ACCESSORY: return 15;
-	case ZOMBATAR_PAGE_HATS: return 14;
-	case ZOMBATAR_PAGE_BACKDROPS: return 5;
-	default: return 0;
-	}
+	return ZOMBATAR_ITEMS_PER_PAGE[ClampRange(static_cast<int>(thePage), 0, NUM_ZOMBATAR_PAGES - 1)];
 }
 
 int ZombatarWidget::GetItemCountForPage() const
@@ -843,13 +859,25 @@ void ZombatarWidget::DrawAvatar(Graphics* g, int theX, int theY, const unsigned 
 	DrawImageColorized(g, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN, aBlankX, aBlankY, aColor[ZOMBATAR_PAGE_SKIN]);
 	g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK, aBlankX, aBlankY);
 
-	DrawPartImage(g, ZOMBATAR_PAGE_CLOTHES, aPart[ZOMBATAR_PAGE_CLOTHES], theX, theY, aColor[ZOMBATAR_PAGE_CLOTHES]);
-	DrawPartImage(g, ZOMBATAR_PAGE_TIDBITS, aPart[ZOMBATAR_PAGE_TIDBITS], theX, theY, aColor[ZOMBATAR_PAGE_TIDBITS]);
-	DrawPartImage(g, ZOMBATAR_PAGE_ACCESSORY, aPart[ZOMBATAR_PAGE_ACCESSORY], theX, theY, aColor[ZOMBATAR_PAGE_ACCESSORY]);
-	DrawPartImage(g, ZOMBATAR_PAGE_FACIAL_HAIR, aPart[ZOMBATAR_PAGE_FACIAL_HAIR], theX, theY, aColor[ZOMBATAR_PAGE_FACIAL_HAIR]);
-	DrawPartImage(g, ZOMBATAR_PAGE_HAIR, aPart[ZOMBATAR_PAGE_HAIR], theX, theY, aColor[ZOMBATAR_PAGE_HAIR]);
-	DrawPartImage(g, ZOMBATAR_PAGE_EYEWEAR, aPart[ZOMBATAR_PAGE_EYEWEAR], theX, theY, aColor[ZOMBATAR_PAGE_EYEWEAR]);
-	DrawPartImage(g, ZOMBATAR_PAGE_HATS, aPart[ZOMBATAR_PAGE_HATS], theX, theY, aColor[ZOMBATAR_PAGE_HATS]);
+	ZombatarDrawPart aParts[7];
+	int aNumParts = 0;
+	for (int i = ZOMBATAR_PAGE_HAIR; i < ZOMBATAR_PAGE_BACKDROPS; i++)
+	{
+		ZombatarPage aPage = static_cast<ZombatarPage>(i);
+		int aIndex = aPart[i];
+		if (aIndex >= 0)
+		{
+			const ZombatarPartLayout* aLayout = GetPartLayout(aPage, aIndex);
+			aParts[aNumParts].mPage = aPage;
+			aParts[aNumParts].mIndex = aIndex;
+			aParts[aNumParts].mColor = aColor[i];
+			aParts[aNumParts].mDrawOrder = aLayout ? aLayout->mDrawOrder : 0;
+			aNumParts++;
+		}
+	}
+	std::stable_sort(aParts, aParts + aNumParts);
+	for (int i = 0; i < aNumParts; i++)
+		DrawPartImage(g, aParts[i].mPage, aParts[i].mIndex, theX, theY, aParts[i].mColor);
 }
 
 void ZombatarWidget::DrawDraftAvatar(Graphics* g, int theX, int theY)
@@ -1008,7 +1036,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 	if (mPage == ZOMBATAR_PAGE_SKIN)
 	{
 		g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
-		for (int i = 0; i < 12; i++)
+		for (int i = 0; i < ZOMBATAR_SKIN_COLOR_COUNT; i++)
 		{
 			Rect aRect = GetColorRect(i);
 			bool aSelected = mColor[ZOMBATAR_PAGE_SKIN] == i;
@@ -1019,31 +1047,23 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 			g->SetColor(Color::White);
 		}
 	}
-	else if (mPart[mPage] < 0)
-	{
-		g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
-		g->SetFont(FONT_DWARVENTODCRAFT12);
-		g->SetColor(Color(255, 255, 255));
-		std::string aText = TodStringTranslate("[ZOMBATAR_COLOR_ITEM_NOT_CHOSEN]");
-		g->DrawString(aText, ZOMBATAR_COLOR_X + 130 - FONT_DWARVENTODCRAFT12->StringWidth(aText) / 2, ZOMBATAR_COLOR_Y + 40);
-	}
 	else
 	{
-		int aMode = GetPartColorMode(mPage, mPart[mPage]);
+		g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
+		int aMode = mPart[mPage] < 0 ? ZOMBATAR_COLOR_MODE_NONE : GetPartColorMode(mPage, mPart[mPage]);
 		if (aMode == ZOMBATAR_COLOR_MODE_NONE)
 		{
-			g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
+			const char* aKey = mPart[mPage] < 0 ? "[ZOMBATAR_COLOR_ITEM_NOT_CHOSEN]" : "[ZOMBATAR_COLOR_NOT_APPLICABLE]";
 			g->SetFont(FONT_DWARVENTODCRAFT12);
-			g->SetColor(Color(255, 255, 255));
-			std::string aText = TodStringTranslate("[ZOMBATAR_COLOR_NOT_APPLICABLE]");
+			g->SetColor(Color::White);
+			std::string aText = TodStringTranslate(aKey);
 			g->DrawString(aText, ZOMBATAR_COLOR_X + 130 - FONT_DWARVENTODCRAFT12->StringWidth(aText) / 2, ZOMBATAR_COLOR_Y + 40);
 		}
 		else
 		{
-			g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
-			int aBase = aMode == ZOMBATAR_COLOR_MODE_1 ? ZOMBATAR_PART_COLOR_BASE : ZOMBATAR_PART_COLOR_BASE_2;
-			int aNoneValue = aMode == ZOMBATAR_COLOR_MODE_1 ? ZOMBATAR_PART_COLOR_NONE_1 : ZOMBATAR_PART_COLOR_NONE_2;
-			for (int i = 0; i < 18; i++)
+			int aBase, aNoneValue;
+			GetPartColorRange(aMode, aBase, aNoneValue);
+			for (int i = 0; i < ZOMBATAR_PART_COLOR_COUNT; i++)
 			{
 				Rect aRect = GetColorRect(i);
 				bool aNone = i == ZOMBATAR_PART_COLOR_NONE_SWATCH;
@@ -1101,8 +1121,6 @@ void ZombatarWidget::ChangePage(ZombatarPage thePage)
 {
 	mPage = thePage;
 	mSubPage = 0;
-	int aTotal = GetTotalItemsForPage(thePage);
-	mMaxSubPages = (aTotal > ZOMBATAR_GRID_PAGE) ? (aTotal - 1) / ZOMBATAR_GRID_PAGE : 0;
 	UpdateButtonState();
 }
 
@@ -1112,6 +1130,10 @@ void ZombatarWidget::UpdateButtonState()
 	bool aList = mState == ZOMBATAR_STATE_LIST;
 	bool aCreate = mState == ZOMBATAR_STATE_CREATE;
 	bool aConfirm = mState == ZOMBATAR_STATE_CONFIRM;
+
+	int aTotal = GetTotalItemsForPage(mPage);
+	mMaxSubPages = (aTotal > ZOMBATAR_GRID_PAGE) ? (aTotal - 1) / ZOMBATAR_GRID_PAGE : 0;
+	mSubPage = ClampRange(mSubPage, 0, mMaxSubPages);
 	bool aPaged = aCreate && mMaxSubPages > 0;
 
 	mBackButton->SetVisible(aCreate || aList);
@@ -1131,9 +1153,6 @@ void ZombatarWidget::UpdateButtonState()
 	mNextPageButton->mDisabled = mSubPage >= mMaxSubPages;
 	mFinishedButton->mDisabled = aCreate && !CanSaveNewHead();
 
-	mFinishedButton->mButtonImage = IMAGE_ZOMBATAR_FINISHED_BUTTON;
-	mFinishedButton->mOverImage = IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT;
-	mFinishedButton->mDownImage = nullptr;
 	if (aConfirm)
 		mFinishedButton->Resize(ZOMBATAR_ACCEPT_X, ZOMBATAR_CONFIRM_BTN_Y, 103, 26);
 	else
@@ -1170,7 +1189,7 @@ void ZombatarWidget::MouseMove(int x, int y)
 
 	if (PageAllowsColors())
 	{
-		int aColorCount = mPage == ZOMBATAR_PAGE_SKIN ? 12 : 18;
+		int aColorCount = mPage == ZOMBATAR_PAGE_SKIN ? ZOMBATAR_SKIN_COLOR_COUNT : ZOMBATAR_PART_COLOR_COUNT;
 		for (int i = 0; i < aColorCount; i++)
 		{
 			if (GetColorRect(i).Contains(x, y))
@@ -1213,7 +1232,7 @@ void ZombatarWidget::HandleColorClick(int x, int y)
 
 	if (mPage == ZOMBATAR_PAGE_SKIN)
 	{
-		for (int i = 0; i < 12; i++)
+		for (int i = 0; i < ZOMBATAR_SKIN_COLOR_COUNT; i++)
 		{
 			if (GetColorRect(i).Contains(x, y))
 			{
@@ -1225,9 +1244,9 @@ void ZombatarWidget::HandleColorClick(int x, int y)
 	}
 
 	int aMode = GetPartColorMode(mPage, mPart[mPage]);
-	int aBase = aMode == ZOMBATAR_COLOR_MODE_1 ? ZOMBATAR_PART_COLOR_BASE : ZOMBATAR_PART_COLOR_BASE_2;
-	int aNoneValue = aMode == ZOMBATAR_COLOR_MODE_1 ? ZOMBATAR_PART_COLOR_NONE_1 : ZOMBATAR_PART_COLOR_NONE_2;
-	for (int i = 0; i < 18; i++)
+	int aBase, aNoneValue;
+	GetPartColorRange(aMode, aBase, aNoneValue);
+	for (int i = 0; i < ZOMBATAR_PART_COLOR_COUNT; i++)
 	{
 		if (GetColorRect(i).Contains(x, y))
 		{

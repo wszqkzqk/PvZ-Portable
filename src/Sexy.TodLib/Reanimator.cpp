@@ -940,8 +940,7 @@ void Reanimation::DrawRenderGroup(Graphics* g, int theRenderGroup)
 
 void Reanimation::Draw(Graphics* g)
 {
-	for (int aGroup = 0; aGroup <= 17; aGroup++)
-		DrawRenderGroup(g, aGroup);
+	DrawRenderGroup(g, RENDER_GROUP_NORMAL);
 }
 
 // GOTY @Patoke: 0x477640
