@@ -182,6 +182,95 @@ constexpr int GetPartColorMode(ZombatarPage thePage, int thePartIndex)
 	}
 }
 
+struct ZombatarPartLayout
+{
+	int mOffsetX;
+	int mOffsetY;
+	int mColorOffsetX;
+	int mColorOffsetY;
+	int mZ;
+};
+
+constexpr ZombatarPartLayout gClothesLayout[12] =
+{
+	{88, 110, 0, 0, 0}, {75, 100, 0, 0, 0}, {85, 112, 0, 0, 0}, {76, 110, 0, 0, 0},
+	{89, 115, 0, 0, 0}, {93, 110, 0, 0, 0}, {78, 105, 0, 0, 0}, {88, 110, 0, 0, 0},
+	{88, 102, 0, 0, 0}, {85, 110, 0, 0, 0}, {85, 110, 0, 0, 0}, {79, 112, 0, 0, 0}
+};
+
+constexpr ZombatarPartLayout gTidbitsLayout[14] =
+{
+	{28, 63, 18, 48, 2}, {28, 63, 0, 0, 2}, {46, 111, 0, 0, 2}, {31, 62, 0, 0, 4},
+	{31, 58, 0, 0, 4}, {28, 66, 0, 0, 4}, {28, 72, 0, 0, 4}, {33, 55, 0, 0, 4},
+	{21, 76, 0, 0, 4}, {36, 71, 0, 0, 2}, {36, 70, 0, 0, 2}, {86, 91, 0, 6, 2},
+	{88, 50, 0, 8, 4}, {113, 115, 0, 0, 4}
+};
+
+constexpr ZombatarPartLayout gAccessoryLayout[15] =
+{
+	{103, 110, 0, 0, 4}, {108, 110, 0, 0, 4}, {86, 113, 0, 0, 4}, {131, 95, 0, 0, 4},
+	{131, 100, 0, 0, 4}, {131, 100, 0, 0, 4}, {104, 111, 0, 0, 4}, {118, 65, 0, 0, 4},
+	{61, 118, 0, 0, 4}, {43, 100, 0, 0, 4}, {135, 92, 0, 0, 4}, {78, 130, 0, 0, 4},
+	{68, 145, 0, 0, 4}, {133, 70, 0, 0, 4}, {13, 40, 0, 0, 10}
+};
+
+constexpr ZombatarPartLayout gFacialHairLayout[24] =
+{
+	{35, 107, 1, 0, 6}, {51, 110, 0, 0, 6}, {45, 110, 0, 0, 6}, {38, 105, 3, 2, 6},
+	{69, 145, 0, 0, 6}, {48, 112, 0, 0, 6}, {13, 107, 0, 0, 6}, {45, 105, 1, 1, 6},
+	{41, 105, 1, 1, 6}, {44, 112, 1, 2, 6}, {43, 88, 1, 4, 6}, {28, 105, 8, 1, 6},
+	{45, 110, 0, 0, 6}, {18, 103, 1, 1, 6}, {63, 145, 2, 1, 6}, {63, 140, 1, 1, 6},
+	{43, 110, 0, 0, 6}, {43, 110, 0, 0, 6}, {58, 96, 1, 3, 6}, {46, 92, 0, 0, 6},
+	{114, 80, 0, 0, 6}, {118, 83, 1, 1, 6}, {13, 87, 3, 4, 6}, {58, 145, 1, 1, 6}
+};
+
+constexpr ZombatarPartLayout gHairLayout[16] =
+{
+	{23, 0, 8, 1, 8}, {23, 25, 2, 3, 8}, {23, 30, 0, 0, 8}, {30, 15, 0, 0, 8},
+	{36, 37, 0, 0, 8}, {39, 13, 0, 0, 8}, {51, 22, 0, 0, 8}, {28, 15, 0, 0, 8},
+	{128, 55, 0, 0, 8}, {22, 32, 0, 0, 8}, {25, 19, 2, 2, 8}, {51, -5, 2, 2, 8},
+	{33, 13, 2, 2, 8}, {9, -2, 1, 5, 8}, {45, 4, 0, -1, 8}, {26, 20, 0, 0, 8}
+};
+
+constexpr ZombatarPartLayout gEyewearLayout[16] =
+{
+	{28, 73, 0, 0, 10}, {31, 85, 0, -1, 10}, {28, 69, 0, 1, 10}, {28, 78, 0, -1, 10},
+	{30, 75, -1, -1, 10}, {30, 78, -1, -1, 10}, {50, 90, -1, -1, 10}, {32, 70, -1, -1, 10},
+	{36, 100, -1, -1, 10}, {31, 75, -1, -1, 10}, {31, 67, -1, -1, 10}, {38, 95, -1, -1, 10},
+	{30, 81, 0, 0, 10}, {35, 64, 0, 0, 10}, {42, 65, 0, 0, 10}, {35, 65, 0, 0, 10}
+};
+
+constexpr ZombatarPartLayout gHatsLayout[14] =
+{
+	{28, 5, 2, 1, 12}, {47, 12, 0, 0, 12}, {36, 20, 15, -1, 12}, {11, 10, 0, 0, 12},
+	{41, 16, 0, 0, 12}, {18, 3, 4, -2, 12}, {53, 17, 0, 15, 12}, {3, 0, 0, -2, 12},
+	{38, 0, -1, -2, 12}, {13, 45, 0, 0, 12}, {63, 8, 1, 14, 12}, {43, 15, 0, 0, 12},
+	{18, 0, 0, 0, 12}, {23, 5, 0, 0, 12}
+};
+
+constexpr int ZOMBATAR_BLANK_FRAME = 180;
+
+const ZombatarPartLayout* GetPartLayout(ZombatarPage thePage, int theIndex)
+{
+	switch (thePage)
+	{
+	case ZOMBATAR_PAGE_CLOTHES: return theIndex < 12 ? &gClothesLayout[theIndex] : nullptr;
+	case ZOMBATAR_PAGE_TIDBITS: return theIndex < 14 ? &gTidbitsLayout[theIndex] : nullptr;
+	case ZOMBATAR_PAGE_ACCESSORY: return theIndex < 15 ? &gAccessoryLayout[theIndex] : nullptr;
+	case ZOMBATAR_PAGE_FACIAL_HAIR:
+	{
+		int aIdx = theIndex;
+		if (aIdx > 16)
+			aIdx -= aIdx / 17;
+		return aIdx < 24 ? &gFacialHairLayout[aIdx] : nullptr;
+	}
+	case ZOMBATAR_PAGE_HAIR: return theIndex < 16 ? &gHairLayout[theIndex] : nullptr;
+	case ZOMBATAR_PAGE_EYEWEAR: return theIndex < 16 ? &gEyewearLayout[theIndex] : nullptr;
+	case ZOMBATAR_PAGE_HATS: return theIndex < 14 ? &gHatsLayout[theIndex] : nullptr;
+	default: return nullptr;
+	}
+}
+
 ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 {
 	mGameSelector = theGameSelector;
@@ -198,8 +287,12 @@ ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 	mDeleteHover = false;
 
 	mBackButton = MakeNewButton(ZOMBATAR_BTN_BACK, this, "", nullptr,
-		IMAGE_ZOMBATAR_BACK_BUTTON, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT, nullptr);
-	mBackButton->Resize(ZOMBATAR_BACK_X, ZOMBATAR_BACK_Y, 98, 26);
+		IMAGE_BLANK, IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT, IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT);
+	{
+		int aBackW = IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT ? IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT->mWidth : 98;
+		int aBackH = IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT ? IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT->mHeight : 26;
+		mBackButton->Resize(ZOMBATAR_BACK_X, ZOMBATAR_BACK_Y, aBackW, aBackH);
+	}
 
 	mViewButton = MakeNewButton(ZOMBATAR_BTN_VIEW, this, "", nullptr,
 		IMAGE_ZOMBATAR_VIEW_BUTTON, IMAGE_ZOMBATAR_VIEW_BUTTON_HIGHLIGHT, nullptr);
@@ -700,20 +793,26 @@ void ZombatarWidget::DrawPartImage(Graphics* g, ZombatarPage thePage, int theInd
 	if (!aImage)
 		return;
 
+	const ZombatarPartLayout* aLayout = GetPartLayout(thePage, theIndex);
+	int aPosX = theX + (aLayout ? aLayout->mOffsetX : 0);
+	int aPosY = theY + (aLayout ? aLayout->mOffsetY : 0);
+
 	if (GetPartColorMode(thePage, theIndex) == ZOMBATAR_COLOR_MODE_NONE)
 	{
-		g->DrawImage(aImage, theX, theY);
+		g->DrawImage(aImage, aPosX, aPosY);
 		return;
 	}
 
 	if (aMask)
 	{
-		DrawImageColorized(g, aMask, theX, theY, theColorIndex);
-		g->DrawImage(aImage, theX, theY);
+		int aColorOffX = aLayout ? aLayout->mColorOffsetX : 0;
+		int aColorOffY = aLayout ? aLayout->mColorOffsetY : 0;
+		DrawImageColorized(g, aMask, aPosX + aColorOffX, aPosY + aColorOffY, theColorIndex);
+		g->DrawImage(aImage, aPosX, aPosY);
 	}
 	else
 	{
-		DrawImageColorized(g, aImage, theX, theY, theColorIndex);
+		DrawImageColorized(g, aImage, aPosX, aPosY, theColorIndex);
 	}
 }
 
@@ -723,12 +822,22 @@ void ZombatarWidget::DrawAvatar(Graphics* g, int theX, int theY, const unsigned 
 	int aColor[NUM_ZOMBATAR_PAGES];
 	DecodeRecord(theRecord, aPart, aColor);
 
-	g->DrawImage(GetBackgroundImage(aPart[ZOMBATAR_PAGE_BACKDROPS]), theX, theY);
-	DrawImageColorized(g, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN, theX, theY, aColor[ZOMBATAR_PAGE_SKIN]);
-	g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK, theX, theY);
+	Image* aBackground = GetBackgroundImage(aPart[ZOMBATAR_PAGE_BACKDROPS]);
+	g->DrawImage(aBackground, theX, theY);
+
+	int aBlankX = theX;
+	int aBlankY = theY;
+	if (aBackground && IMAGE_ZOMBATAR_ZOMBIE_BLANK)
+	{
+		aBlankX = theX + (aBackground->mHeight - IMAGE_ZOMBATAR_ZOMBIE_BLANK->mHeight);
+		aBlankY = theY + (aBackground->mWidth - IMAGE_ZOMBATAR_ZOMBIE_BLANK->mWidth);
+	}
+	DrawImageColorized(g, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN, aBlankX, aBlankY, aColor[ZOMBATAR_PAGE_SKIN]);
+	g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK, aBlankX, aBlankY);
+
 	DrawPartImage(g, ZOMBATAR_PAGE_CLOTHES, aPart[ZOMBATAR_PAGE_CLOTHES], theX, theY, aColor[ZOMBATAR_PAGE_CLOTHES]);
-	DrawPartImage(g, ZOMBATAR_PAGE_ACCESSORY, aPart[ZOMBATAR_PAGE_ACCESSORY], theX, theY, aColor[ZOMBATAR_PAGE_ACCESSORY]);
 	DrawPartImage(g, ZOMBATAR_PAGE_TIDBITS, aPart[ZOMBATAR_PAGE_TIDBITS], theX, theY, aColor[ZOMBATAR_PAGE_TIDBITS]);
+	DrawPartImage(g, ZOMBATAR_PAGE_ACCESSORY, aPart[ZOMBATAR_PAGE_ACCESSORY], theX, theY, aColor[ZOMBATAR_PAGE_ACCESSORY]);
 	DrawPartImage(g, ZOMBATAR_PAGE_FACIAL_HAIR, aPart[ZOMBATAR_PAGE_FACIAL_HAIR], theX, theY, aColor[ZOMBATAR_PAGE_FACIAL_HAIR]);
 	DrawPartImage(g, ZOMBATAR_PAGE_HAIR, aPart[ZOMBATAR_PAGE_HAIR], theX, theY, aColor[ZOMBATAR_PAGE_HAIR]);
 	DrawPartImage(g, ZOMBATAR_PAGE_EYEWEAR, aPart[ZOMBATAR_PAGE_EYEWEAR], theX, theY, aColor[ZOMBATAR_PAGE_EYEWEAR]);
