@@ -19,6 +19,8 @@
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <climits>
+
 #include "Plant.h"
 #include "Board.h"
 #include "../ConstEnums.h"

@@ -26,7 +26,6 @@
 #include "../../SexyAppFramework/graphics/Color.h"
 
 #include <algorithm>
-#include <climits>
 #include <cstdint>
 #include <cstring>
 

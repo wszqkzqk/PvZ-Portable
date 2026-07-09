@@ -33,6 +33,7 @@
 #include "widget/Slider.h"
 #include "widget/Checkbox.h"
 #include "widget/WidgetManager.h"
+#include "misc/KeyCodes.h"
 #include "graphics/Font.h"
 #include "graphics/Graphics.h"
 
@@ -201,6 +202,17 @@ void ZombatarTOS::ButtonDepress(int theId)
 			mApp->mGameSelector->mZombatarWidget->Open();
 		break;
 	}
+}
+
+void ZombatarTOS::KeyDown(KeyCode theKey)
+{
+	if (theKey == KeyCode::KEYCODE_ESCAPE)
+	{
+		ButtonDepress(ZombatarTOS::ZombatarTOS_Back);
+		return;
+	}
+
+	LawnDialog::KeyDown(theKey);
 }
 
 void ZombatarTOS::CheckboxChecked(int theId, bool checked)

@@ -1478,7 +1478,12 @@ void ZombatarWidget::ButtonDepress(int theId)
 void ZombatarWidget::KeyDown(KeyCode theKey)
 {
 	if (theKey == KEYCODE_ESCAPE)
-		BackToSelector();
+	{
+		if (mState == ZOMBATAR_STATE_CONFIRM)
+			ChangeState(ZOMBATAR_STATE_CREATE);
+		else
+			BackToSelector();
+	}
 }
 
 void ZombatarWidget::BackToSelector()

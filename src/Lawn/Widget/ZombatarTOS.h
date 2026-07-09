@@ -68,6 +68,7 @@ public:
 	void						Resize(int theX, int theY, int theWidth, int theHeight) override;
 	void						ButtonPress(int theId) override;
 	void						ButtonDepress(int theId) override;
+	void						KeyDown(KeyCode theKey) override;
 	void						CheckboxChecked(int theId, bool checked) override;
 	void						SliderVal(int theId, double theVal) override;
 };
