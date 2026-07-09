@@ -114,10 +114,9 @@ constexpr int ZOMBATAR_AVATAR_GROUND_X = 592;
 constexpr int ZOMBATAR_AVATAR_GROUND_Y = 300;
 constexpr int ZOMBATAR_AVATAR_ZOMBIE_X = ZOMBATAR_AVATAR_GROUND_X + 40;
 constexpr int ZOMBATAR_AVATAR_ZOMBIE_Y = ZOMBATAR_AVATAR_GROUND_Y + 50;
-constexpr int ZOMBATAR_AVATAR_CLIP_X = ZOMBATAR_AVATAR_GROUND_X - 4;
-constexpr int ZOMBATAR_AVATAR_CLIP_Y = ZOMBATAR_AVATAR_GROUND_Y - 38;
-constexpr int ZOMBATAR_AVATAR_CLIP_W = 205;
-constexpr int ZOMBATAR_AVATAR_CLIP_H = 298;
+constexpr int ZOMBATAR_AVATAR_GROUND_CLIP_TOP = 10;
+constexpr int ZOMBATAR_AVATAR_GROUND_CLIP_RIGHT = 40;
+constexpr int ZOMBATAR_AVATAR_GROUND_CLIP_BOTTOM = 10;
 
 constexpr int ZOMBATAR_CONFIRM_HEADER_X = 305;
 constexpr int ZOMBATAR_CONFIRM_HEADER_Y = 185;
@@ -957,18 +956,22 @@ void ZombatarWidget::DrawAvatarBox(Graphics* g)
 
 	Image* aGround = IMAGE_ALMANAC_GROUNDDAY;
 	if (aGround)
+	{
+		g->SetClipRect(ZOMBATAR_AVATAR_GROUND_X, ZOMBATAR_AVATAR_GROUND_Y + ZOMBATAR_AVATAR_GROUND_CLIP_TOP,
+			aGround->mWidth - ZOMBATAR_AVATAR_GROUND_CLIP_RIGHT,
+			aGround->mHeight - ZOMBATAR_AVATAR_GROUND_CLIP_TOP - ZOMBATAR_AVATAR_GROUND_CLIP_BOTTOM);
 		g->DrawImage(aGround, ZOMBATAR_AVATAR_GROUND_X, ZOMBATAR_AVATAR_GROUND_Y);
+		g->ClearClipRect();
+	}
 
 	mPreviewZombie->mPosX = static_cast<float>(ZOMBATAR_AVATAR_ZOMBIE_X);
 	mPreviewZombie->mPosY = static_cast<float>(ZOMBATAR_AVATAR_ZOMBIE_Y);
 	mPreviewZombie->mX = ZOMBATAR_AVATAR_ZOMBIE_X;
 	mPreviewZombie->mY = ZOMBATAR_AVATAR_ZOMBIE_Y;
 
-	g->SetClipRect(ZOMBATAR_AVATAR_CLIP_X, ZOMBATAR_AVATAR_CLIP_Y, ZOMBATAR_AVATAR_CLIP_W, ZOMBATAR_AVATAR_CLIP_H);
 	Graphics aZombieGraphics = Graphics(*g);
 	mPreviewZombie->BeginDraw(&aZombieGraphics);
 	mPreviewZombie->Draw(&aZombieGraphics);
-	g->ClearClipRect();
 }
 
 bool ZombatarWidget::ExportAvatarPNG(const unsigned char* theRecord, int theExportIndex)
@@ -1036,6 +1039,7 @@ void ZombatarWidget::Draw(Graphics* g)
 		return;
 
 	DrawMain(g);
+	DrawAvatarBox(g);
 	if (mState == ZOMBATAR_STATE_LIST)
 		DrawList(g);
 	else if (mState == ZOMBATAR_STATE_CONFIRM)
@@ -1045,8 +1049,6 @@ void ZombatarWidget::Draw(Graphics* g)
 
 	if (IMAGE_ZOMBATAR_DISPLAY_WINDOW)
 		g->DrawImage(IMAGE_ZOMBATAR_DISPLAY_WINDOW, 5, 0);
-
-	DrawAvatarBox(g);
 }
 
 void ZombatarWidget::DrawMain(Graphics* g)
