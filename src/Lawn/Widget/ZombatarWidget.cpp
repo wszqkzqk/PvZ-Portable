@@ -60,8 +60,8 @@ constexpr int ZOMBATAR_PANEL_Y = 25;
 constexpr int ZOMBATAR_PANEL_W = 560;
 constexpr int ZOMBATAR_INNER_X = 152;
 constexpr int ZOMBATAR_INNER_Y = 125;
-constexpr int ZOMBATAR_COLORS_X = 196;
-constexpr int ZOMBATAR_COLORS_Y = 310;
+constexpr int ZOMBATAR_COLORS_X = 221;
+constexpr int ZOMBATAR_COLORS_Y = 335;
 constexpr int ZOMBATAR_PREVIEW_X = 592;
 constexpr int ZOMBATAR_PREVIEW_Y = 115;
 
@@ -76,8 +76,14 @@ constexpr int ZOMBATAR_GRID_BIAS_X = 50;
 
 constexpr int ZOMBATAR_COLOR_COLS = 9;
 constexpr int ZOMBATAR_COLOR_GAP = 4;
-constexpr int ZOMBATAR_COLOR_X = 213;
-constexpr int ZOMBATAR_COLOR_Y = 342;
+constexpr int ZOMBATAR_COLOR_X = 238;
+constexpr int ZOMBATAR_COLOR_Y = 367;
+constexpr int ZOMBATAR_COLOR_HINT_X = 240;
+constexpr int ZOMBATAR_COLOR_HINT_Y = 380;
+
+constexpr int ZOMBATAR_START_TEXT_Y = 185;
+constexpr int ZOMBATAR_START_TEXT_W = 500;
+constexpr int ZOMBATAR_START_TEXT_H = 100;
 
 constexpr int ZOMBATAR_BACK_X = 278;
 constexpr int ZOMBATAR_BACK_Y = 528;
@@ -666,10 +672,11 @@ Rect ZombatarWidget::GetColorRect(int theIndex) const
 {
 	int aSwatchW = IMAGE_ZOMBATAR_COLORPICKER ? IMAGE_ZOMBATAR_COLORPICKER->mWidth : 21;
 	int aSwatchH = IMAGE_ZOMBATAR_COLORPICKER ? IMAGE_ZOMBATAR_COLORPICKER->mHeight : 20;
-	int aStep = aSwatchW + ZOMBATAR_COLOR_GAP;
+	int aStepX = aSwatchW + ZOMBATAR_COLOR_GAP;
+	int aStepY = aSwatchH + ZOMBATAR_COLOR_GAP;
 	int aCol = theIndex % ZOMBATAR_COLOR_COLS;
 	int aRow = theIndex / ZOMBATAR_COLOR_COLS;
-	return Rect(ZOMBATAR_COLOR_X + aCol * aStep, ZOMBATAR_COLOR_Y + aRow * aStep, aSwatchW, aSwatchH);
+	return Rect(ZOMBATAR_COLOR_X + aCol * aStepX, ZOMBATAR_COLOR_Y + aRow * aStepY, aSwatchW, aSwatchH);
 }
 
 int ZombatarWidget::GetTotalItemsForPage(ZombatarPage thePage) const
@@ -1071,10 +1078,11 @@ void ZombatarWidget::DrawList(Graphics* g)
 
 	DrawAvatar(g, ZOMBATAR_PREVIEW_X, ZOMBATAR_PREVIEW_Y, mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE);
 
-	g->SetFont(FONT_DWARVENTODCRAFT12);
+	g->SetFont(FONT_BRIANNETOD12);
 	g->SetColor(Color(255, 255, 255));
 	g->DrawString(Sexy::StrFormat("%d / %d", mCurrentIndex + 1, aCount), ZOMBATAR_LIST_COUNTER_X, ZOMBATAR_LIST_COUNTER_Y);
 
+	g->SetFont(FONT_DWARVENTODCRAFT12);
 	g->SetColor(mDeleteHover ? Color(22, 253, 5) : Color(255, 255, 255));
 	g->DrawString("Delete?", ZOMBATAR_LIST_DELETE_X, ZOMBATAR_LIST_DELETE_Y);
 	g->SetColor(Color::White);
@@ -1089,6 +1097,15 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 	{
 		Rect aRect = GetCategoryRect(i);
 		g->DrawImage(GetCategoryImage(static_cast<ZombatarPage>(i), i == mPage, aRect.Contains(mMouseX, mMouseY)), aRect.mX, aRect.mY);
+	}
+
+	if (mPage == ZOMBATAR_PAGE_SKIN)
+	{
+		int aPanelW = IMAGE_ZOMBATAR_WIDGET_BG ? IMAGE_ZOMBATAR_WIDGET_BG->mWidth : ZOMBATAR_PANEL_W;
+		TodDrawStringWrapped(g, "[ZOMBATAR_START_TEXT]",
+			Rect(ZOMBATAR_PANEL_X + aPanelW / 2 - 200, ZOMBATAR_START_TEXT_Y, ZOMBATAR_START_TEXT_W, ZOMBATAR_START_TEXT_H),
+			FONT_DWARVENTODCRAFT15, Color(254, 227, 0, 175), DS_ALIGN_CENTER);
+		g->SetColor(Color::White);
 	}
 
 	DrawDraftAvatar(g, ZOMBATAR_PREVIEW_X, ZOMBATAR_PREVIEW_Y);
@@ -1144,10 +1161,10 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 		if (aMode == ZOMBATAR_COLOR_MODE_NONE)
 		{
 			const char* aKey = mPart[mPage] < 0 ? "[ZOMBATAR_COLOR_ITEM_NOT_CHOSEN]" : "[ZOMBATAR_COLOR_NOT_APPLICABLE]";
-			g->SetFont(FONT_DWARVENTODCRAFT12);
-			g->SetColor(Color::White);
-			std::string aText = TodStringTranslate(aKey);
-			g->DrawString(aText, ZOMBATAR_COLOR_X + 130 - FONT_DWARVENTODCRAFT12->StringWidth(aText) / 2, ZOMBATAR_COLOR_Y + 40);
+			int aColorsW = IMAGE_ZOMBATAR_COLORS_BG ? IMAGE_ZOMBATAR_COLORS_BG->mWidth : 261;
+			int aColorsH = IMAGE_ZOMBATAR_COLORS_BG ? IMAGE_ZOMBATAR_COLORS_BG->mHeight : 96;
+			TodDrawStringWrapped(g, aKey, Rect(ZOMBATAR_COLOR_HINT_X, ZOMBATAR_COLOR_HINT_Y, aColorsW - 40, aColorsH),
+				FONT_BRIANNETOD12, Color::White, DS_ALIGN_LEFT);
 		}
 		else
 		{
@@ -1189,9 +1206,9 @@ void ZombatarWidget::DrawConfirm(Graphics* g)
 	std::string aHeader = TodStringTranslate("[ZOMBATAR_FINISHED_WARNING_HEADER]");
 	g->DrawString(aHeader, ZOMBATAR_CONFIRM_HEADER_X - FONT_HOUSEOFTERROR28->StringWidth(aHeader) / 2, ZOMBATAR_CONFIRM_HEADER_Y);
 
-	g->SetFont(FONT_CONTINUUMBOLD14);
-	g->SetColor(Color(255, 255, 255));
-	g->WriteWordWrapped(Rect(ZOMBATAR_CONFIRM_TEXT_X, ZOMBATAR_CONFIRM_TEXT_Y, ZOMBATAR_CONFIRM_TEXT_W, ZOMBATAR_CONFIRM_TEXT_H), TodStringTranslate("[ZOMBATAR_FINISHED_WARNING_TEXT]"), 14, DS_ALIGN_CENTER);
+	TodDrawStringWrapped(g, "[ZOMBATAR_FINISHED_WARNING_TEXT]",
+		Rect(ZOMBATAR_CONFIRM_TEXT_X, ZOMBATAR_CONFIRM_TEXT_Y, ZOMBATAR_CONFIRM_TEXT_W, ZOMBATAR_CONFIRM_TEXT_H),
+		FONT_CONTINUUMBOLD14, Color::White, DS_ALIGN_CENTER);
 
 	g->SetFont(FONT_BRIANNETOD12);
 	g->SetColor(Color(255, 255, 255));
