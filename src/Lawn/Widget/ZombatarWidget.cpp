@@ -1492,7 +1492,6 @@ void ZombatarWidget::BackToSelector()
 	mSubPage = 0;
 	ChangeState(GetHeadCount() > 0 ? ZOMBATAR_STATE_LIST : ZOMBATAR_STATE_CREATE);
 	ResetDraft();
-	DestroyPreviewZombie();
 	mGameSelector->SlideTo(0, 0);
 	if (mWidgetManager)
 		mWidgetManager->SetFocus(mGameSelector);
