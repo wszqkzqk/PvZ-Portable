@@ -215,6 +215,17 @@ void ZombatarTOS::KeyDown(KeyCode theKey)
 	LawnDialog::KeyDown(theKey);
 }
 
+void ZombatarTOS::MouseWheel(int theDelta)
+{
+	if (mTextHeight <= TOS_CLIP_H)
+		return;
+
+	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_H);
+	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
+	aOffset -= theDelta * 12;
+	mTOSSlider->SetValue(std::max(0.0, std::min(1.0, static_cast<double>(aOffset) / aMaxScroll)));
+}
+
 void ZombatarTOS::CheckboxChecked(int theId, bool checked)
 {
 	if (theId == ZombatarTOS::ZombatarTOS_TOSCheckbox && checked)

@@ -69,6 +69,7 @@ public:
 	void						ButtonPress(int theId) override;
 	void						ButtonDepress(int theId) override;
 	void						KeyDown(KeyCode theKey) override;
+	void						MouseWheel(int theDelta) override;
 	void						CheckboxChecked(int theId, bool checked) override;
 	void						SliderVal(int theId, double theVal) override;
 };
