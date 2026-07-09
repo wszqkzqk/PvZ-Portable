@@ -182,6 +182,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
     mFireballRow = -1;
     mIsFireBall = false;
     mMoweredReanimID = ReanimationID::REANIMATIONID_NULL;
+    mZombatarHeadReanimID = ReanimationID::REANIMATIONID_NULL;
     mLastPortalX = -1;
     for (int i = 0; i < MAX_ZOMBIE_FOLLOWERS; i++)
     {
@@ -3338,19 +3339,8 @@ void Zombie::DropFlag()
     OverrideParticleScale(aParticle);
 }
 
-void Zombie::SetupZombatarFlagReanim()
+void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
 {
-    PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
-    if (!aPlayerInfo || aPlayerInfo->mZombatarData.empty())
-        return;
-
-    int aCount = static_cast<int>(aPlayerInfo->mZombatarData.size() / ZOMBATAR_RECORD_SIZE);
-    if (aCount <= 0)
-        return;
-
-    int aIndex = Rand(aCount);
-    const unsigned char* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(aIndex) * ZOMBATAR_RECORD_SIZE;
-
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
     if (!aBodyReanim)
         return;
@@ -3361,17 +3351,22 @@ void Zombie::SetupZombatarFlagReanim()
     aBodyReanim->AssignRenderGroupToPrefix("anim_hair", RENDER_GROUP_HIDDEN);
     aBodyReanim->mFrameBasePose = 0;
 
-    Reanimation* aHeadReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_ZOMBATAR_HEAD);
-    aHeadReanim->PlayReanim("anim_head_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
+    Reanimation* aHeadReanim = mApp->ReanimationTryToGet(mZombatarHeadReanimID);
+    if (!aHeadReanim)
+    {
+        aHeadReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_ZOMBATAR_HEAD);
+        aHeadReanim->PlayReanim("anim_head_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
+        mZombatarHeadReanimID = mApp->ReanimationGetID(aHeadReanim);
+        AttachEffect* aAttachEffect = AttachReanim(aTrackInstance->mAttachmentID, aHeadReanim, 0.0f, 0.0f);
+        TodScaleRotateTransformMatrix(aAttachEffect->mOffset, -20.0f, -1.0f, 0.2f, 1.0f, 1.0f);
+    }
+
     aHeadReanim->AssignRenderGroupToPrefix("hats_", RENDER_GROUP_HIDDEN);
     aHeadReanim->AssignRenderGroupToPrefix("hair_", RENDER_GROUP_HIDDEN);
     aHeadReanim->AssignRenderGroupToPrefix("facialHair_", RENDER_GROUP_HIDDEN);
     aHeadReanim->AssignRenderGroupToPrefix("accessories_", RENDER_GROUP_HIDDEN);
     aHeadReanim->AssignRenderGroupToPrefix("eyeWear_", RENDER_GROUP_HIDDEN);
     aHeadReanim->AssignRenderGroupToPrefix("tidBits_", RENDER_GROUP_HIDDEN);
-
-    AttachEffect* aAttachEffect = AttachReanim(aTrackInstance->mAttachmentID, aHeadReanim, 0.0f, 0.0f);
-    TodScaleRotateTransformMatrix(aAttachEffect->mOffset, -20.0f, -1.0f, 0.2f, 1.0f, 1.0f);
 
     struct RuntimePart
     {
@@ -3395,7 +3390,7 @@ void Zombie::SetupZombatarFlagReanim()
 
     for (const RuntimePart& aPart : aRuntimeParts)
     {
-        int aPartIndex = ZombatarReadSignedRecordSlot(aRecord, aPart.mPartSlot);
+        int aPartIndex = ZombatarReadSignedRecordSlot(theRecord, aPart.mPartSlot);
         if (aPartIndex < 0 || aPartIndex >= aPart.mMaxCount)
             continue;
         int aTrackIndex = aPartIndex;
@@ -3409,8 +3404,23 @@ void Zombie::SetupZombatarFlagReanim()
             continue;
         ReanimatorTrackInstance* aPartTrack = aHeadReanim->GetTrackInstanceByName(aPrefix.c_str());
         aHeadReanim->AssignRenderGroupToPrefix(aPrefix.c_str(), RENDER_GROUP_NORMAL);
-        aPartTrack->mTrackColor = ZombatarGetColor(ZombatarReadSignedRecordSlot(aRecord, aPart.mColorSlot));
+        aPartTrack->mTrackColor = ZombatarGetColor(ZombatarReadSignedRecordSlot(theRecord, aPart.mColorSlot));
     }
+}
+
+void Zombie::SetupZombatarFlagReanim()
+{
+    PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
+    if (!aPlayerInfo || aPlayerInfo->mZombatarData.empty())
+        return;
+
+    int aCount = static_cast<int>(aPlayerInfo->mZombatarData.size() / ZOMBATAR_RECORD_SIZE);
+    if (aCount <= 0)
+        return;
+
+    int aIndex = Rand(aCount);
+    const unsigned char* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(aIndex) * ZOMBATAR_RECORD_SIZE;
+    ApplyZombatarHead(aRecord);
 }
 
 void Zombie::DropPole()
@@ -7371,6 +7381,7 @@ void Zombie::DieNoLoot()
     mApp->RemoveReanimation(mBodyReanimID);
     mApp->RemoveReanimation(mMoweredReanimID);
     mApp->RemoveReanimation(mSpecialHeadReanimID);
+    mApp->RemoveReanimation(mZombatarHeadReanimID);
 
     mDead = true;
     TrySpawnLevelAward();

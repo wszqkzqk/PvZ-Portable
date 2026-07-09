@@ -29,6 +29,7 @@ class GameSelector;
 class LawnApp;
 class PlayerInfo;
 class NewLawnButton;
+class Zombie;
 
 using namespace Sexy;
 
@@ -96,6 +97,8 @@ public:
 	NewLawnButton*				mPrevPageButton;
 	NewLawnButton*				mNextPageButton;
 
+	Zombie*						mPreviewZombie;
+
 public:
 	ZombatarWidget(GameSelector* theGameSelector);
 	~ZombatarWidget() override;
@@ -133,6 +136,9 @@ private:
 	void						DrawConfirm(Graphics* g);
 	void						DrawAvatar(Graphics* g, int theX, int theY, const unsigned char* theRecord);
 	void						DrawDraftAvatar(Graphics* g, int theX, int theY);
+	void						CreatePreviewZombie();
+	void						DestroyPreviewZombie();
+	void						DrawAvatarBox(Graphics* g);
 	void						DrawImageColorized(Graphics* g, Image* theImage, int theX, int theY, int theColorIndex);
 	Rect						GetCategoryRect(int theIndex) const;
 	Rect						GetItemRect(int theIndex) const;

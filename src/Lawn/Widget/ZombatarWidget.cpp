@@ -22,6 +22,7 @@
 #include "ZombatarWidget.h"
 #include "GameSelector.h"
 #include "GameButton.h"
+#include "../Zombie.h"
 #include "../System/PlayerInfo.h"
 #include "../System/Zombatar.h"
 #include "../../LawnApp.h"
@@ -104,10 +105,19 @@ constexpr int ZOMBATAR_LIST_COUNTER_X = 221;
 constexpr int ZOMBATAR_LIST_COUNTER_Y = 161;
 constexpr int ZOMBATAR_LIST_DELETE_X = 351;
 constexpr int ZOMBATAR_LIST_DELETE_Y = 161;
-constexpr int ZOMBATAR_LIST_DELETE_RECT_X = 346;
-constexpr int ZOMBATAR_LIST_DELETE_RECT_Y = 146;
+constexpr int ZOMBATAR_LIST_DELETE_RECT_X = 321;
+constexpr int ZOMBATAR_LIST_DELETE_RECT_Y = 121;
 constexpr int ZOMBATAR_LIST_DELETE_RECT_W = 60;
 constexpr int ZOMBATAR_LIST_DELETE_RECT_H = 20;
+
+constexpr int ZOMBATAR_AVATAR_GROUND_X = 592;
+constexpr int ZOMBATAR_AVATAR_GROUND_Y = 300;
+constexpr int ZOMBATAR_AVATAR_ZOMBIE_X = ZOMBATAR_AVATAR_GROUND_X + 40;
+constexpr int ZOMBATAR_AVATAR_ZOMBIE_Y = ZOMBATAR_AVATAR_GROUND_Y + 50;
+constexpr int ZOMBATAR_AVATAR_CLIP_X = ZOMBATAR_AVATAR_GROUND_X - 4;
+constexpr int ZOMBATAR_AVATAR_CLIP_Y = ZOMBATAR_AVATAR_GROUND_Y - 38;
+constexpr int ZOMBATAR_AVATAR_CLIP_W = 205;
+constexpr int ZOMBATAR_AVATAR_CLIP_H = 298;
 
 constexpr int ZOMBATAR_CONFIRM_HEADER_X = 305;
 constexpr int ZOMBATAR_CONFIRM_HEADER_Y = 185;
@@ -314,6 +324,7 @@ ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 	mHoverGridCell = -1;
 	mHoverColorCell = -1;
 	mDeleteHover = false;
+	mPreviewZombie = nullptr;
 
 	mBackButton = MakeNewButton(ZOMBATAR_BTN_BACK, this, "", nullptr,
 		IMAGE_BLANK, IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT, IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT);
@@ -362,6 +373,7 @@ ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 
 ZombatarWidget::~ZombatarWidget()
 {
+	DestroyPreviewZombie();
 	delete mBackButton;
 	delete mViewButton;
 	delete mFinishedButton;
@@ -390,6 +402,7 @@ void ZombatarWidget::AddedToManager(WidgetManager* theWidgetManager)
 void ZombatarWidget::RemovedFromManager(WidgetManager* theWidgetManager)
 {
 	Widget::RemovedFromManager(theWidgetManager);
+	DestroyPreviewZombie();
 	RemoveWidget(mBackButton);
 	RemoveWidget(mViewButton);
 	RemoveWidget(mFinishedButton);
@@ -404,6 +417,8 @@ void ZombatarWidget::RemovedFromManager(WidgetManager* theWidgetManager)
 void ZombatarWidget::Update()
 {
 	Widget::Update();
+	if (mPreviewZombie)
+		mPreviewZombie->Update();
 	MarkDirty();
 }
 
@@ -411,6 +426,8 @@ void ZombatarWidget::Open()
 {
 	if (!mApp->mPlayerInfo)
 		return;
+
+	CreatePreviewZombie();
 
 	mSubPage = 0;
 	mMaxSubPages = 0;
@@ -887,6 +904,73 @@ void ZombatarWidget::DrawDraftAvatar(Graphics* g, int theX, int theY)
 	DrawAvatar(g, theX, theY, aRecord);
 }
 
+void ZombatarWidget::CreatePreviewZombie()
+{
+	if (mPreviewZombie)
+		return;
+
+	mPreviewZombie = new Zombie();
+	mPreviewZombie->mApp = mApp;
+	mPreviewZombie->mBoard = nullptr;
+	mPreviewZombie->ZombieInitialize(0, ZombieType::ZOMBIE_FLAG, false, nullptr, Zombie::ZOMBIE_WAVE_UI);
+	mPreviewZombie->mPosX = 0.0f;
+	mPreviewZombie->mPosY = 0.0f;
+	mPreviewZombie->mX = 0;
+	mPreviewZombie->mY = 0;
+}
+
+void ZombatarWidget::DestroyPreviewZombie()
+{
+	if (!mPreviewZombie)
+		return;
+
+	mPreviewZombie->DieNoLoot();
+	delete mPreviewZombie;
+	mPreviewZombie = nullptr;
+}
+
+void ZombatarWidget::DrawAvatarBox(Graphics* g)
+{
+	if (!mPreviewZombie)
+		return;
+
+	const unsigned char* aRecord = nullptr;
+	unsigned char aDraft[ZOMBATAR_RECORD_SIZE];
+	if (mState == ZOMBATAR_STATE_LIST)
+	{
+		if (GetHeadCount() <= 0)
+			return;
+		ClampCurrentIndex();
+		aRecord = mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE;
+	}
+	else if (mState == ZOMBATAR_STATE_CREATE)
+	{
+		EncodeRecord(aDraft);
+		aRecord = aDraft;
+	}
+	else
+	{
+		return;
+	}
+
+	mPreviewZombie->ApplyZombatarHead(aRecord);
+
+	Image* aGround = IMAGE_ALMANAC_GROUNDDAY;
+	if (aGround)
+		g->DrawImage(aGround, ZOMBATAR_AVATAR_GROUND_X, ZOMBATAR_AVATAR_GROUND_Y);
+
+	mPreviewZombie->mPosX = static_cast<float>(ZOMBATAR_AVATAR_ZOMBIE_X);
+	mPreviewZombie->mPosY = static_cast<float>(ZOMBATAR_AVATAR_ZOMBIE_Y);
+	mPreviewZombie->mX = ZOMBATAR_AVATAR_ZOMBIE_X;
+	mPreviewZombie->mY = ZOMBATAR_AVATAR_ZOMBIE_Y;
+
+	g->SetClipRect(ZOMBATAR_AVATAR_CLIP_X, ZOMBATAR_AVATAR_CLIP_Y, ZOMBATAR_AVATAR_CLIP_W, ZOMBATAR_AVATAR_CLIP_H);
+	Graphics aZombieGraphics = Graphics(*g);
+	mPreviewZombie->BeginDraw(&aZombieGraphics);
+	mPreviewZombie->Draw(&aZombieGraphics);
+	g->ClearClipRect();
+}
+
 bool ZombatarWidget::ExportAvatarPNG(const unsigned char* theRecord, int theExportIndex)
 {
 	PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
@@ -961,6 +1045,8 @@ void ZombatarWidget::Draw(Graphics* g)
 
 	if (IMAGE_ZOMBATAR_DISPLAY_WINDOW)
 		g->DrawImage(IMAGE_ZOMBATAR_DISPLAY_WINDOW, 5, 0);
+
+	DrawAvatarBox(g);
 }
 
 void ZombatarWidget::DrawMain(Graphics* g)
@@ -980,6 +1066,8 @@ void ZombatarWidget::DrawList(Graphics* g)
 	DrawAvatar(g, ZOMBATAR_LIST_CUR_X, ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE);
 	if (mCurrentIndex + 1 < aCount)
 		DrawAvatar(g, ZOMBATAR_LIST_NEXT_X, ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + (mCurrentIndex + 1) * ZOMBATAR_RECORD_SIZE);
+
+	DrawAvatar(g, ZOMBATAR_PREVIEW_X, ZOMBATAR_PREVIEW_Y, mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE);
 
 	g->SetFont(FONT_DWARVENTODCRAFT12);
 	g->SetColor(Color(255, 255, 255));
@@ -1397,6 +1485,7 @@ void ZombatarWidget::BackToSelector()
 	mSubPage = 0;
 	ChangeState(GetHeadCount() > 0 ? ZOMBATAR_STATE_LIST : ZOMBATAR_STATE_CREATE);
 	ResetDraft();
+	DestroyPreviewZombie();
 	mGameSelector->SlideTo(0, 0);
 	if (mWidgetManager)
 		mWidgetManager->SetFocus(mGameSelector);

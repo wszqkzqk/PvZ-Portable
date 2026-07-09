@@ -183,6 +183,7 @@ public:
     int32_t                         mFireballRow;
     bool                            mIsFireBall;
     ReanimationID                   mMoweredReanimID;
+    ReanimationID                   mZombatarHeadReanimID;
     int32_t                         mLastPortalX;
 
 public:
@@ -383,6 +384,7 @@ public:
     void                            UpdateMowered();
     void                            DropFlag();
     void                            SetupZombatarFlagReanim();
+    void                            ApplyZombatarHead(const unsigned char* theRecord);
     void                            DropPole();
     void                            DrawBossBackArm(Graphics* g, const ZombieDrawPosition& theDrawPos);
     static void                     PreloadZombieResources(ZombieType theZombieType);
