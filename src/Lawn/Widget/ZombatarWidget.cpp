@@ -897,10 +897,10 @@ void ZombatarWidget::DrawAvatar(Graphics* g, int theX, int theY, const unsigned 
 
 	int aBlankX = theX;
 	int aBlankY = theY;
-	if (aBackground && IMAGE_ZOMBATAR_ZOMBIE_BLANK)
+	if (IMAGE_ZOMBATAR_BACKGROUND_BLANK && IMAGE_ZOMBATAR_ZOMBIE_BLANK)
 	{
-		aBlankX = theX + (aBackground->mHeight - IMAGE_ZOMBATAR_ZOMBIE_BLANK->mHeight);
-		aBlankY = theY + (aBackground->mWidth - IMAGE_ZOMBATAR_ZOMBIE_BLANK->mWidth);
+		aBlankX = theX + (IMAGE_ZOMBATAR_BACKGROUND_BLANK->mWidth - IMAGE_ZOMBATAR_ZOMBIE_BLANK->mWidth);
+		aBlankY = theY + (IMAGE_ZOMBATAR_BACKGROUND_BLANK->mHeight - IMAGE_ZOMBATAR_ZOMBIE_BLANK->mHeight);
 	}
 	DrawImageColorized(g, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN, aBlankX, aBlankY, aColor[ZOMBATAR_PAGE_SKIN]);
 	g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK, aBlankX, aBlankY);

@@ -217,10 +217,10 @@ void ZombatarTOS::KeyDown(KeyCode theKey)
 
 void ZombatarTOS::MouseWheel(int theDelta)
 {
-	if (mTextHeight <= TOS_CLIP_H)
+	if (mTextHeight <= TOS_TEXT_Y)
 		return;
 
-	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_H);
+	int aMaxScroll = std::max(0, mTextHeight - TOS_TEXT_Y);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 	aOffset -= theDelta * 12;
 	mTOSSlider->SetValue(std::max(0.0, std::min(1.0, static_cast<double>(aOffset) / aMaxScroll)));
