@@ -136,12 +136,14 @@ private:
 	void						DrawConfirm(Graphics* g);
 	void						DrawAvatar(Graphics* g, int theX, int theY, const unsigned char* theRecord);
 	void						DrawDraftAvatar(Graphics* g, int theX, int theY);
+	void						DrawColorSwatches(Graphics* g, int thePaletteBase, int theCount, int theSavedColor);
 	void						CreatePreviewZombie();
 	void						DestroyPreviewZombie();
 	void						DrawAvatarBox(Graphics* g);
 	void						DrawImageColorized(Graphics* g, Image* theImage, int theX, int theY, int theColorIndex);
 	Rect						GetCategoryRect(int theIndex) const;
 	Rect						GetItemRect(int theIndex) const;
+	Rect						GetItemHitRect(int theIndex) const;
 	Rect						GetColorRect(int theIndex) const;
 	int							GetTotalItemsForPage(ZombatarPage thePage) const;
 	int							GetItemCountForPage() const;

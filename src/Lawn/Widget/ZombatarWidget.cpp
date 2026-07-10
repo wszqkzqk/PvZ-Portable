@@ -48,7 +48,6 @@ constexpr int ZOMBATAR_PART_COLOR_BASE = 12;
 constexpr int ZOMBATAR_PART_COLOR_BASE_2 = 30;
 constexpr int ZOMBATAR_PART_COLOR_NONE_1 = 29;
 constexpr int ZOMBATAR_PART_COLOR_NONE_2 = 47;
-constexpr int ZOMBATAR_PART_COLOR_NONE_SWATCH = 17;
 
 constexpr int ZOMBATAR_COLOR_MODE_SKIN = 0;
 constexpr int ZOMBATAR_COLOR_MODE_1 = 1;
@@ -73,6 +72,9 @@ constexpr int ZOMBATAR_GRID_ROWS = 3;
 constexpr int ZOMBATAR_GRID_PAGE = 17;
 constexpr int ZOMBATAR_GRID_GAP = -4;
 constexpr int ZOMBATAR_GRID_BIAS_X = 50;
+constexpr int ZOMBATAR_CELL_INSET = 9;
+constexpr int ZOMBATAR_CELL_ZOMBIE_MARGIN = 10;
+constexpr Color ZOMBATAR_CELL_DIM_COLOR(0x80, 0x80, 0x80, 0x80);
 
 constexpr int ZOMBATAR_COLOR_COLS = 9;
 constexpr int ZOMBATAR_COLOR_GAP = 4;
@@ -299,18 +301,32 @@ struct ZombatarDrawPart
 	bool operator<(const ZombatarDrawPart& theOther) const { return mDrawOrder < theOther.mDrawOrder; }
 };
 
-inline void GetPartColorRange(int theMode, int& theBase, int& theNone)
+constexpr int ZombatarColorBaseForMode(int theMode)
 {
-	if (theMode == ZOMBATAR_COLOR_MODE_1)
+	return theMode == ZOMBATAR_COLOR_MODE_1 ? ZOMBATAR_PART_COLOR_BASE : ZOMBATAR_PART_COLOR_BASE_2;
+}
+
+static Rect FitIconRect(Image* theImage, const Rect& theCell)
+{
+	int aCellW = theCell.mWidth;
+	int aCellH = theCell.mHeight;
+	int aAvailW = aCellW - 2 * ZOMBATAR_CELL_INSET;
+	int aAvailH = aCellH - 2 * ZOMBATAR_CELL_INSET;
+	int aW = theImage->mWidth;
+	int aH = theImage->mHeight;
+	bool aOvflW = static_cast<float>(aW) > static_cast<float>(aAvailW);
+	bool aOvflH = static_cast<float>(aH) > static_cast<float>(aAvailH);
+	if (aOvflW && (!aOvflH || aW >= aH))
 	{
-		theBase = ZOMBATAR_PART_COLOR_BASE;
-		theNone = ZOMBATAR_PART_COLOR_NONE_1;
+		aH = static_cast<int>(aH * (static_cast<float>(aAvailW) / static_cast<float>(aW)));
+		aW = aAvailW;
 	}
-	else
+	else if (aOvflH)
 	{
-		theBase = ZOMBATAR_PART_COLOR_BASE_2;
-		theNone = ZOMBATAR_PART_COLOR_NONE_2;
+		aW = static_cast<int>(aW * (static_cast<float>(aAvailH) / static_cast<float>(aW)));
+		aH = aAvailH;
 	}
+	return Rect(theCell.mX + (aCellW - aW) / 2, theCell.mY + (aCellH - aH) / 2, aW, aH);
 }
 
 constexpr int ZOMBATAR_ITEMS_PER_PAGE[NUM_ZOMBATAR_PAGES] = { 0, 16, 24, 14, 16, 12, 15, 14, 5 };
@@ -655,6 +671,13 @@ Rect ZombatarWidget::GetCategoryRect(int theIndex) const
 	return Rect(ZOMBATAR_TABS_X, ZOMBATAR_TABS_Y0 + theIndex * aStep, aTabW, aTabH);
 }
 
+Rect ZombatarWidget::GetItemHitRect(int theIndex) const
+{
+	Rect aRect = GetItemRect(theIndex);
+	return Rect(aRect.mX + ZOMBATAR_CELL_INSET, aRect.mY + ZOMBATAR_CELL_INSET,
+		aRect.mWidth - 2 * ZOMBATAR_CELL_INSET, aRect.mHeight - 2 * ZOMBATAR_CELL_INSET);
+}
+
 Rect ZombatarWidget::GetItemRect(int theIndex) const
 {
 	int aCellW = IMAGE_ZOMBATAR_ACCESSORY_BG ? IMAGE_ZOMBATAR_ACCESSORY_BG->mWidth : 67;
@@ -910,6 +933,27 @@ void ZombatarWidget::DrawDraftAvatar(Graphics* g, int theX, int theY)
 	DrawAvatar(g, theX, theY, aRecord);
 }
 
+void ZombatarWidget::DrawColorSwatches(Graphics* g, int thePaletteBase, int theCount, int theSavedColor)
+{
+	g->SetColorizeImages(true);
+	for (int i = 0; i < theCount; i++)
+	{
+		int aPalette = thePaletteBase + i;
+		int aAlpha = 0x40;
+		if (aPalette == theSavedColor)
+			aAlpha = 0xff;
+		else if (i == mHoverColorCell)
+			aAlpha = 0x80;
+		Color aColor = ZombatarGetColor(aPalette);
+		g->SetColor(Color(aColor.mRed, aColor.mGreen, aColor.mBlue, aAlpha));
+		Image* aImage = (aPalette == ZOMBATAR_PART_COLOR_NONE_1 || aPalette == ZOMBATAR_PART_COLOR_NONE_2) ? IMAGE_ZOMBATAR_COLORPICKER_NONE : IMAGE_ZOMBATAR_COLORPICKER;
+		Rect aRect = GetColorRect(i);
+		g->DrawImage(aImage, aRect.mX, aRect.mY);
+	}
+	g->SetColorizeImages(false);
+	g->SetColor(Color::White);
+}
+
 void ZombatarWidget::CreatePreviewZombie()
 {
 	if (mPreviewZombie)
@@ -1115,48 +1159,93 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 	for (int i = 0; i < aItemCount; i++)
 	{
 		Rect aRect = GetItemRect(i);
-		bool aSelected = mPart[mPage] == aBaseIndex + i;
+		int aPartIndex = aBaseIndex + i;
+		bool aSelected = mPart[mPage] == aPartIndex;
 		bool aHover = i == mHoverGridCell;
-		g->DrawImage((aSelected || aHover) ? IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT : IMAGE_ZOMBATAR_ACCESSORY_BG, aRect.mX, aRect.mY);
-		if (mPage == ZOMBATAR_PAGE_BACKDROPS)
+		bool aDim = !aSelected && !aHover;
+
+		if (aDim)
 		{
-			Image* aImage = GetBackgroundImage(aBaseIndex + i);
-			if (aImage)
-				g->DrawImage(aImage, Rect(aRect.mX + 6, aRect.mY + 4, std::max(8, aRect.mWidth - 12), std::max(8, aRect.mHeight - 8)), Rect(0, 0, aImage->mWidth, aImage->mHeight));
+			g->SetColorizeImages(true);
+			g->SetColor(ZOMBATAR_CELL_DIM_COLOR);
 		}
-		else
+		g->DrawImage(aHover ? IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT : IMAGE_ZOMBATAR_ACCESSORY_BG, aRect.mX, aRect.mY);
+
+		if (mPage == ZOMBATAR_PAGE_CLOTHES && IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN && IMAGE_ZOMBATAR_ZOMBIE_BLANK)
 		{
-			Image* aImage = GetPartImage(mPage, aBaseIndex + i);
-			if (aImage)
-				g->DrawImage(aImage, Rect(aRect.mX + 3, aRect.mY + 1, std::max(8, aRect.mWidth - 6), std::max(8, aRect.mHeight - 6)), Rect(0, 0, aImage->mWidth, aImage->mHeight));
+			g->PushState();
+			g->ClipRect(Rect(aRect.mX + ZOMBATAR_CELL_INSET, aRect.mY + ZOMBATAR_CELL_INSET,
+				aRect.mWidth - ZOMBATAR_CELL_INSET, aRect.mHeight - ZOMBATAR_CELL_INSET));
+			Color aSkinColor = ZombatarGetColor(mColor[ZOMBATAR_PAGE_SKIN]);
+			aSkinColor.mAlpha = aDim ? 0x80 : 0xff;
+			g->SetColorizeImages(true);
+			g->SetColor(aSkinColor);
+			g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN,
+				Rect(aRect.mX - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mY - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mWidth, aRect.mHeight),
+				Rect(0, 0, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN->mWidth, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN->mHeight));
+			g->SetColorizeImages(false);
+			g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK,
+				Rect(aRect.mX - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mY - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mWidth, aRect.mHeight),
+				Rect(0, 0, IMAGE_ZOMBATAR_ZOMBIE_BLANK->mWidth, IMAGE_ZOMBATAR_ZOMBIE_BLANK->mHeight));
+			g->PopState();
+			if (aDim)
+			{
+				g->SetColorizeImages(true);
+				g->SetColor(ZOMBATAR_CELL_DIM_COLOR);
+			}
+		}
+
+		Image* aImage = (mPage == ZOMBATAR_PAGE_BACKDROPS) ? GetBackgroundImage(aPartIndex) : GetPartImage(mPage, aPartIndex);
+		if (aImage)
+		{
+			Rect aIconRect = FitIconRect(aImage, aRect);
+			Image* aMask = GetPartMaskImage(mPage, aPartIndex);
+			if (aMask)
+			{
+				const ZombatarPartLayout* aLayout = GetPartLayout(mPage, aPartIndex);
+				float aScaleX = (float)aIconRect.mWidth / (float)aImage->mWidth;
+				float aScaleY = (float)aIconRect.mHeight / (float)aImage->mHeight;
+				int aMaskX = aIconRect.mX + (aLayout ? (int)(aLayout->mColorOffsetX * aScaleX) : 0);
+				int aMaskY = aIconRect.mY + (aLayout ? (int)(aLayout->mColorOffsetY * aScaleY) : 0);
+				g->DrawImage(aMask, Rect(aMaskX, aMaskY, (int)(aMask->mWidth * aScaleX), (int)(aMask->mHeight * aScaleY)), Rect(0, 0, aMask->mWidth, aMask->mHeight));
+			}
+			g->DrawImage(aImage, aIconRect, Rect(0, 0, aImage->mWidth, aImage->mHeight));
+		}
+
+		if (aDim)
+		{
+			g->SetColorizeImages(false);
+			g->SetColor(Color::White);
 		}
 	}
 
 	if (PageAllowsNone())
 	{
 		Rect aRect = GetItemRect(aItemCount);
-		g->DrawImage(IMAGE_ZOMBATAR_ACCESSORY_BG_NONE, aRect.mX, aRect.mY);
-		if (mPart[mPage] < 0 || mHoverGridCell == aItemCount)
-			g->DrawImage(IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT, aRect.mX, aRect.mY);
-	}
-
-	if (mPage == ZOMBATAR_PAGE_SKIN)
-	{
-		g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
-		for (int i = 0; i < ZOMBATAR_SKIN_COLOR_COUNT; i++)
+		bool aSelected = mPart[mPage] < 0;
+		bool aHover = mHoverGridCell == aItemCount;
+		bool aDim = !aSelected && !aHover;
+		if (aDim)
 		{
-			Rect aRect = GetColorRect(i);
-			bool aSelected = mColor[ZOMBATAR_PAGE_SKIN] == i;
-			bool aHover = i == mHoverColorCell;
-			g->DrawImage((aSelected || aHover) ? IMAGE_ZOMBATAR_COLORPICKER_HIGHLIGHT : IMAGE_ZOMBATAR_COLORPICKER, aRect.mX, aRect.mY);
-			g->SetColor(ZombatarGetColor(i));
-			g->FillRect(aRect.mX + 4, aRect.mY + 4, std::max(4, aRect.mWidth - 8), std::max(4, aRect.mHeight - 8));
+			g->SetColorizeImages(true);
+			g->SetColor(ZOMBATAR_CELL_DIM_COLOR);
+		}
+		g->DrawImage(aHover ? IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT : IMAGE_ZOMBATAR_ACCESSORY_BG, aRect.mX, aRect.mY);
+		g->DrawImage(IMAGE_ZOMBATAR_ACCESSORY_BG_NONE, aRect.mX, aRect.mY);
+		if (aDim)
+		{
+			g->SetColorizeImages(false);
 			g->SetColor(Color::White);
 		}
 	}
+
+	g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
+	if (mPage == ZOMBATAR_PAGE_SKIN)
+	{
+		DrawColorSwatches(g, 0, ZOMBATAR_SKIN_COLOR_COUNT, mColor[ZOMBATAR_PAGE_SKIN]);
+	}
 	else
 	{
-		g->DrawImage(IMAGE_ZOMBATAR_COLORS_BG, ZOMBATAR_COLORS_X, ZOMBATAR_COLORS_Y);
 		int aMode = mPart[mPage] < 0 ? ZOMBATAR_COLOR_MODE_NONE : GetPartColorMode(mPage, mPart[mPage]);
 		if (aMode == ZOMBATAR_COLOR_MODE_NONE)
 		{
@@ -1168,23 +1257,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 		}
 		else
 		{
-			int aBase, aNoneValue;
-			GetPartColorRange(aMode, aBase, aNoneValue);
-			for (int i = 0; i < ZOMBATAR_PART_COLOR_COUNT; i++)
-			{
-				Rect aRect = GetColorRect(i);
-				bool aNone = i == ZOMBATAR_PART_COLOR_NONE_SWATCH;
-				bool aSelected = aNone ? (mColor[mPage] < 0 || mColor[mPage] == aNoneValue) : mColor[mPage] == aBase + i;
-				bool aHover = i == mHoverColorCell;
-				int aPalette = aNone ? aNoneValue : aBase + i;
-				g->DrawImage((aSelected || aHover) ? IMAGE_ZOMBATAR_COLORPICKER_HIGHLIGHT : (aNone ? IMAGE_ZOMBATAR_COLORPICKER_NONE : IMAGE_ZOMBATAR_COLORPICKER), aRect.mX, aRect.mY);
-				if (!aNone)
-				{
-					g->SetColor(ZombatarGetColor(aPalette));
-					g->FillRect(aRect.mX + 4, aRect.mY + 4, std::max(4, aRect.mWidth - 8), std::max(4, aRect.mHeight - 8));
-					g->SetColor(Color::White);
-				}
-			}
+			DrawColorSwatches(g, ZombatarColorBaseForMode(aMode), ZOMBATAR_PART_COLOR_COUNT, mColor[mPage]);
 		}
 	}
 
@@ -1285,13 +1358,13 @@ void ZombatarWidget::MouseMove(int x, int y)
 	int aItemCount = GetItemCountForPage();
 	for (int i = 0; i < aItemCount; i++)
 	{
-		if (GetItemRect(i).Contains(x, y))
+		if (GetItemHitRect(i).Contains(x, y))
 		{
 			mHoverGridCell = i;
 			break;
 		}
 	}
-	if (mHoverGridCell < 0 && PageAllowsNone() && GetItemRect(aItemCount).Contains(x, y))
+	if (mHoverGridCell < 0 && PageAllowsNone() && GetItemHitRect(aItemCount).Contains(x, y))
 		mHoverGridCell = aItemCount;
 
 	if (PageAllowsColors())
@@ -1317,7 +1390,7 @@ void ZombatarWidget::HandleGridClick(int x, int y)
 	int aBaseIndex = mSubPage * ZOMBATAR_GRID_PAGE;
 	for (int i = 0; i < aItemCount; i++)
 	{
-		if (GetItemRect(i).Contains(x, y))
+		if (GetItemHitRect(i).Contains(x, y))
 		{
 			mPart[mPage] = aBaseIndex + i;
 			UpdateButtonState();
@@ -1325,7 +1398,7 @@ void ZombatarWidget::HandleGridClick(int x, int y)
 		}
 	}
 
-	if (PageAllowsNone() && GetItemRect(aItemCount).Contains(x, y))
+	if (PageAllowsNone() && GetItemHitRect(aItemCount).Contains(x, y))
 	{
 		mPart[mPage] = -1;
 		UpdateButtonState();
@@ -1351,13 +1424,12 @@ void ZombatarWidget::HandleColorClick(int x, int y)
 	}
 
 	int aMode = GetPartColorMode(mPage, mPart[mPage]);
-	int aBase, aNoneValue;
-	GetPartColorRange(aMode, aBase, aNoneValue);
+	int aBase = ZombatarColorBaseForMode(aMode);
 	for (int i = 0; i < ZOMBATAR_PART_COLOR_COUNT; i++)
 	{
 		if (GetColorRect(i).Contains(x, y))
 		{
-			mColor[mPage] = i == ZOMBATAR_PART_COLOR_NONE_SWATCH ? aNoneValue : aBase + i;
+			mColor[mPage] = aBase + i;
 			return;
 		}
 	}
