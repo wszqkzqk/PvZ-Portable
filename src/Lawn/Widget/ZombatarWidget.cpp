@@ -438,6 +438,8 @@ void ZombatarWidget::RemovedFromManager(WidgetManager* theWidgetManager)
 void ZombatarWidget::Update()
 {
 	Widget::Update();
+	if (mState == ZOMBATAR_STATE_CREATE && mPart[mPage] < 0 && mColor[mPage] != ZOMBATAR_PART_COLOR_NONE_2)
+		mColor[mPage] = ZOMBATAR_PART_COLOR_NONE_2;
 	if (mPreviewZombie)
 		mPreviewZombie->Update();
 	MarkDirty();
