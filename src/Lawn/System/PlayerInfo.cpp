@@ -163,7 +163,10 @@ void PlayerInfo::SyncDetails(DataSync& theSync)
 			{
 				theSync.SyncBytes(mZombatarData.data(), static_cast<uint32_t>(mZombatarData.size()));
 			}
-			theSync.SyncBytes(mMiniGameCompletionFlags, sizeof(mMiniGameCompletionFlags));
+			{
+				unsigned char aMiniGameFlags[0x14]; // consumed and discarded: derived from mChallengeRecords on save
+				theSync.SyncBytes(aMiniGameFlags, sizeof(aMiniGameFlags));
+			}
 
 			uint8_t aZombatarCreatedBefore = 0;
 			theSync.SyncUInt8(aZombatarCreatedBefore);
@@ -174,7 +177,6 @@ void PlayerInfo::SyncDetails(DataSync& theSync)
 			mZombatarAccepted = 0;
 			mZombatarHeadCount = 0;
 			mZombatarData.clear();
-			memset(mMiniGameCompletionFlags, 0, sizeof(mMiniGameCompletionFlags));
 			mZombatarCreatedBefore = 0;
 		}
 		return;
@@ -196,7 +198,14 @@ void PlayerInfo::SyncDetails(DataSync& theSync)
 	{
 		theSync.SyncBytes(mZombatarData.data(), aZombatarDataBytes);
 	}
-	theSync.SyncBytes(mMiniGameCompletionFlags, sizeof(mMiniGameCompletionFlags));
+	{
+		unsigned char aMiniGameFlags[0x14] = {};
+		for (int i = 0; i < 20; i++)
+		{
+			aMiniGameFlags[i] = mChallengeRecords[i + 0x0F] > 0 ? 1 : 0;
+		}
+		theSync.SyncBytes(aMiniGameFlags, sizeof(aMiniGameFlags));
+	}
 
 	uint8_t aZombatarCreatedBefore = mZombatarCreatedBefore ? 1 : 0;
 	theSync.SyncUInt8(aZombatarCreatedBefore);
@@ -291,7 +300,6 @@ void PlayerInfo::Reset()
 	mZombatarAccepted = 0;
 	mZombatarHeadCount = 0;
 	mZombatarData.clear();
-	memset(mMiniGameCompletionFlags, 0, sizeof(mMiniGameCompletionFlags));
 	mZombatarCreatedBefore = 0;
 }
 

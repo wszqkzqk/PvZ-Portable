@@ -104,7 +104,7 @@ public:
     unsigned char       mZombatarAccepted;                  //+GOTY: 0x28
     uint32_t            mZombatarHeadCount;                 //+GOTY: 0x29
     std::vector<unsigned char> mZombatarData;               // raw 0x48 * count
-    unsigned char       mMiniGameCompletionFlags[0x14];     // mini-game completion flags, index = mGameMode - GAMEMODE_CHALLENGE_WAR_AND_PEAS
+    // mini-game completion flags (20 bytes in the save after the Zombatar records) are derived from mChallengeRecords at save time; no runtime field
     unsigned char       mZombatarCreatedBefore;             // created at least one Zombatar (0/1)
 
 public:

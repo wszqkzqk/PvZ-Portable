@@ -1406,9 +1406,6 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel()
 {
 	bool aUnlockedNewChallenge = false;
 
-	if (mGameMode >= GameMode::GAMEMODE_CHALLENGE_WAR_AND_PEAS && mGameMode <= GameMode::GAMEMODE_CHALLENGE_FINAL_BOSS)
-		mPlayerInfo->mMiniGameCompletionFlags[static_cast<int>(mGameMode) - static_cast<int>(GameMode::GAMEMODE_CHALLENGE_WAR_AND_PEAS)] = 1;
-
 	if (IsAdventureMode())
 	{
 		if (mBoard->mLevel == FINAL_LEVEL)
