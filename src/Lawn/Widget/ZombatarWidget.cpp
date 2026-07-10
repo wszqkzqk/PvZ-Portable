@@ -454,7 +454,7 @@ void ZombatarWidget::Open()
 	mMaxSubPages = 0;
 	mPage = ZOMBATAR_PAGE_SKIN;
 	mDeleteHover = false;
-	mCurrentIndex = mApp->mPlayerInfo->mZombatarIndex;
+	mCurrentIndex = 0;
 	ClampCurrentIndex();
 
 	if (GetHeadCount() > 0)
@@ -513,14 +513,10 @@ void ZombatarWidget::ClampCurrentIndex()
 	if (aCount <= 0)
 	{
 		mCurrentIndex = 0;
-		if (mApp->mPlayerInfo)
-			mApp->mPlayerInfo->mZombatarIndex = -1;
 	}
 	else
 	{
 		mCurrentIndex = ClampRange(mCurrentIndex, 0, aCount - 1);
-		if (mApp->mPlayerInfo)
-			mApp->mPlayerInfo->mZombatarIndex = mCurrentIndex;
 	}
 }
 
@@ -595,7 +591,6 @@ bool ZombatarWidget::SaveDraft()
 	EncodeRecord(aPlayerInfo->mZombatarData.data() + aOffset);
 	aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
 	mCurrentIndex = static_cast<int>(aOffset / ZOMBATAR_RECORD_SIZE);
-	aPlayerInfo->mZombatarIndex = mCurrentIndex;
 
 	if (!ExportAvatarPNG(aPlayerInfo->mZombatarData.data() + aOffset, mCurrentIndex + 1))
 	{
@@ -624,7 +619,6 @@ void ZombatarWidget::DeleteCurrent()
 	ClampCurrentIndex();
 	std::vector<unsigned char> aOldData = aPlayerInfo->mZombatarData;
 	uint32_t aOldHeadCount = aPlayerInfo->mZombatarHeadCount;
-	int32_t aOldZombatarIndex = aPlayerInfo->mZombatarIndex;
 	int aOldIndex = mCurrentIndex;
 	unsigned char* aData = aPlayerInfo->mZombatarData.data();
 	size_t aOffset = static_cast<size_t>(mCurrentIndex) * ZOMBATAR_RECORD_SIZE;
@@ -634,12 +628,10 @@ void ZombatarWidget::DeleteCurrent()
 		memmove(aData + aOffset, aData + aTailOffset, aTailBytes);
 	aPlayerInfo->mZombatarData.resize(aPlayerInfo->mZombatarData.size() - ZOMBATAR_RECORD_SIZE);
 	aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
-	aPlayerInfo->mZombatarIndex = GetHeadCount() > 0 ? ClampRange(aOldIndex, 0, GetHeadCount() - 1) : -1;
 	if (!ExportAllAvatarPNGs())
 	{
 		aPlayerInfo->mZombatarData = aOldData;
 		aPlayerInfo->mZombatarHeadCount = aOldHeadCount;
-		aPlayerInfo->mZombatarIndex = aOldZombatarIndex;
 		mCurrentIndex = aOldIndex;
 		ExportAllAvatarPNGs();
 		mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Export Failed", "The Zombatar image files could not be updated.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
@@ -1530,7 +1522,6 @@ void ZombatarWidget::ButtonDepress(int theId)
 		if (mCurrentIndex > 0)
 		{
 			mCurrentIndex--;
-			mApp->mPlayerInfo->mZombatarIndex = mCurrentIndex;
 			LoadCurrentToDraft();
 			UpdateButtonState();
 		}
@@ -1540,7 +1531,6 @@ void ZombatarWidget::ButtonDepress(int theId)
 		if (mCurrentIndex + 1 < GetHeadCount())
 		{
 			mCurrentIndex++;
-			mApp->mPlayerInfo->mZombatarIndex = mCurrentIndex;
 			LoadCurrentToDraft();
 			UpdateButtonState();
 		}

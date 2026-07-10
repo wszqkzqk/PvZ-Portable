@@ -104,8 +104,7 @@ public:
     unsigned char       mZombatarAccepted;                  //+GOTY: 0x28
     uint32_t            mZombatarHeadCount;                 //+GOTY: 0x29
     std::vector<unsigned char> mZombatarData;               // raw 0x48 * count
-    int32_t             mZombatarIndex;                     // selected Zombatar index, mirrored into the trailing block
-    unsigned char       mZombatarTrailingUnknown[0x14];     // trailing Zombatar metadata; first uint32 stores selected index
+    unsigned char       mMiniGameCompletionFlags[0x14];     // mini-game completion flags, index = mGameMode - GAMEMODE_CHALLENGE_WAR_AND_PEAS
     unsigned char       mZombatarCreatedBefore;             // created at least one Zombatar (0/1)
 
 public:
