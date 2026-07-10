@@ -949,7 +949,7 @@ void ZombatarWidget::DrawAvatarBox(Graphics* g)
 		ClampCurrentIndex();
 		aRecord = mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE;
 	}
-	else if (mState == ZOMBATAR_STATE_CREATE)
+	else if (mState == ZOMBATAR_STATE_CREATE || mState == ZOMBATAR_STATE_CONFIRM)
 	{
 		EncodeRecord(aDraft);
 		aRecord = aDraft;
@@ -1047,6 +1047,8 @@ void ZombatarWidget::Draw(Graphics* g)
 
 	DrawMain(g);
 	DrawAvatarBox(g);
+	if (mState != ZOMBATAR_STATE_LIST)
+		DrawDraftAvatar(g, ZOMBATAR_PREVIEW_X, ZOMBATAR_PREVIEW_Y);
 	if (mState == ZOMBATAR_STATE_LIST)
 		DrawList(g);
 	else if (mState == ZOMBATAR_STATE_CONFIRM)
@@ -1107,8 +1109,6 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 			FONT_DWARVENTODCRAFT15, Color(254, 227, 0, 175), DS_ALIGN_CENTER);
 		g->SetColor(Color::White);
 	}
-
-	DrawDraftAvatar(g, ZOMBATAR_PREVIEW_X, ZOMBATAR_PREVIEW_Y);
 
 	int aItemCount = GetItemCountForPage();
 	int aBaseIndex = mSubPage * ZOMBATAR_GRID_PAGE;
@@ -1243,7 +1243,7 @@ void ZombatarWidget::UpdateButtonState()
 	mSubPage = ClampRange(mSubPage, 0, mMaxSubPages);
 	bool aPaged = aCreate && mMaxSubPages > 0;
 
-	mBackButton->SetVisible(aCreate || aList);
+	mBackButton->SetVisible(aCreate || aList || aConfirm);
 	mConfirmBackButton->SetVisible(aConfirm);
 	mViewButton->SetVisible(aCreate && aCount > 0);
 	mFinishedButton->SetVisible(aCreate || aConfirm);
