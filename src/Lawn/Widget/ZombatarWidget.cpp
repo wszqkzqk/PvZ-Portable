@@ -438,8 +438,6 @@ void ZombatarWidget::RemovedFromManager(WidgetManager* theWidgetManager)
 void ZombatarWidget::Update()
 {
 	Widget::Update();
-	if (mState == ZOMBATAR_STATE_CREATE && mPart[mPage] < 0 && mColor[mPage] != ZOMBATAR_PART_COLOR_NONE_2)
-		mColor[mPage] = ZOMBATAR_PART_COLOR_NONE_2;
 	if (mPreviewZombie)
 		mPreviewZombie->Update();
 	MarkDirty();
@@ -1386,7 +1384,10 @@ void ZombatarWidget::HandleGridClick(int x, int y)
 	{
 		if (GetItemHitRect(i).Contains(x, y))
 		{
-			mPart[mPage] = aBaseIndex + i;
+			int aPartIndex = aBaseIndex + i;
+			mPart[mPage] = aPartIndex;
+			if (GetPartColorMode(mPage, aPartIndex) == ZOMBATAR_COLOR_MODE_NONE)
+				mColor[mPage] = ZOMBATAR_COLOR_NONE;
 			UpdateButtonState();
 			return;
 		}
@@ -1395,6 +1396,7 @@ void ZombatarWidget::HandleGridClick(int x, int y)
 	if (PageAllowsNone() && GetItemHitRect(aItemCount).Contains(x, y))
 	{
 		mPart[mPage] = -1;
+		mColor[mPage] = ZOMBATAR_COLOR_NONE;
 		UpdateButtonState();
 	}
 }

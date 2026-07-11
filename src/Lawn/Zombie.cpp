@@ -3387,7 +3387,7 @@ void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
         { ZOMBATAR_SLOT_TIDBITS, ZOMBATAR_SLOT_TIDBITS_COLOR, 14, "tidBits_", false, false },
         { ZOMBATAR_SLOT_EYEWEAR, ZOMBATAR_SLOT_EYEWEAR_COLOR, 16, "eyeWear_", false, false },
         { ZOMBATAR_SLOT_ACCESSORY, ZOMBATAR_SLOT_ACCESSORY_COLOR, 15, "accessories_", true, false },
-        { ZOMBATAR_SLOT_FACIAL_HAIR, ZOMBATAR_SLOT_FACIAL_HAIR_COLOR, 24, "facialHair_", false, true }
+        { ZOMBATAR_SLOT_FACIAL_HAIR, ZOMBATAR_SLOT_FACIAL_HAIR_COLOR, 25, "facialHair_", false, true }
     };
 
     for (const RuntimePart& aPart : aRuntimeParts)
