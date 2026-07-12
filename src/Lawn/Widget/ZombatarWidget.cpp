@@ -506,7 +506,8 @@ bool ZombatarWidget::CanSaveNewHead() const
 
 void ZombatarWidget::ShowMaxHeadsMessage()
 {
-	mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Limit Reached", "This profile already has the maximum number of saved Zombatars.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
+	mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Limit Reached",
+		"This profile already has the maximum number of saved Zombatars.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
 }
 
 void ZombatarWidget::ClampCurrentIndex()
@@ -601,7 +602,8 @@ bool ZombatarWidget::SaveDraft()
 		aPlayerInfo->mZombatarData.resize(aOffset);
 		aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
 		ClampCurrentIndex();
-		mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Export Failed", "The Zombatar image could not be written.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
+		mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Export Failed",
+			"The Zombatar image could not be written.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
 		return false;
 	}
 
@@ -638,7 +640,8 @@ void ZombatarWidget::DeleteCurrent()
 		aPlayerInfo->mZombatarHeadCount = aOldHeadCount;
 		mCurrentIndex = aOldIndex;
 		ExportAllAvatarPNGs();
-		mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Export Failed", "The Zombatar image files could not be updated.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
+		mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Export Failed",
+			"The Zombatar image files could not be updated.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
 		return;
 	}
 	EraseAvatarPNG(aCount);
@@ -1275,7 +1278,8 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 	{
 		g->SetFont(FONT_DWARVENTODCRAFT12);
 		g->SetColor(Color(255, 255, 255));
-		std::string aPage = Sexy::StrFormat("Page %d / %d", mSubPage + 1, mMaxSubPages + 1);
+		std::string aPage = Sexy::StrFormat(
+			mApp->GetString("ZOMBATAR_PAGE", "Page %d / %d").c_str(), mSubPage + 1, mMaxSubPages + 1);
 		g->DrawString(aPage, 321, 441);
 	}
 }
