@@ -117,7 +117,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
     TOD_ASSERT(theType >= 0 && theType <= ZombieType::NUM_ZOMBIE_TYPES);
 
     int aZombatarRecordIndex = -1;
-    if (theType == ZombieType::ZOMBIE_FLAG)
+    if (theType == ZombieType::ZOMBIE_FLAG && mBoard)
     {
         PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
         if (aPlayerInfo && !aPlayerInfo->mZombatarData.empty())

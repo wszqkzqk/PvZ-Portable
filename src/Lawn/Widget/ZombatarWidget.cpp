@@ -1302,6 +1302,8 @@ void ZombatarWidget::DrawConfirm(Graphics* g)
 void ZombatarWidget::ChangeState(ZombatarWidgetState theState)
 {
 	mState = theState;
+	mHoverGridCell = -1;
+	mHoverColorCell = -1;
 	mDeleteHover = false;
 	UpdateButtonState();
 }
