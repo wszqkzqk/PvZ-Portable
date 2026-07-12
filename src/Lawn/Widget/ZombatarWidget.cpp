@@ -540,6 +540,8 @@ void ZombatarWidget::DecodeRecord(const unsigned char* theRecord, int* thePart, 
 	{
 		ZombatarPage aPage = static_cast<ZombatarPage>(i);
 		int aItemCount = GetTotalItemsForPage(aPage);
+		if (aItemCount > 16)
+			aItemCount += aItemCount / 17;
 		int aPart = ZombatarReadSignedRecordSlot(theRecord, SlotForPart(aPage));
 		int aColor = ZombatarReadSignedRecordSlot(theRecord, SlotForColor(aPage));
 
