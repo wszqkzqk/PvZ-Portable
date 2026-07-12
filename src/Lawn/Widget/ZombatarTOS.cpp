@@ -133,7 +133,7 @@ void ZombatarTOS::Draw(Graphics* g)
 	if (mTextHeight <= 0)
 		mTextHeight = TodDrawStringWrappedHelper(g, mBody, Rect(0, 0, TOS_TEXT_W, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
 
-	int aMaxScroll = std::max(0, mTextHeight - TOS_TEXT_Y);
+	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_H);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 
 	g->PushState();
@@ -217,10 +217,10 @@ void ZombatarTOS::KeyDown(KeyCode theKey)
 
 void ZombatarTOS::MouseWheel(int theDelta)
 {
-	if (mTextHeight <= TOS_TEXT_Y)
+	if (mTextHeight <= TOS_CLIP_H)
 		return;
 
-	int aMaxScroll = std::max(0, mTextHeight - TOS_TEXT_Y);
+	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_H);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 	aOffset -= theDelta * 12;
 	mTOSSlider->SetValue(std::max(0.0, std::min(1.0, static_cast<double>(aOffset) / aMaxScroll)));

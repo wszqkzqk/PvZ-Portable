@@ -323,7 +323,7 @@ static Rect FitIconRect(Image* theImage, const Rect& theCell)
 	}
 	else if (aOvflH)
 	{
-		aW = static_cast<int>(aW * (static_cast<float>(aAvailH) / static_cast<float>(aW)));
+		aW = static_cast<int>(aW * (static_cast<float>(aAvailH) / static_cast<float>(aH)));
 		aH = aAvailH;
 	}
 	return Rect(theCell.mX + (aCellW - aW) / 2, theCell.mY + (aCellH - aH) / 2, aW, aH);
