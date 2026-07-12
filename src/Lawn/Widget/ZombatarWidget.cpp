@@ -699,7 +699,7 @@ int ZombatarWidget::GetTotalItemsForPage(ZombatarPage thePage) const
 	return ZOMBATAR_ITEMS_PER_PAGE[ClampRange(static_cast<int>(thePage), 0, NUM_ZOMBATAR_PAGES - 1)];
 }
 
-int ZombatarWidget::GetItemCountForPage() const
+int ZombatarWidget::GetSubPageItemCount() const
 {
 	int aTotal = GetTotalItemsForPage(mPage);
 	int aRemaining = aTotal - mSubPage * ZOMBATAR_GRID_PAGE;
@@ -1081,7 +1081,7 @@ void ZombatarWidget::Draw(Graphics* g)
 	if (!mApp->mPlayerInfo)
 		return;
 
-	DrawMain(g);
+	DrawMainBackground(g);
 	DrawAvatarBox(g);
 	if (mState != ZOMBATAR_STATE_LIST)
 		DrawDraftAvatar(g, ZOMBATAR_PREVIEW_X, ZOMBATAR_PREVIEW_Y);
@@ -1096,7 +1096,7 @@ void ZombatarWidget::Draw(Graphics* g)
 		g->DrawImage(IMAGE_ZOMBATAR_DISPLAY_WINDOW, 5, 0);
 }
 
-void ZombatarWidget::DrawMain(Graphics* g)
+void ZombatarWidget::DrawMainBackground(Graphics* g)
 {
 	g->DrawImage(IMAGE_ZOMBATAR_MAIN_BG, 0, 0);
 }
@@ -1146,7 +1146,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 		g->SetColor(Color::White);
 	}
 
-	int aItemCount = GetItemCountForPage();
+	int aItemCount = GetSubPageItemCount();
 	int aBaseIndex = mSubPage * ZOMBATAR_GRID_PAGE;
 	for (int i = 0; i < aItemCount; i++)
 	{
@@ -1347,7 +1347,7 @@ void ZombatarWidget::MouseMove(int x, int y)
 	if (mState != ZOMBATAR_STATE_CREATE)
 		return;
 
-	int aItemCount = GetItemCountForPage();
+	int aItemCount = GetSubPageItemCount();
 	for (int i = 0; i < aItemCount; i++)
 	{
 		if (GetItemHitRect(i).Contains(x, y))
@@ -1373,16 +1373,16 @@ void ZombatarWidget::MouseMove(int x, int y)
 	}
 }
 
-void ZombatarWidget::HandleGridClick(int x, int y)
+void ZombatarWidget::HandleGridClick(int theX, int theY)
 {
 	if (mState != ZOMBATAR_STATE_CREATE)
 		return;
 
-	int aItemCount = GetItemCountForPage();
+	int aItemCount = GetSubPageItemCount();
 	int aBaseIndex = mSubPage * ZOMBATAR_GRID_PAGE;
 	for (int i = 0; i < aItemCount; i++)
 	{
-		if (GetItemHitRect(i).Contains(x, y))
+		if (GetItemHitRect(i).Contains(theX, theY))
 		{
 			int aPartIndex = aBaseIndex + i;
 			mPart[mPage] = aPartIndex;
@@ -1393,7 +1393,7 @@ void ZombatarWidget::HandleGridClick(int x, int y)
 		}
 	}
 
-	if (PageAllowsNone() && GetItemHitRect(aItemCount).Contains(x, y))
+	if (PageAllowsNone() && GetItemHitRect(aItemCount).Contains(theX, theY))
 	{
 		mPart[mPage] = -1;
 		mColor[mPage] = ZOMBATAR_COLOR_NONE;
@@ -1401,7 +1401,7 @@ void ZombatarWidget::HandleGridClick(int x, int y)
 	}
 }
 
-void ZombatarWidget::HandleColorClick(int x, int y)
+void ZombatarWidget::HandleColorClick(int theX, int theY)
 {
 	if (mState != ZOMBATAR_STATE_CREATE || !PageAllowsColors())
 		return;
@@ -1410,7 +1410,7 @@ void ZombatarWidget::HandleColorClick(int x, int y)
 	{
 		for (int i = 0; i < ZOMBATAR_SKIN_COLOR_COUNT; i++)
 		{
-			if (GetColorRect(i).Contains(x, y))
+			if (GetColorRect(i).Contains(theX, theY))
 			{
 				mColor[ZOMBATAR_PAGE_SKIN] = i;
 				return;
@@ -1423,7 +1423,7 @@ void ZombatarWidget::HandleColorClick(int x, int y)
 	int aBase = ZombatarColorBaseForMode(aMode);
 	for (int i = 0; i < ZOMBATAR_PART_COLOR_COUNT; i++)
 	{
-		if (GetColorRect(i).Contains(x, y))
+		if (GetColorRect(i).Contains(theX, theY))
 		{
 			mColor[mPage] = aBase + i;
 			return;

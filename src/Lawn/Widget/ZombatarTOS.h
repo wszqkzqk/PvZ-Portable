@@ -40,7 +40,7 @@ class ZombatarTOS : public LawnDialog, public Sexy::SliderListener, public Sexy:
 protected:
 	enum
 	{
-		ZombatarTOS_TOSCheckbox = 500,
+		ZombatarTOS_Checkbox = 500,
 		ZombatarTOS_Accept = 501,
 		ZombatarTOS_Back = 502,
 		ZombatarTOS_Slider = 503
@@ -54,8 +54,8 @@ public:
 	int							mTextHeight;
 	bool						mFlashArrow;
 	int							mArrowAlpha;
-	int							mArrowDir;
-	std::string					mBody;
+	int							mArrowFadeDir;
+	std::string					mBodyText;
 
 public:
 	ZombatarTOS(LawnApp* theApp);

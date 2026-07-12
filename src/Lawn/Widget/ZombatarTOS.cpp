@@ -66,7 +66,7 @@ ZombatarTOS::ZombatarTOS(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_Z
 	mTextHeight = 0;
 	mFlashArrow = false;
 	mArrowAlpha = 0;
-	mArrowDir = 3;
+	mArrowFadeDir = 3;
 
 	mTOSSlider = new Slider(IMAGE_ZOMBATAR_TOS_SLIDER, IMAGE_ZOMBATAR_TOS_SLIDER_THUMB, ZombatarTOS::ZombatarTOS_Slider, this);
 	mTOSSlider->mHorizontal = false;
@@ -78,7 +78,7 @@ ZombatarTOS::ZombatarTOS(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_Z
 	mAcceptButton = MakeNewButton(ZombatarTOS::ZombatarTOS_Accept, this, "", nullptr,
 		IMAGE_ZOMBATAR_ACCEPT_BUTTON, IMAGE_ZOMBATAR_ACCEPT_BUTTON_HIGHLIGHT, nullptr);
 
-	mTOSCheckbox = MakeNewCheckbox(ZombatarTOS::ZombatarTOS_TOSCheckbox, this, false);
+	mTOSCheckbox = MakeNewCheckbox(ZombatarTOS::ZombatarTOS_Checkbox, this, false);
 
 	Resize(0, 0, TOS_DIALOG_W, TOS_DIALOG_H);
 }
@@ -128,17 +128,17 @@ void ZombatarTOS::Draw(Graphics* g)
 {
 	LawnDialog::Draw(g);
 
-	if (mBody.empty())
-		mBody = TodStringTranslate("[ZOMBATAR_TOS]");
+	if (mBodyText.empty())
+		mBodyText = TodStringTranslate("[ZOMBATAR_TOS]");
 	if (mTextHeight <= 0)
-		mTextHeight = TodDrawStringWrappedHelper(g, mBody, Rect(0, 0, TOS_TEXT_W, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
+		mTextHeight = TodDrawStringWrappedHelper(g, mBodyText, Rect(0, 0, TOS_TEXT_W, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
 
 	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_H);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 
 	g->PushState();
 	g->ClipRect(Rect(TOS_TEXT_X, TOS_TEXT_Y, TOS_TEXT_W, TOS_CLIP_H));
-	TodDrawStringWrapped(g, mBody, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_W, mTextHeight), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT);
+	TodDrawStringWrapped(g, mBodyText, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_W, mTextHeight), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT);
 	g->PopState();
 
 	if (mFlashArrow && IMAGE_ZOMBATAR_TOS_ARROW)
@@ -156,16 +156,16 @@ void ZombatarTOS::Update()
 	LawnDialog::Update();
 	if (mFlashArrow)
 	{
-		mArrowAlpha += mArrowDir;
+		mArrowAlpha += mArrowFadeDir;
 		if (mArrowAlpha >= 255)
 		{
 			mArrowAlpha = 255;
-			mArrowDir = -3;
+			mArrowFadeDir = -3;
 		}
 		else if (mArrowAlpha <= 0)
 		{
 			mArrowAlpha = 0;
-			mArrowDir = 3;
+			mArrowFadeDir = 3;
 		}
 		MarkDirty();
 	}
@@ -189,7 +189,7 @@ void ZombatarTOS::ButtonDepress(int theId)
 		{
 			mFlashArrow = true;
 			mArrowAlpha = 0;
-			mArrowDir = 3;
+			mArrowFadeDir = 3;
 			return;
 		}
 		if (mApp->mPlayerInfo)
@@ -228,7 +228,7 @@ void ZombatarTOS::MouseWheel(int theDelta)
 
 void ZombatarTOS::CheckboxChecked(int theId, bool checked)
 {
-	if (theId == ZombatarTOS::ZombatarTOS_TOSCheckbox && checked)
+	if (theId == ZombatarTOS::ZombatarTOS_Checkbox && checked)
 	{
 		mFlashArrow = false;
 		mArrowAlpha = 0;

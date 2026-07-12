@@ -130,7 +130,7 @@ public:
 	void						ButtonMouseMove(int, int, int) override {}
 
 private:
-	void						DrawMain(Graphics* g);
+	void						DrawMainBackground(Graphics* g);
 	void						DrawList(Graphics* g);
 	void						DrawCreate(Graphics* g);
 	void						DrawConfirm(Graphics* g);
@@ -146,7 +146,7 @@ private:
 	Rect						GetItemHitRect(int theIndex) const;
 	Rect						GetColorRect(int theIndex) const;
 	int							GetTotalItemsForPage(ZombatarPage thePage) const;
-	int							GetItemCountForPage() const;
+	int							GetSubPageItemCount() const;
 	bool						PageAllowsNone() const;
 	bool						PageAllowsColors() const;
 	Image*						GetCategoryImage(ZombatarPage thePage, bool theSelected, bool theOver) const;
@@ -161,8 +161,8 @@ private:
 	void						EncodeRecord(unsigned char* theRecord) const;
 	void						BackToSelector();
 	void						ShowMaxHeadsMessage();
-	void						HandleGridClick(int x, int y);
-	void						HandleColorClick(int x, int y);
+	void						HandleGridClick(int theX, int theY);
+	void						HandleColorClick(int theX, int theY);
 	void						UpdateButtonState();
 };
 

@@ -43,7 +43,7 @@
 #include "../Sexy.TodLib/Attachment.h"
 #include "../Sexy.TodLib/TodParticle.h"
 
-static std::string ZombatarTrackPrefix(const char* thePrefix, int theIndex)
+static std::string ZombatarTrackName(const char* thePrefix, int theIndex)
 {
     return Sexy::StrFormat("%s%02d", thePrefix, theIndex);
 }
@@ -3377,7 +3377,7 @@ void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
         int mMaxCount;
         const char* mPrefix;
         bool mRemapAccessory;
-        bool mCompactRange;
+        bool mCompactTrackRange;
     };
 
     static constexpr RuntimePart aRuntimeParts[] =
@@ -3396,11 +3396,11 @@ void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
         if (aPartIndex < 0 || aPartIndex >= aPart.mMaxCount)
             continue;
         int aTrackIndex = aPartIndex;
-        if (aPart.mCompactRange && aTrackIndex > 16)
+        if (aPart.mCompactTrackRange && aTrackIndex > 16)
             aTrackIndex -= aTrackIndex / 17;
         if (aPart.mRemapAccessory)
             aTrackIndex = ZombatarRemapAccessoryForRuntime(aTrackIndex);
-        std::string aPrefix = ZombatarTrackPrefix(aPart.mPrefix, aTrackIndex);
+        std::string aPrefix = ZombatarTrackName(aPart.mPrefix, aTrackIndex);
 
         if (!aHeadReanim->TrackExists(aPrefix.c_str()))
             continue;

@@ -1491,7 +1491,8 @@ void GameSelector::AddPreviewProfiles()
 
 // @Patoke: implemented functions
 // GOTY @Patoke: 0x450140
-void GameSelector::SlideTo(int theX, int theY) {
+void GameSelector::SlideTo(int theX, int theY)
+{
 	if (mSlideCounter > 0)
 		return;
 
@@ -1502,7 +1503,8 @@ void GameSelector::SlideTo(int theX, int theY) {
 	mStartY = mY;
 }
 
-void GameSelector::ShowZombatarScreen() {
+void GameSelector::ShowZombatarScreen()
+{
 	if (!mZombatarWidget)
 		return;
 	if (mApp->mPlayerInfo && !mApp->mPlayerInfo->mZombatarAccepted)
@@ -1512,7 +1514,8 @@ void GameSelector::ShowZombatarScreen() {
 }
 
 // GOTY @Patoke: 0x450200
-void GameSelector::ShowAchievementsScreen() {
+void GameSelector::ShowAchievementsScreen()
+{
 	SlideTo(0, -mApp->mHeight);
 	mWidgetManager->SetFocus(mAchievementsWidget);
 }
