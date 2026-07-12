@@ -383,7 +383,7 @@ public:
     void                            MowDown();
     void                            UpdateMowered();
     void                            DropFlag();
-    void                            SetupZombatarFlagReanim();
+    void                            SetupZombatarFlagReanim(int theRecordIndex);
     void                            ApplyZombatarHead(const unsigned char* theRecord);
     void                            DropPole();
     void                            DrawBossBackArm(Graphics* g, const ZombieDrawPosition& theDrawPos);

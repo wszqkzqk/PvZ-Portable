@@ -453,6 +453,8 @@ void ZombatarWidget::Open()
 	mSubPage = 0;
 	mMaxSubPages = 0;
 	mPage = ZOMBATAR_PAGE_SKIN;
+	mHoverGridCell = -1;
+	mHoverColorCell = -1;
 	mDeleteHover = false;
 	mCurrentIndex = 0;
 	ClampCurrentIndex();
@@ -782,7 +784,13 @@ Image* ZombatarWidget::GetPartImage(ZombatarPage thePage, int theIndex) const
 	case ZOMBATAR_PAGE_HATS: return theIndex < 14 ? aHats[theIndex] : nullptr;
 	case ZOMBATAR_PAGE_HAIR: return theIndex < 16 ? aHair[theIndex] : nullptr;
 	case ZOMBATAR_PAGE_EYEWEAR: return theIndex < 16 ? aEyewear[theIndex] : nullptr;
-	case ZOMBATAR_PAGE_FACIAL_HAIR: return theIndex < 24 ? aFacial[theIndex] : nullptr;
+	case ZOMBATAR_PAGE_FACIAL_HAIR:
+	{
+		int aIdx = theIndex;
+		if (aIdx > 16)
+			aIdx -= aIdx / 17;
+		return aIdx < 24 ? aFacial[aIdx] : nullptr;
+	}
 	case ZOMBATAR_PAGE_TIDBITS: return theIndex < 14 ? aTidbits[theIndex] : nullptr;
 	case ZOMBATAR_PAGE_ACCESSORY: return theIndex < 15 ? aAccessory[theIndex] : nullptr;
 	default: return nullptr;
@@ -828,7 +836,13 @@ Image* ZombatarWidget::GetPartMaskImage(ZombatarPage thePage, int theIndex) cons
 	case ZOMBATAR_PAGE_HATS: return theIndex < 14 ? aHatsMasks[theIndex] : nullptr;
 	case ZOMBATAR_PAGE_HAIR: return theIndex < 16 ? aHairMasks[theIndex] : nullptr;
 	case ZOMBATAR_PAGE_EYEWEAR: return theIndex < 16 ? aEyewearMasks[theIndex] : nullptr;
-	case ZOMBATAR_PAGE_FACIAL_HAIR: return theIndex < 24 ? aFacialMasks[theIndex] : nullptr;
+	case ZOMBATAR_PAGE_FACIAL_HAIR:
+	{
+		int aIdx = theIndex;
+		if (aIdx > 16)
+			aIdx -= aIdx / 17;
+		return aIdx < 24 ? aFacialMasks[aIdx] : nullptr;
+	}
 	default: return nullptr;
 	}
 }
@@ -1152,6 +1166,8 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 	{
 		Rect aRect = GetItemRect(i);
 		int aPartIndex = aBaseIndex + i;
+		if (aPartIndex > 16)
+			aPartIndex += aPartIndex / 17;
 		bool aSelected = mPart[mPage] == aPartIndex;
 		bool aHover = i == mHoverGridCell;
 		bool aDim = !aSelected && !aHover;
@@ -1286,6 +1302,7 @@ void ZombatarWidget::DrawConfirm(Graphics* g)
 void ZombatarWidget::ChangeState(ZombatarWidgetState theState)
 {
 	mState = theState;
+	mDeleteHover = false;
 	UpdateButtonState();
 }
 
@@ -1293,6 +1310,8 @@ void ZombatarWidget::ChangePage(ZombatarPage thePage)
 {
 	mPage = thePage;
 	mSubPage = 0;
+	mHoverGridCell = -1;
+	mHoverColorCell = -1;
 	UpdateButtonState();
 }
 
@@ -1385,6 +1404,8 @@ void ZombatarWidget::HandleGridClick(int theX, int theY)
 		if (GetItemHitRect(i).Contains(theX, theY))
 		{
 			int aPartIndex = aBaseIndex + i;
+			if (aPartIndex > 16)
+				aPartIndex += aPartIndex / 17;
 			mPart[mPage] = aPartIndex;
 			if (GetPartColorMode(mPage, aPartIndex) == ZOMBATAR_COLOR_MODE_NONE)
 				mColor[mPage] = ZOMBATAR_COLOR_NONE;
@@ -1544,6 +1565,7 @@ void ZombatarWidget::ButtonDepress(int theId)
 		if (mSubPage > 0)
 		{
 			mSubPage--;
+			mHoverGridCell = -1;
 			UpdateButtonState();
 		}
 		break;
@@ -1552,6 +1574,7 @@ void ZombatarWidget::ButtonDepress(int theId)
 		if (mSubPage < mMaxSubPages)
 		{
 			mSubPage++;
+			mHoverGridCell = -1;
 			UpdateButtonState();
 		}
 		break;

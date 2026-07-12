@@ -209,10 +209,7 @@ void ZombatarTOS::KeyDown(KeyCode theKey)
 	if (theKey == KeyCode::KEYCODE_ESCAPE)
 	{
 		ButtonDepress(ZombatarTOS::ZombatarTOS_Back);
-		return;
 	}
-
-	LawnDialog::KeyDown(theKey);
 }
 
 void ZombatarTOS::MouseWheel(int theDelta)

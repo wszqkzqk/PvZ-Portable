@@ -116,6 +116,18 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 {
     TOD_ASSERT(theType >= 0 && theType <= ZombieType::NUM_ZOMBIE_TYPES);
 
+    int aZombatarRecordIndex = -1;
+    if (theType == ZombieType::ZOMBIE_FLAG)
+    {
+        PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
+        if (aPlayerInfo && !aPlayerInfo->mZombatarData.empty())
+        {
+            int aCount = static_cast<int>(aPlayerInfo->mZombatarData.size() / ZOMBATAR_RECORD_SIZE);
+            if (aCount > 0)
+                aZombatarRecordIndex = Rand(aCount);
+        }
+    }
+
     mFromWave = theFromWave;
     mRow = theRow;
     mPosX = 780 + Rand(ZOMBIE_START_RANDOM_OFFSET);
@@ -550,7 +562,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
         ReanimatorTrackInstance* aTrackInstance = aBodyReanim->GetTrackInstanceByName("Zombie_flaghand");
         AttachReanim(aTrackInstance->mAttachmentID, aFlagReanim, 0.0f, 0.0f);
         aBodyReanim->mFrameBasePose = 0;
-        SetupZombatarFlagReanim();
+        SetupZombatarFlagReanim(aZombatarRecordIndex);
 
         mPosX = WIDE_BOARD_WIDTH;
         break;
@@ -3410,18 +3422,16 @@ void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
     }
 }
 
-void Zombie::SetupZombatarFlagReanim()
+void Zombie::SetupZombatarFlagReanim(int theRecordIndex)
 {
+    if (theRecordIndex < 0)
+        return;
+
     PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
     if (!aPlayerInfo || aPlayerInfo->mZombatarData.empty())
         return;
 
-    int aCount = static_cast<int>(aPlayerInfo->mZombatarData.size() / ZOMBATAR_RECORD_SIZE);
-    if (aCount <= 0)
-        return;
-
-    int aIndex = Rand(aCount);
-    const unsigned char* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(aIndex) * ZOMBATAR_RECORD_SIZE;
+    const unsigned char* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(theRecordIndex) * ZOMBATAR_RECORD_SIZE;
     ApplyZombatarHead(aRecord);
 }
 

@@ -866,6 +866,7 @@ static void SyncZombieTailPortable(PortableSaveContext& theContext, Zombie& theZ
 	theContext.SyncBool(theZombie.mIsFireBall);
 	SyncEnumU32(theContext, theZombie.mMoweredReanimID);
 	theContext.SyncInt32(theZombie.mLastPortalX);
+	SyncEnumU32(theContext, theZombie.mZombatarHeadReanimID);
 }
 
 static void SyncPlantTailPortable(PortableSaveContext& theContext, Plant& thePlant)
