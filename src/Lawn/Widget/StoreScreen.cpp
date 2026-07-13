@@ -1011,6 +1011,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
             else if (theStoreItem == STORE_ITEM_TREE_OF_WISDOM)
             {
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = 1;
+                mApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM - GAMEMODE_SURVIVAL_NORMAL_STAGE_1] = 1;
 
                 LawnDialog* aDialog = (LawnDialog*)mApp->DoDialog(
                     DIALOG_STORE_PURCHASE, 
