@@ -68,6 +68,96 @@ jobs:
         name: pvz-portable-archlinux
         path: dist/
 
+  build-portmaster-aarch64:
+    name: Build for PortMaster handhelds (Linux aarch64)
+    runs-on: ubuntu-22.04-arm
+    # Handheld firmware is old: TrimUI ships glibc 2.33 / GLIBCXX 3.4.28.
+    # Build inside 20.04 (glibc 2.31) so the binary runs there, but pull a newer
+    # compiler from the toolchain PPA because the code needs C++20, and link
+    # libstdc++ statically since the devices' own is too old.
+    container: ubuntu:20.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      CC: gcc-13
+      CXX: g++-13
+      PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+    steps:
+    - name: Install checkout prerequisites
+      run: |
+        apt-get update -qq
+        apt-get install -y -qq git curl ca-certificates software-properties-common
+
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Install Toolchain and Dependencies
+      run: |
+        add-apt-repository -y ppa:ubuntu-toolchain-r/test
+        apt-get update -qq
+        apt-get install -y -qq \
+          gcc-13 g++-13 \
+          cmake ninja-build pkg-config \
+          zlib1g-dev libjpeg-dev libpng-dev \
+          libogg-dev libvorbis-dev libmpg123-dev libflac-dev \
+          libasound2-dev libudev-dev
+
+    - name: Build SDL2 from Source
+      # 20.04 ships SDL2 2.0.10, which predates the SDL2::SDL2 CMake target.
+      # Only headers/link symbols are used here; the device provides libSDL2 at runtime.
+      run: |
+        curl -sL --retry 5 --retry-delay 3 --retry-all-errors \
+          https://libsdl.org/release/SDL2-2.0.14.tar.gz -o /tmp/sdl2.tar.gz
+        tar -xzf /tmp/sdl2.tar.gz -C /tmp
+        cmake -S /tmp/SDL2-2.0.14 -B /tmp/sdl2-build -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release -DSDL_STATIC=OFF -DCMAKE_INSTALL_PREFIX=/usr/local
+        cmake --build /tmp/sdl2-build --target install
+
+    - name: Build libopenmpt from Source
+      # 20.04 ships libopenmpt 0.4, which lacks openmpt_module_ctl_set_boolean.
+      run: |
+        curl -sL --retry 5 --retry-delay 3 --retry-all-errors \
+          https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-0.6.18+release.autotools.tar.gz \
+          -o /tmp/openmpt.tar.gz
+        mkdir -p /tmp/openmpt
+        tar -xzf /tmp/openmpt.tar.gz -C /tmp/openmpt --strip-components=1
+        cd /tmp/openmpt
+        ./configure --prefix=/usr/local \
+          --disable-openmpt123 --disable-examples --disable-tests --disable-doc
+        make -j"$(nproc)"
+        make install
+        ldconfig
+
+    - name: Build PvZ-Portable
+      run: |
+        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc"
+        cmake --build build
+
+    - name: Package PortMaster Layout
+      # PortMaster expects pvz_portable.<arch> plus a libs.<arch>/ the launcher puts
+      # on LD_LIBRARY_PATH. Bundle every non-system dependency, libstdc++ included:
+      # libopenmpt is a C++ shared library and the devices' libstdc++ is too old for it.
+      run: |
+        mkdir -p dist/pvz_portable/libs.aarch64
+        cp build/pvz-portable dist/pvz_portable/pvz_portable.aarch64
+        strip dist/pvz_portable/pvz_portable.aarch64
+        chmod +x dist/pvz_portable/pvz_portable.aarch64
+        ldd build/pvz-portable | awk '{print $3}' \
+          | grep -E 'libopenmpt|libmpg123|libogg|libvorbis|libjpeg|libpng|libz\.|libstdc\+\+' \
+          | while read -r lib; do cp -L "$lib" dist/pvz_portable/libs.aarch64/; done
+        strip --strip-unneeded dist/pvz_portable/libs.aarch64/*.so* || true
+        echo "--- bundled ---"
+        ls -la dist/pvz_portable dist/pvz_portable/libs.aarch64
+        echo "--- glibc floor (must be <= 2.31) ---"
+        strings -a dist/pvz_portable/pvz_portable.aarch64 | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sort -uV | tail -1
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: pvz-portable-portmaster-aarch64
+        path: dist/
+
   build-windows-msys2-ucrt64:
     name: Build for Windows (MSYS2 UCRT64)
     runs-on: windows-latest
