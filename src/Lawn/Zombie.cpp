@@ -3594,6 +3594,20 @@ void Zombie::DropHead(unsigned int theDamageFlags)
         }
     }
 
+    Reanimation* aZombatarHeadReanim = mApp->ReanimationTryToGet(mZombatarHeadReanimID);
+    if (aZombatarHeadReanim)
+    {
+        TodParticleSystem* aMustacheParticle = mApp->AddTodParticle(aPosX, aPosY, aRenderOrder, ParticleEffect::PARTICLE_ZOMBIE_MUSTACHE);
+        OverrideParticleColor(aMustacheParticle);
+        OverrideParticleScale(aMustacheParticle);
+
+        Image* aHairImage = aZombatarHeadReanim->GetCurrentTrackImage("hair_00");
+        if (aMustacheParticle && aHairImage)
+        {
+            aMustacheParticle->OverrideImage(nullptr, aHairImage);
+        }
+    }
+
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
     if (mBoard->mMustacheMode && aBodyReanim->TrackExists("Zombie_mustache"))
     {
