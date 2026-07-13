@@ -252,10 +252,6 @@ void PlayerInfo::DeleteUserFiles()
 {
 	std::string aFilename = GetAppDataPath(StrFormat("userdata/user%d.dat", mId));
 	gSexyAppBase->EraseFile(aFilename);
-	for (int i = 1; i <= MAX_ZOMBATAR_HEADS; i++)
-	{
-		gSexyAppBase->EraseFile(GetAppDataPath(StrFormat("userdata/Zombatar_%d_%d.png", mId, i)));
-	}
 
 	for (int i = 0; i < static_cast<int>(GameMode::NUM_GAME_MODES); i++)
 	{

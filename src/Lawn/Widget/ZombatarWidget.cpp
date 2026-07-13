@@ -30,16 +30,13 @@
 #include "../../GameConstants.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
 #include "graphics/Graphics.h"
-#include "graphics/MemoryImage.h"
 #include "graphics/Font.h"
-#include "imagelib/ImageLib.h"
 #include "misc/KeyCodes.h"
 #include "widget/Dialog.h"
 #include "widget/WidgetManager.h"
 
 #include <algorithm>
 #include <cstring>
-#include <vector>
 
 constexpr int ZOMBATAR_COLOR_NONE = -1;
 constexpr int ZOMBATAR_SKIN_COLOR_COUNT = 12;
@@ -68,7 +65,6 @@ constexpr int ZOMBATAR_TABS_X = 58;
 constexpr int ZOMBATAR_TABS_Y0 = 128;
 
 constexpr int ZOMBATAR_GRID_COLS = 6;
-constexpr int ZOMBATAR_GRID_ROWS = 3;
 constexpr int ZOMBATAR_GRID_PAGE = 17;
 constexpr int ZOMBATAR_GRID_GAP = -4;
 constexpr int ZOMBATAR_GRID_BIAS_X = 50;
@@ -597,16 +593,6 @@ bool ZombatarWidget::SaveDraft()
 	aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
 	mCurrentIndex = static_cast<int>(aOffset / ZOMBATAR_RECORD_SIZE);
 
-	if (!ExportAvatarPNG(aPlayerInfo->mZombatarData.data() + aOffset, mCurrentIndex + 1))
-	{
-		aPlayerInfo->mZombatarData.resize(aOffset);
-		aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
-		ClampCurrentIndex();
-		mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Export Failed",
-			"The Zombatar image could not be written.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
-		return false;
-	}
-
 	aPlayerInfo->mZombatarCreatedBefore = 1;
 	aPlayerInfo->SaveDetails();
 	ResetDraft();
@@ -623,9 +609,6 @@ void ZombatarWidget::DeleteCurrent()
 		return;
 
 	ClampCurrentIndex();
-	std::vector<unsigned char> aOldData = aPlayerInfo->mZombatarData;
-	uint32_t aOldHeadCount = aPlayerInfo->mZombatarHeadCount;
-	int aOldIndex = mCurrentIndex;
 	unsigned char* aData = aPlayerInfo->mZombatarData.data();
 	size_t aOffset = static_cast<size_t>(mCurrentIndex) * ZOMBATAR_RECORD_SIZE;
 	size_t aTailOffset = aOffset + ZOMBATAR_RECORD_SIZE;
@@ -634,17 +617,6 @@ void ZombatarWidget::DeleteCurrent()
 		memmove(aData + aOffset, aData + aTailOffset, aTailBytes);
 	aPlayerInfo->mZombatarData.resize(aPlayerInfo->mZombatarData.size() - ZOMBATAR_RECORD_SIZE);
 	aPlayerInfo->mZombatarHeadCount = static_cast<uint32_t>(GetHeadCount());
-	if (!ExportAllAvatarPNGs())
-	{
-		aPlayerInfo->mZombatarData = aOldData;
-		aPlayerInfo->mZombatarHeadCount = aOldHeadCount;
-		mCurrentIndex = aOldIndex;
-		ExportAllAvatarPNGs();
-		mApp->LawnMessageBox(DIALOG_MESSAGE, "Zombatar Export Failed",
-			"The Zombatar image files could not be updated.", "[DIALOG_BUTTON_OK]", "", Dialog::BUTTONS_FOOTER);
-		return;
-	}
-	EraseAvatarPNG(aCount);
 	ClampCurrentIndex();
 
 	if (GetHeadCount() > 0)
@@ -1034,65 +1006,6 @@ void ZombatarWidget::DrawAvatarBox(Graphics* g)
 	Graphics aZombieGraphics = Graphics(*g);
 	mPreviewZombie->BeginDraw(&aZombieGraphics);
 	mPreviewZombie->Draw(&aZombieGraphics);
-}
-
-bool ZombatarWidget::ExportAvatarPNG(const unsigned char* theRecord, int theExportIndex)
-{
-	PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
-	if (!aPlayerInfo)
-		return false;
-
-	Image* aBackground = GetBackgroundImage(ZombatarReadSignedRecordSlot(theRecord, ZOMBATAR_SLOT_BACKGROUND));
-	if (!aBackground)
-		return false;
-
-	MemoryImage aMemoryImage(mApp);
-	aMemoryImage.Create(aBackground->mWidth, aBackground->mHeight);
-	uint32_t* aMemoryBits = aMemoryImage.GetBits();
-	memset(aMemoryBits, 0, sizeof(uint32_t) * aBackground->mWidth * aBackground->mHeight);
-
-	Graphics aGraphics(&aMemoryImage);
-	DrawAvatar(&aGraphics, 0, 0, theRecord);
-	aMemoryImage.CommitBits();
-
-	ImageLib::Image aExportImage;
-	aExportImage.mWidth = aMemoryImage.mWidth;
-	aExportImage.mHeight = aMemoryImage.mHeight;
-	aExportImage.mBits = new uint32_t[aExportImage.mWidth * aExportImage.mHeight];
-
-	uint32_t* aSourceBits = aMemoryImage.GetBits();
-	int aPixelCount = aExportImage.mWidth * aExportImage.mHeight;
-	for (int i = 0; i < aPixelCount; i++)
-		aExportImage.mBits[i] = Sexy::ToLE32(aSourceBits[i]);
-
-	MkDir(GetAppDataPath("userdata"));
-	return ImageLib::WritePNGImage(GetAppDataPath(StrFormat("userdata/Zombatar_%d_%d.png", aPlayerInfo->mId, theExportIndex)), &aExportImage);
-}
-
-bool ZombatarWidget::ExportAllAvatarPNGs()
-{
-	PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
-	if (!aPlayerInfo)
-		return false;
-
-	int aCount = GetHeadCount();
-	for (int i = 0; i < aCount; i++)
-	{
-		const unsigned char* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(i) * ZOMBATAR_RECORD_SIZE;
-		if (!ExportAvatarPNG(aRecord, i + 1))
-			return false;
-	}
-	return true;
-}
-
-void ZombatarWidget::EraseAvatarPNG(int theExportIndex)
-{
-	if (theExportIndex <= 0)
-		return;
-	PlayerInfo* aPlayerInfo = mApp->mPlayerInfo;
-	if (!aPlayerInfo)
-		return;
-	mApp->EraseFile(GetAppDataPath(StrFormat("userdata/Zombatar_%d_%d.png", aPlayerInfo->mId, theExportIndex)));
 }
 
 void ZombatarWidget::Draw(Graphics* g)

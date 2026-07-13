@@ -152,9 +152,6 @@ private:
 	Image*						GetPartImage(ZombatarPage thePage, int theIndex) const;
 	Image*						GetPartMaskImage(ZombatarPage thePage, int theIndex) const;
 	Image*						GetBackgroundImage(int theIndex) const;
-	bool						ExportAvatarPNG(const unsigned char* theRecord, int theExportIndex);
-	bool						ExportAllAvatarPNGs();
-	void						EraseAvatarPNG(int theExportIndex);
 	void						DrawPartImage(Graphics* g, ZombatarPage thePage, int theIndex, int theX, int theY, int theColorIndex);
 	void						DecodeRecord(const unsigned char* theRecord, int* thePart, int* theColor) const;
 	void						EncodeRecord(unsigned char* theRecord) const;
