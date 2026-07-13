@@ -819,9 +819,6 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 
 Image* Reanimation::GetCurrentTrackImage(const char* theTrackName)
 {
-	if (!TrackExists(theTrackName))
-		return nullptr;
-
 	int aTrackIndex = FindTrackIndex(theTrackName);
 	ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[aTrackIndex];
 	if (aTrackInstance->mImageOverride != nullptr)
@@ -831,13 +828,10 @@ Image* Reanimation::GetCurrentTrackImage(const char* theTrackName)
 	GetCurrentTransform(aTrackIndex, &aTransform);
 
 	Image* aImage = aTransform.mImage;
-	if (mDefinition->mReanimAtlas != nullptr && aImage != nullptr)
+	if (mDefinition->mReanimAtlas != nullptr && aImage != nullptr && mDefinition->mReanimAtlas->GetEncodedReanimAtlas(aImage) != nullptr)
 	{
-		ReanimAtlasImage* aAtlasImage = mDefinition->mReanimAtlas->GetEncodedReanimAtlas(aImage);
-		if (aAtlasImage)
-			aImage = aAtlasImage->mOriginalImage;
-		else if (reinterpret_cast<uintptr_t>(aImage) <= 1000)
-			aImage = nullptr;
+		// Encoded atlas handles do not map to stable source-image pointers at runtime.
+		aImage = nullptr;
 	}
 	return aImage;
 }
