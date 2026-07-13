@@ -33,6 +33,7 @@
 #include "../../Sexy.TodLib/TodStringFile.h"
 #include "widget/WidgetManager.h"
 #include <SDL.h>
+#include <algorithm>
 
 constinit const ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
 	{ .mChallengeMode = GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1, .mChallengeIconIndex = 0, .mPage = ChallengePage::CHALLENGE_PAGE_SURVIVAL, .mRow = 0, .mCol = 0, .mChallengeName = "[SURVIVAL_DAY_NORMAL]" },
@@ -298,7 +299,7 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex)
 
 			if (aDef.mChallengeMode < GAMEMODE_SCARY_POTTER_4 || mApp->HasFinishedAdventure() || aLevelsCompleted < 3)
 			{
-				return ClampInt(aDef.mChallengeMode - GAMEMODE_SCARY_POTTER_1 - aLevelsCompleted, 0, 9);
+				return std::clamp(aDef.mChallengeMode - GAMEMODE_SCARY_POTTER_1 - aLevelsCompleted, 0, 9);
 			}
 			else
 			{
@@ -318,7 +319,7 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex)
 
 			if (aDef.mChallengeMode < GAMEMODE_PUZZLE_I_ZOMBIE_4 || mApp->HasFinishedAdventure() || aLevelsCompleted < 3)
 			{
-				return ClampInt(aDef.mChallengeMode - GAMEMODE_PUZZLE_I_ZOMBIE_1 - aLevelsCompleted, 0, 9);
+				return std::clamp(aDef.mChallengeMode - GAMEMODE_PUZZLE_I_ZOMBIE_1 - aLevelsCompleted, 0, 9);
 			}
 			else
 			{

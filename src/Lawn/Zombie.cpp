@@ -42,6 +42,7 @@
 #include "../Sexy.TodLib/Reanimator.h"
 #include "../Sexy.TodLib/Attachment.h"
 #include "../Sexy.TodLib/TodParticle.h"
+#include <algorithm>
 
 constexpr const int ZOMBIE_START_RANDOM_OFFSET = 40;
 constexpr const int BUNGEE_ZOMBIE_HEIGHT = 3000;
@@ -1443,7 +1444,7 @@ void Zombie::UpdateZombiePogo()
         aHeight = 170.0f;
     }
     mAltitude = TodAnimateCurveFloat(POGO_BOUNCE_TIME, 0, mPhaseCounter, 9.0f, aHeight + 9.0f, TodCurves::CURVE_BOUNCE_SLOW_MIDDLE);
-    mFrame = ClampInt(3 - mAltitude / 3, 0, 3);
+    mFrame = std::clamp(static_cast<int>(3 - mAltitude / 3), 0, 3);
 
     if (mPhaseCounter == 7)
     {
@@ -5121,13 +5122,13 @@ void Zombie::DrawZombiePart(Graphics* g, Image* theImage, int theFrame, int theR
     float aDrawHeight = aCelHeight;
     if (theDrawPos.mClipHeight > CLIP_HEIGHT_LIMIT)
     {
-        aDrawHeight = ClampFloat(aCelHeight - theDrawPos.mClipHeight, 0.0f, aCelHeight);
+        aDrawHeight = std::clamp(aCelHeight - theDrawPos.mClipHeight, 0.0f, static_cast<float>(aCelHeight));
     }
 
     int anAlpha = 255;
     if (mZombieFade >= 0)
     {
-        anAlpha = ClampInt(255 * mZombieFade / 10, 0, 255);
+        anAlpha = std::clamp(255 * mZombieFade / 10, 0, 255);
         g->SetColorizeImages(true);
         g->SetColor(Color(255, 255, 255, anAlpha));
     }
@@ -5670,7 +5671,7 @@ void Zombie::DrawReanim(Graphics* g, const ZombieDrawPosition& theDrawPos, int t
     int aFadeAlpha = 255;
     if (mZombieFade >= 0)
     {
-        aFadeAlpha = ClampInt(255 * mZombieFade / 10, 0, 255);
+        aFadeAlpha = std::clamp(255 * mZombieFade / 10, 0, 255);
     }
 
     Color aColorOverride(255, 255, 255, aFadeAlpha);

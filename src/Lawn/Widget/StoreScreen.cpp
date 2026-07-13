@@ -42,6 +42,7 @@
 #include "graphics/ImageFont.h"
 #include "widget/WidgetManager.h"
 #include "AchievementsScreen.h"
+#include <algorithm>
 
 constexpr const int STORESCREEN_ITEMOFFSET_1_X = 422;
 constexpr const int STORESCREEN_ITEMOFFSET_1_Y = 206;
@@ -594,7 +595,7 @@ void StoreScreen::UpdateMouse()
                 case STORE_ITEM_WHEEL_BARROW:           aMessageIndex = 2024;                           break;
                 case STORE_ITEM_STINKY_THE_SNAIL:       aMessageIndex = 2025;                           break;
                 case STORE_ITEM_PACKET_UPGRADE:
-                    aMessageIndex = ClampInt(mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] + 2011, 2011, 2014);
+                    aMessageIndex = std::clamp(static_cast<int>(mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE]) + 2011, 2011, 2014);
                     break;
                 case STORE_ITEM_POOL_CLEANER:           aMessageIndex = 2026;                           break;
                 case STORE_ITEM_ROOF_CLEANER:           aMessageIndex = 2027;                           break;

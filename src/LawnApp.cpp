@@ -64,6 +64,7 @@
 #include "Lawn/Widget/SeedChooserScreen.h"
 #include "widget/WidgetManager.h"
 #include "misc/ResourceManager.h"
+#include <algorithm>
 
 #include "widget/Checkbox.h"
 #include "widget/Dialog.h"
@@ -2104,7 +2105,7 @@ void LawnApp::PlayFoleyPitch(FoleyType theFoleyType, float thePitch)
 
 std::string LawnApp::GetStageString(int theLevel)
 {
-	int aArea = ClampInt((theLevel - 1) / LEVELS_PER_AREA + 1, 1, ADVENTURE_AREAS + 1);
+	int aArea = std::clamp((theLevel - 1) / LEVELS_PER_AREA + 1, 1, ADVENTURE_AREAS + 1);
 	int aSub = theLevel - (aArea - 1) * LEVELS_PER_AREA;
 	return StrFormat("%d-%d", aArea, aSub);
 }

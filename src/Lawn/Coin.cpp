@@ -727,7 +727,7 @@ void Coin::UpdateCollected()
             ScoreCoin();
         }
 
-        mScale = ClampFloat(mCollectionDistance * 0.05f, 0.5f, 1.0f);
+        mScale = std::clamp(mCollectionDistance * 0.05f, 0.5f, 1.0f);
         mScale *= GetSunScale();
     }
 }
@@ -778,7 +778,7 @@ Color Coin::GetColor()
 {
     if ((IsSun() || IsMoney()) && mIsBeingCollected)
     {
-        float aAlpha = ClampFloat(mCollectionDistance * 0.035f, 0.35f, 1.0f) * 255.0f;
+        float aAlpha = std::clamp(mCollectionDistance * 0.035f, 0.35f, 1.0f) * 255.0f;
         return Color(255, 255, 255, aAlpha);
     }
 

@@ -32,6 +32,7 @@
 #include "../Sexy.TodLib/Reanimator.h"
 #include "../Sexy.TodLib/Attachment.h"
 #include "Widget/AchievementsScreen.h"
+#include <algorithm>
 
 constinit const ProjectileDefinition gProjectileDefinition[] = {
 	{ .mProjectileType = ProjectileType::PROJECTILE_PEA, .mImageRow = 0, .mDamage = 20 },
@@ -921,7 +922,7 @@ void Projectile::DoImpact(Zombie* theZombie)
 				aPosX -= 60.0f;
 			}
 
-			aPosY = ClampFloat(aPosY, 20.0f, 100.0f);
+			aPosY = std::clamp(aPosY, 20.0f, 100.0f);
 			theZombie->AddAttachedParticle(aPosX, aPosY, aEffect);
 		}
 		else
@@ -1138,7 +1139,7 @@ void Projectile::DrawShadow(Graphics* g)
 
 	if (mMotionType == ProjectileMotion::MOTION_LOBBED)
 	{
-		float aHeight = ClampFloat(-mPosZ, 0.0f, 200.0f);
+		float aHeight = std::clamp(-mPosZ, 0.0f, 200.0f);
 		aScale *= 200.0f / (aHeight + 200.0f);
 	}
 

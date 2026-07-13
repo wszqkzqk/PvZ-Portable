@@ -27,6 +27,7 @@
 #include "../../GameConstants.h"
 #include "../System/PlayerInfo.h"
 #include "widget/WidgetManager.h"
+#include <algorithm>
 
 CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_CHEAT, true, "CHEAT", "Enter New Level:", "", Dialog::BUTTONS_OK_CANCEL)
 {
@@ -107,7 +108,7 @@ bool CheatDialog::ApplyCheat()
 	if (sscanf(mLevelEditWidget->mString.c_str(), "c%d", &aChallengeIndex) == 1 || 
 		sscanf(mLevelEditWidget->mString.c_str(), "C%d", &aChallengeIndex) == 1)
 	{
-		mApp->mGameMode = (GameMode)ClampInt(aChallengeIndex, 0, NUM_CHALLENGE_MODES);
+		mApp->mGameMode = (GameMode)std::clamp(aChallengeIndex, 0, NUM_CHALLENGE_MODES);
 		return true;
 	}
 

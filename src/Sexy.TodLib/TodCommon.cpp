@@ -200,7 +200,7 @@ float TodCalcSmoothWeight(float aWeight, float aLastPicked, float aSecondLastPic
 	float aAdvancedLength2 = aSecondLastPicked + 1.0f - aExpectedLength2;	// 相较于 theSecondLastPicked 的期望值，提前的轮数
 	float aFactor1 = 1.0f + aAdvancedLength1 / aExpectedLength1 * 2.0f;		// = aWeight * aLastPicked * 2 + aWeight * 2 - 1
 	float aFactor2 = 1.0f + aAdvancedLength2 / aExpectedLength2 * 2.0f;		// = aSecondLastPicked * aWeight + aWeight - 1
-	float aFactorFinal = ClampFloat(aFactor1 * 0.75f + aFactor2 * 0.25f, 0.01f, 100.0f);
+	float aFactorFinal = std::clamp(aFactor1 * 0.75f + aFactor2 * 0.25f, 0.01f, 100.0f);
 	return aWeight * aFactorFinal;
 }
 
@@ -1014,8 +1014,8 @@ Color GetFlashingColor(uint32_t theCounter, int theFlashTime)
 	int aTimeInf = theFlashTime / 2;
 	//int aTimeDel = abs(aTimeInf - aTimeAge) / aTimeInf;
 	// @Patoke: order wasn't like in binaries
-	int aGrayness = ClampInt(200 * abs(aTimeInf - aTimeAge) / aTimeInf + 55, 0, 255);
-	//int aGrayness = ClampInt(55 + 200 * abs(aTimeInf - aTimeAge)/ aTimeInf, 0, 255);
+	int aGrayness = std::clamp(200 * abs(aTimeInf - aTimeAge) / aTimeInf + 55, 0, 255);
+	//int aGrayness = std::clamp(55 + 200 * abs(aTimeInf - aTimeAge)/ aTimeInf, 0, 255);
 	return Color(aGrayness, aGrayness, aGrayness, 255);
 }
 
@@ -1026,13 +1026,13 @@ Color ColorAdd(const Color& theColor1, const Color& theColor2)
 	int b = theColor1.mBlue + theColor2.mBlue;
 	int a = theColor1.mAlpha + theColor2.mAlpha;
 
-	return Color(ClampInt(r, 0, 255), ClampInt(g, 0, 255), ClampInt(b, 0, 255), ClampInt(a, 0, 255));  // 线性减淡
+	return Color(std::clamp(r, 0, 255), std::clamp(g, 0, 255), std::clamp(b, 0, 255), std::clamp(a, 0, 255));  // 线性减淡
 }
 
 // GOTY @Patoke: 0x51D3C0
 int ColorComponentMultiply(int theColor1, int theColor2)
 {
-	return ClampInt(theColor1 * theColor2 / 255, 0, 255);  // 正片叠底
+	return std::clamp(theColor1 * theColor2 / 255, 0, 255);  // 正片叠底
 }
 
 Color ColorsMultiply(const Color& theColor1, const Color& theColor2)

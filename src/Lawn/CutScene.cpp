@@ -46,6 +46,7 @@
 #include "../Sexy.TodLib/TodStringFile.h"
 #include "misc/PerfTimer.h"
 #include "widget/WidgetManager.h"
+#include <algorithm>
 
 static const int	TimePanRightStart				= 1500;
 static const int	TimePanRightEnd					= 3500;
@@ -597,7 +598,7 @@ void CutScene::PlaceStreetZombies()
 		{
 			int aZombieNumInWave = aZombieTypeCount[aZombieType];
 			int aZombiePreviewNum = aZombieNumInWave * aPreviewCapacity / aTotalZombieCount;
-			aZombiePreviewNum = ClampInt(aZombiePreviewNum, 1, aZombieNumInWave);
+			aZombiePreviewNum = std::clamp(aZombiePreviewNum, 1, aZombieNumInWave);
 			for (int i = 0; i < aZombiePreviewNum; i++)
 			{
 				FindAndPlaceZombie(aZombieType, aZombieGrid);

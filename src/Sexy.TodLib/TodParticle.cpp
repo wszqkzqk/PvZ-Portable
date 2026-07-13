@@ -26,6 +26,7 @@
 #include "../GameConstants.h"
 #include "graphics/Graphics.h"
 #include "graphics/GLInterface.h"
+#include <algorithm>
 
 int gParticleDefCount;                      // [0x6A9F08]
 TodParticleDefinition* gParticleDefArray;   // [0x6A9F0C]
@@ -510,8 +511,8 @@ void TodParticleEmitter::UpdateParticleField(TodParticle* theParticle, ParticleF
 		break;
 	}
 	case ParticleFieldType::FIELD_MAX_VELOCITY:  // 限速场
-		theParticle->mVelocity.x = ClampFloat(theParticle->mVelocity.x, -x, x);
-		theParticle->mVelocity.y = ClampFloat(theParticle->mVelocity.y, -y, y);
+		theParticle->mVelocity.x = std::clamp(theParticle->mVelocity.x, -x, x);
+		theParticle->mVelocity.y = std::clamp(theParticle->mVelocity.y, -y, y);
 		break;
 	case ParticleFieldType::FIELD_VELOCITY:  // 匀速场
 		theParticle->mPosition.x += 0.01 * x;
@@ -964,9 +965,9 @@ void RenderParticle(Graphics* g, TodParticle* theParticle, const Color& theColor
 	if (aFrame == -1)  // 如果未定义覆写帧
 	{
 		if (FloatTrackIsSet(aEmitterDef->mAnimationRate))  // 如果定义了动画速率
-			aFrame = ClampInt(theParticle->mAnimationTimeValue * aEmitterDef->mImageFrames, 0, aEmitterDef->mImageFrames - 1);  // 动画时间值（循环率） * 总帧数得到当前帧
+			aFrame = std::clamp(static_cast<int>(theParticle->mAnimationTimeValue * aEmitterDef->mImageFrames), 0, aEmitterDef->mImageFrames - 1);  // 动画时间值（循环率） * 总帧数得到当前帧
 		else if (aEmitterDef->mAnimated)
-			aFrame = ClampInt(theParticle->mParticleTimeValue * aEmitterDef->mImageFrames, 0, aEmitterDef->mImageFrames - 1);  // 粒子时间值 * 总帧数得到当前帧
+			aFrame = std::clamp(static_cast<int>(theParticle->mParticleTimeValue * aEmitterDef->mImageFrames), 0, aEmitterDef->mImageFrames - 1);  // 粒子时间值 * 总帧数得到当前帧
 		else
 			aFrame = theParticle->mImageFrame;  // 帧固定的粒子，直接取其贴图帧
 	}
@@ -1038,10 +1039,10 @@ void TodParticleEmitter::DrawParticle(Graphics* g, TodParticle* theParticle, Tod
 	if (GetRenderParams(theParticle, &aParams))
 	{
 		Color aColor(
-			ClampInt(FloatRoundToInt(aParams.mRed), 0, 255), 
-			ClampInt(FloatRoundToInt(aParams.mGreen), 0, 255), 
-			ClampInt(FloatRoundToInt(aParams.mBlue), 0, 255), 
-			ClampInt(FloatRoundToInt(aParams.mAlpha), 0, 255)
+			std::clamp(FloatRoundToInt(aParams.mRed), 0, 255), 
+			std::clamp(FloatRoundToInt(aParams.mGreen), 0, 255), 
+			std::clamp(FloatRoundToInt(aParams.mBlue), 0, 255), 
+			std::clamp(FloatRoundToInt(aParams.mAlpha), 0, 255)
 		);
 		if (aColor.mAlpha > 0)  // 不透明度为 0 时，不绘制
 		{

@@ -23,6 +23,7 @@
 #include "TodCommon.h"
 #include "FilterEffect.h"
 #include "graphics/MemoryImage.h"
+#include <algorithm>
 
 void RGB_to_HSL(float r, float g, float b, float& h, float& s, float& l)
 {
@@ -67,7 +68,7 @@ void HSL_to_RGB(float h, float sl, float l, float& r, float& g, float& b)
 	float y = 2 * l - v;
 	float sv = (v - y) / v;
 	h *= 6.0f;
-	int sextant = ClampInt(static_cast<int>(h), 0, 5);
+	int sextant = std::clamp(static_cast<int>(h), 0, 5);
 	float vsf = v * sv * (h - sextant);
 	float x = y + vsf;
 	float z = v - vsf;
@@ -124,7 +125,7 @@ void FilterEffectDoLumSat(MemoryImage* theImage, float theLum, float theSat)
 			l *= theLum;
 			HSL_to_RGB(h, s, l, r, g, b);
 
-			*ptr = a << 24 | ClampInt(r * 255, 0, 255) << 16 | ClampInt(g * 255, 0, 255) << 8 | ClampInt(b * 255, 0, 255);
+			*ptr = a << 24 | std::clamp(static_cast<int>(r * 255), 0, 255) << 16 | std::clamp(static_cast<int>(g * 255), 0, 255) << 8 | std::clamp(static_cast<int>(b * 255), 0, 255);
 			ptr++;
 		}
 	}
