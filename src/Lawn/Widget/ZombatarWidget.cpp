@@ -132,11 +132,6 @@ constexpr int ZOMBATAR_CONFIRM_ACCEPT_LABEL_X = 195;
 constexpr int ZOMBATAR_CONFIRM_BACK_LABEL_X = 435;
 constexpr int ZOMBATAR_CONFIRM_LABEL_Y = 335;
 
-constexpr int ClampRange(int theValue, int theMin, int theMax)
-{
-	return std::max(theMin, std::min(theValue, theMax));
-}
-
 constexpr int SlotForPart(ZombatarPage thePage)
 {
 	switch (thePage)
@@ -515,7 +510,7 @@ void ZombatarWidget::ClampCurrentIndex()
 	}
 	else
 	{
-		mCurrentIndex = ClampRange(mCurrentIndex, 0, aCount - 1);
+		mCurrentIndex = std::clamp(mCurrentIndex, 0, aCount - 1);
 	}
 }
 
@@ -543,7 +538,7 @@ void ZombatarWidget::DecodeRecord(const unsigned char* theRecord, int* thePart, 
 		int aColor = ZombatarReadSignedRecordSlot(theRecord, SlotForColor(aPage));
 
 		if (aPage == ZOMBATAR_PAGE_BACKDROPS)
-			thePart[i] = ClampRange(aPart, 0, aItemCount - 1);
+			thePart[i] = std::clamp(aPart, 0, aItemCount - 1);
 		else
 			thePart[i] = (aPart >= 0 && aPart < aItemCount) ? aPart : -1;
 
@@ -558,7 +553,7 @@ void ZombatarWidget::EncodeRecord(unsigned char* theRecord) const
 {
 	memset(theRecord, 0, ZOMBATAR_RECORD_SIZE);
 	ZombatarWriteRecordSlot(theRecord, ZOMBATAR_SLOT_SKIN_PART, ZOMBATAR_COLOR_NONE);
-	ZombatarWriteRecordSlot(theRecord, ZOMBATAR_SLOT_SKIN_COLOR, ClampRange(mColor[ZOMBATAR_PAGE_SKIN], 0, 11));
+	ZombatarWriteRecordSlot(theRecord, ZOMBATAR_SLOT_SKIN_COLOR, std::clamp(mColor[ZOMBATAR_PAGE_SKIN], 0, 11));
 
 	for (int i = ZOMBATAR_PAGE_HAIR; i < NUM_ZOMBATAR_PAGES; i++)
 	{
@@ -675,14 +670,14 @@ Rect ZombatarWidget::GetColorRect(int theIndex) const
 
 int ZombatarWidget::GetTotalItemsForPage(ZombatarPage thePage) const
 {
-	return ZOMBATAR_ITEMS_PER_PAGE[ClampRange(static_cast<int>(thePage), 0, NUM_ZOMBATAR_PAGES - 1)];
+	return ZOMBATAR_ITEMS_PER_PAGE[std::clamp(static_cast<int>(thePage), 0, NUM_ZOMBATAR_PAGES - 1)];
 }
 
 int ZombatarWidget::GetSubPageItemCount() const
 {
 	int aTotal = GetTotalItemsForPage(mPage);
 	int aRemaining = aTotal - mSubPage * ZOMBATAR_GRID_PAGE;
-	return ClampRange(aRemaining, 0, ZOMBATAR_GRID_PAGE);
+	return std::clamp(aRemaining, 0, ZOMBATAR_GRID_PAGE);
 }
 
 bool ZombatarWidget::PageAllowsNone() const
@@ -722,7 +717,7 @@ Image* ZombatarWidget::GetCategoryImage(ZombatarPage thePage, bool theSelected, 
 		{ IMAGE_ZOMBATAR_BACKDROPS_BUTTON, IMAGE_ZOMBATAR_BACKDROPS_BUTTON_HIGHLIGHT, IMAGE_ZOMBATAR_BACKDROPS_BUTTON_OVER }
 	};
 
-	const CategoryImages& aCategoryImages = aImages[ClampRange(static_cast<int>(thePage), 0, NUM_ZOMBATAR_PAGES - 1)];
+	const CategoryImages& aCategoryImages = aImages[std::clamp(static_cast<int>(thePage), 0, NUM_ZOMBATAR_PAGES - 1)];
 	if (theSelected)
 		return aCategoryImages.mHighlight;
 	if (theOver && aCategoryImages.mOver)
@@ -740,7 +735,7 @@ Image* ZombatarWidget::GetBackgroundImage(int theIndex) const
 		IMAGE_ZOMBATAR_BACKGROUND_ROOF,
 		IMAGE_ZOMBATAR_BACKGROUND_BLANK
 	};
-	return aImages[ClampRange(theIndex, 0, 4)];
+	return aImages[std::clamp(theIndex, 0, 4)];
 }
 
 Image* ZombatarWidget::GetPartImage(ZombatarPage thePage, int theIndex) const
@@ -1245,7 +1240,7 @@ void ZombatarWidget::UpdateButtonState()
 
 	int aTotal = GetTotalItemsForPage(mPage);
 	mMaxSubPages = (aTotal > ZOMBATAR_GRID_PAGE) ? (aTotal - 1) / ZOMBATAR_GRID_PAGE : 0;
-	mSubPage = ClampRange(mSubPage, 0, mMaxSubPages);
+	mSubPage = std::clamp(mSubPage, 0, mMaxSubPages);
 	bool aPaged = aCreate && mMaxSubPages > 0;
 
 	mBackButton->SetVisible(aCreate || aList || aConfirm);
