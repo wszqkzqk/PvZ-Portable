@@ -222,10 +222,10 @@ constexpr ZombatarPartLayout gClothesLayout[12] =
 
 constexpr ZombatarPartLayout gTidbitsLayout[14] =
 {
-	{28, 63, 18, 48, 2}, {28, 63, 0, 0, 2}, {46, 111, 0, 0, 2}, {31, 62, 0, 0, 4},
-	{31, 58, 0, 0, 4}, {28, 66, 0, 0, 4}, {28, 72, 0, 0, 4}, {33, 55, 0, 0, 4},
-	{21, 76, 0, 0, 4}, {36, 71, 0, 0, 2}, {36, 70, 0, 0, 2}, {86, 91, 0, 6, 2},
-	{88, 50, 0, 8, 4}, {113, 115, 0, 0, 4}
+	{28, 63, 18, 48, 2}, {28, 63, 0, 0, 2}, {46, 111, 0, 0, 2}, {31, 62, 0, 0, 2},
+	{31, 58, 0, 0, 2}, {28, 66, 0, 0, 2}, {28, 72, 0, 0, 2}, {33, 55, 0, 0, 2},
+	{21, 76, 0, 0, 2}, {36, 71, 0, 0, 2}, {36, 70, 0, 0, 2}, {86, 91, 0, 6, 2},
+	{88, 50, 0, 8, 2}, {113, 115, 0, 0, 2}
 };
 
 constexpr ZombatarPartLayout gAccessoryLayout[15] =
@@ -242,8 +242,8 @@ constexpr ZombatarPartLayout gFacialHairLayout[24] =
 	{69, 145, 0, 0, 6}, {48, 112, 0, 0, 6}, {13, 107, 0, 0, 6}, {45, 105, 1, 1, 6},
 	{41, 105, 1, 1, 6}, {44, 112, 1, 2, 6}, {43, 88, 1, 4, 6}, {28, 105, 8, 1, 6},
 	{45, 110, 0, 0, 6}, {18, 103, 1, 1, 6}, {63, 145, 2, 1, 6}, {63, 140, 1, 1, 6},
-	{43, 110, 0, 0, 6}, {43, 110, 0, 0, 6}, {58, 96, 1, 3, 6}, {46, 92, 0, 0, 6},
-	{114, 80, 0, 0, 6}, {118, 83, 1, 1, 6}, {13, 87, 3, 4, 6}, {58, 145, 1, 1, 6}
+	{43, 110, 0, 0, 6}, {58, 96, 1, 3, 6}, {46, 92, 0, 0, 6}, {114, 80, 0, 0, 6},
+	{118, 83, 1, 1, 6}, {13, 87, 3, 4, 6}, {58, 145, 1, 1, 6}, {38, 108, 4, 2, 6}
 };
 
 constexpr ZombatarPartLayout gHairLayout[16] =
@@ -1182,7 +1182,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 			g->SetColorizeImages(true);
 			g->SetColor(ZOMBATAR_CELL_DIM_COLOR);
 		}
-		g->DrawImage(aHover ? IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT : IMAGE_ZOMBATAR_ACCESSORY_BG, aRect.mX, aRect.mY);
+		g->DrawImage(aSelected ? IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT : IMAGE_ZOMBATAR_ACCESSORY_BG, aRect.mX, aRect.mY);
 
 		if (mPage == ZOMBATAR_PAGE_CLOTHES && IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN && IMAGE_ZOMBATAR_ZOMBIE_BLANK)
 		{
@@ -1243,7 +1243,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 			g->SetColorizeImages(true);
 			g->SetColor(ZOMBATAR_CELL_DIM_COLOR);
 		}
-		g->DrawImage(aHover ? IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT : IMAGE_ZOMBATAR_ACCESSORY_BG, aRect.mX, aRect.mY);
+		g->DrawImage(aSelected ? IMAGE_ZOMBATAR_ACCESSORY_BG_HIGHLIGHT : IMAGE_ZOMBATAR_ACCESSORY_BG, aRect.mX, aRect.mY);
 		g->DrawImage(IMAGE_ZOMBATAR_ACCESSORY_BG_NONE, aRect.mX, aRect.mY);
 		if (aDim)
 		{
@@ -1276,7 +1276,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 
 	if (mMaxSubPages > 0)
 	{
-		g->SetFont(FONT_DWARVENTODCRAFT12);
+		g->SetFont(FONT_BRIANNETOD12);
 		g->SetColor(Color(255, 255, 255));
 		std::string aPage = Sexy::StrFormat(
 			mApp->GetString("ZOMBATAR_PAGE", "Page %d / %d").c_str(), mSubPage + 1, mMaxSubPages + 1);
