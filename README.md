@@ -176,7 +176,6 @@ sudo pacman -S --needed base-devel cmake libjpeg-turbo libogg libopenmpt libpng 
 
 You can install the required dependencies using the following command:
 
-
 ```bash
 sudo apt install cmake ninja-build libogg-dev libjpeg-dev libopenmpt-dev libpng-dev libvorbis-dev libmpg123-dev libsdl2-dev
 ```
