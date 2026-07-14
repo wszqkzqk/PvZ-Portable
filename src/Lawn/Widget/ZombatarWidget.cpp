@@ -429,8 +429,19 @@ void ZombatarWidget::RemovedFromManager(WidgetManager* theWidgetManager)
 void ZombatarWidget::Update()
 {
 	Widget::Update();
-	if (mPreviewZombie)
+	if (mX >= BOARD_WIDTH)
+	{
+		if (mPreviewZombie)
+			DestroyPreviewZombie();
+	}
+	else if (mPreviewZombie)
+	{
 		mPreviewZombie->Update();
+	}
+	else if (mApp->mPlayerInfo)
+	{
+		CreatePreviewZombie();
+	}
 	MarkDirty();
 }
 
@@ -438,8 +449,6 @@ void ZombatarWidget::Open()
 {
 	if (!mApp->mPlayerInfo)
 		return;
-
-	CreatePreviewZombie();
 
 	mSubPage = 0;
 	mMaxSubPages = 0;
@@ -1005,7 +1014,7 @@ void ZombatarWidget::DrawAvatarBox(Graphics* g)
 
 void ZombatarWidget::Draw(Graphics* g)
 {
-	if (!mApp->mPlayerInfo)
+	if (!mApp->mPlayerInfo || mX >= BOARD_WIDTH)
 		return;
 
 	DrawMainBackground(g);
