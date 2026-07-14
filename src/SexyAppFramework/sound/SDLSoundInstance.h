@@ -75,7 +75,7 @@ protected:
 
 	uint32_t				mDefaultFrequency;
 
-	int						mDemoEndUpdateCount; // demo sessions: first update tick at which playback is considered finished; 0 = not playing
+	uint					mDemoEndUpdateCount; // demo sessions: first update tick at which playback is considered finished; 0 = not playing
 	bool					mDemoLooping; // demo sessions: looping flag of the current playback
 
 protected:

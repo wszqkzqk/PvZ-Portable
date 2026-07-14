@@ -85,15 +85,9 @@ public:
 	void					WriteDouble(double theDouble);
 	void					WriteString(std::string_view theStr);
 	inline uint32_t			GetPos();
-	inline void				SetUInt32(uint32_t, uint32_t) { /* 未找到 */ }
-	inline void				SetUInt16(uint32_t, uint32_t) { /* 未找到 */ }
-	inline void				SetUInt8(uint32_t, uint32_t) { /* 未找到 */ }
 	inline void*			GetDataPtr() { return mData; }
-	inline int				GetDataLen() { return mDataLen; }
+	inline uint32_t			GetDataLen() { return mDataLen; }
 };
-
-typedef std::map<void*, int> PointerToIntMap;
-typedef std::map<int, void*> IntToPointerMap;
 
 class DataSync
 {
@@ -101,13 +95,8 @@ protected:
 	DataReader*				mReader;
 	DataWriter*				mWriter;
 	int						mVersion;
-	PointerToIntMap			mPointerToIntMap;
-	IntToPointerMap			mIntToPointerMap;
-	std::vector<void**>		mPointerSyncList;
-	int						mCurPointerIndex;
 
 protected:
-	void ResetPointerTable();
 	void Reset();
 
 public:
@@ -115,7 +104,6 @@ public:
 	DataSync(DataWriter& theWriter);
 	virtual ~DataSync();
 
-	inline void				SyncPointers() { /* 未找到 */ }
 	inline void				SetReader(DataReader* theReader) { mReader = theReader; }
 	inline void				SetWriter(DataWriter* theWriter) { mWriter = theWriter; }
 	inline DataReader*		GetReader() { return mReader; }
@@ -153,8 +141,6 @@ public:
 	void					SyncFloat(float& theFloat);
 	void					SyncDouble(double& theDouble);
 	void					SyncString(std::string& theStr);
-	inline void				SyncPointer(void**) { /* 未找到 */ }
-	inline void				RegisterPointer(void*) { /* 未找到 */ }
 	inline void				SetVersion(int theVersion) { mVersion = theVersion; }
 	inline int				GetVersion() const { return mVersion; }
 };

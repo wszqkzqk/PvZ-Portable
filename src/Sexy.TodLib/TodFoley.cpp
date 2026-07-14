@@ -205,7 +205,7 @@ bool SoundSystemHasFoleyPlayedTooRecently(TodFoley* theSoundSystem, FoleyType th
 	for (int i = 0; i < MAX_FOLEY_INSTANCES; i++)
 	{
 		FoleyInstance* aFoleyInstance = &aFoleyData->mFoleyInstances[i];
-		if (aFoleyInstance->mRefCount != 0 && gSexyAppBase->mUpdateCount - aFoleyInstance->mStartTime < 10)  // 若同种音效存在近 10 cs 内播放的实例
+		if (aFoleyInstance->mRefCount != 0 && gSexyAppBase->mUpdateCount - aFoleyInstance->mStartTime < 10U)  // 若同种音效存在近 10 cs 内播放的实例
 			return true;
 	}
 	return false;

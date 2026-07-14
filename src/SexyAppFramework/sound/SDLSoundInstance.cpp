@@ -216,7 +216,7 @@ bool SDLSoundInstance::Play(bool looping, bool autoRelease)
 	{
 		mDemoLooping = looping;
 		mDemoEndUpdateCount = gSexyAppBase->mUpdateCount +
-			static_cast<int>(GetChunkDurationMS(mMixChunk != nullptr ? mMixChunk->alen : 0) / (10.0 * mPitch)) + 1;
+			static_cast<uint>(GetChunkDurationMS(mMixChunk != nullptr ? mMixChunk->alen : 0) / (10.0 * mPitch)) + 1;
 	}
 
 	if (!mMixChunk)

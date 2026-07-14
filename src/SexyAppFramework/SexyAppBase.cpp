@@ -33,6 +33,7 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
+#include <cinttypes>
 #include <cstdlib>
 #include <cstring>
 #include <chrono>
@@ -320,11 +321,6 @@ SexyAppBase::SexyAppBase()
 	mAutoMuteCount = 0;
 	mDemoMute = false;
 	mMuteOnLostFocus = false;
-	mFPSTime = 0;
-	mFPSStartTick = SDL_GetTicks();
-	mFPSFlipCount = 0;
-	mFPSCount = 0;
-	mFPSDirtyCount = 0;
 	mShowFPS = false;
 	mShowFPSMode = FPS_ShowFPS;
 	mDrawTime = 0;
@@ -399,12 +395,11 @@ SexyAppBase::SexyAppBase()
 	mDemoTimeZoneOffset = 0;
 	mDemoNeedsCommand = true;
 	mDemoLoadingComplete = false;
-	mDemoLength = 0;
 	mDemoCmdNum = 0;
-	mDemoCmdOrder = -1; // Means we haven't processed any demo commands yet
 	mDemoCmdBitPos = 0;
 	mDemoCmdUpdateCnt = 0;
-	mDemoQueuedSince = -1;
+	mDemoQueuedSince = 0;
+	mDemoCommandQueued = false;
 
 	mWidgetManager = new WidgetManager(this);
 	mResourceManager = new ResourceManager(this);
@@ -569,14 +564,14 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 		aMarkerBuffer.WriteBytes(aBuffer, aSize);
 		aMarkerBuffer.SeekFront();
 
-		int aNumItems = aMarkerBuffer.ReadLong();
-		int i;
+		uint32_t aNumItems = aMarkerBuffer.ReadUInt32();
+		uint32_t i;
 		for (i=0; i<aNumItems && !aMarkerBuffer.AtEnd(); i++)
 		{
 			mDemoMarkerList.push_back(DemoMarker());
 			DemoMarker &aMarker = mDemoMarkerList.back();
 			aMarker.first = aMarkerBuffer.ReadString();
-			aMarker.second = aMarkerBuffer.ReadLong();
+			aMarker.second = aMarkerBuffer.ReadUInt32();
 		}
 
 		if (i!=aNumItems)
@@ -591,8 +586,8 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	}
 
 	// Read demo commands
-	if (!aFile.read(reinterpret_cast<char*>(&mDemoLength), sizeof(mDemoLength))) return false;
-	mDemoLength = static_cast<int>(FromLE32(static_cast<uint32_t>(mDemoLength)));
+	uint32_t aDemoLengthLE; // unused by playback; consumed only to keep the stream aligned
+	if (!aFile.read(reinterpret_cast<char*>(&aDemoLengthLE), sizeof(aDemoLengthLE))) return false;
 	aBytesLeft -= 4;
 	
 	if (aBytesLeft <= 0)
@@ -683,11 +678,11 @@ void SexyAppBase::WriteDemoBuffer()
 			aFile.write(mProductVersion.c_str(), static_cast<std::streamsize>(mProductVersion.length()));
 
 			Buffer aMarkerBuffer;
-			aMarkerBuffer.WriteLong(mDemoMarkerList.size());
+			aMarkerBuffer.WriteUInt32(static_cast<uint32_t>(mDemoMarkerList.size()));
 			for (DemoMarkerList::iterator aMarkerItr = mDemoMarkerList.begin(); aMarkerItr != mDemoMarkerList.end(); ++aMarkerItr)
 			{
 				aMarkerBuffer.WriteString(aMarkerItr->first);
-				aMarkerBuffer.WriteLong(aMarkerItr->second);
+				aMarkerBuffer.WriteUInt32(aMarkerItr->second);
 			}
 			int aMarkerBufferSize = aMarkerBuffer.GetDataLen();
 			uint32_t aMarkerBufferSizeLE = ToLE32(static_cast<uint32_t>(aMarkerBufferSize));
@@ -726,7 +721,7 @@ void SexyAppBase::DemoSyncBuffer(Buffer* theBuffer)
 		DBG_ASSERTE(!mDemoIsShortCmd);
 		DBG_ASSERTE(mDemoCmdNum == DEMO_SYNC);
 
-		uint32_t aLen = mDemoBuffer.ReadLong();
+		uint32_t aLen = mDemoBuffer.ReadUInt32();
 		
 		theBuffer->Clear();
 		for (int i = 0; i < static_cast<int>(aLen); i++)
@@ -737,7 +732,7 @@ void SexyAppBase::DemoSyncBuffer(Buffer* theBuffer)
 		WriteDemoTimingBlock();
 		mDemoBuffer.WriteNumBits(0, 1);
 		mDemoBuffer.WriteNumBits(DEMO_SYNC, 5);		
-		mDemoBuffer.WriteLong(theBuffer->GetDataLen());
+		mDemoBuffer.WriteUInt32(static_cast<uint32_t>(theBuffer->GetDataLen()));
 		mDemoBuffer.WriteBytes(theBuffer->GetDataPtr(), theBuffer->GetDataLen());
 	}
 }
@@ -753,9 +748,9 @@ void SexyAppBase::DemoSyncString(std::string* theString)
 void SexyAppBase::DemoSyncInt(int* theInt)
 {
 	Buffer aBuffer;
-	aBuffer.WriteLong(*theInt);
+	aBuffer.WriteInt32(*theInt);
 	DemoSyncBuffer(&aBuffer);
-	*theInt = aBuffer.ReadLong();
+	*theInt = aBuffer.ReadInt32();
 }
 
 void SexyAppBase::DemoSyncBool(bool* theBool)
@@ -799,7 +794,7 @@ void SexyAppBase::DemoAddMarker(const std::string& theString)
 	}
 	else if (mRecordingDemoBuffer)
 	{
-		mDemoMarkerList.push_back(DemoMarker(theString,mUpdateCount));
+		mDemoMarkerList.push_back(DemoMarker(theString, static_cast<uint32_t>(mUpdateCount)));
 	}
 }
 
@@ -816,7 +811,7 @@ void SexyAppBase::DemoAssertIntEqual(int theInt)
 		DBG_ASSERTE(!mDemoIsShortCmd);
 		DBG_ASSERTE(mDemoCmdNum == DEMO_ASSERT_INT_EQUAL);
 
-		int anInt = mDemoBuffer.ReadLong();
+		int anInt = mDemoBuffer.ReadInt32();
 		(void)anInt; // unused in Release mode
 		DBG_ASSERTE(anInt == theInt);
 	}
@@ -825,7 +820,7 @@ void SexyAppBase::DemoAssertIntEqual(int theInt)
 		WriteDemoTimingBlock();
 		mDemoBuffer.WriteNumBits(0, 1);
 		mDemoBuffer.WriteNumBits(DEMO_ASSERT_INT_EQUAL, 5);				
-		mDemoBuffer.WriteLong(theInt);
+		mDemoBuffer.WriteInt32(theInt);
 	}
 }
 
@@ -1223,16 +1218,16 @@ bool SexyAppBase::RegistryReadKey(const std::string& theValueName, uint32_t* the
 		if (!success)
 			return false;
 
-		*theType = mDemoBuffer.ReadLong();
+		*theType = mDemoBuffer.ReadUInt32();
 
-		uint32_t aLen = mDemoBuffer.ReadLong();
+		uint32_t aLen = mDemoBuffer.ReadUInt32();
 		*theLength = aLen;
 
 		if (*theLength >= aLen)
 		{
 			if ((*theType == regemu::REGEMU_DWORD) && (aLen == sizeof(uint32_t)))
 			{
-				uint32_t aValue = static_cast<uint32_t>(mDemoBuffer.ReadLong()); // stream stores DWORDs little-endian
+				uint32_t aValue = mDemoBuffer.ReadUInt32();
 				memcpy(theValue, &aValue, sizeof(aValue));
 			}
 			else
@@ -1270,13 +1265,13 @@ bool SexyAppBase::RegistryReadKey(const std::string& theValueName, uint32_t* the
 				mDemoBuffer.WriteNumBits(0, 1);
 				mDemoBuffer.WriteNumBits(DEMO_REGISTRY_READ, 5);
 				mDemoBuffer.WriteNumBits(1, 1); // success
-				mDemoBuffer.WriteLong(*theType);
-				mDemoBuffer.WriteLong(*theLength);
+				mDemoBuffer.WriteUInt32(*theType);
+				mDemoBuffer.WriteUInt32(*theLength);
 				if ((*theType == regemu::REGEMU_DWORD) && (*theLength == sizeof(uint32_t)))
 				{
 					uint32_t aValue;
 					memcpy(&aValue, theValue, sizeof(aValue));
-					mDemoBuffer.WriteLong(aValue); // WriteLong serializes little-endian
+					mDemoBuffer.WriteUInt32(aValue);
 				}
 				else
 					mDemoBuffer.WriteBytes(theValue, *theLength);
@@ -1466,7 +1461,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 		if (!success)
 			return false;
 
-		uint32_t aLen = mDemoBuffer.ReadLong();		
+		uint32_t aLen = mDemoBuffer.ReadUInt32();
 				
 		theBuffer->Clear();
 		for (int i = 0; i < static_cast<int>(aLen); i++)
@@ -1509,7 +1504,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 			mDemoBuffer.WriteNumBits(0, 1);
 			mDemoBuffer.WriteNumBits(DEMO_FILE_READ, 5);
 			mDemoBuffer.WriteNumBits(1, 1); // success			
-			mDemoBuffer.WriteLong(aFileSize);
+			mDemoBuffer.WriteUInt32(static_cast<uint32_t>(aFileSize));
 			mDemoBuffer.WriteBytes(aData, aFileSize);
 		}
 
@@ -1691,10 +1686,7 @@ void SexyAppBase::UpdateFrames()
 	mUpdateCount++;	
 
 	if (!mMinimized)
-	{		
-		if (mWidgetManager->UpdateFrame())
-			++mFPSDirtyCount;
-	}
+		mWidgetManager->UpdateFrame();
 
 	mMusicInterface->Update();	
 	CleanSharedImages();
@@ -1724,7 +1716,7 @@ bool SexyAppBase::DoUpdateFrames()
 		}
 
 		// a queued command waits on game logic; let the tick advance so it can be claimed or judged diverged
-		if ((mLoaded == mDemoLoadingComplete) && ((mUpdateCount != mLastDemoUpdateCnt) || (mDemoQueuedSince >= 0)))
+		if ((mLoaded == mDemoLoadingComplete) && ((mUpdateCount != mLastDemoUpdateCnt) || mDemoCommandQueued))
 		{
 			UpdateFrames();
 			return true;
@@ -1769,8 +1761,6 @@ void SexyAppBase::Redraw(Rect* theClipRect)
 		return;
 
 	mGLInterface->Redraw(theClipRect);
-
-	mFPSFlipCount++;
 }
 
 ///////////////////////////// FPS Stuff
@@ -1876,9 +1866,6 @@ bool SexyAppBase::DrawDirtyStuff()
 		mDrawCount++;
 
 		uint32_t aMidTime = SDL_GetTicks();
-
-		mFPSCount++;
-		mFPSTime += aMidTime - aStartTime;
 
 		mDrawTime += aMidTime - aStartTime;
 
@@ -2101,12 +2088,10 @@ void SexyAppBase::WriteDemoTimingBlock()
 
 		mDemoBuffer.WriteNumBits(0, 1);
 		mDemoBuffer.WriteNumBits(DEMO_IDLE, 5);
-		mDemoCmdOrder++;
 	}
 	
 	mDemoBuffer.WriteNumBits(mUpdateCount - mLastDemoUpdateCnt, 4);
 	mLastDemoUpdateCnt = mUpdateCount;
-	mDemoCmdOrder++;
 }
 
 int aNumBigMoveMessages = 0;
@@ -2121,7 +2106,7 @@ bool SexyAppBase::PrepareDemoCommand([[maybe_unused]] bool required)
 		mDemoCmdBitPos = mDemoBuffer.mReadBitPos;
 		mDemoCmdUpdateCnt = mLastDemoUpdateCnt;
 		if (required) // a game-logic call site claimed the queued command
-			mDemoQueuedSince = -1;
+			mDemoCommandQueued = false;
 
 		mLastDemoUpdateCnt += mDemoBuffer.ReadNumBits(4, false);
 
@@ -2133,8 +2118,6 @@ bool SexyAppBase::PrepareDemoCommand([[maybe_unused]] bool required)
 			mDemoCmdNum = mDemoBuffer.ReadNumBits(5, false);
 
 		mDemoNeedsCommand = false;
-
-		mDemoCmdOrder++;
 	}
 
 	DBG_ASSERTE((mUpdateCount >= mLastDemoUpdateCnt) || (!required));
@@ -2294,12 +2277,13 @@ void SexyAppBase::ProcessDemo()
 					case DEMO_SYNC:
 					case DEMO_ASSERT_STRING_EQUAL:
 					case DEMO_ASSERT_INT_EQUAL:
-						if (mDemoQueuedSince >= 0 && mUpdateCount > mDemoQueuedSince) // queued across a tick with no claim: the replay has diverged
+						if (mDemoCommandQueued && mUpdateCount != mDemoQueuedSince) // queued across a tick with no claim: the replay has diverged
 						{
 							Shutdown();
 							return;
 						}
 						mDemoQueuedSince = mUpdateCount;
+						mDemoCommandQueued = true;
 						mDemoBuffer.mReadBitPos = mDemoCmdBitPos; // leave queued for the game-logic call site to consume
 						mLastDemoUpdateCnt = mDemoCmdUpdateCnt;
 						mDemoNeedsCommand = true;
@@ -2650,7 +2634,7 @@ bool SexyAppBase::Process(bool allowSleep)
 			while (mUpdateCount < mFastForwardToUpdateNum || mFastForwardToMarker)
 			{
 				ClearUpdateBacklog();
-				int aLastUpdateCount = mUpdateCount;
+				uint aLastUpdateCount = mUpdateCount;
 								
 				// Actual updating code below
 				//////////////////////////////////////////////////////////////////////////
@@ -2991,7 +2975,7 @@ bool SexyAppBase::UpdateAppStep(bool* updated)
 		}
 		else
 		{
-			int anOldUpdateCnt = mUpdateCount;
+			uint anOldUpdateCnt = mUpdateCount;
 			Process();		
 			if (updated != nullptr)
 				*updated = mUpdateCount != anOldUpdateCnt;			
@@ -3072,14 +3056,14 @@ void SexyAppBase::Start()
 
 	Sexy::PrintF("Seconds       = %g\r\n", (SDL_GetTicks() - aStartTime) / 1000.0);
 	//Sexy::PrintF("Count         = %d\r\n", aCount);
-	Sexy::PrintF("Sleep Count   = %d\r\n", mSleepCount);
-	Sexy::PrintF("Update Count  = %d\r\n", mUpdateCount);
-	Sexy::PrintF("Draw Count    = %d\r\n", mDrawCount);
-	Sexy::PrintF("Draw Time     = %d\r\n", mDrawTime);
-	Sexy::PrintF("Screen Blt    = %d\r\n", mScreenBltTime);
+	Sexy::PrintF("Sleep Count   = %u\r\n", mSleepCount);
+	Sexy::PrintF("Update Count  = %u\r\n", mUpdateCount);
+	Sexy::PrintF("Draw Count    = %u\r\n", mDrawCount);
+	Sexy::PrintF("Draw Time     = %" PRIu64 "\r\n", mDrawTime);
+	Sexy::PrintF("Screen Blt    = %u\r\n", mScreenBltTime);
 	if (mDrawTime+mScreenBltTime > 0)
 	{
-		Sexy::PrintF("Avg FPS       = %d\r\n", (mDrawCount*1000)/(mDrawTime+mScreenBltTime));
+		Sexy::PrintF("Avg FPS       = %" PRIu64 "\r\n", static_cast<uint64_t>(mDrawCount) * 1000 / (mDrawTime+mScreenBltTime));
 	}
 
 	//timeEndPeriod(1);	

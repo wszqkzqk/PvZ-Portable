@@ -205,7 +205,7 @@ void LawnDialog::ButtonPress(int theId)
 
 void LawnDialog::ButtonDepress(int theId)
 {
-    if (mUpdateCnt > mButtonDelay)
+    if (mButtonDelay < 0 || mUpdateCnt > static_cast<uint>(mButtonDelay))
     {
         Dialog::ButtonDepress(theId);
     }

@@ -195,21 +195,10 @@ DataSync::~DataSync()
 {
 }
 
-void DataSync::ResetPointerTable()
-{
-	mIntToPointerMap.clear();
-	mPointerToIntMap.clear();
-	mPointerSyncList.clear();
-	mCurPointerIndex = 1;
-	mPointerToIntMap[nullptr] = 0;
-	mIntToPointerMap[0] = nullptr;
-}
-
 void DataSync::Reset()
 {
 	mReader = nullptr;
 	mWriter = nullptr;
-	ResetPointerTable();
 }
 
 void DataSync::SyncBytes(void* theData, uint32_t theDataLen)

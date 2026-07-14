@@ -20,7 +20,7 @@
  */
 
 #include <time.h>
-#include <inttypes.h>
+#include <cinttypes>
 #include <stdarg.h>
 #include <stdexcept>
 #include <fstream>

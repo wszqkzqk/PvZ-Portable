@@ -91,8 +91,6 @@ public:
 	int						mLastMouseY;
 	int						mDownButtons;
 	int						mActualDownButtons;
-	int						mLastInputUpdateCnt;
-	
 	bool					mKeyDown[0xFF];
 	int						mLastDownButtonId;	
 	

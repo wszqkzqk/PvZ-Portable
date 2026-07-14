@@ -515,7 +515,7 @@ void WidgetContainer::UpdateAll(ModalFlags* theFlags)
 
 	if (theFlags->GetFlags() & WIDGETFLAGS_UPDATE)
 	{	
-		if (mLastWMUpdateCount != (ulong)mWidgetManager->mUpdateCnt)
+		if (mLastWMUpdateCount != mWidgetManager->mUpdateCnt)
 		{
 			mLastWMUpdateCount = mWidgetManager->mUpdateCnt;
 			Update();

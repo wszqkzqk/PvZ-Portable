@@ -585,8 +585,6 @@ void WidgetManager::RehupMouse()
 
 bool WidgetManager::MouseUp(int x, int y, int theClickCount)
 {	
-	mLastInputUpdateCnt = mUpdateCnt;
-	
 	int aMask;
 	
 	if (theClickCount < 0)
@@ -620,8 +618,6 @@ bool WidgetManager::MouseUp(int x, int y, int theClickCount)
 
 bool WidgetManager::MouseDown(int x, int y, int theClickCount) 
 {	
-	mLastInputUpdateCnt = mUpdateCnt;
-
 	if (theClickCount < 0)
 		mActualDownButtons |= 0x02;
 	else if (theClickCount == 3)
@@ -673,8 +669,6 @@ bool WidgetManager::MouseDown(int x, int y, int theClickCount)
 
 bool WidgetManager::MouseMove(int x, int y) 
 {	
-	mLastInputUpdateCnt = mUpdateCnt;
-
 	if (mDownButtons)
 		return MouseDrag(x,y);
 
@@ -686,8 +680,6 @@ bool WidgetManager::MouseMove(int x, int y)
 
 bool WidgetManager::MouseDrag(int x, int y) 
 {	
-	mLastInputUpdateCnt = mUpdateCnt;
-
 	mMouseIn = true;
 	mLastMouseX = x;
 	mLastMouseY = y;
@@ -734,7 +726,6 @@ bool WidgetManager::MouseDrag(int x, int y)
 bool WidgetManager::MouseExit(int x, int y)
 {
 	(void)x;(void)y;
-	mLastInputUpdateCnt = mUpdateCnt;
 
 	mMouseIn = false;
 
@@ -749,16 +740,12 @@ bool WidgetManager::MouseExit(int x, int y)
 
 void WidgetManager::MouseWheel(int theDelta)
 {
-	mLastInputUpdateCnt = mUpdateCnt;
-
 	if (mFocusWidget != nullptr)
 		mFocusWidget->MouseWheel(theDelta);
 }
 
 bool WidgetManager::KeyChar(char theChar)
 {
-	mLastInputUpdateCnt = mUpdateCnt;
-
 	if (theChar == KEYCODE_TAB)
 	{
 		//TODO: Check thing
@@ -780,8 +767,6 @@ bool WidgetManager::KeyChar(char theChar)
 
 bool WidgetManager::KeyText(std::string_view theText)
 {
-	mLastInputUpdateCnt = mUpdateCnt;
-
 	if (mFocusWidget != nullptr)
 		mFocusWidget->KeyText(theText);
 
@@ -790,8 +775,6 @@ bool WidgetManager::KeyText(std::string_view theText)
 
 bool WidgetManager::KeyDown(KeyCode key)
 {
-	mLastInputUpdateCnt = mUpdateCnt;
-
 	if ((key >= 0) && (key < 0xFF))
 		mKeyDown[key] = true;
 
@@ -803,8 +786,6 @@ bool WidgetManager::KeyDown(KeyCode key)
 
 bool WidgetManager::KeyUp(KeyCode key)
 {
-	mLastInputUpdateCnt = mUpdateCnt;
-
 	if ((key >= 0) && (key < 0xFF))
 		mKeyDown[key] = false;
 

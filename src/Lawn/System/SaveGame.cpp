@@ -2355,7 +2355,7 @@ static bool WriteChunkV4(std::vector<unsigned char>& thePayload, uint32_t theChu
 	aChunkWriter.OpenMemory(0x200);
 	aChunkWriter.WriteUInt32(SAVE4_CHUNK_VERSION);
 	aChunkWriter.WriteUInt32(1U);
-	aChunkWriter.WriteUInt32(static_cast<uint32_t>(aFieldWriter.GetDataLen()));
+	aChunkWriter.WriteUInt32(aFieldWriter.GetDataLen());
 	aChunkWriter.WriteBytes(aFieldWriter.GetDataPtr(), aFieldWriter.GetDataLen());
 
 	std::vector<unsigned char> aChunk;
@@ -2636,8 +2636,15 @@ public:
 public:
 	inline int		ByteLeftToRead() { return (mBuffer.mDataBitSize - mBuffer.mReadBitPos + 7) / 8; }
 	void			SyncBytes(void* theDest, int theReadSize);
-	void			SyncInt(int& theInt);
-	inline void		SyncUint(uint32_t& theInt) { SyncInt((signed int&)theInt); }
+	void			SyncInt32(int32_t& theInt32);
+	void			SyncUInt32(uint32_t& theUInt32);
+	inline void		SyncInt(int& theInt)
+	{
+		int32_t aValue = theInt;
+		SyncInt32(aValue);
+		if (mReading)
+			theInt = aValue;
+	}
 	void			SyncReanimationDef(ReanimatorDefinition*& theDefinition);
 	void			SyncParticleDef(TodParticleDefinition*& theDefinition);
 	void			SyncTrailDef(TrailDefinition*& theDefinition);
@@ -2654,11 +2661,11 @@ void SaveGameContext::SyncBytes(void* theDest, int theReadSize)
 			mFailed = true;
 		}
 
-		aReadSize = mFailed ? 0 : mBuffer.ReadLong();
+		aReadSize = mFailed ? 0 : mBuffer.ReadInt32();
 	}
 	else
 	{
-		mBuffer.WriteLong(theReadSize);
+		mBuffer.WriteInt32(theReadSize);
 	}
 
 	if (mReading)
@@ -2683,7 +2690,7 @@ void SaveGameContext::SyncBytes(void* theDest, int theReadSize)
 	}
 }
 
-void SaveGameContext::SyncInt(int& theInt)
+void SaveGameContext::SyncInt32(int32_t& theInt32)
 {
 	if (mReading)
 	{
@@ -2692,11 +2699,28 @@ void SaveGameContext::SyncInt(int& theInt)
 			mFailed = true;
 		}
 
-		theInt = mFailed ? 0 : mBuffer.ReadLong();
+		theInt32 = mFailed ? 0 : mBuffer.ReadInt32();
 	}
 	else
 	{
-		mBuffer.WriteLong(theInt);
+		mBuffer.WriteInt32(theInt32);
+	}
+}
+
+void SaveGameContext::SyncUInt32(uint32_t& theUInt32)
+{
+	if (mReading)
+	{
+		if (ByteLeftToRead() < 4)
+		{
+			mFailed = true;
+		}
+
+		theUInt32 = mFailed ? 0 : mBuffer.ReadUInt32();
+	}
+	else
+	{
+		mBuffer.WriteUInt32(theUInt32);
 	}
 }
 
@@ -2969,9 +2993,9 @@ static void SyncTrail(Board* theBoard, Trail* theTrail, SaveGameContext& theCont
 
 template <typename T> inline static void SyncDataArray(SaveGameContext& theContext, DataArray<T>& theDataArray)
 {
-	theContext.SyncUint(theDataArray.mFreeListHead);
-	theContext.SyncUint(theDataArray.mMaxUsedCount);
-	theContext.SyncUint(theDataArray.mSize);
+	theContext.SyncUInt32(theDataArray.mFreeListHead);
+	theContext.SyncUInt32(theDataArray.mMaxUsedCount);
+	theContext.SyncUInt32(theDataArray.mSize);
 	theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(*theDataArray.mBlock));
 }
 
@@ -3030,14 +3054,14 @@ static void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 			theContext.mFailed = true;
 		}
 
-		if (theContext.mFailed || static_cast<uint32_t>(theContext.mBuffer.ReadLong()) != SAVE_FILE_MAGIC_NUMBER)
+		if (theContext.mFailed || theContext.mBuffer.ReadUInt32() != SAVE_FILE_MAGIC_NUMBER)
 		{
 			theContext.mFailed = true;
 		}
 	}
 	else
 	{
-		theContext.mBuffer.WriteLong(SAVE_FILE_MAGIC_NUMBER);
+		theContext.mBuffer.WriteUInt32(SAVE_FILE_MAGIC_NUMBER);
 	}
 }
 

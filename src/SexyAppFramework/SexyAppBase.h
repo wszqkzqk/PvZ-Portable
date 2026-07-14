@@ -242,14 +242,14 @@ public:
 	time_t					mLastTime;
 	uint32_t				mLastUserInputTick;
 
-	int						mSleepCount;
-	int						mDrawCount;
-	int						mUpdateCount;
+	uint					mSleepCount;
+	uint					mDrawCount;
+	uint					mUpdateCount;
 	int						mUpdateAppState;
 	int						mUpdateAppDepth;
 	double					mUpdateMultiplier;		
 	bool					mPaused;
-	int						mFastForwardToUpdateNum;
+	uint					mFastForwardToUpdateNum;
 	bool					mFastForwardToMarker;
 	bool					mFastForwardStep;
 	uint32_t				mLastDrawTick;
@@ -270,15 +270,10 @@ public:
 	bool					mPhysMinimized;
 	bool					mIsDisabled;
 	bool					mHasFocus;
-	int						mDrawTime;
-	uint32_t				mFPSStartTick;
-	int						mFPSFlipCount;
-	int						mFPSDirtyCount;
-	int						mFPSTime;
-	int						mFPSCount;
+	uint64_t				mDrawTime;
 	bool					mShowFPS;
 	int						mShowFPSMode;
-	int						mScreenBltTime;
+	uint					mScreenBltTime;
 	bool					mAutoStartLoadingThread;
 	bool					mLoadingThreadStarted;
 	bool					mLoadingThreadCompleted;
@@ -306,22 +301,21 @@ public:
 	bool					mHasCustomDemoFile; // an explicit -demofile overrides automatic demo file selection
 	uint					mDemoRecordFileLimit;
 	Buffer					mDemoBuffer;
-	int						mDemoLength;
 	int						mLastDemoMouseX;
 	int						mLastDemoMouseY;
-	int						mLastDemoUpdateCnt;
+	uint					mLastDemoUpdateCnt;
 	uint64_t				mDemoStartTime; // wall clock at session start, base of the demo-synced clock
 	int32_t					mDemoTimeZoneOffset; // recorder's local time minus UTC in seconds, for demo-synced local time
 	bool					mDemoNeedsCommand;
 	bool					mDemoIsShortCmd;
 	int						mDemoCmdNum;
-	int						mDemoCmdOrder;
 	int						mDemoCmdBitPos;
-	int						mDemoCmdUpdateCnt; // update tick before the current command header was read
-	int						mDemoQueuedSince; // tick when a game-logic-owned command was queued; -1 = none
+	uint					mDemoCmdUpdateCnt; // update tick before the current command header was read
+	uint					mDemoQueuedSince; // tick when a game-logic-owned command was queued
+	bool					mDemoCommandQueued;
 	bool					mDemoLoadingComplete;
 
-	typedef std::pair<std::string, int> DemoMarker;
+	typedef std::pair<std::string, uint32_t> DemoMarker;
 	typedef std::list<DemoMarker> DemoMarkerList;
 	DemoMarkerList			mDemoMarkerList;
 

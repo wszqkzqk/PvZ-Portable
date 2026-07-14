@@ -48,8 +48,8 @@ public:
 
 	bool					mUpdateIteratorModified;
 	WidgetList::iterator	mUpdateIterator;
-	ulong					mLastWMUpdateCount;
-	int						mUpdateCnt;
+	uint					mLastWMUpdateCount;
+	uint					mUpdateCnt;
 	bool					mDirty;
 	int						mX;
 	int						mY;

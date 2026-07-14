@@ -217,7 +217,7 @@ bool StoreScreen::IsItemSoldOut(StoreItem theStoreItem)
     else if (theStoreItem == STORE_ITEM_BONUS_LAWN_MOWER)
         return aPlayer->mPurchases[STORE_ITEM_BONUS_LAWN_MOWER] >= 2;
     else if (IsPottedPlant(theStoreItem))
-        return mApp->mZenGarden->IsZenGardenFull(true) || aPlayer->mPurchases[theStoreItem] == GetCurrentDaysSince2000(mApp->GetNowTime());
+        return mApp->mZenGarden->IsZenGardenFull(true) || aPlayer->mPurchases[theStoreItem] == static_cast<uint32_t>(GetCurrentDaysSince2000(mApp->GetNowTime()));
     else return aPlayer->mPurchases[theStoreItem];
 
     unreachable();
@@ -657,7 +657,7 @@ void StoreScreen::Update()
     if (mApp->mCrazyDaveState == CRAZY_DAVE_OFF)
     {
         // demo sessions preload by update tick instead of the frame-scheduled mDrawnOnce
-        bool aShouldPreload = mApp->IsInDemoMode() ? (mApp->mUpdateCount - mAddedAtUpdateCount >= 2) : mDrawnOnce;
+        bool aShouldPreload = mApp->IsInDemoMode() ? (mApp->mUpdateCount - mAddedAtUpdateCount >= 2U) : mDrawnOnce;
         if (aShouldPreload)
         {
             StorePreload();

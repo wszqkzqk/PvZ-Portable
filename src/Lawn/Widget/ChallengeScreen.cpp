@@ -770,10 +770,10 @@ void ChallengeScreen::MouseDown(int x, int y, int theClickCount)
 	if (mLimboPageUnlocked)
 		return;
 
-	constexpr int MAX_GAP_TICKS = 20; // 200 ms at 100 update ticks/sec
+	constexpr uint MAX_GAP_TICKS = 20; // 200 ms at 100 update ticks/sec
 	constexpr int CLICKS_NEEDED = 5;
 
-	int aNow = mApp->mUpdateCount;
+	uint aNow = mApp->mUpdateCount;
 	if (aNow - mLastClickUpdateCnt > MAX_GAP_TICKS)
 		mClickCount = 0;
 	mLastClickUpdateCnt = aNow;

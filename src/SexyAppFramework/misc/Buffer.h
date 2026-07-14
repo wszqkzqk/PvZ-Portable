@@ -54,7 +54,8 @@ public:
 	static int				GetBitsRequired(int theNum, bool isSigned);
 	void					WriteBoolean(bool theBool);
 	void					WriteShort(short theShort);
-	void					WriteLong(int32_t theLong);
+	void					WriteUInt32(uint32_t theValue);
+	void					WriteInt32(int32_t theValue);
 	void					WriteString(const std::string& theString);
 	void					WriteLine(const std::string& theString);	
 	void					WriteBuffer(const ByteVector& theBuffer);
@@ -68,7 +69,8 @@ public:
 	int						ReadNumBits(int theBits, bool isSigned) const;
 	bool					ReadBoolean() const;
 	short					ReadShort() const;
-	int32_t					ReadLong() const;
+	uint32_t				ReadUInt32() const;
+	int32_t					ReadInt32() const;
 	std::string				ReadString() const;	
 	std::string				ReadLine() const;
 	void					ReadBytes(uchar* theData, int theLen) const;
