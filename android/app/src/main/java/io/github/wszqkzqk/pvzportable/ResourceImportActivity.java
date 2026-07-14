@@ -181,7 +181,7 @@ public class ResourceImportActivity extends AppCompatActivity {
                     String name = stripCommonPrefix(entry.getName());
                     if (name == null) { zis.closeEntry(); continue; }
 
-                    File outFile = new File(gameDir, name);
+                    File outFile = resolveWithinGameDir(new File(gameDir, name));
                     File parent = outFile.getParentFile();
                     if (parent != null && !parent.exists()) parent.mkdirs();
 
@@ -234,6 +234,17 @@ public class ResourceImportActivity extends AppCompatActivity {
                name.startsWith("compiled/");
     }
 
+    private File resolveWithinGameDir(File candidate) throws IOException {
+        File canonicalGameDir = gameDir.getCanonicalFile();
+        File canonicalCandidate = candidate.getCanonicalFile();
+        String gameDirPath = canonicalGameDir.getPath();
+        String candidatePath = canonicalCandidate.getPath();
+        if (!candidatePath.equals(gameDirPath) && !candidatePath.startsWith(gameDirPath + File.separator)) {
+            throw new IOException("Import entry is outside the game directory");
+        }
+        return canonicalCandidate;
+    }
+
     private void importFromDirectory(Uri treeUri) {
         setWorking(true);
         new Thread(() -> {
@@ -274,16 +285,17 @@ public class ResourceImportActivity extends AppCompatActivity {
     }
 
     private void copyDocumentTree(DocumentFile src, File destDir) throws IOException {
-        if (!destDir.exists()) destDir.mkdirs();
+        File safeDestDir = resolveWithinGameDir(destDir);
+        if (!safeDestDir.exists()) safeDestDir.mkdirs();
         for (DocumentFile child : src.listFiles()) {
             if (child.isDirectory()) {
                 String name = child.getName();
                 if (name == null) continue;
-                copyDocumentTree(child, new File(destDir, name));
+                copyDocumentTree(child, resolveWithinGameDir(new File(safeDestDir, name)));
             } else {
                 String name = child.getName();
                 if (name == null) continue;
-                File outFile = new File(destDir, name);
+                File outFile = resolveWithinGameDir(new File(safeDestDir, name));
                 try (InputStream is = getContentResolver().openInputStream(child.getUri());
                      OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile), BUFFER_SIZE)) {
                     if (is == null) continue;
@@ -387,7 +399,7 @@ public class ResourceImportActivity extends AppCompatActivity {
                     if (entry.isDirectory()) { zis.closeEntry(); continue; }
                     String name = entry.getName();
                     if (!name.startsWith("userdata/")) name = "userdata/" + name;
-                    File outFile = new File(gameDir, name);
+                    File outFile = resolveWithinGameDir(new File(gameDir, name));
                     File parent = outFile.getParentFile();
                     if (parent != null && !parent.exists()) parent.mkdirs();
                     try (OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile), BUFFER_SIZE)) {
