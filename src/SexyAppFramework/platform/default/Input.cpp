@@ -248,28 +248,33 @@ static bool SDLSynthesizeAsciiCharFromKeyDown(const SDL_KeyboardEvent& theEvent,
 {
 	theChar = 0;
 
-	if (SDL_IsTextInputActive())
-		return false;
-
 	SDL_Keycode aSym = theEvent.keysym.sym;
 	SDL_Keymod aMods = static_cast<SDL_Keymod>(theEvent.keysym.mod);
 	const bool aHasCtrl = (aMods & KMOD_CTRL) != 0;
 	const bool aHasAlt = (aMods & KMOD_ALT) != 0;
 	const bool aHasGui = (aMods & KMOD_GUI) != 0;
 	const bool aHasShift = (aMods & KMOD_SHIFT) != 0;
+	const bool aTextInputActive = SDL_IsTextInputActive(); // printable chars arrive via SDL_TEXTINPUT then
 
 	if (aHasAlt || aHasGui)
 		return false;
 
 	if (aSym >= SDLK_a && aSym <= SDLK_z)
 	{
-		theChar = aHasCtrl
-			? static_cast<char>(aSym - SDLK_a + 1)
-			: static_cast<char>(aHasShift ? aSym - SDLK_a + 'A' : aSym);
+		if (aHasCtrl)
+		{
+			theChar = static_cast<char>(aSym - SDLK_a + 1); // Ctrl+letter -> control code; SDL_TEXTINPUT is not guaranteed for Ctrl combos
+			return true;
+		}
+
+		if (aTextInputActive)
+			return false;
+
+		theChar = static_cast<char>(aHasShift ? aSym - SDLK_a + 'A' : aSym);
 		return true;
 	}
 
-	if (aHasCtrl)
+	if (aHasCtrl || aTextInputActive)
 		return false;
 
 	switch (aSym)
@@ -524,7 +529,8 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 
 			case SDL_TEXTINPUT:
 				mLastUserInputTick = mLastTimerTime;
-				mWidgetManager->KeyChar((char)event.text.text[0]);
+				if (static_cast<unsigned char>(event.text.text[0]) >= 32) // some backends report Ctrl+letter control codes as text
+					mWidgetManager->KeyChar(event.text.text[0]);
 				break;
 		}
 	}
