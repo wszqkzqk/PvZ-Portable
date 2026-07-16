@@ -259,7 +259,7 @@ inline size_t UTF8PrevBoundary(std::string_view theString, size_t theOffset)
 	return aPos;
 }
 
-// Byte offset of the theCodePointIndex-th code point (size if fewer).
+// Byte offset of the theCodePointIndex-th code point (size if fewer or on invalid UTF-8).
 inline size_t UTF8ByteOffsetForCodePoint(std::string_view theString, size_t theCodePointIndex)
 {
 	size_t aOffset = 0;
@@ -267,7 +267,7 @@ inline size_t UTF8ByteOffsetForCodePoint(std::string_view theString, size_t theC
 	for (size_t i = 0; i < theCodePointIndex; i++)
 	{
 		if (!UTF8DecodeNext(theString, aOffset, aChar))
-			break;
+			return theString.size();
 	}
 	return aOffset;
 }
