@@ -529,8 +529,12 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 
 			case SDL_TEXTINPUT:
 				mLastUserInputTick = mLastTimerTime;
-				if (static_cast<unsigned char>(event.text.text[0]) >= 32) // some backends report Ctrl+letter control codes as text
-					mWidgetManager->KeyChar(event.text.text[0]);
+				for (const char* aTextPtr = event.text.text; *aTextPtr != 0; aTextPtr++) // IMEs may commit a whole string in one event
+				{
+					const unsigned char aChar = static_cast<unsigned char>(*aTextPtr);
+					if (aChar >= 32 && aChar < 128) // control codes arrive via keydown; non-ASCII has no legacy byte representation
+						mWidgetManager->KeyChar(*aTextPtr);
+				}
 				break;
 		}
 	}
