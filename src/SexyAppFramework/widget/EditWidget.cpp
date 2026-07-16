@@ -58,7 +58,6 @@ EditWidget::EditWidget(int theId, EditListener* theEditListener)
 	mDrawSelOverride = false;
 	mMaxChars = -1;
 	mMaxPixels = -1;
-	mPasswordChar = 0;
 	mBlinkDelay = 40;
 
 	SetColors(gEditWidgetColors, NUM_COLORS);
@@ -100,22 +99,6 @@ void EditWidget::SetText(const std::string& theText, bool leftPosToZero)
 	MarkDirty();
 }
 
-std::string& EditWidget::GetDisplayString()
-{
-	if (mPasswordChar==0)
-		return mString;
-
-	if (mPasswordDisplayString.size()!=mString.size())
-	{
-		mPasswordDisplayString = std::string(mString.size(), mPasswordChar);
-		//mPasswordDisplayString.resize(mString.size());
-		//for (int i=0; i<(int)mPasswordDisplayString.length(); i++)
-		//	mPasswordDisplayString[i] = mPasswordChar;
-	}
-
-	return mPasswordDisplayString;
-}
-
 bool EditWidget::WantsFocus()
 {
 	mHadFocusBeforePress = mHasFocus; // WidgetManager calls WantsFocus right before SetFocus on each press
@@ -145,7 +128,7 @@ void EditWidget::Draw(Graphics* g) // Already translated
 		mFont = FONT_PICO129->Duplicate();
 		//mFont = new SysFont(mWidgetManager->mApp, "Arial Unicode MS", 10, false);
 
-	std::string &aString = GetDisplayString();
+	std::string_view aString = mString;
 
 	g->SetColor(mColors[COLOR_BKG]);			
 	g->FillRect(0, 0, mWidth, mHeight);
@@ -209,8 +192,7 @@ void EditWidget::UpdateCaretPos()
 
 int EditWidget::GetCaretXOffset()
 {
-	std::string &aString = GetDisplayString();
-	return mFont->StringWidth(aString.substr(0, mCursorPos)) - mFont->StringWidth(aString.substr(0, mLeftPos));
+	return mFont->StringWidth(mString.substr(0, mCursorPos)) - mFont->StringWidth(mString.substr(0, mLeftPos));
 }
 
 void EditWidget::UpdateTextInputArea()
@@ -338,7 +320,7 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 		{
 			int aSelStart = std::min(mCursorPos, mHilitePos);
 			int aSelLen = std::max(mCursorPos, mHilitePos) - aSelStart;
-			mWidgetManager->mApp->CopyToClipboard(GetDisplayString().substr(aSelStart, aSelLen));
+			mWidgetManager->mApp->CopyToClipboard(mString.substr(aSelStart, aSelLen));
 
 			if (theChar == 3)
 			{
@@ -650,13 +632,13 @@ int EditWidget::GetCharAt(int x, int y)
 	(void)y;
 	int aPos = 0;
 
-	std::string &aString = GetDisplayString();
+	std::string_view aString = mString;
 
 	for (int i = mLeftPos; i < (int)aString.length(); )
 	{
 		int aNext = UTF8NextBoundary(aString, i);
-		std::string_view aLoSubStr = std::string_view(aString).substr(mLeftPos, i - mLeftPos);
-		std::string_view aHiSubStr = std::string_view(aString).substr(mLeftPos, aNext - mLeftPos);
+		std::string_view aLoSubStr = aString.substr(mLeftPos, i - mLeftPos);
+		std::string_view aHiSubStr = aString.substr(mLeftPos, aNext - mLeftPos);
 
 		int aLoLen = mFont->StringWidth(aLoSubStr);
 		int aHiLen = mFont->StringWidth(aHiSubStr);
@@ -684,7 +666,7 @@ void EditWidget::FocusCursor(bool bigJump)
 
 	if (mFont != nullptr)
 	{
-		std::string &aString = GetDisplayString();
+		std::string_view aString = mString;
 		while ((mWidth-8 > 0) && (mFont->StringWidth(aString.substr(0, mCursorPos)) - mFont->StringWidth(aString.substr(0, mLeftPos)) >= mWidth-8))
 		{
 			if (bigJump)
@@ -748,7 +730,7 @@ void EditWidget::MouseUp(int x, int y, int theBtnNum, int theClickCount)
 
 void EditWidget::HiliteWord()
 {
-	std::string &aString = GetDisplayString();
+	std::string_view aString = mString;
 
 	if (mCursorPos < (int)aString.length())
 	{

@@ -48,7 +48,6 @@ public:
 
 	int						mId;
 	std::string				mString;
-	std::string				mPasswordDisplayString;
 	_Font*					mFont;
 
 	struct WidthCheck
@@ -71,7 +70,6 @@ public:
 	int						mLeftPos;		
 	int						mMaxChars;
 	int						mMaxPixels;
-	char				mPasswordChar;
 	
 	std::string				mUndoString;
 	int						mUndoCursor;
@@ -82,7 +80,6 @@ public:
 protected:
 	virtual void			ProcessKey(KeyCode theKey, char theChar);
 	void					InsertTextAtCursor(std::string_view theText);
-	std::string&			GetDisplayString();
 	virtual void			HiliteWord();
 	void					UpdateCaretPos();
 	void					UpdateTextInputArea();
