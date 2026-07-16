@@ -140,7 +140,7 @@ KeyCode	Sexy::GetKeyCodeFromName(const std::string& theKeyName)
 	char *s = aKeyName;
 	while (*s)
 	{
-		*s = toupper(*s);
+		*s = toupper(static_cast<unsigned char>(*s));
 		s++;
 	}
 
