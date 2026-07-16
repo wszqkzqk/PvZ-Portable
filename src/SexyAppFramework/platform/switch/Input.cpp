@@ -84,6 +84,11 @@ void SexyAppBase::StopTextInput()
 	
 }
 
+void SexyAppBase::SetTextInputRect(const Rect& theRect)
+{
+	(void)theRect;
+}
+
 bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 {
 	if (!appletMainLoop())

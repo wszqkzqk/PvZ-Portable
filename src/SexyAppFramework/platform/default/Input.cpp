@@ -342,6 +342,21 @@ void SexyAppBase::StopTextInput()
 #endif
 }
 
+void SexyAppBase::SetTextInputRect(const Rect& theRect)
+{
+	const Rect& aLogical = mWidgetManager->mMouseDestRect;
+	const Rect& aPresent = mWidgetManager->mMouseSourceRect; // presentation/window pixels, inverse of RemapMouse
+	if (aLogical.mWidth <= 0 || aLogical.mHeight <= 0)
+		return;
+
+	SDL_Rect aRect;
+	aRect.x = (theRect.mX - aLogical.mX) * aPresent.mWidth / aLogical.mWidth + aPresent.mX;
+	aRect.y = (theRect.mY - aLogical.mY) * aPresent.mHeight / aLogical.mHeight + aPresent.mY;
+	aRect.w = theRect.mWidth * aPresent.mWidth / aLogical.mWidth;
+	aRect.h = theRect.mHeight * aPresent.mHeight / aLogical.mHeight;
+	SDL_SetTextInputRect(&aRect);
+}
+
 bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 {
 #ifdef __EMSCRIPTEN__

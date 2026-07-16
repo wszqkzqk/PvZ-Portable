@@ -31,6 +31,7 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
 
@@ -57,6 +58,7 @@ public class PvZPortableActivity extends SDLActivity {
 
         super.onCreate(savedInstanceState);
         hideSystemUI();
+        setupImeLayoutAdjustment();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             mBackCallback = this::dispatchBackToSdl;
@@ -110,6 +112,28 @@ public class PvZPortableActivity extends SDLActivity {
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
+    }
+
+    private void setupImeLayoutAdjustment() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING); // legacy adjustPan is inert with edge-to-edge on R+
+            View content = findViewById(android.R.id.content);
+            content.setOnApplyWindowInsetsListener((v, insets) -> {
+                int shift = 0;
+                if (insets.isVisible(WindowInsets.Type.ime()) && mTextEdit != null) {
+                    int imeBottom = insets.getInsets(WindowInsets.Type.ime()).bottom;
+                    View dummyEdit = mTextEdit; // DummyEdit is package-private, access via View
+                    if (dummyEdit.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+                        RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) dummyEdit.getLayoutParams();
+                        shift = Math.max(0, p.topMargin + p.height - (v.getHeight() - imeBottom));
+                    }
+                }
+                mLayout.setTranslationY(-shift);
+                return v.onApplyWindowInsets(insets);
+            });
+        } else {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         }
     }
 

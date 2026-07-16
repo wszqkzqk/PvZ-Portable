@@ -512,6 +512,7 @@ public:
 	void					InitInput();
 	bool					StartTextInput(std::string& theInput); // set theInput and return true if using soft keyboard capability and user pressed OK (e.g. Switch libnx swkbd)
 	void					StopTextInput();
+	void					SetTextInputRect(const Rect& theRect); // caret rect in logical coords; anchors the IME UI (candidate window, keyboard pan)
 	bool					Is3DAccelerated();
 	bool					Is3DAccelerationSupported();
 	bool					Is3DAccelerationRecommended();

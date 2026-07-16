@@ -63,6 +63,7 @@ public:
 	bool					mShowingCursor;
 	bool					mDrawSelOverride; // set this to true to draw selected text even when not in focus
 	bool					mHadDoubleClick;	// Used to fix a bug with double clicking to hilite a word after the widget manager started calling mouse drag before mouse down/up events
+	bool					mHadFocusBeforePress; // mHasFocus snapshot taken in WantsFocus (pre-SetFocus)
 	int						mCursorPos;
 	int						mHilitePos;
 	int						mBlinkAcc;
@@ -83,6 +84,8 @@ protected:
 	std::string&			GetDisplayString();
 	virtual void			HiliteWord();
 	void					UpdateCaretPos();
+	void					UpdateTextInputArea();
+	int						GetCaretXOffset();
 
 public:
 	virtual void			SetFont(_Font* theFont, _Font* theWidthCheckFont = nullptr);

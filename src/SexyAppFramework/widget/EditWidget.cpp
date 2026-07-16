@@ -46,6 +46,7 @@ EditWidget::EditWidget(int theId, EditListener* theEditListener)
 	mFont = nullptr;
 
 	mHadDoubleClick = false;
+	mHadFocusBeforePress = false;
 	mHilitePos = -1;
 	mLastModifyIdx = -1;
 	mLeftPos = 0;
@@ -118,6 +119,7 @@ std::string& EditWidget::GetDisplayString()
 
 bool EditWidget::WantsFocus()
 {
+	mHadFocusBeforePress = mHasFocus; // WidgetManager calls WantsFocus right before SetFocus on each press
 	return true;
 }
 
@@ -156,8 +158,8 @@ void EditWidget::Draw(Graphics* g) // Already translated
 				
 		if (i == 1)
 		{
-			int aCursorX = mFont->StringWidth(aString.substr(0, mCursorPos)) - mFont->StringWidth(aString.substr(0, mLeftPos));
-			int aHiliteX = aCursorX+2;
+			int aCursorX = GetCaretXOffset();
+			int aHiliteX = aCursorX + 2;
 			if ((mHilitePos != -1) && (mCursorPos != mHilitePos))
 				aHiliteX = mFont->StringWidth(aString.substr(0, mHilitePos)) - mFont->StringWidth(aString.substr(0, mLeftPos));
 			
@@ -206,6 +208,24 @@ void EditWidget::UpdateCaretPos()
 	//SetCaretPos(aPoint.mX,aPoint.mY);
 }
 
+int EditWidget::GetCaretXOffset()
+{
+	std::string &aString = GetDisplayString();
+	return mFont->StringWidth(aString.substr(0, mCursorPos)) - mFont->StringWidth(aString.substr(0, mLeftPos));
+}
+
+void EditWidget::UpdateTextInputArea()
+{
+	if (mFont == nullptr || mWidgetManager == nullptr || !mHasFocus) // FocusCursor may fire while unattached or unfocused
+		return;
+
+	int aCursorX = std::min(std::max(0, GetCaretXOffset()), mWidth-8);
+
+	Point anAbsPos = GetAbsPos();
+	int aTextY = anAbsPos.mY + (mHeight - mFont->GetHeight())/2; // match where the caret is drawn
+	mWidgetManager->mApp->SetTextInputRect(Rect(anAbsPos.mX + 4 + aCursorX, aTextY, 1, mFont->GetHeight()));
+}
+
 void EditWidget::GotFocus()
 {
 	Widget::GotFocus();
@@ -213,6 +233,8 @@ void EditWidget::GotFocus()
 	mShowingCursor = true;
 	mBlinkAcc = 0;
 	MarkDirty();
+
+	UpdateTextInputArea(); // set before StartTextInput so the platform anchors the IME upfront
 
 	std::string value;
 	bool wrote = mWidgetManager->mApp->StartTextInput(value);
@@ -612,11 +634,21 @@ void EditWidget::FocusCursor(bool bigJump)
 			MarkDirty();
 		}
 	}
+
+	UpdateTextInputArea();
 }
 
 void EditWidget::MouseDown(int x, int y, int theBtnNum, int theClickCount)
 {
 	Widget::MouseDown(x, y, theBtnNum, theClickCount);
+
+	if (mHadFocusBeforePress) // restart the session on a repeat press; the first press goes through GotFocus
+	{
+		std::string value;
+		bool wrote = mWidgetManager->mApp->StartTextInput(value);
+		if (wrote)
+			SetText(value);
+	}
 
 	mHilitePos = -1;
 	mCursorPos = GetCharAt(x, y);
