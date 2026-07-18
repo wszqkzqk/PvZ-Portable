@@ -51,17 +51,19 @@ EM_JS(void, WasmStartSoftKeyboard, (), {
 			if (!state.active) return;
 
 			var nextValue = input.value || "";
+			var lastChars = Array.from(state.lastValue); // diff by code point: one backspace deletes one code point
+			var nextChars = Array.from(nextValue);
 			var prefixLen = 0;
-			while (prefixLen < state.lastValue.length && prefixLen < nextValue.length
-				&& state.lastValue.charCodeAt(prefixLen) === nextValue.charCodeAt(prefixLen)) {
+			while (prefixLen < lastChars.length && prefixLen < nextChars.length
+				&& lastChars[prefixLen] === nextChars[prefixLen]) {
 				prefixLen++;
 			}
 
-			for (var i = state.lastValue.length; i > prefixLen; --i) {
+			for (var i = lastChars.length; i > prefixLen; --i) {
 				state.pendingKeys.push(8);
 			}
 
-			for (const ch of nextValue.slice(prefixLen)) {
+			for (const ch of nextChars.slice(prefixLen)) {
 				var charCode = ch.codePointAt(0);
 				if (charCode > 0 && charCode <= 0x7f) {
 					state.pendingChars.push(charCode);
