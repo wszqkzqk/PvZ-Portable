@@ -24,6 +24,8 @@
 
 #include <SDL.h>
 
+#include <algorithm>
+
 #include "SexyAppBase.h"
 #include "graphics/GLInterface.h"
 #include "graphics/GLImage.h"
@@ -326,6 +328,165 @@ void SexyAppBase::InitInput()
 	SDL_Init(SDL_INIT_EVENTS);
 }
 
+static void RecordDemoMousePosition(SexyAppBase* theApp, int theX, int theY)
+{
+	// stream coords are unsigned 12-bit; wrap so out-of-bounds clicks stay out of bounds
+	theX &= 4095;
+	theY &= 4095;
+
+	int aDiffX = theX - theApp->mLastDemoMouseX;
+	int aDiffY = theY - theApp->mLastDemoMouseY;
+
+	if ((abs(aDiffX) < 32) && (abs(aDiffY) < 32))
+	{
+		if ((aDiffX != 0) || (aDiffY != 0))
+		{
+			theApp->WriteDemoTimingBlock();
+			theApp->mDemoBuffer.WriteNumBits(1, 1);
+			theApp->mDemoBuffer.WriteNumBits(0, 1);
+			theApp->mDemoBuffer.WriteNumBits(aDiffX, 6);
+			theApp->mDemoBuffer.WriteNumBits(aDiffY, 6);
+		}
+	}
+	else
+	{
+		theApp->WriteDemoTimingBlock();
+		theApp->mDemoBuffer.WriteNumBits(0, 1);
+		theApp->mDemoBuffer.WriteNumBits(DEMO_MOUSE_POSITION, 5);
+		theApp->mDemoBuffer.WriteNumBits(theX, 12);
+		theApp->mDemoBuffer.WriteNumBits(theY, 12);
+	}
+
+	theApp->mLastDemoMouseX = theX;
+	theApp->mLastDemoMouseY = theY;
+}
+
+// Records input events into the demo stream, mirroring the formats read by ProcessDemo
+static void RecordDemoEvent(SexyAppBase* theApp, const SDL_Event& theEvent)
+{
+	switch (theEvent.type)
+	{
+		case SDL_APP_WILLENTERBACKGROUND:
+		case SDL_APP_DIDENTERFOREGROUND:
+			theApp->WriteDemoTimingBlock();
+			theApp->mDemoBuffer.WriteNumBits(0, 1);
+			theApp->mDemoBuffer.WriteNumBits(DEMO_SIZE, 5);
+			theApp->mDemoBuffer.WriteBoolean(theEvent.type == SDL_APP_WILLENTERBACKGROUND);
+			break;
+
+		case SDL_WINDOWEVENT:
+			switch (theEvent.window.event)
+			{
+				case SDL_WINDOWEVENT_MINIMIZED:
+				case SDL_WINDOWEVENT_RESTORED:
+					theApp->WriteDemoTimingBlock();
+					theApp->mDemoBuffer.WriteNumBits(0, 1);
+					theApp->mDemoBuffer.WriteNumBits(DEMO_SIZE, 5);
+					theApp->mDemoBuffer.WriteBoolean(theEvent.window.event == SDL_WINDOWEVENT_MINIMIZED);
+					break;
+
+				case SDL_WINDOWEVENT_FOCUS_GAINED:
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+					theApp->WriteDemoTimingBlock();
+					theApp->mDemoBuffer.WriteNumBits(0, 1);
+					theApp->mDemoBuffer.WriteNumBits(DEMO_ACTIVATE_APP, 5);
+					theApp->mDemoBuffer.WriteNumBits(theEvent.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ? 1 : 0, 1);
+					break;
+			}
+			break;
+
+		case SDL_MOUSEMOTION:
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+		{
+			int x = (theEvent.type == SDL_MOUSEMOTION) ? theEvent.motion.x : theEvent.button.x;
+			int y = (theEvent.type == SDL_MOUSEMOTION) ? theEvent.motion.y : theEvent.button.y;
+			theApp->mWidgetManager->RemapMouse(x, y);
+
+			RecordDemoMousePosition(theApp, x, y);
+
+			if (theEvent.type != SDL_MOUSEMOTION)
+			{
+				bool down = theEvent.type == SDL_MOUSEBUTTONDOWN;
+				int aBtnNum =
+					(theEvent.button.button == SDL_BUTTON_LEFT) ? 1 :
+					(theEvent.button.button == SDL_BUTTON_RIGHT) ? -1 :
+					3;
+				if (down && theEvent.button.clicks == 2)
+					aBtnNum = (theEvent.button.button == SDL_BUTTON_LEFT) ? 2 : -2;
+
+				theApp->WriteDemoTimingBlock();
+				theApp->mDemoBuffer.WriteNumBits(1, 1);
+				theApp->mDemoBuffer.WriteNumBits(1, 1);
+				theApp->mDemoBuffer.WriteNumBits(down ? 1 : 0, 1);
+				theApp->mDemoBuffer.WriteNumBits(aBtnNum, 3);
+			}
+
+			if (!theApp->mMouseIn)
+			{
+				theApp->WriteDemoTimingBlock();
+				theApp->mDemoBuffer.WriteNumBits(0, 1);
+				theApp->mDemoBuffer.WriteNumBits(DEMO_MOUSE_ENTER, 5);
+			}
+			break;
+		}
+
+		case SDL_MOUSEWHEEL:
+			theApp->WriteDemoTimingBlock();
+			theApp->mDemoBuffer.WriteNumBits(0, 1);
+			theApp->mDemoBuffer.WriteNumBits(DEMO_MOUSE_WHEEL, 5);
+			theApp->mDemoBuffer.WriteNumBits(std::clamp(theEvent.wheel.y, -128, 127), 8);
+			break;
+
+		case SDL_KEYDOWN:
+		{
+			if (theApp->mAllowAltEnter &&
+				theEvent.key.repeat == 0 &&
+				(theEvent.key.keysym.sym == SDLK_RETURN || theEvent.key.keysym.sym == SDLK_KP_ENTER) &&
+				(theEvent.key.keysym.mod & KMOD_ALT))
+				break; // screen-mode toggle, not delivered to the widget manager
+
+			theApp->WriteDemoTimingBlock();
+			theApp->mDemoBuffer.WriteNumBits(0, 1);
+			theApp->mDemoBuffer.WriteNumBits(DEMO_KEY_DOWN, 5);
+			theApp->mDemoBuffer.WriteNumBits(static_cast<int>(SDLKeyToKeyCode(theEvent.key.keysym.sym)), 8);
+
+			char aChar = 0;
+			if (SDLSynthesizeAsciiCharFromKeyDown(theEvent.key, aChar))
+			{
+				theApp->WriteDemoTimingBlock();
+				theApp->mDemoBuffer.WriteNumBits(0, 1);
+				theApp->mDemoBuffer.WriteNumBits(DEMO_KEY_CHAR, 5);
+				theApp->mDemoBuffer.WriteNumBits(0, 1);
+				theApp->mDemoBuffer.WriteNumBits(aChar, 8);
+			}
+			break;
+		}
+
+		case SDL_KEYUP:
+			theApp->WriteDemoTimingBlock();
+			theApp->mDemoBuffer.WriteNumBits(0, 1);
+			theApp->mDemoBuffer.WriteNumBits(DEMO_KEY_UP, 5);
+			theApp->mDemoBuffer.WriteNumBits(static_cast<int>(SDLKeyToKeyCode(theEvent.key.keysym.sym)), 8);
+			break;
+
+		case SDL_TEXTINPUT:
+			for (const char* aTextPtr = theEvent.text.text; *aTextPtr != 0; aTextPtr++)
+			{
+				const unsigned char aChar = static_cast<unsigned char>(*aTextPtr);
+				if (aChar < 32 || aChar >= 128) // must match the delivery filter below
+					continue;
+
+				theApp->WriteDemoTimingBlock();
+				theApp->mDemoBuffer.WriteNumBits(0, 1);
+				theApp->mDemoBuffer.WriteNumBits(DEMO_KEY_CHAR, 5);
+				theApp->mDemoBuffer.WriteNumBits(0, 1);
+				theApp->mDemoBuffer.WriteNumBits(aChar, 8);
+			}
+			break;
+	}
+}
+
 bool SexyAppBase::StartTextInput(std::string& theInput)
 {
 	(void)theInput;
@@ -365,26 +526,76 @@ void SexyAppBase::SetTextInputRect(const Rect& theRect)
 bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 {
 #ifdef __EMSCRIPTEN__
-	int aPendingKey = WasmPopSoftKeyboardKey();
-	if (aPendingKey != 0)
+	if (!mPlayingDemoBuffer)
 	{
-		mLastUserInputTick = mLastTimerTime;
-		mWidgetManager->KeyDown(static_cast<KeyCode>(aPendingKey));
-		return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-	}
+		int aPendingKey = WasmPopSoftKeyboardKey();
+		if (aPendingKey != 0)
+		{
+			if ((mRecordingDemoBuffer) && (!mShutdown))
+			{
+				WriteDemoTimingBlock();
+				mDemoBuffer.WriteNumBits(0, 1);
+				mDemoBuffer.WriteNumBits(DEMO_KEY_DOWN, 5);
+				mDemoBuffer.WriteNumBits(aPendingKey, 8);
+			}
+			mLastUserInputTick = mLastTimerTime;
+			mWidgetManager->KeyDown(static_cast<KeyCode>(aPendingKey));
+			return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+		}
 
-	int aPendingChar = WasmPopSoftKeyboardChar();
-	if (aPendingChar != 0)
+		int aPendingChar = WasmPopSoftKeyboardChar();
+		if (aPendingChar != 0)
+		{
+			if ((mRecordingDemoBuffer) && (!mShutdown))
+			{
+				WriteDemoTimingBlock();
+				mDemoBuffer.WriteNumBits(0, 1);
+				mDemoBuffer.WriteNumBits(DEMO_KEY_CHAR, 5);
+				mDemoBuffer.WriteNumBits(0, 1);
+				mDemoBuffer.WriteNumBits(aPendingChar, 8);
+			}
+			mLastUserInputTick = mLastTimerTime;
+			mWidgetManager->KeyChar(static_cast<char>(aPendingChar));
+			return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+		}
+	}
+	else
 	{
-		mLastUserInputTick = mLastTimerTime;
-		mWidgetManager->KeyChar(static_cast<char>(aPendingChar));
-		return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+		while (WasmPopSoftKeyboardKey() != 0) {} // discard queued soft-keyboard input during playback
+		while (WasmPopSoftKeyboardChar() != 0) {}
 	}
 #endif
 
 	SDL_Event event;
 	if (SDL_PollEvent(&event))
 	{
+		if ((mRecordingDemoBuffer) && (!mShutdown))
+			RecordDemoEvent(this, event);
+
+		if (mPlayingDemoBuffer)
+		{
+			// Input is replayed from the demo stream; only window-management events are handled
+			switch (event.type)
+			{
+				case SDL_QUIT:
+					CloseRequestAsync();
+					break;
+
+				case SDL_WINDOWEVENT:
+					if (event.window.event == SDL_WINDOWEVENT_CLOSE)
+						CloseRequestAsync();
+					else if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+					{
+						mGLInterface->UpdateViewport();
+						mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
+						mWidgetManager->MarkAllDirty();
+					}
+					break;
+			}
+
+			return SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+		}
+
 		switch(event.type)
 		{
 			case SDL_QUIT:

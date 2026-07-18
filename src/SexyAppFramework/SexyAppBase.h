@@ -391,6 +391,7 @@ protected:
 
 	// Demo recording helpers	
 	void					ProcessDemo();
+	inline bool				IsOnPrimaryThread() const { return std::this_thread::get_id() == mPrimaryThreadId; } // demo-synced IO is primary-thread only
 
 public:
 	SexyAppBase();

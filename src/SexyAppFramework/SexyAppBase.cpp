@@ -81,7 +81,7 @@
 using namespace Sexy;
 
 const int DEMO_FILE_ID = 0x42BEEF78;
-const int DEMO_VERSION = 2;
+const int DEMO_VERSION = 3; // v3: demo-synced IO is main-thread only (no loading-thread commands in the stream)
 
 SexyAppBase* Sexy::gSexyAppBase = nullptr;
 
@@ -475,6 +475,8 @@ bool SexyAppBase::AppCanRestore()
 
 bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 {
+	theError = "Invalid demo file.";
+
 	std::ifstream aFile(PathFromU8(mDemoFileName), std::ios::in | std::ios::binary);
 	if (!aFile)
 	{
@@ -484,6 +486,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 
 	uint32_t aFileID;
 	if (!aFile.read(reinterpret_cast<char*>(&aFileID), sizeof(aFileID))) return false;
+	aFileID = FromLE32(aFileID);
 
 	DBG_ASSERTE(aFileID == DEMO_FILE_ID);
 	if (aFileID != DEMO_FILE_ID)
@@ -495,13 +498,21 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 
 	uint32_t aVersion;
 	if (!aFile.read(reinterpret_cast<char*>(&aVersion), sizeof(aVersion))) return false;
+	aVersion = FromLE32(aVersion);
+
+	if (aVersion != DEMO_VERSION)
+	{
+		theError = "Incompatible demo file version.";
+		return false;
+	}
 	
 	if (!aFile.read(reinterpret_cast<char*>(&mRandSeed), sizeof(mRandSeed))) return false;
+	mRandSeed = FromLE32(mRandSeed);
 	SRand(mRandSeed);
 
 	ushort aStrLen = 4;
 	if (!aFile.read(reinterpret_cast<char*>(&aStrLen), sizeof(aStrLen))) return false;
-	aStrLen = std::min<ushort>(aStrLen, 255);
+	aStrLen = std::min<ushort>(FromLE16(aStrLen), 255);
 	char aStr[256];
 	if (!aFile.read(aStr, aStrLen)) return false;
 	aStr[aStrLen] = '\0';
@@ -525,9 +536,10 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	{
 		int aSize;
 		if (!aFile.read(reinterpret_cast<char*>(&aSize), sizeof(aSize))) return false;
+		aSize = static_cast<int>(FromLE32(static_cast<uint32_t>(aSize)));
 		aBytesLeft -= 4;
 
-		if (aSize >= aBytesLeft)
+		if (aSize < 0 || aSize >= aBytesLeft)
 		{
 			theError = "Invalid demo file.";
 			return false;
@@ -563,6 +575,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 
 	// Read demo commands
 	if (!aFile.read(reinterpret_cast<char*>(&mDemoLength), sizeof(mDemoLength))) return false;
+	mDemoLength = static_cast<int>(FromLE32(static_cast<uint32_t>(mDemoLength)));
 	aBytesLeft -= 4;
 	
 	if (aBytesLeft <= 0)
@@ -589,15 +602,17 @@ void SexyAppBase::WriteDemoBuffer()
 		std::ofstream aFile(PathFromU8(mDemoFileName), std::ios::out | std::ios::binary | std::ios::trunc);
 		if (aFile)
 		{
-			uint32_t aFileID = DEMO_FILE_ID;
+			// Demo file format is little-endian; ToLE*/FromLE* are no-ops on little-endian machines
+			uint32_t aFileID = ToLE32(DEMO_FILE_ID);
 			aFile.write(reinterpret_cast<const char*>(&aFileID), sizeof(aFileID));		
 
-			uint32_t aVersion = DEMO_VERSION;
+			uint32_t aVersion = ToLE32(DEMO_VERSION);
 			aFile.write(reinterpret_cast<const char*>(&aVersion), sizeof(aVersion));
-			
-			aFile.write(reinterpret_cast<const char*>(&mRandSeed), sizeof(mRandSeed));
 
-			ushort aStrLen = mProductVersion.length();
+			uint32_t aRandSeed = ToLE32(mRandSeed);
+			aFile.write(reinterpret_cast<const char*>(&aRandSeed), sizeof(aRandSeed));
+
+			ushort aStrLen = ToLE16(static_cast<uint16_t>(mProductVersion.length()));
 			aFile.write(reinterpret_cast<const char*>(&aStrLen), sizeof(aStrLen));		
 			aFile.write(mProductVersion.c_str(), static_cast<std::streamsize>(mProductVersion.length()));
 
@@ -609,10 +624,11 @@ void SexyAppBase::WriteDemoBuffer()
 				aMarkerBuffer.WriteLong(aMarkerItr->second);
 			}
 			int aMarkerBufferSize = aMarkerBuffer.GetDataLen();
-			aFile.write(reinterpret_cast<const char*>(&aMarkerBufferSize), sizeof(aMarkerBufferSize));
+			uint32_t aMarkerBufferSizeLE = ToLE32(static_cast<uint32_t>(aMarkerBufferSize));
+			aFile.write(reinterpret_cast<const char*>(&aMarkerBufferSizeLE), sizeof(aMarkerBufferSizeLE));
 			aFile.write(reinterpret_cast<const char*>(aMarkerBuffer.GetDataPtr()), aMarkerBufferSize);
 
-			uint32_t aDemoLength = mUpdateCount;
+			uint32_t aDemoLength = ToLE32(static_cast<uint32_t>(mUpdateCount));
 			aFile.write(reinterpret_cast<const char*>(&aDemoLength), sizeof(aDemoLength));
 
 			aFile.write(reinterpret_cast<const char*>(mDemoBuffer.GetDataPtr()), mDemoBuffer.GetDataLen());
@@ -947,7 +963,7 @@ bool SexyAppBase::RegistryWrite(const std::string& theValueName, uint32_t theTyp
 	if (mRegKey.length() == 0)
 		return false;
 
-	if (mPlayingDemoBuffer)
+	if ((mPlayingDemoBuffer) && IsOnPrimaryThread())
 	{
 		if (mManualShutdown)
 			return true;
@@ -979,7 +995,7 @@ bool SexyAppBase::RegistryWrite(const std::string& theValueName, uint32_t theTyp
 
 	if (!regemu::RegistryWrite(aKeyName, aValueName, theType, theValue, theLength))
 	{
-		if (mRecordingDemoBuffer)
+		if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 		{
 			WriteDemoTimingBlock();
 			mDemoBuffer.WriteNumBits(0, 1);
@@ -990,7 +1006,7 @@ bool SexyAppBase::RegistryWrite(const std::string& theValueName, uint32_t theTyp
 		return false;
 	}
 
-	if (mRecordingDemoBuffer)
+	if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 	{
 		WriteDemoTimingBlock();
 		mDemoBuffer.WriteNumBits(0, 1);
@@ -1041,7 +1057,7 @@ bool SexyAppBase::RegistryEraseKey(const std::string& _theKeyName)
 	if (mRegKey.length() == 0)
 		return false;
 
-	if (mPlayingDemoBuffer)
+	if ((mPlayingDemoBuffer) && IsOnPrimaryThread())
 	{
 		if (mManualShutdown)
 			return true;
@@ -1059,7 +1075,7 @@ bool SexyAppBase::RegistryEraseKey(const std::string& _theKeyName)
 
 	if (!regemu::RegistryEraseKey(aKeyName))
 	{
-		if (mRecordingDemoBuffer)
+		if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 		{
 			WriteDemoTimingBlock();
 			mDemoBuffer.WriteNumBits(0, 1);
@@ -1070,7 +1086,7 @@ bool SexyAppBase::RegistryEraseKey(const std::string& _theKeyName)
 		return false;
 	}
 
-	if (mRecordingDemoBuffer)
+	if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 	{
 		WriteDemoTimingBlock();
 		mDemoBuffer.WriteNumBits(0, 1);
@@ -1115,7 +1131,7 @@ bool SexyAppBase::RegistryReadKey(const std::string& theValueName, uint32_t* the
 	if (mRegKey.length() == 0)
 		return false;
 
-	if (mPlayingDemoBuffer)
+	if ((mPlayingDemoBuffer) && IsOnPrimaryThread())
 	{
 		if (mManualShutdown)
 			return false;
@@ -1134,10 +1150,16 @@ bool SexyAppBase::RegistryReadKey(const std::string& theValueName, uint32_t* the
 
 		uint32_t aLen = mDemoBuffer.ReadLong();
 		*theLength = aLen;
-		
+
 		if (*theLength >= aLen)
-		{			
-			mDemoBuffer.ReadBytes(theValue, aLen);
+		{
+			if ((*theType == regemu::REGEMU_DWORD) && (aLen == sizeof(uint32_t)))
+			{
+				uint32_t aValue = static_cast<uint32_t>(mDemoBuffer.ReadLong()); // stream stores DWORDs little-endian
+				memcpy(theValue, &aValue, sizeof(aValue));
+			}
+			else
+				mDemoBuffer.ReadBytes(theValue, aLen);
 			return true;
 		}
 		else
@@ -1165,7 +1187,7 @@ bool SexyAppBase::RegistryReadKey(const std::string& theValueName, uint32_t* the
 
 		if (regemu::RegistryRead(aKeyName, aValueName, (uint32_t*)theType, theValue, (uint32_t*)theLength))
 		{
-			if (mRecordingDemoBuffer)
+			if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 			{
 				WriteDemoTimingBlock();
 				mDemoBuffer.WriteNumBits(0, 1);
@@ -1173,13 +1195,20 @@ bool SexyAppBase::RegistryReadKey(const std::string& theValueName, uint32_t* the
 				mDemoBuffer.WriteNumBits(1, 1); // success
 				mDemoBuffer.WriteLong(*theType);
 				mDemoBuffer.WriteLong(*theLength);
-				mDemoBuffer.WriteBytes(theValue, *theLength);
+				if ((*theType == regemu::REGEMU_DWORD) && (*theLength == sizeof(uint32_t)))
+				{
+					uint32_t aValue;
+					memcpy(&aValue, theValue, sizeof(aValue));
+					mDemoBuffer.WriteLong(aValue); // WriteLong serializes little-endian
+				}
+				else
+					mDemoBuffer.WriteBytes(theValue, *theLength);
 			}
 
 			return true;
 		}
 
-		if (mRecordingDemoBuffer)
+		if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 		{
 			WriteDemoTimingBlock();
 			mDemoBuffer.WriteNumBits(0, 1);
@@ -1289,7 +1318,7 @@ void SexyAppBase::ReadFromRegistry()
 
 bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *theData, unsigned long theDataLen)
 {
-	if (mPlayingDemoBuffer)
+	if ((mPlayingDemoBuffer) && IsOnPrimaryThread())
 	{
 		if (mManualShutdown)
 			return true;
@@ -1311,7 +1340,7 @@ bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *t
 	std::ofstream aFile(PathFromU8(theFileName), std::ios::out | std::ios::binary | std::ios::trunc);
 	if (!aFile)
 	{
-		if (mRecordingDemoBuffer)
+		if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 		{
 			WriteDemoTimingBlock();
 			mDemoBuffer.WriteNumBits(0, 1);
@@ -1326,7 +1355,7 @@ bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *t
 	if (!aFile)
 		return false;
 
-	if (mRecordingDemoBuffer)
+	if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 	{
 		WriteDemoTimingBlock();
 		mDemoBuffer.WriteNumBits(0, 1);
@@ -1345,7 +1374,7 @@ bool SexyAppBase::WriteBufferToFile(const std::string& theFileName, const Buffer
 
 bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* theBuffer, bool dontWriteToDemo)
 {
-	if ((mPlayingDemoBuffer) && (!dontWriteToDemo))
+	if ((mPlayingDemoBuffer) && (!dontWriteToDemo) && IsOnPrimaryThread())
 	{
 		if (mManualShutdown)
 			return false;
@@ -1374,7 +1403,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 
 		if (aFP == nullptr)
 		{
-			if ((mRecordingDemoBuffer) && (!dontWriteToDemo))
+			if ((mRecordingDemoBuffer) && (!dontWriteToDemo) && IsOnPrimaryThread())
 			{
 				WriteDemoTimingBlock();
 				mDemoBuffer.WriteNumBits(0, 1);
@@ -1397,7 +1426,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 		theBuffer->Clear();
 		theBuffer->SetData(aData, aFileSize);
 
-		if ((mRecordingDemoBuffer) && (!dontWriteToDemo))
+		if ((mRecordingDemoBuffer) && (!dontWriteToDemo) && IsOnPrimaryThread())
 		{
 			WriteDemoTimingBlock();
 			mDemoBuffer.WriteNumBits(0, 1);
@@ -1424,7 +1453,7 @@ bool SexyAppBase::ReadUTF8StringFromFile(const std::string& theFileName, std::st
 
 bool SexyAppBase::FileExists(const std::string& theFileName)
 {
-	if (mPlayingDemoBuffer)
+	if ((mPlayingDemoBuffer) && IsOnPrimaryThread())
 	{
 		if (mManualShutdown)
 			return true;
@@ -1442,7 +1471,7 @@ bool SexyAppBase::FileExists(const std::string& theFileName)
 	{
 		PFILE* aFP = p_fopen(theFileName.c_str(), "rb");
 
-		if (mRecordingDemoBuffer)
+		if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 		{
 			WriteDemoTimingBlock();
 			mDemoBuffer.WriteNumBits(0, 1);
@@ -1506,6 +1535,13 @@ void SexyAppBase::Shutdown()
 	}
 	else if (!mShutdown)
 	{
+		if (mRecordingDemoBuffer) // every quit path converges here; close the stream before any shutdown IO
+		{
+			WriteDemoTimingBlock();
+			mDemoBuffer.WriteNumBits(0, 1);
+			mDemoBuffer.WriteNumBits(DEMO_CLOSE, 5);
+		}
+
 		mExitToTop = true;
 		mShutdown = true;
 		ShutdownHook();
@@ -1979,7 +2015,7 @@ void SexyAppBase::ClearKeysDown()
 void SexyAppBase::WriteDemoTimingBlock()
 {
 	// Demo writing functions can only be called from the main thread and after SexyAppBase::Init
-	DBG_ASSERTE(std::this_thread::get_id() == mPrimaryThreadId);
+	DBG_ASSERTE(IsOnPrimaryThread());
 
 	while (mUpdateCount - mLastDemoUpdateCnt > 15)
 	{
@@ -2030,8 +2066,11 @@ void SexyAppBase::ProcessDemo()
 {
 	if (mPlayingDemoBuffer)
 	{
-		// At end of demo buffer?  How dare you!
-		DBG_ASSERTE(!mDemoBuffer.AtEnd());
+		if (mDemoBuffer.AtEnd()) // a recording that didn't end with DEMO_CLOSE: treat stream end as end of demo
+		{
+			Shutdown();
+			return;
+		}
 
 		while ((!mShutdown) && (mUpdateCount == mLastDemoUpdateCnt) && (!mDemoBuffer.AtEnd()))
 		{
@@ -3348,6 +3387,19 @@ void SexyAppBase::Init()
 
 	gPakInterface->AddPakFile(GetResourcePath("main.pak"));
 
+	// Set up demo recording stuff
+	if (mPlayingDemoBuffer) // must load before any demo-synced ops
+	{
+		std::string anError;
+		if (!ReadDemoBuffer(anError))
+		{
+			mPlayingDemoBuffer = false;
+			Popup(anError);
+			DoExit(0);
+			return;
+		}
+	}
+
 	InitPropertiesHook();
 
 #if defined(__ANDROID__) && !defined(__TERMUX__)
@@ -3399,19 +3451,10 @@ void SexyAppBase::Init()
 
 	ReadFromRegistry();	
 
-	mRandSeed = SDL_GetTicks();
-	SRand(mRandSeed);
-
-	// Set up demo recording stuff
-	if (mPlayingDemoBuffer)
+	if (!mPlayingDemoBuffer) // demo playback restores mRandSeed from the demo file
 	{
-		std::string anError;
-		if (!ReadDemoBuffer(anError))
-		{
-			mPlayingDemoBuffer = false;
-			Popup(anError);
-			DoExit(0);
-		}
+		mRandSeed = SDL_GetTicks();
+		SRand(mRandSeed);
 	}
 
 	srand(SDL_GetTicks());
