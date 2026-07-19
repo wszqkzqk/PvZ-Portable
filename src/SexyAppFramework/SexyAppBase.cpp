@@ -27,6 +27,7 @@
 //#define SEXY_MEMTRACE
 
 #include <string>
+#include <string_view>
 #include <fstream>
 #include <time.h>
 #include <math.h>
@@ -36,6 +37,8 @@
 #include <cstring>
 #include <chrono>
 #include <filesystem>
+#include <system_error>
+#include <tuple>
 
 #include <SDL.h>
 
@@ -384,6 +387,7 @@ SexyAppBase::SexyAppBase()
 
 	mDemoPrefix = "sexyapp";
 	mDemoFileName = mDemoPrefix + ".dmo";
+	mDemoRecordFileLimit = 0;
 	mPlayingDemoBuffer = false;
 	mManualShutdown = false;
 	mRecordingDemoBuffer = false;
@@ -607,6 +611,29 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	return true;
 }
 
+// Lists theDemoPrefix + "-*.dmo" files newest first; zero-padded timestamps sort chronologically by name
+static void FindDemoFiles(std::string_view theDemoPrefix, std::vector<std::string>& theFiles)
+{
+	theFiles.clear();
+
+	const std::string aFilter = std::string(theDemoPrefix) + '-';
+	std::error_code anError;
+	for (const std::filesystem::directory_entry& anEntry : std::filesystem::directory_iterator(".", anError))
+	{
+		std::string aName = PathToU8(anEntry.path().filename());
+		if (aName.starts_with(aFilter) && aName.ends_with(".dmo"))
+			theFiles.push_back(aName);
+	}
+
+	const size_t aStampLen = theDemoPrefix.size() + 16; // "-YYYYMMDD-HHMMSS"
+	auto aKeyOf = [aStampLen](const std::string& theName) {
+		return std::make_tuple(std::string_view(theName).substr(0, aStampLen), theName.size(), std::string_view(theName));
+	};
+	std::sort(theFiles.begin(), theFiles.end(), [&aKeyOf](const std::string& theA, const std::string& theB) {
+		return aKeyOf(theA) > aKeyOf(theB); // newest first: stamp, then longer (suffixed) name, then lexicographic
+	});
+}
+
 void SexyAppBase::WriteDemoBuffer()
 {
 	if (mRecordingDemoBuffer)
@@ -650,6 +677,17 @@ void SexyAppBase::WriteDemoBuffer()
 			aFile.write(reinterpret_cast<const char*>(&aDemoLength), sizeof(aDemoLength));
 
 			aFile.write(reinterpret_cast<const char*>(mDemoBuffer.GetDataPtr()), mDemoBuffer.GetDataLen());
+			aFile.close();
+			if (aFile && mDemoRecordFileLimit != 0)
+			{
+				std::vector<std::string> aDemoFiles;
+				FindDemoFiles(mDemoPrefix, aDemoFiles);
+				for (size_t i = mDemoRecordFileLimit; i < aDemoFiles.size(); ++i)
+				{
+					std::error_code anError;
+					std::filesystem::remove(PathFromU8(aDemoFiles[i]), anError);
+				}
+			}
 		}		
 	}
 }
@@ -3307,19 +3345,39 @@ void SexyAppBase::ParseCmdLine(const std::string& theCmdLine)
 	}
 }
 
-static int GetMaxDemoFileNum(const std::string& theDemoPrefix, int theMaxToKeep, bool doErase)
+static std::string GetTimestampedDemoFileName(std::string_view theDemoPrefix)
 {
-	(void)theDemoPrefix;
-	(void)theMaxToKeep;
-	(void)doErase;
-	// Demo file enumeration not implemented
-	return 0;
+	time_t aNow = time(nullptr);
+	tm aNowTM = *localtime(&aNow);
+
+	std::string aBaseName = StrFormat((std::string(theDemoPrefix) + "-%04d%02d%02d-%02d%02d%02d").c_str(),
+		aNowTM.tm_year + 1900, aNowTM.tm_mon + 1, aNowTM.tm_mday, aNowTM.tm_hour, aNowTM.tm_min, aNowTM.tm_sec);
+	std::string aName = aBaseName + ".dmo";
+	const std::string aSuffixPrefix = aBaseName + '-';
+	std::vector<std::string> aDemoFiles;
+	FindDemoFiles(theDemoPrefix, aDemoFiles);
+	for (const std::string& aFileName : aDemoFiles)
+	{
+		if (aFileName == aName)
+			return aBaseName + "-2.dmo";
+		if (aFileName.starts_with(aSuffixPrefix))
+			return StrFormat("%s-%d.dmo", aBaseName.c_str(), atoi(aFileName.c_str() + aSuffixPrefix.length()) + 1);
+	}
+
+	return aName;
 }
 
 void SexyAppBase::HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue)
 {
 	if (theParamName == "-play")
 	{
+		if (mDemoFileName == mDemoPrefix + ".dmo") // no -demofile given: play the newest recording
+		{
+			std::vector<std::string> aDemoFiles;
+			FindDemoFiles(mDemoPrefix, aDemoFiles);
+			if (!aDemoFiles.empty())
+				mDemoFileName = aDemoFiles.front();
+		}
 		mPlayingDemoBuffer = true;
 		mRecordingDemoBuffer = false;
 	}
@@ -3328,9 +3386,9 @@ void SexyAppBase::HandleCmdLineParam(const std::string& theParamName, const std:
 		int aNum = atoi(theParamValue.c_str());
 		if (aNum<=0)
 			aNum=5;
+		mDemoRecordFileLimit = static_cast<uint>(aNum);
 
-		int aDemoFileNum = GetMaxDemoFileNum(mDemoPrefix, aNum, true) + 1;
-		mDemoFileName = StrFormat((mDemoPrefix + "%d.dmo").c_str(), aDemoFileNum);
+		mDemoFileName = GetTimestampedDemoFileName(mDemoPrefix);
 		if (mDemoFileName.length() < 2)
 		{
 			mDemoFileName = GetAppDataPath(mDemoFileName);
@@ -3340,16 +3398,20 @@ void SexyAppBase::HandleCmdLineParam(const std::string& theParamName, const std:
 	}
 	else if (theParamName == "-playnum")
 	{
-		int aNum = atoi(theParamValue.c_str())-1;
-		aNum = std::max(aNum, 0);
+		int aNum = std::max(atoi(theParamValue.c_str()), 1);
 
-		int aDemoFileNum = GetMaxDemoFileNum(mDemoPrefix, aNum, false)-aNum;
-		mDemoFileName = StrFormat((mDemoPrefix + "%d.dmo").c_str(), aDemoFileNum);
+		std::vector<std::string> aDemoFiles;
+		FindDemoFiles(mDemoPrefix, aDemoFiles);
+		if (static_cast<size_t>(aNum) <= aDemoFiles.size())
+			mDemoFileName = aDemoFiles[aNum - 1]; // N-th newest
 		mRecordingDemoBuffer = false;
 		mPlayingDemoBuffer = true;
 	}
 	else if (theParamName == "-record")
 	{
+		mDemoRecordFileLimit = 0;
+		if (mDemoFileName == mDemoPrefix + ".dmo") // no -demofile given: timestamp to avoid overwriting
+			mDemoFileName = GetTimestampedDemoFileName(mDemoPrefix);
 		mRecordingDemoBuffer = true;
 		mPlayingDemoBuffer = false;
 	}

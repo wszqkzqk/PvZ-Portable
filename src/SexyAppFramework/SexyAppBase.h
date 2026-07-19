@@ -303,6 +303,7 @@ public:
 	bool					mManualShutdown;
 	std::string				mDemoPrefix;
 	std::string				mDemoFileName;
+	uint					mDemoRecordFileLimit;
 	Buffer					mDemoBuffer;
 	int						mDemoLength;
 	int						mLastDemoMouseX;
