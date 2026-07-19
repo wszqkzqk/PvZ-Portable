@@ -144,7 +144,7 @@ std::string GetLegacySavedGameName(GameMode theGameMode, int theProfileId)
 
 int GetCurrentDaysSince2000(time_t theTime)
 {
-    tm aNowTM = *localtime(&theTime);
+    tm aNowTM = gLawnApp->GetLocalTime(theTime);
 
     int dy = aNowTM.tm_year - 100;
     return dy * 365 + (dy - 1) / 400 - (dy - 1) / 100 + (dy - 1) / 4 + aNowTM.tm_yday + 1;

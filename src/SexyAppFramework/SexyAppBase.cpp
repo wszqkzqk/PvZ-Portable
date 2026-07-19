@@ -81,7 +81,7 @@
 using namespace Sexy;
 
 const int DEMO_FILE_ID = 0x42BEEF78;
-const int DEMO_VERSION = 4; // v4: header also carries the session start time for the demo-synced clock
+const int DEMO_VERSION = 5; // v5: header also carries the session timezone offset
 
 SexyAppBase* Sexy::gSexyAppBase = nullptr;
 
@@ -390,6 +390,7 @@ SexyAppBase::SexyAppBase()
 	mLastDemoMouseY = 0;
 	mLastDemoUpdateCnt = 0;
 	mDemoStartTime = 0;
+	mDemoTimeZoneOffset = 0;
 	mDemoNeedsCommand = true;
 	mDemoLoadingComplete = false;
 	mDemoLength = 0;
@@ -514,6 +515,10 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	if (!aFile.read(reinterpret_cast<char*>(&mDemoStartTime), sizeof(mDemoStartTime))) return false;
 	mDemoStartTime = FromLE64(mDemoStartTime);
 
+	uint32_t aTimeZoneOffsetLE;
+	if (!aFile.read(reinterpret_cast<char*>(&aTimeZoneOffsetLE), sizeof(aTimeZoneOffsetLE))) return false;
+	mDemoTimeZoneOffset = static_cast<int32_t>(FromLE32(aTimeZoneOffsetLE));
+
 	ushort aStrLen = 4;
 	if (!aFile.read(reinterpret_cast<char*>(&aStrLen), sizeof(aStrLen))) return false;
 	aStrLen = std::min<ushort>(FromLE16(aStrLen), 255);
@@ -618,6 +623,9 @@ void SexyAppBase::WriteDemoBuffer()
 
 			uint64_t aDemoStartTime = ToLE64(mDemoStartTime);
 			aFile.write(reinterpret_cast<const char*>(&aDemoStartTime), sizeof(aDemoStartTime));
+
+			uint32_t aTimeZoneOffsetLE = ToLE32(static_cast<uint32_t>(mDemoTimeZoneOffset));
+			aFile.write(reinterpret_cast<const char*>(&aTimeZoneOffsetLE), sizeof(aTimeZoneOffsetLE));
 
 			ushort aStrLen = ToLE16(static_cast<uint16_t>(mProductVersion.length()));
 			aFile.write(reinterpret_cast<const char*>(&aStrLen), sizeof(aStrLen));		
@@ -3464,7 +3472,15 @@ void SexyAppBase::Init()
 		SRand(mRandSeed);
 
 		if (mRecordingDemoBuffer)
-			mDemoStartTime = static_cast<uint64_t>(time(nullptr)); // synthetic clock base; mUpdateCount is still 0 here
+		{
+			time_t aNow = time(nullptr);
+			mDemoStartTime = static_cast<uint64_t>(aNow); // synthetic clock base; mUpdateCount is still 0 here
+			tm aLocalTM = *localtime(&aNow);
+			tm aUtcTM = *gmtime(&aNow);
+			aLocalTM.tm_isdst = -1;
+			aUtcTM.tm_isdst = -1;
+			mDemoTimeZoneOffset = static_cast<int32_t>(difftime(mktime(&aLocalTM), mktime(&aUtcTM))); // local minus UTC in seconds
+		}
 	}
 
 	srand(SDL_GetTicks());
