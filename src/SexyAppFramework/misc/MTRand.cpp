@@ -104,6 +104,8 @@ void MTRand::SRand(const std::string& theSerialData)
 			(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[1])) << 8) |
 			(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[2])) << 16) |
 			(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[3])) << 24));
+		if (mti < 1 || mti > MTRAND_N) // reject out-of-range index before it can drive a negative read
+			SRand(4357);
 	}
 	else
 		SRand(4357);
