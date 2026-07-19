@@ -82,7 +82,7 @@
 using namespace Sexy;
 
 const int DEMO_FILE_ID = 0x42BEEF78;
-const int DEMO_VERSION = 5; // v5: header also carries the session timezone offset
+const int DEMO_VERSION = 6; // v6: text input is recorded as UTF-8 (DEMO_KEY_TEXT)
 
 SexyAppBase* Sexy::gSexyAppBase = nullptr;
 
@@ -2195,6 +2195,13 @@ void SexyAppBase::ProcessDemo()
 							int sizeMult = static_cast<int>(mDemoBuffer.ReadNumBits(1, false)) + 1; // will be 1 for single, 2 for double
 							char aChar = static_cast<char>(mDemoBuffer.ReadNumBits(8 * sizeMult, false));
 							mWidgetManager->KeyChar(aChar);
+						}
+						break;
+					case DEMO_KEY_TEXT:
+						{
+							std::string aText = mDemoBuffer.ReadString();
+							if (!aText.empty())
+								mWidgetManager->KeyText(aText);
 						}
 						break;
 					case DEMO_CLOSE:

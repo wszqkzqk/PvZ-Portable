@@ -478,17 +478,12 @@ static void RecordDemoEvent(SexyAppBase* theApp, const SDL_Event& theEvent)
 			break;
 
 		case SDL_TEXTINPUT:
-			for (const char* aTextPtr = theEvent.text.text; *aTextPtr != 0; aTextPtr++)
+			if (theEvent.text.text[0] != 0) // delivered via KeyText, so record the whole UTF-8 string
 			{
-				const unsigned char aChar = static_cast<unsigned char>(*aTextPtr);
-				if (aChar < 32 || aChar >= 128) // must match the delivery filter below
-					continue;
-
 				theApp->WriteDemoTimingBlock();
 				theApp->mDemoBuffer.WriteNumBits(0, 1);
-				theApp->mDemoBuffer.WriteNumBits(DEMO_KEY_CHAR, 5);
-				theApp->mDemoBuffer.WriteNumBits(0, 1);
-				theApp->mDemoBuffer.WriteNumBits(aChar, 8);
+				theApp->mDemoBuffer.WriteNumBits(DEMO_KEY_TEXT, 5);
+				theApp->mDemoBuffer.WriteString(theEvent.text.text);
 			}
 			break;
 	}
@@ -563,14 +558,10 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 
 			if ((mRecordingDemoBuffer) && (!mShutdown))
 			{
-				for (const char aTextChar : aPendingText)
-				{
-					WriteDemoTimingBlock();
-					mDemoBuffer.WriteNumBits(0, 1);
-					mDemoBuffer.WriteNumBits(DEMO_KEY_CHAR, 5);
-					mDemoBuffer.WriteNumBits(0, 1);
-					mDemoBuffer.WriteNumBits(static_cast<unsigned char>(aTextChar), 8);
-				}
+				WriteDemoTimingBlock();
+				mDemoBuffer.WriteNumBits(0, 1);
+				mDemoBuffer.WriteNumBits(DEMO_KEY_TEXT, 5);
+				mDemoBuffer.WriteString(aPendingText);
 			}
 			mLastUserInputTick = mLastTimerTime;
 			mWidgetManager->KeyText(aPendingText);
