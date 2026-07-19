@@ -1163,37 +1163,37 @@ void CreditScreen::Update()
         {
             Reanimation* aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
             int aDurationSinceStart = mTimerSinceStart.GetDuration();
-        int aDurationReanimation = (aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count * aCreditsReanim->mAnimTime / aCreditsReanim->mAnimRate) * 1000.0f;
-        if (mCreditsPhase == CreditsPhase::CREDITS_MAIN2)
-        {
-            aDurationReanimation += 57142;
-        }
-        else if (mCreditsPhase == CreditsPhase::CREDITS_MAIN3)
-        {
-            aDurationReanimation += 112000;
-        }
+            int aDurationReanimation = (aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count * aCreditsReanim->mAnimTime / aCreditsReanim->mAnimRate) * 1000.0f;
+            if (mCreditsPhase == CreditsPhase::CREDITS_MAIN2)
+            {
+                aDurationReanimation += 57142;
+            }
+            else if (mCreditsPhase == CreditsPhase::CREDITS_MAIN3)
+            {
+                aDurationReanimation += 112000;
+            }
 
-        int aUnsyncedDuration = aDurationSinceStart - aDurationReanimation;
-        int aUnsyncedFrames = (aUnsyncedDuration + 5) / 10;
-        if (aUnsyncedFrames < 0)
-        {
-            TodTrace("Movie playing too fast %d frames", 1 - aUnsyncedFrames);
-        }
-        else if (aUnsyncedFrames > 2)
-        {
-            TodTrace("Movie playing too slow %d frames", aUnsyncedFrames - 1);
-        }
+            int aUnsyncedDuration = aDurationSinceStart - aDurationReanimation;
+            int aUnsyncedFrames = (aUnsyncedDuration + 5) / 10;
+            if (aUnsyncedFrames < 0)
+            {
+                TodTrace("Movie playing too fast %d frames", 1 - aUnsyncedFrames);
+            }
+            else if (aUnsyncedFrames > 2)
+            {
+                TodTrace("Movie playing too slow %d frames", aUnsyncedFrames - 1);
+            }
 
-        if (aUnsyncedDuration > 10000)
-        {
-            JumpToFrame(static_cast<CreditsPhase>(static_cast<int>(mCreditsPhase) + 1), 0.0f);
-            aUnsyncedFrames = 0;
-        }
-        while (aUnsyncedFrames > 0)
-        {
-            UpdateMovie();
-            aUnsyncedFrames--;
-        }
+            if (aUnsyncedDuration > 10000)
+            {
+                JumpToFrame(static_cast<CreditsPhase>(static_cast<int>(mCreditsPhase) + 1), 0.0f);
+                aUnsyncedFrames = 0;
+            }
+            while (aUnsyncedFrames > 0)
+            {
+                UpdateMovie();
+                aUnsyncedFrames--;
+            }
         }
     }
 
