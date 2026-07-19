@@ -2,6 +2,7 @@
 #define __MTRAND_H__
 
 #include <string>
+#include <stdint.h>
 
 namespace Sexy
 {
@@ -10,7 +11,7 @@ namespace Sexy
 
 class MTRand
 {
-	unsigned long mt[MTRAND_N]; /* the array for the state vector  */
+	uint32_t mt[MTRAND_N]; /* the array for the state vector  */
 	int mti;
 
 public:

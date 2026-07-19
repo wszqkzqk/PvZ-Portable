@@ -59,7 +59,6 @@ using namespace Sexy;
 MTRand::MTRand(const std::string& theSerialData)
 {
 	SRand(theSerialData);
-	mti=MTRAND_N+1; /* mti==MTRAND_N+1 means mt[MTRAND_N] is not initialized */
 }
 
 MTRand::MTRand(unsigned long seed)    
@@ -88,9 +87,23 @@ void MTRand::SetRandAllowed(bool allowed)
 
 void MTRand::SRand(const std::string& theSerialData)
 {
-	if (theSerialData.size() == MTRAND_N*4)
+	if (theSerialData.size() == MTRAND_N*4 + 4)
 	{
-		memcpy(mt, theSerialData.c_str(), MTRAND_N*4);
+		// little-endian, 4 bytes per word: independent of host byte order
+		const char* aPtr = theSerialData.c_str();
+		for (int i = 0; i < MTRAND_N; i++)
+		{
+			mt[i] = static_cast<uint32_t>(static_cast<unsigned char>(aPtr[0])) |
+				(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[1])) << 8) |
+				(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[2])) << 16) |
+				(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[3])) << 24);
+			aPtr += 4;
+		}
+		mti = static_cast<int>(
+			static_cast<uint32_t>(static_cast<unsigned char>(aPtr[0])) |
+			(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[1])) << 8) |
+			(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[2])) << 16) |
+			(static_cast<uint32_t>(static_cast<unsigned char>(aPtr[3])) << 24));
 	}
 	else
 		SRand(4357);
@@ -189,8 +202,22 @@ std::string MTRand::Serialize()
 {
 	std::string aString;
 
-	aString.resize(MTRAND_N*4);
-	memcpy((char*) aString.c_str(), mt, MTRAND_N*4);
+	// little-endian, 4 bytes per word: independent of host byte order
+	aString.resize(MTRAND_N*4 + 4);
+	char* aPtr = aString.data();
+	for (int i = 0; i < MTRAND_N; i++)
+	{
+		uint32_t aValue = mt[i];
+		*aPtr++ = static_cast<char>(aValue & 0xFF);
+		*aPtr++ = static_cast<char>((aValue >> 8) & 0xFF);
+		*aPtr++ = static_cast<char>((aValue >> 16) & 0xFF);
+		*aPtr++ = static_cast<char>((aValue >> 24) & 0xFF);
+	}
+	uint32_t aMti = static_cast<uint32_t>(mti);
+	*aPtr++ = static_cast<char>(aMti & 0xFF);
+	*aPtr++ = static_cast<char>((aMti >> 8) & 0xFF);
+	*aPtr++ = static_cast<char>((aMti >> 16) & 0xFF);
+	*aPtr++ = static_cast<char>((aMti >> 24) & 0xFF);
 
 	return aString;
 }
