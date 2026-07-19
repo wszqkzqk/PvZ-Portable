@@ -1135,7 +1135,7 @@ void CreditScreen::Update()
     {
         mApp->SetCursor(CURSOR_POINTER);
     }
-    if (mDrawCount == 0 || mCreditsPaused)
+    if (mCreditsPaused || (!mApp->IsInDemoMode() && mDrawCount == 0))
     {
         return;
     }
@@ -1155,8 +1155,14 @@ void CreditScreen::Update()
     }
     else if (mUpdateCount > 1)
     {
-        Reanimation* aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
-        int aDurationSinceStart = mTimerSinceStart.GetDuration();
+        if (mApp->IsInDemoMode()) // demo sessions advance the movie strictly one frame per update tick
+        {
+            UpdateMovie();
+        }
+        else
+        {
+            Reanimation* aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
+            int aDurationSinceStart = mTimerSinceStart.GetDuration();
         int aDurationReanimation = (aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count * aCreditsReanim->mAnimTime / aCreditsReanim->mAnimRate) * 1000.0f;
         if (mCreditsPhase == CreditsPhase::CREDITS_MAIN2)
         {
@@ -1187,6 +1193,7 @@ void CreditScreen::Update()
         {
             UpdateMovie();
             aUnsyncedFrames--;
+        }
         }
     }
 
@@ -1633,7 +1640,10 @@ void CreditScreen::JumpToFrame(CreditsPhase thePhase, float theFrame)
     }
 
     mCreditsPhase = thePhase;
-    mTimerSinceStart.SetStartTime(aJumpMilliseconds);
+    if (mApp->IsInDemoMode()) // keep the demo tick clock in sync with the jump target
+        mUpdateCount = 1 + static_cast<int>(aJumpMilliseconds / 10.0);
+    else
+        mTimerSinceStart.SetStartTime(aJumpMilliseconds);
 }
 
 void CreditScreen::KeyChar(char theChar)
@@ -1723,7 +1733,7 @@ void CreditScreen::PauseCredits()
     mApp->mSoundSystem->StopFoley(FoleyType::FOLEY_SCREAM);
     mApp->PlaySample(SOUND_PAUSE);
     mCreditsPaused = true;
-    int aDurationOnPause = mTimerSinceStart.GetDuration();
+    int aDurationOnPause = mApp->IsInDemoMode() ? (mUpdateCount - 1) * 10 : mTimerSinceStart.GetDuration();
     mApp->mMusic->GameMusicPause(true);
 
     if (mApp->LawnMessageBox(
@@ -1740,7 +1750,8 @@ void CreditScreen::PauseCredits()
 
     mCreditsPaused = false;
     mApp->mMusic->GameMusicPause(false);
-    mTimerSinceStart.SetStartTime(aDurationOnPause);
+    if (!mApp->IsInDemoMode()) // the demo tick clock already froze during the pause
+        mTimerSinceStart.SetStartTime(aDurationOnPause);
 }
 
 void CreditScreen::KeyDown(KeyCode theKey)
