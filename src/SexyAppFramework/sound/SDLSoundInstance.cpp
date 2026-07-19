@@ -24,6 +24,7 @@
 
 #include "SDLSoundInstance.h"
 #include "SDLSoundManager.h"
+#include "SexyAppBase.h"
 
 using namespace Sexy;
 
@@ -45,6 +46,8 @@ SDLSoundInstance::SDLSoundInstance(SDLSoundManager* theSoundManager, Mix_Chunk* 
 	mPitch = 1.0f;
 
 	mDefaultFrequency = 44100;
+	mDemoEndUpdateCount = 0;
+	mDemoLooping = false;
 
 	RehupVolume();
 }
@@ -209,6 +212,13 @@ bool SDLSoundInstance::Play(bool looping, bool autoRelease)
 	mHasPlayed = true;	
 	mAutoRelease = autoRelease;	
 
+	if (gSexyAppBase->IsInDemoMode()) // demo sessions derive the playing state from game ticks instead of the audio clock (deterministic replay)
+	{
+		mDemoLooping = looping;
+		mDemoEndUpdateCount = gSexyAppBase->mUpdateCount +
+			static_cast<int>(GetChunkDurationMS(mMixChunk != nullptr ? mMixChunk->alen : 0) / (10.0 * mPitch)) + 1;
+	}
+
 	if (!mMixChunk)
 		return false;
 
@@ -227,6 +237,7 @@ bool SDLSoundInstance::Play(bool looping, bool autoRelease)
 
 void SDLSoundInstance::Stop()
 {
+	mDemoEndUpdateCount = 0;
 	if (mChannel >= 0 && mChannel < MAX_CHANNELS)
 	{
 		// Detach pitch effect before halting to avoid callbacks touching a dying object.
@@ -239,6 +250,14 @@ void SDLSoundInstance::Stop()
 
 bool SDLSoundInstance::IsPlaying()
 {
+	if (gSexyAppBase->IsInDemoMode()) // see Play(): tick-derived playing state in demo sessions, independent of mixer channel allocation
+	{
+		if (!mMixChunk || !mHasPlayed || mDemoEndUpdateCount == 0)
+			return false;
+		if (mDemoLooping)
+			return true;
+		return gSexyAppBase->mUpdateCount < mDemoEndUpdateCount;
+	}
 	if (!mMixChunk || !mHasPlayed || mChannel < 0 || mChannel >= MAX_CHANNELS)
 		return false;
 	return Mix_Playing(mChannel);
