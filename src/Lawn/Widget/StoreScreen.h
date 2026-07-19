@@ -70,6 +70,7 @@ public:
     PottedPlant                 mPottedPlantSpecs;
     DataArray<Coin>             mCoins;
     bool                        mDrawnOnce;
+    int                         mAddedAtUpdateCount; // tick snapshot for demo-mode preload timing
     bool                        mGoToTreeNow;
     bool                        mPurchasedFullVersion;
     bool                        mTrialLockedWhenStoreOpened;

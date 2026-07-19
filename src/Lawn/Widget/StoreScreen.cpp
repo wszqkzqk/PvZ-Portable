@@ -142,6 +142,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
         mNextButton->SetDisabled(true);
     }
     mDrawnOnce = false;
+    mAddedAtUpdateCount = mApp->mUpdateCount;
     mGoToTreeNow = false;
     mPurchasedFullVersion = false;
     mTrialLockedWhenStoreOpened = mApp->IsTrialStageLocked();
@@ -655,7 +656,9 @@ void StoreScreen::Update()
 
     if (mApp->mCrazyDaveState == CRAZY_DAVE_OFF)
     {
-        if (mDrawnOnce)
+        // demo sessions preload by update tick instead of the frame-scheduled mDrawnOnce
+        bool aShouldPreload = mApp->IsInDemoMode() ? (mApp->mUpdateCount - mAddedAtUpdateCount >= 2) : mDrawnOnce;
+        if (aShouldPreload)
         {
             StorePreload();
         }
