@@ -1278,6 +1278,9 @@ void LawnApp::Init()
 	if (mShutdown) // MakeWindow() failed
 		return;
 
+	if (mRecordingDemoBuffer || mPlayingDemoBuffer)
+		mAppRandSeed = mRandSeed; // demo sessions derive the app-level seed from the recorded one
+
 	// @Patoke: horrible debug checks, breaks the whole exe in release mode
 //#ifdef PVZ_DEBUG
 	TodAssertInitForApp();

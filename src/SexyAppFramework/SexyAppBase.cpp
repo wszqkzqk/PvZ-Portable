@@ -81,7 +81,7 @@
 using namespace Sexy;
 
 const int DEMO_FILE_ID = 0x42BEEF78;
-const int DEMO_VERSION = 3; // v3: demo-synced IO is main-thread only (no loading-thread commands in the stream)
+const int DEMO_VERSION = 4; // v4: header also carries the session start time for the demo-synced clock
 
 SexyAppBase* Sexy::gSexyAppBase = nullptr;
 
@@ -389,6 +389,7 @@ SexyAppBase::SexyAppBase()
 	mLastDemoMouseX = 0;
 	mLastDemoMouseY = 0;
 	mLastDemoUpdateCnt = 0;
+	mDemoStartTime = 0;
 	mDemoNeedsCommand = true;
 	mDemoLoadingComplete = false;
 	mDemoLength = 0;
@@ -510,6 +511,9 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	mRandSeed = FromLE32(mRandSeed);
 	SRand(mRandSeed);
 
+	if (!aFile.read(reinterpret_cast<char*>(&mDemoStartTime), sizeof(mDemoStartTime))) return false;
+	mDemoStartTime = FromLE64(mDemoStartTime);
+
 	ushort aStrLen = 4;
 	if (!aFile.read(reinterpret_cast<char*>(&aStrLen), sizeof(aStrLen))) return false;
 	aStrLen = std::min<ushort>(FromLE16(aStrLen), 255);
@@ -611,6 +615,9 @@ void SexyAppBase::WriteDemoBuffer()
 
 			uint32_t aRandSeed = ToLE32(mRandSeed);
 			aFile.write(reinterpret_cast<const char*>(&aRandSeed), sizeof(aRandSeed));
+
+			uint64_t aDemoStartTime = ToLE64(mDemoStartTime);
+			aFile.write(reinterpret_cast<const char*>(&aDemoStartTime), sizeof(aDemoStartTime));
 
 			ushort aStrLen = ToLE16(static_cast<uint16_t>(mProductVersion.length()));
 			aFile.write(reinterpret_cast<const char*>(&aStrLen), sizeof(aStrLen));		
@@ -3455,6 +3462,9 @@ void SexyAppBase::Init()
 	{
 		mRandSeed = SDL_GetTicks();
 		SRand(mRandSeed);
+
+		if (mRecordingDemoBuffer)
+			mDemoStartTime = static_cast<uint64_t>(time(nullptr)); // synthetic clock base; mUpdateCount is still 0 here
 	}
 
 	srand(SDL_GetTicks());

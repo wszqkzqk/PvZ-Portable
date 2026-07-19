@@ -123,7 +123,7 @@ ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 	mUnlockStateCounter = 0;
 	mLimboPageUnlocked = false;
 	mClickCount = 0;
-	mLastClickTime = 0;
+	mLastClickUpdateCnt = 0;
 	mLoadedResourceNames.push_back("DelayLoad_ChallengeScreen");
 
 	for (std::string& resource : mLoadedResourceNames)
@@ -770,13 +770,13 @@ void ChallengeScreen::MouseDown(int x, int y, int theClickCount)
 	if (mLimboPageUnlocked)
 		return;
 
-	constexpr int MAX_GAP_MS = 200;
+	constexpr int MAX_GAP_TICKS = 20; // 200 ms at 100 update ticks/sec
 	constexpr int CLICKS_NEEDED = 5;
 
-	uint32_t aNow = SDL_GetTicks();
-	if (aNow - mLastClickTime > MAX_GAP_MS)
+	int aNow = mApp->mUpdateCount;
+	if (aNow - mLastClickUpdateCnt > MAX_GAP_TICKS)
 		mClickCount = 0;
-	mLastClickTime = aNow;
+	mLastClickUpdateCnt = aNow;
 	mClickCount++;
 	if (mClickCount >= CLICKS_NEEDED)
 	{

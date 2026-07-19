@@ -177,6 +177,7 @@ public:
 	int32_t							mNumWaves;
 	uint32_t						mMainCounter;
 	uint32_t						mEffectCounter;
+	uint32_t						mBoardUpdateCounter; // ticks since level start; unlike mMainCounter it also advances outside SCENE_PLAYING
 	uint32_t						mDrawCount;
 	int32_t							mRiseFromGraveCounter;
 	int32_t							mOutOfMoneyCounter;

@@ -142,10 +142,9 @@ std::string GetLegacySavedGameName(GameMode theGameMode, int theProfileId)
     return GetAppDataPath(StrFormat("userdata/game%d_%d.dat", theProfileId, static_cast<int>(theGameMode)));
 }
 
-int GetCurrentDaysSince2000()
+int GetCurrentDaysSince2000(time_t theTime)
 {
-    time_t aNow = time(0);
-    tm aNowTM = *localtime(&aNow);
+    tm aNowTM = *localtime(&theTime);
 
     int dy = aNowTM.tm_year - 100;
     return dy * 365 + (dy - 1) / 400 - (dy - 1) / 100 + (dy - 1) / 4 + aNowTM.tm_yday + 1;

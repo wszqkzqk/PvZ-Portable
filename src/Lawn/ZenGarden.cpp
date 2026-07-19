@@ -104,7 +104,7 @@ ZenGarden::ZenGarden()
     mApp = (LawnApp*)gSexyAppBase;
     mBoard = nullptr;
     mGardenType = GardenType::GARDEN_MAIN;
-    mNowTime = time(0);
+    mNowTime = time(nullptr); // constructed on the loading thread: GetNowTime() reads main-thread state; refreshed before any use
     mNowTM = *localtime(&mNowTime);
 }
 
@@ -284,7 +284,7 @@ PottedPlant* ZenGarden::PottedPlantFromIndex(intptr_t thePottedPlantIndex)
 void ZenGarden::ZenGardenInitLevel()
 {
     mBoard = mApp->mBoard;
-    mNowTime = time(0);
+    mNowTime = mApp->GetNowTime();
     mNowTM = *localtime(&mNowTime);
 
     for (int i = 0; i < mApp->mPlayerInfo->mNumPottedPlants; i++)
@@ -1725,8 +1725,8 @@ void ZenGarden::ZenGardenUpdate()
         return;
     }
 
-    // Cache time(0) and localtime() once per frame to avoid repeated syscalls
-    mNowTime = time(0);
+    // Cache the current time and localtime() once per frame to avoid repeated calls
+    mNowTime = mApp->GetNowTime();
     mNowTM = *localtime(&mNowTime);
 
     mApp->UpdateCrazyDave();
@@ -2374,7 +2374,7 @@ void ZenGarden::OpenStore()
     }
     else
     {
-        mNowTime = time(0);
+        mNowTime = mApp->GetNowTime();
         mNowTM = *localtime(&mNowTime);
 
         mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_ZEN_GARDEN);

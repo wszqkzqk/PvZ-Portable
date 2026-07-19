@@ -33,6 +33,7 @@
 #include "misc/Buffer.h"
 #include <mutex>
 #include <thread>
+#include <time.h>
 #include <set>
 #include <string_view>
 #include "graphics/SharedImage.h"
@@ -306,6 +307,7 @@ public:
 	int						mLastDemoMouseX;
 	int						mLastDemoMouseY;
 	int						mLastDemoUpdateCnt;
+	uint64_t				mDemoStartTime; // wall clock at session start, base of the demo-synced clock
 	bool					mDemoNeedsCommand;
 	bool					mDemoIsShortCmd;
 	int						mDemoCmdNum;
@@ -394,6 +396,14 @@ protected:
 	inline bool				IsOnPrimaryThread() const { return std::this_thread::get_id() == mPrimaryThreadId; } // demo-synced IO is primary-thread only
 
 public:
+	// Demo-synced wall clock: real time normally; session start time advanced by update ticks during demo record/playback
+	inline time_t			GetNowTime() const
+	{
+		if (mRecordingDemoBuffer || mPlayingDemoBuffer)
+			return static_cast<time_t>(mDemoStartTime) + mUpdateCount / 100;
+		return time(nullptr);
+	}
+
 	SexyAppBase();
 	virtual ~SexyAppBase();
 

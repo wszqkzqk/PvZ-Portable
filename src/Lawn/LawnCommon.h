@@ -25,6 +25,7 @@
 #include "../ConstEnums.h"
 #include "graphics/Graphics.h"
 #include "widget//EditWidget.h"
+#include <time.h>
 
 using namespace Sexy;
 // using namespace std;
@@ -78,6 +79,6 @@ void						DrawEditBox(Graphics* g, EditWidget* theWidget);
 // ====================================================================================================
 std::string					GetSavedGameName(GameMode theGameMode, int theProfileId);
 std::string					GetLegacySavedGameName(GameMode theGameMode, int theProfileId);
-int							GetCurrentDaysSince2000();
+int							GetCurrentDaysSince2000(time_t theTime);
 
 #endif

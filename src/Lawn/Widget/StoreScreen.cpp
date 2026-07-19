@@ -216,7 +216,7 @@ bool StoreScreen::IsItemSoldOut(StoreItem theStoreItem)
     else if (theStoreItem == STORE_ITEM_BONUS_LAWN_MOWER)
         return aPlayer->mPurchases[STORE_ITEM_BONUS_LAWN_MOWER] >= 2;
     else if (IsPottedPlant(theStoreItem))
-        return mApp->mZenGarden->IsZenGardenFull(true) || aPlayer->mPurchases[theStoreItem] == GetCurrentDaysSince2000();
+        return mApp->mZenGarden->IsZenGardenFull(true) || aPlayer->mPurchases[theStoreItem] == GetCurrentDaysSince2000(mApp->GetNowTime());
     else return aPlayer->mPurchases[theStoreItem];
 
     unreachable();
@@ -988,7 +988,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
             }
             else if (theStoreItem == STORE_ITEM_STINKY_THE_SNAIL)
             {
-                uint32_t aTime = static_cast<uint32_t>(time(0));
+                uint32_t aTime = static_cast<uint32_t>(mApp->GetNowTime());
                 if (aTime == 0) aTime = 1;
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = aTime;
             }
@@ -1039,7 +1039,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
                 mApp->mZenGarden->AddPottedPlant(&mPottedPlantSpecs);
                 mPottedPlantSpecs.InitializePottedPlant(SEED_MARIGOLD);
                 mPottedPlantSpecs.mDrawVariation = (DrawVariation)RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN);
-                mApp->mPlayerInfo->mPurchases[theStoreItem] = GetCurrentDaysSince2000();
+                mApp->mPlayerInfo->mPurchases[theStoreItem] = GetCurrentDaysSince2000(mApp->GetNowTime());
             }
             else
             {

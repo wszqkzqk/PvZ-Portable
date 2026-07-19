@@ -1432,7 +1432,7 @@ void CutScene::Update()
 		return;
 	}
 
-	if (mApp->mGameScene != GameScenes::SCENE_LEVEL_INTRO || mBoard->mDrawCount == 0)
+	if (mApp->mGameScene != GameScenes::SCENE_LEVEL_INTRO || mBoard->mBoardUpdateCounter <= 1) // the first frame is drawn after the first update tick, so defer one tick deterministically
 		return;
 
 	// 进行预加载
