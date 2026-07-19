@@ -762,7 +762,7 @@ bool ZenGarden::WasPlantNeedFulfilledToday(PottedPlant* thePottedPlant)
     }
 
     time_t aLastNeedFulfilledTime = (time_t)thePottedPlant->mLastNeedFulfilledTime;
-    tm aLastNeedFulfilledTM = *localtime(&aLastNeedFulfilledTime);
+    tm aLastNeedFulfilledTM = mApp->GetLocalTime(aLastNeedFulfilledTime);
     return mNowTM.tm_year <= aLastNeedFulfilledTM.tm_year && mNowTM.tm_yday <= aLastNeedFulfilledTM.tm_yday;
 }
 
@@ -775,7 +775,7 @@ bool ZenGarden::PlantShouldRefreshNeed(PottedPlant* thePottedPlant)
     }
     
     time_t aLastWateredTime = (time_t)thePottedPlant->mLastWateredTime;
-    tm aLastWateredTM = *localtime(&aLastWateredTime);
+    tm aLastWateredTM = mApp->GetLocalTime(aLastWateredTime);
     return mNowTM.tm_year > aLastWateredTM.tm_year || mNowTM.tm_yday > aLastWateredTM.tm_yday;
 }
 
