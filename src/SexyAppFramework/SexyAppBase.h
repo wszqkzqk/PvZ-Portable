@@ -416,6 +416,8 @@ public:
 		if (IsInDemoMode())
 		{
 			time_t aShifted = theTime + static_cast<time_t>(mDemoTimeZoneOffset);
+			if (aShifted < 0) // MSVC/UCRT gmtime rejects pre-epoch times
+				aShifted = 0; // clamp to no earlier than 1970-01-01
 			return *gmtime(&aShifted);
 		}
 		return *localtime(&theTime);

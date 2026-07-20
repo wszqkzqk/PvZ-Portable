@@ -404,20 +404,26 @@ int Dialog::WaitForResult(bool autoKill)
 	//gSexyAppBase->DoMainLoop(mId);	
 
 #ifdef __EMSCRIPTEN__
-	while ((mWidgetManager != nullptr) && (mResult == 0x7FFFFFFF))
+	const auto isWaitingForResult = [this]() {
+		return mWidgetManager != nullptr && mResult == 0x7FFFFFFF;
+	};
+
+	while (isWaitingForResult())
 	{
 		bool updated = false;
 		if (!gSexyAppBase->UpdateAppStep(&updated))
 			break;
 
-		// Prevent web FPS drop and input lag: complete all pending stages and process all events in one rAF.
-		while (gSexyAppBase->mUpdateAppState != UPDATESTATE_PROCESS_DONE || gSexyAppBase->mHasPendingDraw)
+		// While still waiting, complete pending stages in one rAF to avoid FPS drops and input lag.
+		while (isWaitingForResult() &&
+			(gSexyAppBase->mUpdateAppState != UPDATESTATE_PROCESS_DONE || gSexyAppBase->mHasPendingDraw))
 		{
 			if (!gSexyAppBase->UpdateAppStep(&updated))
 				break;
 		}
 
-		emscripten_sleep(0);
+		if (isWaitingForResult())
+			emscripten_sleep(0);
 	}
 #else
 	while ((gSexyAppBase->UpdateAppStep(nullptr)) && (mWidgetManager != nullptr) && (mResult == 0x7FFFFFFF));

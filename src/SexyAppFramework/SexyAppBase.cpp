@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <chrono>
 #include <filesystem>
 
 #include <SDL.h>
@@ -1663,10 +1664,10 @@ bool SexyAppBase::DoUpdateFrames()
 			LoadingThreadCompleted();
 		}
 
-		// Hrrm not sure why we check (mUpdateCount != mLastDemoUpdateCnt) here
-		if ((mLoaded == mDemoLoadingComplete) && (mUpdateCount != mLastDemoUpdateCnt))		
+		// a queued command waits on game logic; let the tick advance so it can be claimed or judged diverged
+		if ((mLoaded == mDemoLoadingComplete) && ((mUpdateCount != mLastDemoUpdateCnt) || (mDemoQueuedSince >= 0)))
 		{
-			UpdateFrames();		
+			UpdateFrames();
 			return true;
 		}
 
@@ -3412,9 +3413,16 @@ void SexyAppBase::InitHook()
 {
 }
 
+// Seconds since 1970-01-01 00:00 for broken-down fields, timezone-agnostic
+static inline int64_t DemoWallSeconds(const tm& theTM)
+{
+	auto aDays = std::chrono::sys_days{std::chrono::year{theTM.tm_year + 1900} / (theTM.tm_mon + 1) / theTM.tm_mday};
+	return aDays.time_since_epoch().count() * 86400LL + theTM.tm_hour * 3600 + theTM.tm_min * 60 + theTM.tm_sec;
+}
+
 void SexyAppBase::Init()
 {
-	mPrimaryThreadId = std::this_thread::get_id();	
+	mPrimaryThreadId = std::this_thread::get_id();
 	
 	if (mShutdown)
 		return;
@@ -3501,10 +3509,7 @@ void SexyAppBase::Init()
 			time_t aNow = time(nullptr);
 			mDemoStartTime = static_cast<uint64_t>(aNow); // synthetic clock base; mUpdateCount is still 0 here
 			tm aLocalTM = *localtime(&aNow);
-			tm aUtcTM = *gmtime(&aNow);
-			aLocalTM.tm_isdst = -1;
-			aUtcTM.tm_isdst = -1;
-			mDemoTimeZoneOffset = static_cast<int32_t>(difftime(mktime(&aLocalTM), mktime(&aUtcTM))); // local minus UTC in seconds
+			mDemoTimeZoneOffset = static_cast<int32_t>(DemoWallSeconds(aLocalTM) - aNow); // local minus UTC; pure arithmetic, exact around DST
 		}
 	}
 
