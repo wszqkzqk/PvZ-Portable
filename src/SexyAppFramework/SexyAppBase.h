@@ -314,6 +314,7 @@ public:
 	int						mDemoCmdNum;
 	int						mDemoCmdOrder;
 	int						mDemoCmdBitPos;
+	int						mDemoCmdUpdateCnt; // update tick before the current command header was read
 	bool					mDemoLoadingComplete;
 
 	typedef std::pair<std::string, int> DemoMarker;

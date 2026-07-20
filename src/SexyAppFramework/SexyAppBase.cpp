@@ -397,6 +397,7 @@ SexyAppBase::SexyAppBase()
 	mDemoCmdNum = 0;
 	mDemoCmdOrder = -1; // Means we haven't processed any demo commands yet
 	mDemoCmdBitPos = 0;
+	mDemoCmdUpdateCnt = 0;
 
 	mWidgetManager = new WidgetManager(this);
 	mResourceManager = new ResourceManager(this);
@@ -2057,6 +2058,7 @@ bool SexyAppBase::PrepareDemoCommand([[maybe_unused]] bool required)
 	if (mDemoNeedsCommand)
 	{
 		mDemoCmdBitPos = mDemoBuffer.mReadBitPos;
+		mDemoCmdUpdateCnt = mLastDemoUpdateCnt;
 
 		mLastDemoUpdateCnt += mDemoBuffer.ReadNumBits(4, false);
 
@@ -2212,6 +2214,20 @@ void SexyAppBase::ProcessDemo()
 						break;
 					case DEMO_IDLE:
 						break;
+					case DEMO_REGISTRY_GETSUBKEYS:
+					case DEMO_REGISTRY_READ:
+					case DEMO_REGISTRY_WRITE:
+					case DEMO_REGISTRY_ERASE:
+					case DEMO_FILE_EXISTS:
+					case DEMO_FILE_READ:
+					case DEMO_FILE_WRITE:
+					case DEMO_SYNC:
+					case DEMO_ASSERT_STRING_EQUAL:
+					case DEMO_ASSERT_INT_EQUAL:
+						mDemoBuffer.mReadBitPos = mDemoCmdBitPos; // leave queued for the game-logic call site to consume
+						mLastDemoUpdateCnt = mDemoCmdUpdateCnt;
+						mDemoNeedsCommand = true;
+						return;
 					default:
 						DBG_ASSERTE("Invalid Demo Command" == 0);
 						break;
