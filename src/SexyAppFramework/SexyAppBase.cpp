@@ -398,6 +398,7 @@ SexyAppBase::SexyAppBase()
 	mDemoCmdOrder = -1; // Means we haven't processed any demo commands yet
 	mDemoCmdBitPos = 0;
 	mDemoCmdUpdateCnt = 0;
+	mDemoQueuedSince = -1;
 
 	mWidgetManager = new WidgetManager(this);
 	mResourceManager = new ResourceManager(this);
@@ -2059,6 +2060,8 @@ bool SexyAppBase::PrepareDemoCommand([[maybe_unused]] bool required)
 	{
 		mDemoCmdBitPos = mDemoBuffer.mReadBitPos;
 		mDemoCmdUpdateCnt = mLastDemoUpdateCnt;
+		if (required) // a game-logic call site claimed the queued command
+			mDemoQueuedSince = -1;
 
 		mLastDemoUpdateCnt += mDemoBuffer.ReadNumBits(4, false);
 
@@ -2074,9 +2077,9 @@ bool SexyAppBase::PrepareDemoCommand([[maybe_unused]] bool required)
 		mDemoCmdOrder++;
 	}
 
-	DBG_ASSERTE((mUpdateCount == mLastDemoUpdateCnt) || (!required));
+	DBG_ASSERTE((mUpdateCount >= mLastDemoUpdateCnt) || (!required));
 
-	return mUpdateCount == mLastDemoUpdateCnt;
+	return mUpdateCount >= mLastDemoUpdateCnt;
 }
 
 void SexyAppBase::ProcessDemo()
@@ -2089,7 +2092,7 @@ void SexyAppBase::ProcessDemo()
 			return;
 		}
 
-		while ((!mShutdown) && (mUpdateCount == mLastDemoUpdateCnt) && (!mDemoBuffer.AtEnd()))
+		while ((!mShutdown) && (mUpdateCount >= mLastDemoUpdateCnt) && (!mDemoBuffer.AtEnd()))
 		{
 			if (PrepareDemoCommand(false))
 			{
@@ -2224,6 +2227,12 @@ void SexyAppBase::ProcessDemo()
 					case DEMO_SYNC:
 					case DEMO_ASSERT_STRING_EQUAL:
 					case DEMO_ASSERT_INT_EQUAL:
+						if (mDemoQueuedSince >= 0) // second encounter still unclaimed: call site never came, the replay has diverged
+						{
+							Shutdown();
+							return;
+						}
+						mDemoQueuedSince = mUpdateCount;
 						mDemoBuffer.mReadBitPos = mDemoCmdBitPos; // leave queued for the game-logic call site to consume
 						mLastDemoUpdateCnt = mDemoCmdUpdateCnt;
 						mDemoNeedsCommand = true;

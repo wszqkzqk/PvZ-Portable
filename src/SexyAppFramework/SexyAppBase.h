@@ -315,6 +315,7 @@ public:
 	int						mDemoCmdOrder;
 	int						mDemoCmdBitPos;
 	int						mDemoCmdUpdateCnt; // update tick before the current command header was read
+	int						mDemoQueuedSince; // tick when a game-logic-owned command was queued; -1 = none
 	bool					mDemoLoadingComplete;
 
 	typedef std::pair<std::string, int> DemoMarker;
