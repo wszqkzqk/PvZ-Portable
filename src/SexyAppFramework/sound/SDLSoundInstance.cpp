@@ -212,7 +212,7 @@ bool SDLSoundInstance::Play(bool looping, bool autoRelease)
 	mHasPlayed = true;	
 	mAutoRelease = autoRelease;	
 
-	if (gSexyAppBase->IsInDemoMode()) // demo sessions derive the playing state from game ticks instead of the audio clock (deterministic replay)
+	if (gSexyAppBase->IsInDemoMode()) // demo sessions: derive playing state from game ticks, not the audio clock
 	{
 		mDemoLooping = looping;
 		mDemoEndUpdateCount = gSexyAppBase->mUpdateCount +
@@ -250,7 +250,7 @@ void SDLSoundInstance::Stop()
 
 bool SDLSoundInstance::IsPlaying()
 {
-	if (gSexyAppBase->IsInDemoMode()) // see Play(): tick-derived playing state in demo sessions, independent of mixer channel allocation
+	if (gSexyAppBase->IsInDemoMode()) // see Play(): tick-derived playing state in demo sessions
 	{
 		if (!mMixChunk || !mHasPlayed || mDemoEndUpdateCount == 0)
 			return false;
