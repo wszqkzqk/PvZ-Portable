@@ -2227,7 +2227,7 @@ void SexyAppBase::ProcessDemo()
 					case DEMO_SYNC:
 					case DEMO_ASSERT_STRING_EQUAL:
 					case DEMO_ASSERT_INT_EQUAL:
-						if (mDemoQueuedSince >= 0) // second encounter still unclaimed: call site never came, the replay has diverged
+						if (mDemoQueuedSince >= 0 && mUpdateCount > mDemoQueuedSince) // queued across a tick with no claim: the replay has diverged
 						{
 							Shutdown();
 							return;
