@@ -808,6 +808,9 @@ void ZenGarden::UpdatePlantNeeds()
         return;
     }
 
+    mNowTime = mApp->GetNowTime();  // the cached clock is stale on the game selector
+    mNowTM = mApp->GetLocalTime(mNowTime);
+
     for (int i = 0; i < mApp->mPlayerInfo->mNumPottedPlants; i++)
     {
         PottedPlant* aPottedPlant = PottedPlantFromIndex(i);
