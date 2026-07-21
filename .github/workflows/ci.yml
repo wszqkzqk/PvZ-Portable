@@ -215,6 +215,10 @@ jobs:
         echo "Bundling dependencies..."
         dylibbundler -of -b -x dist/pvz-portable -d dist/libs -p @executable_path/libs/
 
+        # Homebrew's SDL2 formula is sdl2-compat, which loads SDL3 at runtime.
+        # dylibbundler cannot discover libraries loaded with dlopen(), so bundle it explicitly.
+        install -m 755 "$(brew --prefix sdl3)/lib/libSDL3.dylib" dist/libs/libSDL3.dylib
+
         codesign --force --deep -s - dist/pvz-portable
 
     - name: Upload Artifact
