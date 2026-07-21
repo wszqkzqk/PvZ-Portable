@@ -314,13 +314,13 @@ python scripts/pvzp-v4-converter.py import level.yaml ~/.local/io.github.wszqkzq
 
 ## Recording and Playing Back Gameplay
 
-The game can record a gameplay session into a `.dmo` demo file and replay it deterministically later. Demo files are written to the current working directory:
+The game can record a gameplay session into a `.dmo` demo file and replay it deterministically later. Automatically named demo files are written to the current working directory:
 
-- `-record` — record to a new file named after the current time, in the form `pvzp-YYYYMMDD-HHMMSS.dmo`; existing recordings are never overwritten.
-- `-play` — play back the newest recording.
-- `-playnum=<N>` — play back the N-th newest recording; `1` is the newest.
-- `-recnum=<N>` — record and keep only the newest `N` recordings.
-- `-demofile="<path>"` — use an explicit file for `-record` or `-play` instead.
+- `-record` — record to a file named after the current local time, in the form `pvzp-YYYYMMDD-HHMMSS[-N].dmo`.
+- `-play` — play back the first matching `pvzp-*.dmo` recording in descending timestamp/name order.
+- `-playnum=<N>` — play back the N-th recording in descending timestamp/name order; `1` selects the first.
+- `-recnum=<N>` — record and keep the first `N` files matching the automatic timestamp pattern in descending timestamp/name order; other `pvzp-*.dmo` files are left untouched.
+- `-demofile="<path>"` — use an explicit file for `-record`, `-recnum`, `-play`, or `-playnum` instead; using an explicit target disables automatic retention.
 
 This feature is primarily designed for debugging and regression testing.
 
