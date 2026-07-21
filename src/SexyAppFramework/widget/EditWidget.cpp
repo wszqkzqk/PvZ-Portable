@@ -348,7 +348,9 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 				aBaseString = aBaseString.substr(0, aLineEnd);
 
 			InsertTextAtCursor(aBaseString);
-			bigChange = (mString != anOldString);
+			bigChange = (mString != anOldString) ||
+				(mCursorPos != anOldCursorPos) ||
+				(mHilitePos != anOldHilitePos);
 		}
 	}
 	else if (theChar == 26)
@@ -564,7 +566,6 @@ void EditWidget::InsertTextAtCursor(std::string_view theText)
 		// Replace selection with inserted text.
 		mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) + aInsert + mString.substr(std::max(mCursorPos, mHilitePos));
 		mCursorPos = std::min(mCursorPos, mHilitePos);
-		mHilitePos = -1;
 	}
 	else
 	{
@@ -572,6 +573,7 @@ void EditWidget::InsertTextAtCursor(std::string_view theText)
 	}
 
 	mCursorPos += aInsert.size();
+	mHilitePos = -1;
 }
 
 void EditWidget::KeyText(std::string_view theText)
@@ -593,7 +595,9 @@ void EditWidget::KeyText(std::string_view theText)
 
 	mCursorPos = std::clamp(mCursorPos, 0, (int)mString.length());
 
-	if (mString != anOldString)
+	if ((mString != anOldString) ||
+		(mCursorPos != anOldCursorPos) ||
+		(mHilitePos != anOldHilitePos))
 	{
 		if (aHadSelection || aPreInsertCursorPos != mLastModifyIdx)
 		{
@@ -605,6 +609,10 @@ void EditWidget::KeyText(std::string_view theText)
 		mHilitePos = -1;
 		mBlinkAcc = 0;
 		mShowingCursor = true;
+	}
+	else
+	{
+		mLastModifyIdx = -1;
 	}
 
 	FocusCursor(true);
