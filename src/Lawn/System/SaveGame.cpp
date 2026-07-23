@@ -558,12 +558,6 @@ static void SyncGameObjectPortable(PortableSaveContext& theContext, GameObject& 
 
 static constexpr const uint32_t PORTABLE_FIELD_TAIL = 100U;
 
-template <typename T>
-static void ResetItemForRead(T& theItem)
-{
-	std::fill_n(reinterpret_cast<unsigned char*>(&theItem), sizeof(T), 0);
-}
-
 template <typename TEnum>
 static void SyncEnum32(PortableSaveContext& theContext, TEnum& theValue)
 {
@@ -1370,8 +1364,8 @@ static void SyncDataArrayPortable(PortableSaveContext& theContext, DataArray<T>&
 
 	for (uint32_t i = 0; i < theDataArray.mMaxUsedCount; i++)
 	{
-		theContext.SyncUInt32(theDataArray.mBlock[i].mID);
-		theSyncFn(theDataArray.mBlock[i].mItem);
+		theContext.SyncUInt32(theDataArray.DataArrayGetIDAt(i));
+		theSyncFn(theDataArray.DataArrayGetItemAt(i));
 	}
 }
 
@@ -1391,7 +1385,7 @@ static void SyncDataArrayIdsOnlyPortable(PortableSaveContext& theContext, DataAr
 
 	for (uint32_t i = 0; i < theDataArray.mMaxUsedCount; i++)
 	{
-		theContext.SyncUInt32(theDataArray.mBlock[i].mID);
+		theContext.SyncUInt32(theDataArray.DataArrayGetIDAt(i));
 	}
 }
 
@@ -1411,12 +1405,12 @@ static void SyncDataArrayPortableTLV(PortableSaveContext& theContext, DataArray<
 
 	for (uint32_t i = 0; i < theDataArray.mMaxUsedCount; i++)
 	{
-		theContext.SyncUInt32(theDataArray.mBlock[i].mID);
+		theContext.SyncUInt32(theDataArray.DataArrayGetIDAt(i));
 		if (theContext.mReading)
 		{
 			uint32_t aItemSize = 0;
 			theContext.SyncUInt32(aItemSize);
-			ResetItemForRead(theDataArray.mBlock[i].mItem);
+			T& anItem = theDataArray.DataArrayResetItemAt(i);
 			std::vector<unsigned char> aItemData;
 			aItemData.resize(aItemSize);
 			if (aItemSize > 0)
@@ -1431,17 +1425,17 @@ static void SyncDataArrayPortableTLV(PortableSaveContext& theContext, DataArray<
 				const unsigned char* aFieldData = nullptr;
 				if (!aReader.ReadBytes(aFieldData, aFieldSize))
 					break;
-				theReadFn(aFieldId, aFieldData, aFieldSize, theDataArray.mBlock[i].mItem);
+				theReadFn(aFieldId, aFieldData, aFieldSize, anItem);
 			}
 		}
 		else
 		{
-			bool aActive = (theDataArray.mBlock[i].mID & DATA_ARRAY_KEY_MASK) != 0;
+			bool aActive = (theDataArray.DataArrayGetIDAt(i) & DATA_ARRAY_KEY_MASK) != 0;
 			uint32_t aItemSize = 0;
 			std::vector<unsigned char> aItemData;
 			if (aActive)
 			{
-				theWriteFn(aItemData, theDataArray.mBlock[i].mItem);
+				theWriteFn(aItemData, theDataArray.DataArrayGetItemAt(i));
 				aItemSize = static_cast<uint32_t>(aItemData.size());
 			}
 			theContext.SyncUInt32(aItemSize);
@@ -2992,23 +2986,38 @@ static void SyncTrail(Board* theBoard, Trail* theTrail, SaveGameContext& theCont
 	}
 }
 
+template <typename T>
+struct LegacyDataArrayItem
+{
+	alignas(T) unsigned char mItem[sizeof(T)];
+	unsigned int mID;
+};
+
 template <typename T> inline static void SyncDataArray(SaveGameContext& theContext, DataArray<T>& theDataArray)
 {
 	theContext.SyncUInt32(theDataArray.mFreeListHead);
 	theContext.SyncUInt32(theDataArray.mMaxUsedCount);
 	theContext.SyncUInt32(theDataArray.mSize);
-	theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(*theDataArray.mBlock));
+	auto aBlock = std::make_unique<LegacyDataArrayItem<T>[]>(theDataArray.mMaxUsedCount);
+	if (!theContext.mReading)
+	{
+		for (uint32_t i = 0; i < theDataArray.mMaxUsedCount; i++)
+		{
+			auto& aSlot = aBlock[i];
+			std::copy_n(reinterpret_cast<unsigned char*>(&theDataArray.DataArrayGetItemAt(i)), sizeof(T), aSlot.mItem);
+			aSlot.mID = theDataArray.DataArrayGetIDAt(i);
+		}
+	}
+	theContext.SyncBytes(aBlock.get(), theDataArray.mMaxUsedCount * sizeof(aBlock[0]));
 	if (!theContext.mReading)
 		return;
 
 	for (uint32_t i = 0; i < theDataArray.mMaxUsedCount; i++)
 	{
-		auto* aSlot = &theDataArray.mBlock[i];
-		if (aSlot->mID & DATA_ARRAY_KEY_MASK)
-			continue;
-		unsigned int aLink = aSlot->mID;
-		std::construct_at(aSlot);
-		aSlot->mID = aLink;
+		auto& aSlot = aBlock[i];
+		theDataArray.DataArrayGetIDAt(i) = aSlot.mID;
+		if (aSlot.mID & DATA_ARRAY_KEY_MASK)
+			std::copy_n(aSlot.mItem, sizeof(T), reinterpret_cast<unsigned char*>(&theDataArray.DataArrayGetItemAt(i)));
 	}
 }
 
