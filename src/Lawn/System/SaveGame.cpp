@@ -41,6 +41,7 @@
 #include "misc/Buffer.h"
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 static constexpr const char* FILE_COMPILE_TIME_STRING = "Jul  2 201011:47:03"; // The compile time of 1.2.0.1073 GOTY
@@ -2997,6 +2998,18 @@ template <typename T> inline static void SyncDataArray(SaveGameContext& theConte
 	theContext.SyncUInt32(theDataArray.mMaxUsedCount);
 	theContext.SyncUInt32(theDataArray.mSize);
 	theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(*theDataArray.mBlock));
+	if (!theContext.mReading)
+		return;
+
+	for (uint32_t i = 0; i < theDataArray.mMaxUsedCount; i++)
+	{
+		auto* aSlot = &theDataArray.mBlock[i];
+		if (aSlot->mID & DATA_ARRAY_KEY_MASK)
+			continue;
+		unsigned int aLink = aSlot->mID;
+		std::construct_at(aSlot);
+		aSlot->mID = aLink;
+	}
 }
 
 static void SyncBoard(SaveGameContext& theContext, Board* theBoard)
