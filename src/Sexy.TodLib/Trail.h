@@ -75,7 +75,7 @@ public:
 
 public:
 	TrailDefinition();
-	~TrailDefinition();
+	~TrailDefinition() = default;
 };
 bool						TrailLoadADef(TrailDefinition* theTrailDef, const char* theTrailFileName);
 void						TrailLoadDefinitions(TrailParams* theTrailParamArray, int theTrailParamArraySize);

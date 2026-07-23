@@ -40,10 +40,6 @@ TrailDefinition::TrailDefinition()
 	mImage = nullptr;
 }
 
-TrailDefinition::~TrailDefinition()
-{
-}
-
 TrailPoint::TrailPoint()
 {
 }
