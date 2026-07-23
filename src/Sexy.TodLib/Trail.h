@@ -63,18 +63,18 @@ extern TrailParams gLawnTrailArray[static_cast<int>(TrailType::NUM_TRAILS)];
 class TrailDefinition
 {
 public:
-	Image*					mImage;
-	int						mMaxPoints;
-	float					mMinPointDistance;
-	int						mTrailFlags;
-	FloatParameterTrack		mTrailDuration;
-	FloatParameterTrack		mWidthOverLength;
-	FloatParameterTrack		mWidthOverTime;
-	FloatParameterTrack		mAlphaOverLength;
-	FloatParameterTrack		mAlphaOverTime;
+	Image*					mImage = nullptr;
+	int						mMaxPoints = 2;
+	float					mMinPointDistance = 1.0f;
+	int						mTrailFlags = 0;
+	FloatParameterTrack		mTrailDuration{};
+	FloatParameterTrack		mWidthOverLength{};
+	FloatParameterTrack		mWidthOverTime{};
+	FloatParameterTrack		mAlphaOverLength{};
+	FloatParameterTrack		mAlphaOverTime{};
 
 public:
-	TrailDefinition();
+	TrailDefinition() = default;
 	~TrailDefinition() = default;
 };
 bool						TrailLoadADef(TrailDefinition* theTrailDef, const char* theTrailFileName);

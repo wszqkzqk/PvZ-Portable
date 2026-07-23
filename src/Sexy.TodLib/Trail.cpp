@@ -31,15 +31,6 @@ TrailParams gLawnTrailArray[TrailType::NUM_TRAILS] = {
 	{ TrailType::TRAIL_ICE, "particles/IceTrail.trail" }
 };
 
-TrailDefinition::TrailDefinition()
-{
-	memset(this, 0, sizeof(TrailDefinition));
-	mMinPointDistance = 1.0f;
-	mMaxPoints = 2;
-	mTrailFlags = 0U;
-	mImage = nullptr;
-}
-
 TrailPoint::TrailPoint()
 {
 }
@@ -67,7 +58,7 @@ void TrailLoadDefinitions(TrailParams* theTrailParamArray, int theTrailParamArra
 	gTrailParamArraySize = theTrailParamArraySize;
 	gTrailParamArray = theTrailParamArray;
 	gTrailDefCount = theTrailParamArraySize;
-	gTrailDefArray = new TrailDefinition[theTrailParamArraySize];
+	gTrailDefArray = new TrailDefinition[theTrailParamArraySize]();
 
 	for (int i = 0; i < gTrailParamArraySize; i++)
 	{

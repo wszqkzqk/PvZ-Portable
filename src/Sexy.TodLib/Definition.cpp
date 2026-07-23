@@ -214,13 +214,7 @@ void* TodParticleDefinitionConstructor(void* thePointer)
 void* TrailDefinitionConstructor(void* thePointer)
 {
     if (thePointer)
-    {
-        memset(thePointer, 0, sizeof(TrailDefinition));
-        ((TrailDefinition*)thePointer)->mMinPointDistance = 1.0f;
-        ((TrailDefinition*)thePointer)->mMaxPoints = 2;
-        ((TrailDefinition*)thePointer)->mTrailFlags = 0U;
-        ((TrailDefinition*)thePointer)->mImage = nullptr;
-    }
+        std::construct_at(static_cast<TrailDefinition*>(thePointer));
     return thePointer;
 }
 
