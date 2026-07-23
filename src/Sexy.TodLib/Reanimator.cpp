@@ -1085,10 +1085,13 @@ void Reanimation::ReanimationDie()
 	if (!mDead)
 	{
 		mDead = true;
-		for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
+		if (mDefinition != nullptr) // null for zeroed pool slots
 		{
-			TOD_ASSERT(mTrackInstances);
-			AttachmentDie(mTrackInstances[aTrackIndex].mAttachmentID);
+			for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
+			{
+				TOD_ASSERT(mTrackInstances);
+				AttachmentDie(mTrackInstances[aTrackIndex].mAttachmentID);
+			}
 		}
 	}
 }

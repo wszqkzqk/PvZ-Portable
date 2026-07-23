@@ -23,6 +23,7 @@
 #define __DATAARRAY_H__
 
 #include <string.h>
+#include <new>
 #include "TodDebug.h"
 #include "TodCommon.h"
 
@@ -74,7 +75,7 @@ public:
 	void DataArrayInitialize(unsigned int theMaxSize, const char* theName)
 	{
 		TOD_ASSERT(mBlock == nullptr);
-		mBlock = static_cast<DataArrayItem*>(operator new(sizeof(DataArrayItem) * theMaxSize));
+		mBlock = new DataArrayItem[theMaxSize]();
 		mMaxSize = theMaxSize;
 		mNextKey = 1001U;
 		mName = theName;
@@ -85,7 +86,7 @@ public:
 		if (mBlock != nullptr)
 		{
 			DataArrayFreeAll();
-			operator delete(mBlock);
+			delete[] mBlock;
 			mBlock = nullptr;
 			mMaxUsedCount = 0U;
 			mMaxSize = 0U;
@@ -99,8 +100,9 @@ public:
 	{
 		DataArrayItem* aItem = reinterpret_cast<DataArrayItem*>(theItem);
 		TOD_ASSERT(DataArrayGet(aItem->mID) == theItem, "Failed: DataArrayFree(0x%x) in %s", theItem, mName);
-		theItem->~T();
 		unsigned int anId = aItem->mID & DATA_ARRAY_INDEX_MASK;
+		aItem->~DataArrayItem();
+		new (aItem) DataArrayItem(); // rebuild zeroed for any T
 		aItem->mID = mFreeListHead;
 		mFreeListHead = anId;
 		mSize--;
@@ -157,14 +159,12 @@ public:
 			mFreeListHead = mBlock[mFreeListHead].mID;
 		}
 
-		DataArray<T>::DataArrayItem* aNewItem = &mBlock[aNext];
-		memset(aNewItem, 0, sizeof(DataArrayItem));
+		DataArray<T>::DataArrayItem* aNewItem = new (&mBlock[aNext]) DataArrayItem();
 		aNewItem->mID = (mNextKey++ << DATA_ARRAY_KEY_SHIFT) | aNext;
 		if (mNextKey == DATA_ARRAY_MAX_SIZE) mNextKey = 1;
 		mSize++;
 
-		new (aNewItem)T();
-		return reinterpret_cast<T*>(aNewItem);
+		return &aNewItem->mItem;
 	}
 
 	T* DataArrayTryToGet(unsigned int theId)

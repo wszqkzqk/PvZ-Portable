@@ -33,7 +33,7 @@ TrailParams gLawnTrailArray[TrailType::NUM_TRAILS] = {
 
 TrailDefinition::TrailDefinition()
 {
-	memset(this, 0, sizeof(TrailDefinition));
+	memset(static_cast<void*>(this), 0, sizeof(TrailDefinition));
 	mMinPointDistance = 1.0f;
 	mMaxPoints = 2;
 	mTrailFlags = 0U;
@@ -107,10 +107,6 @@ Trail::Trail()
 	mDefinition = nullptr;
 	mTrailDuration = 0;
 	mColorOverride = Color::White;
-	for (int i = 0; i < 4; i++)
-	{
-		mTrailInterp[i] = RandRangeFloat(0.0f, 1.0f);
-	}
 }
 
 void Trail::AddPoint(float x, float y)
@@ -312,6 +308,10 @@ Trail* TrailHolder::AllocTrailFromDef(int theRenderOrder, TrailDefinition* theDe
 	aTrail->mTrailHolder = this;
 	aTrail->mDefinition = theDefinition;
 
+	for (int i = 0; i < 4; i++)
+	{
+		aTrail->mTrailInterp[i] = RandRangeFloat(0.0f, 1.0f);
+	}
 	float aDurationInterp = RandRangeFloat(0.0f, 1.0f);
 	aTrail->mTrailDuration = static_cast<int>(FloatTrackEvaluate(aTrail->mDefinition->mTrailDuration, 0.0f, aDurationInterp));
 	return aTrail;
