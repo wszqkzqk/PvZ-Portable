@@ -549,12 +549,12 @@ void TodParticleEmitter::UpdateParticleField(TodParticle* theParticle, ParticleF
 		if (aLastRandSeed == -1)
 			aLastRandSeed = theParticle->mParticleDuration - 1;
 		srand(aLastRandSeed * reinterpret_cast<uintptr_t>(theParticle));
-		theParticle->mPosition.x -= aLastX * (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f);
-		theParticle->mPosition.y -= aLastY * (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f);
+		theParticle->mPosition.x -= aLastX * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		theParticle->mPosition.y -= aLastY * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
 		// 再随机取得当前帧的震动效果
 		srand(theParticle->mParticleAge * reinterpret_cast<uintptr_t>(theParticle));
-		theParticle->mPosition.x += x * (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f);
-		theParticle->mPosition.y += y * (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f);
+		theParticle->mPosition.x += x * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		theParticle->mPosition.y += y * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
 		break;
 	}
 	case ParticleFieldType::FIELD_CIRCLE:  // 圆周
