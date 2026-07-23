@@ -2997,20 +2997,6 @@ template <typename T> inline static void SyncDataArray(SaveGameContext& theConte
 	theContext.SyncUInt32(theDataArray.mMaxUsedCount);
 	theContext.SyncUInt32(theDataArray.mSize);
 	theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(*theDataArray.mBlock));
-	if (theContext.mReading)
-	{
-		// rebuild stale free slots zeroed without destructing them
-		for (uint32_t i = 0; i < theDataArray.mMaxUsedCount; i++)
-		{
-			typename DataArray<T>::DataArrayItem* aSlot = &theDataArray.mBlock[i];
-			if ((aSlot->mID & DATA_ARRAY_KEY_MASK) == 0)
-			{
-				unsigned int aLink = aSlot->mID;
-				new (aSlot) typename DataArray<T>::DataArrayItem();
-				aSlot->mID = aLink;
-			}
-		}
-	}
 }
 
 static void SyncBoard(SaveGameContext& theContext, Board* theBoard)

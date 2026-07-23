@@ -33,7 +33,7 @@ TrailParams gLawnTrailArray[TrailType::NUM_TRAILS] = {
 
 TrailDefinition::TrailDefinition()
 {
-	memset(static_cast<void*>(this), 0, sizeof(TrailDefinition));
+	memset(this, 0, sizeof(TrailDefinition));
 	mMinPointDistance = 1.0f;
 	mMaxPoints = 2;
 	mTrailFlags = 0U;

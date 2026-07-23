@@ -23,7 +23,7 @@
 #define __DATAARRAY_H__
 
 #include <string.h>
-#include <new>
+#include <memory>
 #include "TodDebug.h"
 #include "TodCommon.h"
 
@@ -101,8 +101,8 @@ public:
 		DataArrayItem* aItem = reinterpret_cast<DataArrayItem*>(theItem);
 		TOD_ASSERT(DataArrayGet(aItem->mID) == theItem, "Failed: DataArrayFree(0x%x) in %s", theItem, mName);
 		unsigned int anId = aItem->mID & DATA_ARRAY_INDEX_MASK;
-		aItem->~DataArrayItem();
-		new (aItem) DataArrayItem(); // rebuild zeroed for any T
+		std::destroy_at(aItem);
+		std::construct_at(aItem);
 		aItem->mID = mFreeListHead;
 		mFreeListHead = anId;
 		mSize--;
@@ -159,7 +159,9 @@ public:
 			mFreeListHead = mBlock[mFreeListHead].mID;
 		}
 
-		DataArray<T>::DataArrayItem* aNewItem = new (&mBlock[aNext]) DataArrayItem();
+		DataArray<T>::DataArrayItem* aNewItem = &mBlock[aNext];
+		std::destroy_at(aNewItem);
+		std::construct_at(aNewItem);
 		aNewItem->mID = (mNextKey++ << DATA_ARRAY_KEY_SHIFT) | aNext;
 		if (mNextKey == DATA_ARRAY_MAX_SIZE) mNextKey = 1;
 		mSize++;
