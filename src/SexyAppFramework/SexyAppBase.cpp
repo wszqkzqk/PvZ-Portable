@@ -667,7 +667,7 @@ void SexyAppBase::WriteDemoBuffer()
 			aFile.write(reinterpret_cast<const char*>(&aTimeZoneOffsetLE), sizeof(aTimeZoneOffsetLE));
 
 			// Legacy product-version field; kept empty so older builds that still validate it accept recordings from this build.
-			uint16_t aStrLen = 0;
+			uint16_t aStrLen = ToLE16(0);
 			aFile.write(reinterpret_cast<const char*>(&aStrLen), sizeof(aStrLen));
 
 			Buffer aMarkerBuffer;
