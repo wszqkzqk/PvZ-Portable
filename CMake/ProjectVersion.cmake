@@ -8,7 +8,7 @@
 set(PVZP_VERSION "0.1")
 set(PVZP_VERSION_PLAIN "0.1")
 set(PVZP_BUILD_NUMBER "1")
-set(PVZP_COMMIT_DATE "")
+set(PVZP_COMMIT_DATE "unknown")
 
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
