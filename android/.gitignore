@@ -7,3 +7,4 @@
 /app/build
 /captures
 .externalNativeBuild
+*.keystore

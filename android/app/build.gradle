@@ -39,11 +39,23 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            // Keystore is injected via env vars by CI; absent (e.g. local builds) falls back to debug signing.
+            def storeFilePath = System.getenv('PVZP_KEYSTORE_FILE')
+            if (storeFilePath) {
+                storeFile file(storeFilePath)
+                storePassword System.getenv('PVZP_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('PVZP_KEY_ALIAS')
+                keyPassword System.getenv('PVZP_KEY_PASSWORD')
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
-            // Debug-signed so the APK installs without a release keystore
-            signingConfig signingConfigs.debug
+            signingConfig System.getenv('PVZP_KEYSTORE_FILE') ? signingConfigs.release : signingConfigs.debug
         }
     }
 
