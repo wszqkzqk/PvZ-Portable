@@ -27,6 +27,7 @@
 #include "Lawn/Zombie.h"
 #include "Lawn/Cutscene.h"
 #include "GameConstants.h"
+#include "PvzpVersion.h"
 #include "Lawn/Challenge.h"
 #include "Lawn/ZenGarden.h"
 #include "Sexy.TodLib/Trail.h"
@@ -152,6 +153,7 @@ LawnApp::LawnApp()
 	mAutoStartLoadingThread = false;
 	mDebugKeysEnabled = false;
 	mProdName = "io.github.wszqkzqk.pvz-portable";
+	mProductVersion = PVZP_VERSION;
 	std::string aTitleName = "PvZ Portable";
 	mTitle = aTitleName;
 	mCustomCursorsEnabled = false;
