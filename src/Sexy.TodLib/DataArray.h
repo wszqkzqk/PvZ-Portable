@@ -38,40 +38,22 @@ enum
 
 template <typename T> class DataArray
 {
+	// Value-initialization zeroes T's members only while this constructor stays implicit.
 	struct DataArrayItem : T {};
 
-	struct DataArrayStorage
-	{
-		std::unique_ptr<DataArrayItem[]>	mItems;
-		std::unique_ptr<unsigned int[]>	mItemIds;
-
-		DataArrayStorage(unsigned int theMaxSize) :
-			mItems(std::make_unique<DataArrayItem[]>(theMaxSize)),
-			mItemIds(std::make_unique<unsigned int[]>(theMaxSize))
-		{
-		}
-	};
+	std::unique_ptr<DataArrayItem[]>	mItems;
+	std::unique_ptr<unsigned int[]>		mItemIds;
 
 public:
-	DataArrayStorage*		mStorage;
-	unsigned int			mMaxUsedCount;
-	unsigned int			mMaxSize;
-	unsigned int			mFreeListHead;
-	unsigned int			mSize;
-	unsigned int			mNextKey;
-	const char*				mName;
+	unsigned int			mMaxUsedCount = 0U;
+	unsigned int			mMaxSize = 0U;
+	unsigned int			mFreeListHead = 0U;
+	unsigned int			mSize = 0U;
+	unsigned int			mNextKey = 1U;
+	const char*				mName = nullptr;
 
 public:
-	DataArray()
-	{
-		mStorage = nullptr;
-		mMaxUsedCount = 0U;
-		mMaxSize = 0U;
-		mFreeListHead = 0U;
-		mSize = 0U;
-		mNextKey = 1U;
-		mName = nullptr;
-	}
+	DataArray() = default;
 
 	~DataArray()
 	{
@@ -80,8 +62,9 @@ public:
 
 	void DataArrayInitialize(unsigned int theMaxSize, const char* theName)
 	{
-		TOD_ASSERT(mStorage == nullptr);
-		mStorage = new DataArrayStorage(theMaxSize);
+		TOD_ASSERT(mItems == nullptr);
+		mItems = std::make_unique<DataArrayItem[]>(theMaxSize);
+		mItemIds = std::make_unique<unsigned int[]>(theMaxSize);
 		mMaxSize = theMaxSize;
 		mNextKey = 1001U;
 		mName = theName;
@@ -89,26 +72,22 @@ public:
 
 	void DataArrayDispose()
 	{
-		if (mStorage != nullptr)
-		{
-			DataArrayFreeAll();
-			delete mStorage;
-			mStorage = nullptr;
-			mMaxUsedCount = 0U;
-			mMaxSize = 0U;
-			mFreeListHead = 0U;
-			mSize = 0U;
-			mName = nullptr;
-		}
+		DataArrayFreeAll();  // no-ops when uninitialized
+		mItems.reset();
+		mItemIds.reset();
+		mMaxUsedCount = 0U;
+		mMaxSize = 0U;
+		mFreeListHead = 0U;
+		mSize = 0U;
+		mName = nullptr;
 	}
 
 	void DataArrayFree(T* theItem)
 	{
-		DataArrayItem* aItem = static_cast<DataArrayItem*>(theItem);
-		unsigned int anIndex = static_cast<unsigned int>(aItem - mStorage->mItems.get());
-		TOD_ASSERT(DataArrayGet(mStorage->mItemIds[anIndex]) == theItem, "Failed: DataArrayFree(0x%x) in %s", theItem, mName);
+		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
+		TOD_ASSERT(DataArrayGet(mItemIds[anIndex]) == theItem, "Failed: DataArrayFree(0x%x) in %s", theItem, mName);
 		DataArrayResetItemAt(anIndex);
-		mStorage->mItemIds[anIndex] = mFreeListHead;
+		mItemIds[anIndex] = mFreeListHead;
 		mFreeListHead = anIndex;
 		mSize--;
 	}
@@ -125,9 +104,8 @@ public:
 
 	inline unsigned int DataArrayGetID(T* theItem)
 	{
-		DataArrayItem* aItem = static_cast<DataArrayItem*>(theItem);
-		unsigned int anIndex = static_cast<unsigned int>(aItem - mStorage->mItems.get());
-		unsigned int anId = mStorage->mItemIds[anIndex];
+		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
+		unsigned int anId = mItemIds[anIndex];
 		TOD_ASSERT(DataArrayGet(anId) == theItem, "Failed: DataArrayGetID(0x%x) for %s", theItem, mName);
 		return anId;
 	}
@@ -138,14 +116,14 @@ public:
 		if (theItem != nullptr)
 		{
 			DataArrayItem* aItem = static_cast<DataArrayItem*>(std::launder(theItem));
-			anIndex = static_cast<unsigned int>(aItem - mStorage->mItems.get()) + 1U;
+			anIndex = static_cast<unsigned int>(aItem - mItems.get()) + 1U;
 		}
 
 		while (anIndex < mMaxUsedCount)
 		{
-			if (mStorage->mItemIds[anIndex] & DATA_ARRAY_KEY_MASK)
+			if (mItemIds[anIndex] & DATA_ARRAY_KEY_MASK)
 			{
-				theItem = &mStorage->mItems[anIndex];
+				theItem = &mItems[anIndex];
 				return true;
 			}
 			anIndex++;
@@ -163,11 +141,11 @@ public:
 		else
 		{
 			aNext = mFreeListHead;
-			mFreeListHead = mStorage->mItemIds[mFreeListHead];
+			mFreeListHead = mItemIds[mFreeListHead];
 		}
 
 		T& aNewItem = DataArrayResetItemAt(aNext);
-		mStorage->mItemIds[aNext] = (mNextKey++ << DATA_ARRAY_KEY_SHIFT) | aNext;
+		mItemIds[aNext] = (mNextKey++ << DATA_ARRAY_KEY_SHIFT) | aNext;
 		if (mNextKey == DATA_ARRAY_MAX_SIZE) mNextKey = 1;
 		mSize++;
 
@@ -180,30 +158,30 @@ public:
 			return nullptr;
 
 		unsigned int anIndex = theId & DATA_ARRAY_INDEX_MASK;
-		return (mStorage->mItemIds[anIndex] == theId) ? &mStorage->mItems[anIndex] : nullptr;
+		return (mItemIds[anIndex] == theId) ? &mItems[anIndex] : nullptr;
 	}
 
 	T* DataArrayGet(unsigned int theId)
 	{
 		TOD_ASSERT(DataArrayTryToGet(theId) != nullptr, "Failed: DataArrayGet(0x%x) for %s", theId, mName);
-		return &mStorage->mItems[theId & DATA_ARRAY_INDEX_MASK];
+		return &mItems[theId & DATA_ARRAY_INDEX_MASK];
 	}
 
 	T& DataArrayGetItemAt(unsigned int theIndex)
 	{
-		return mStorage->mItems[theIndex];
+		return mItems[theIndex];
 	}
 
 	T& DataArrayResetItemAt(unsigned int theIndex)
 	{
-		DataArrayItem* aItem = &mStorage->mItems[theIndex];
+		DataArrayItem* aItem = &mItems[theIndex];
 		std::destroy_at(aItem);
 		return *std::construct_at(aItem);
 	}
 
 	unsigned int& DataArrayGetIDAt(unsigned int theIndex)
 	{
-		return mStorage->mItemIds[theIndex];
+		return mItemIds[theIndex];
 	}
 };
 
