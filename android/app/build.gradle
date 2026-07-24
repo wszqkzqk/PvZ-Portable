@@ -11,6 +11,35 @@ configurations.all {
 // -PusePrebuiltLibs=true packages prebuilt jniLibs (CI); otherwise build via CMake.
 def prebuilt = project.hasProperty('usePrebuiltLibs') && project.usePrebuiltLibs.toBoolean()
 
+// Version from git, mirroring archlinux/PKGBUILD's pkgver(); fall back to 0.1/1 without git or tags.
+def gitVersionName = {
+    try {
+        def out = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags', '--abbrev=12'
+            standardOutput = out
+            errorOutput = new ByteArrayOutputStream()
+        }
+        return out.toString().trim().replaceFirst(/^v/, '').replace('-', '.')
+    } catch (Exception ignored) {
+        return '0.1'
+    }
+}()
+
+def gitVersionCode = {
+    try {
+        def out = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', '--count', 'HEAD'
+            standardOutput = out
+            errorOutput = new ByteArrayOutputStream()
+        }
+        return out.toString().trim().toInteger()
+    } catch (Exception ignored) {
+        return 1
+    }
+}()
+
 android {
     namespace 'io.github.wszqkzqk.pvzportable'
     compileSdk 36
@@ -19,8 +48,8 @@ android {
         applicationId "io.github.wszqkzqk.pvzportable"
         minSdk 24
         targetSdk 36
-        versionCode 1
-        versionName "0.1"
+        versionCode gitVersionCode
+        versionName gitVersionName
 
         ndk {
             abiFilters 'arm64-v8a'
