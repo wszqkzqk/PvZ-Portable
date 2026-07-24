@@ -154,6 +154,8 @@ LawnApp::LawnApp()
 	mDebugKeysEnabled = false;
 	mProdName = "io.github.wszqkzqk.pvz-portable";
 	mProductVersion = PVZP_VERSION;
+	mBuildNum = PVZP_BUILD_NUMBER;
+	mCommitDate = PVZP_COMMIT_DATE;
 	std::string aTitleName = "PvZ Portable";
 	mTitle = aTitleName;
 	mCustomCursorsEnabled = false;

@@ -34,7 +34,7 @@ class SexyApp : public SexyAppBase
 {
 public:	
 	int						mBuildNum;
-	std::string				mBuildDate;
+	std::string				mCommitDate;
 
 	std::string				mUserName;	
 

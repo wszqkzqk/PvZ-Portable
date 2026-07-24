@@ -3,10 +3,12 @@
 #   PVZP_VERSION       full git describe, e.g. 0.1.27-15-gcbcd2ef3ffcc
 #   PVZP_VERSION_PLAIN leading tag only, e.g. 0.1.27 (Apple/console version fields)
 #   PVZP_BUILD_NUMBER  commit count, grows monotonically on main
+#   PVZP_COMMIT_DATE   HEAD commit date, e.g. 2026-07-25
 # and generates ${PROJECT_BINARY_DIR}/PvzpVersion.h.
 set(PVZP_VERSION "0.1")
 set(PVZP_VERSION_PLAIN "0.1")
 set(PVZP_BUILD_NUMBER "1")
+set(PVZP_COMMIT_DATE "")
 
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -35,6 +37,16 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 		set(PVZP_BUILD_NUMBER "${_count}")
 	endif()
 
+	execute_process(
+		COMMAND "${GIT_EXECUTABLE}" show -s --format=%cs HEAD
+		WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+		OUTPUT_VARIABLE _date
+		OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
+	)
+	if(_date)
+		set(PVZP_COMMIT_DATE "${_date}")
+	endif()
+
 	# Watch HEAD and its ref so a checkout or commit re-runs configure and
 	# refreshes the version; HEAD is per-worktree, refs live in the common git dir.
 	execute_process(
@@ -61,6 +73,7 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 	endif()
 	unset(_describe)
 	unset(_count)
+	unset(_date)
 	unset(_git_dir)
 	unset(_common_dir)
 	unset(_head)
