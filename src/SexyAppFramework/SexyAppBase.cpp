@@ -523,9 +523,9 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	mDemoTimeZoneOffset = static_cast<int32_t>(FromLE32(aTimeZoneOffsetLE));
 
 	// Legacy product-version field, consumed but ignored; compatibility is gated by DEMO_VERSION.
-	ushort aStrLen = 4;
+	uint16_t aStrLen = 4;
 	if (!aFile.read(reinterpret_cast<char*>(&aStrLen), sizeof(aStrLen))) return false;
-	aStrLen = std::min<ushort>(FromLE16(aStrLen), 255);
+	aStrLen = std::min<uint16_t>(FromLE16(aStrLen), 255);
 	char aStr[256];
 	if (!aFile.read(aStr, aStrLen)) return false;
 
@@ -539,9 +539,9 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	// read marker list
 	if (aVersion >= 2) 
 	{
-		int aSize;
+		int32_t aSize;
 		if (!aFile.read(reinterpret_cast<char*>(&aSize), sizeof(aSize))) return false;
-		aSize = static_cast<int>(FromLE32(static_cast<uint32_t>(aSize)));
+		aSize = static_cast<int32_t>(FromLE32(static_cast<uint32_t>(aSize)));
 		aBytesLeft -= 4;
 
 		if (aSize < 0 || aSize >= aBytesLeft)
@@ -667,7 +667,7 @@ void SexyAppBase::WriteDemoBuffer()
 			aFile.write(reinterpret_cast<const char*>(&aTimeZoneOffsetLE), sizeof(aTimeZoneOffsetLE));
 
 			// Legacy product-version field; kept empty so older builds that still validate it accept recordings from this build.
-			ushort aStrLen = 0;
+			uint16_t aStrLen = 0;
 			aFile.write(reinterpret_cast<const char*>(&aStrLen), sizeof(aStrLen));
 
 			Buffer aMarkerBuffer;
