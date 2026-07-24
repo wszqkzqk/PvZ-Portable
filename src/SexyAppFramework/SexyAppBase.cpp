@@ -666,9 +666,9 @@ void SexyAppBase::WriteDemoBuffer()
 			uint32_t aTimeZoneOffsetLE = ToLE32(static_cast<uint32_t>(mDemoTimeZoneOffset));
 			aFile.write(reinterpret_cast<const char*>(&aTimeZoneOffsetLE), sizeof(aTimeZoneOffsetLE));
 
-			ushort aStrLen = ToLE16(static_cast<uint16_t>(mProductVersion.length()));
-			aFile.write(reinterpret_cast<const char*>(&aStrLen), sizeof(aStrLen));		
-			aFile.write(mProductVersion.c_str(), static_cast<std::streamsize>(mProductVersion.length()));
+			// Legacy product-version field; kept empty so older builds that still validate it accept recordings from this build.
+			ushort aStrLen = 0;
+			aFile.write(reinterpret_cast<const char*>(&aStrLen), sizeof(aStrLen));
 
 			Buffer aMarkerBuffer;
 			aMarkerBuffer.WriteUInt32(static_cast<uint32_t>(mDemoMarkerList.size()));
