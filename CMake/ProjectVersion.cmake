@@ -35,24 +35,34 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 		set(PVZP_BUILD_NUMBER "${_count}")
 	endif()
 
-	# Re-run configure when a commit or checkout moves HEAD. HEAD itself only
-	# changes on checkout; the ref it points to changes on commit, so watch
-	# both. configure_file leaves unchanged outputs untouched, making these
-	# re-configures free unless the version actually changed.
+	# Watch HEAD and its ref so a checkout or commit re-runs configure and
+	# refreshes the version; HEAD is per-worktree, refs live in the common git dir.
 	execute_process(
 		COMMAND "${GIT_EXECUTABLE}" rev-parse --absolute-git-dir
 		WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
 		OUTPUT_VARIABLE _git_dir
 		OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
 	)
-	set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_git_dir}/HEAD")
-	file(READ "${_git_dir}/HEAD" _head)
-	if(_head MATCHES "^ref: (.+)\n")
-		set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_git_dir}/${CMAKE_MATCH_1}")
+	execute_process(
+		COMMAND "${GIT_EXECUTABLE}" rev-parse --git-common-dir
+		WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+		OUTPUT_VARIABLE _common_dir
+		OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
+	)
+	if(EXISTS "${_git_dir}/HEAD")
+		set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_git_dir}/HEAD")
+		file(READ "${_git_dir}/HEAD" _head)
+		if(_common_dir AND _head MATCHES "^ref: (.+)\n")
+			if(NOT IS_ABSOLUTE "${_common_dir}")
+				set(_common_dir "${PROJECT_SOURCE_DIR}/${_common_dir}")
+			endif()
+			set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_common_dir}/${CMAKE_MATCH_1}")
+		endif()
 	endif()
 	unset(_describe)
 	unset(_count)
 	unset(_git_dir)
+	unset(_common_dir)
 	unset(_head)
 endif()
 
