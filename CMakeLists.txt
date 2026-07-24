@@ -303,7 +303,6 @@ elseif (NINTENDO_3DS)
 		NAME "PvZ Portable"
 		DESCRIPTION "A community-driven re-implementation of Plants vs. Zombies GOTY Edition"
 		AUTHOR "wszqkzqk, etc., a community-driven port"
-		VERSION "${PVZP_VERSION_PLAIN}"
 		ICON "${CMAKE_CURRENT_SOURCE_DIR}/icon-3ds.png"
 	)
 
