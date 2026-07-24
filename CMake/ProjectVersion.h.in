@@ -1,4 +1,4 @@
-// Generated from CMake/PvzpVersion.h.in by CMake; do not edit.
+// Generated from CMake/ProjectVersion.h.in by CMake; do not edit.
 #pragma once
 
 #define PVZP_VERSION "@PVZP_VERSION@"

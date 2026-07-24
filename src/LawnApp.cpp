@@ -27,7 +27,7 @@
 #include "Lawn/Zombie.h"
 #include "Lawn/Cutscene.h"
 #include "GameConstants.h"
-#include "PvzpVersion.h"
+#include "ProjectVersion.h"
 #include "Lawn/Challenge.h"
 #include "Lawn/ZenGarden.h"
 #include "Sexy.TodLib/Trail.h"

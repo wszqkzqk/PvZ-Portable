@@ -1,10 +1,10 @@
 # Derives the project version from git tags, the same source of truth that
 # PKGBUILD and android/app/build.gradle read. Sets:
-#   PVZP_VERSION       full git describe, e.g. 0.1.27-15-gcbcd2ef3ffcc
-#   PVZP_VERSION_PLAIN leading tag only, e.g. 0.1.27 (Apple/console version fields)
+#   PVZP_VERSION       full git describe
+#   PVZP_VERSION_PLAIN leading tag only (Apple/console version fields)
 #   PVZP_BUILD_NUMBER  commit count, grows monotonically on main
-#   PVZP_COMMIT_DATE   HEAD commit date, e.g. 2026-07-25
-# and generates ${PROJECT_BINARY_DIR}/PvzpVersion.h.
+#   PVZP_COMMIT_DATE   HEAD commit date
+# and generates ${PROJECT_BINARY_DIR}/ProjectVersion.h.
 set(PVZP_VERSION "0.1")
 set(PVZP_VERSION_PLAIN "0.1")
 set(PVZP_BUILD_NUMBER "1")
@@ -79,4 +79,4 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 	unset(_head)
 endif()
 
-configure_file("${PROJECT_SOURCE_DIR}/CMake/PvzpVersion.h.in" "${PROJECT_BINARY_DIR}/PvzpVersion.h" @ONLY)
+configure_file("${PROJECT_SOURCE_DIR}/CMake/ProjectVersion.h.in" "${PROJECT_BINARY_DIR}/ProjectVersion.h" @ONLY)
