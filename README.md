@@ -160,6 +160,24 @@ cp ~/.local/share/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4 ~/.local/s
 python3 scripts/pvzp-v4-converter.py import level.yaml ~/.local/share/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
 ```
 
+### Inspecting & Editing Global User Data
+
+A second script `scripts/pvzp-user-converter.py` edits the **global user data**.
+
+```bash
+# Overview of a profile
+python scripts/pvzp-user-converter.py info ~/.local/io.github.wszqkzqk/PvZPortable/userdata/user1.dat
+
+# Quick single-value edit (in place)
+python scripts/pvzp-user-converter.py set user1.dat coins 99999
+
+# Full editing via YAML
+python scripts/pvzp-user-converter.py export user1.dat user1.yaml
+python scripts/pvzp-user-converter.py import user1.yaml user1.dat
+```
+
+Both scripts require PyYAML.
+
 ---
 
 ## Command-Line Arguments
