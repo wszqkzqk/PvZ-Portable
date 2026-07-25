@@ -3426,7 +3426,7 @@ void SexyAppBase::HandleCmdLineParam(const std::string& theParamName, const std:
 	else
 	{
 		Popup(GetString("INVALID_COMMANDLINE_PARAM", "Invalid command line parameter: ") + theParamName);
-		DoExit(0);
+		DoExit(1);
 	}
 }
 
