@@ -237,6 +237,11 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Check git version derivation
+      run: |
+        git config --global --add safe.directory '*'
+        git describe --tags
+
     - name: Set up JDK
       uses: actions/setup-java@v5
       with:
