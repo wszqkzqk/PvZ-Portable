@@ -24,8 +24,11 @@ lossless users.dat / user<N>.dat <-> YAML conversion."""
 import argparse
 import base64
 import datetime
+import os
+import shutil
 import struct
 import sys
+import tempfile
 import time
 
 try:
@@ -838,11 +841,51 @@ def _read_file(path: str) -> bytes:
         raise ConvError(f"cannot read {path}: {e.strerror or e}")
 
 
-def _write_file(path: str, data: bytes):
+def _fsync_directory(directory: str):
+    """Best-effort fsync of a directory so that a rename into it is durable."""
+    if os.name != "posix":
+        return
     try:
-        with open(path, "wb") as f:
+        fd = os.open(directory, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    except OSError:
+        pass
+
+
+def _write_file(path: str, data: bytes):
+    """Write data to path atomically.
+
+    The data goes to a temp file in the same directory (hence the same
+    filesystem), is fsynced, and is then moved onto path with os.replace(),
+    so a crash can never leave a half-written file at path. The permission
+    bits of an existing file are preserved. On failure the temp file is
+    removed and path is left untouched.
+    """
+    directory = os.path.dirname(os.path.abspath(path))
+    tmp = None
+    try:
+        fd, tmp = tempfile.mkstemp(dir=directory,
+                                   prefix=os.path.basename(path) + ".",
+                                   suffix=".tmp")
+        with os.fdopen(fd, "wb") as f:
             f.write(data)
+            f.flush()
+            os.fsync(f.fileno())
+        try:
+            shutil.copymode(path, tmp)
+        except OSError:
+            pass  # path does not exist yet; keep the temp file's default mode
+        os.replace(tmp, path)
+        _fsync_directory(directory)
     except OSError as e:
+        if tmp is not None:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
         raise ConvError(f"cannot write {path}: {e.strerror or e}")
 
 
@@ -855,11 +898,7 @@ def cmd_info(args):
 def cmd_export(args):
     kind, doc = parse_user_file(_read_file(args.input))
     out = export_index_yaml(doc) if kind == "index" else export_details_yaml(doc)
-    try:
-        with open(args.output, "w", encoding="utf-8") as f:
-            f.write(dump_yaml(out))
-    except OSError as e:
-        raise ConvError(f"cannot write {args.output}: {e.strerror or e}")
+    _write_file(args.output, dump_yaml(out).encode("utf-8"))
     print(f"Exported {kind} file to: {args.output}")
 
 
