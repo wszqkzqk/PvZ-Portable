@@ -23,8 +23,11 @@
 import argparse
 import base64
 import math
+import os
+import shutil
 import struct
 import sys
+import tempfile
 import zlib
 
 try:
@@ -86,14 +89,14 @@ SEED_TYPE = {
     43: "SEED_CATTAIL", 44: "SEED_WINTERMELON", 45: "SEED_GOLD_MAGNET", 46: "SEED_SPIKEROCK",
     47: "SEED_COBCANNON", 48: "SEED_IMITATER", 49: "SEED_EXPLODE_O_NUT", 50: "SEED_GIANT_WALLNUT",
     51: "SEED_SPROUT", 52: "SEED_LEFTPEATER",
-    53: "SEED_BEGHOULED_BUTTON_SHUFFLE", 54: "SEED_BEGHOULED_BUTTON_CRATER",
-    55: "SEED_SLOT_MACHINE_SUN", 56: "SEED_SLOT_MACHINE_DIAMOND",
-    57: "SEED_ZOMBIQUARIUM_SNORKLE", 58: "SEED_ZOMBIQUARIUM_TROPHY",
-    59: "SEED_ZOMBIE_NORMAL", 60: "SEED_ZOMBIE_TRAFFIC_CONE", 61: "SEED_ZOMBIE_POLEVAULTER",
-    62: "SEED_ZOMBIE_PAIL", 63: "SEED_ZOMBIE_LADDER", 64: "SEED_ZOMBIE_DIGGER",
-    65: "SEED_ZOMBIE_BUNGEE", 66: "SEED_ZOMBIE_FOOTBALL", 67: "SEED_ZOMBIE_BALLOON",
-    68: "SEED_ZOMBIE_SCREEN_DOOR", 69: "SEED_ZOMBONI", 70: "SEED_ZOMBIE_POGO",
-    71: "SEED_ZOMBIE_DANCER", 72: "SEED_ZOMBIE_GARGANTUAR", 73: "SEED_ZOMBIE_IMP",
+    54: "SEED_BEGHOULED_BUTTON_SHUFFLE", 55: "SEED_BEGHOULED_BUTTON_CRATER",
+    56: "SEED_SLOT_MACHINE_SUN", 57: "SEED_SLOT_MACHINE_DIAMOND",
+    58: "SEED_ZOMBIQUARIUM_SNORKLE", 59: "SEED_ZOMBIQUARIUM_TROPHY",
+    60: "SEED_ZOMBIE_NORMAL", 61: "SEED_ZOMBIE_TRAFFIC_CONE", 62: "SEED_ZOMBIE_POLEVAULTER",
+    63: "SEED_ZOMBIE_PAIL", 64: "SEED_ZOMBIE_LADDER", 65: "SEED_ZOMBIE_DIGGER",
+    66: "SEED_ZOMBIE_BUNGEE", 67: "SEED_ZOMBIE_FOOTBALL", 68: "SEED_ZOMBIE_BALLOON",
+    69: "SEED_ZOMBIE_SCREEN_DOOR", 70: "SEED_ZOMBONI", 71: "SEED_ZOMBIE_POGO",
+    72: "SEED_ZOMBIE_DANCER", 73: "SEED_ZOMBIE_GARGANTUAR", 74: "SEED_ZOMBIE_IMP",
 }
 
 ZOMBIE_TYPE = {
@@ -2132,6 +2135,54 @@ def _read_file(path: str) -> bytes:
         raise ConvError(f"cannot read {path}: {e.strerror or e}")
 
 
+def _fsync_directory(directory: str):
+    """Best-effort fsync of a directory so that a rename into it is durable."""
+    if os.name != "posix":
+        return
+    try:
+        fd = os.open(directory, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    except OSError:
+        pass
+
+
+def _write_file(path: str, data: bytes):
+    """Write data to path atomically.
+
+    The data goes to a temp file in the same directory (hence the same
+    filesystem), is fsynced, and is then moved onto path with os.replace(),
+    so a crash can never leave a half-written file at path. The permission
+    bits of an existing file are preserved. On failure the temp file is
+    removed and path is left untouched.
+    """
+    directory = os.path.dirname(os.path.abspath(path))
+    tmp = None
+    try:
+        fd, tmp = tempfile.mkstemp(dir=directory,
+                                   prefix=os.path.basename(path) + ".",
+                                   suffix=".tmp")
+        with os.fdopen(fd, "wb") as f:
+            f.write(data)
+            f.flush()
+            os.fsync(f.fileno())
+        try:
+            shutil.copymode(path, tmp)
+        except OSError:
+            pass  # path does not exist yet; keep the temp file's default mode
+        os.replace(tmp, path)
+        _fsync_directory(directory)
+    except OSError as e:
+        if tmp is not None:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+        raise ConvError(f"cannot write {path}: {e.strerror or e}")
+
+
 def cmd_info(args):
     data = _read_file(args.input)
     print_info(parse_save_file(data), len(data))
@@ -2140,11 +2191,7 @@ def cmd_info(args):
 def cmd_export(args):
     doc = parse_save_file(_read_file(args.input))
     text = dump_yaml(export_document(doc))
-    try:
-        with open(args.output, "w", encoding="utf-8") as f:
-            f.write(text)
-    except OSError as e:
-        raise ConvError(f"cannot write {args.output}: {e.strerror or e}")
+    _write_file(args.output, text.encode("utf-8"))
     print(f"Exported to: {args.output}")
     print("Edit the YAML, then rebuild the save with: "
           f"{args.prog} import {args.output} <output.v4>")
@@ -2161,11 +2208,7 @@ def cmd_import(args):
     warnings = []
     doc = import_document(data, warnings)
     result = write_save_file(doc, warnings)
-    try:
-        with open(args.output, "wb") as f:
-            f.write(result)
-    except OSError as e:
-        raise ConvError(f"cannot write {args.output}: {e.strerror or e}")
+    _write_file(args.output, result)
     for warning in warnings:
         print(f"Warning: {warning}", file=sys.stderr)
     print(f"Imported to: {args.output} ({len(result)} bytes)")
