@@ -1620,13 +1620,20 @@ def parse_waves(data: bytes, num_waves) -> tuple[list, list, bytes]:
     return waves, tails, remainder
 
 
-def write_waves(waves: list, tails: list, remainder_b64, path: str) -> bytes:
+def write_waves(waves: list, tails: list, remainder_b64, path: str,
+                warnings: list) -> bytes:
     if not isinstance(waves, list):
         raise ConvError(f"{path}: expected a list of waves")
     if len(waves) > MAX_WAVES:
         raise ConvError(f"{path}: at most {MAX_WAVES} waves, got {len(waves)}")
-    if tails and (not isinstance(tails, list) or len(tails) != len(waves)):
-        raise ConvError(f"{path}._waves_tails: expected a list of {len(waves)} entries")
+    if tails:
+        if not isinstance(tails, list):
+            raise ConvError(f"{path}._waves_tails: expected a list of {len(waves)} entries")
+        if len(tails) != len(waves):
+            warnings.append(f"{path}._waves_tails: adjusted from {len(tails)} to "
+                            f"{len(waves)} entr{'ies' if len(waves) != 1 else 'y'} "
+                            "to match the wave list")
+            tails = (tails + [None] * len(waves))[:len(waves)]  # new waves get -1 padding
     w = BinaryWriter()
     for wave_index, wave in enumerate(waves):
         if not isinstance(wave, list) or len(wave) > MAX_ZOMBIES_IN_WAVE:
@@ -1651,6 +1658,16 @@ def write_waves(waves: list, tails: list, remainder_b64, path: str) -> bytes:
     remainder = _unb64(remainder_b64, f"{path}._waves_remainder") if remainder_b64 else b""
     if len(remainder) % 4:
         raise ConvError(f"{path}._waves_remainder: length must be a multiple of 4 bytes")
+    slot = MAX_ZOMBIES_IN_WAVE * 4
+    expected = (MAX_WAVES - len(waves)) * slot  # stale slots beyond the waves
+    if len(remainder) > expected:
+        dropped = len(remainder) - expected
+        warnings.append(f"{path}._waves_remainder: dropped {dropped // slot} stale "
+                        f"slot(s)" + (f" and {dropped % slot} byte(s)" if dropped % slot
+                                      else "") + " to make room for the added waves")
+        remainder = remainder[dropped:]
+    elif len(remainder) < expected:
+        remainder = b"\xff" * (expected - len(remainder)) + remainder
     total = body + remainder
     target = MAX_WAVES * MAX_ZOMBIES_IN_WAVE * 4
     if len(total) > target:
@@ -1693,10 +1710,16 @@ def parse_board(data: bytes) -> dict:
     return section
 
 
-def write_board(section: dict, path: str) -> bytes:
+def write_board(section: dict, path: str, warnings: list) -> bytes:
     merged = merge_tiers(section or {}, path)
     waves_remainder = merged.pop("_waves_remainder", None)
     waves_tails = merged.pop("_waves_tails", None)
+    waves_value = merged.get("waves")
+    if isinstance(waves_value, list) and merged.get("num_waves") != len(waves_value):
+        warnings.append(f"{path}.num_waves: adjusted from "
+                        f"{merged.get('num_waves', 'absent')!r} to {len(waves_value)} "
+                        "to match the wave list")
+        merged["num_waves"] = len(waves_value)
     fields = {}
     for key in [k for k in merged if k.startswith("_unknown_")]:
         try:
@@ -1710,7 +1733,7 @@ def write_board(section: dict, path: str) -> bytes:
         value = merged[key]
         if kind == "waves":
             fields[field_id] = write_waves(value, waves_tails or [], waves_remainder,
-                                           f"{path}.{key}")
+                                           f"{path}.{key}", warnings)
         else:
             w = BinaryWriter()
             write_schema_field(kind, arg, value, w, f"{path}.{key}")
@@ -1829,7 +1852,8 @@ def write_save_file(doc: dict, warnings: list) -> bytes:
             section, kind = section_info
             path = section
             if kind == "board":
-                inner = write_tlv_blob(write_board(doc["sections"].get(section), path))
+                inner = write_tlv_blob(write_board(doc["sections"].get(section), path,
+                                                   warnings))
             elif kind == "array":
                 schema, has_base, hoist_row = OBJECT_ARRAYS[section]
                 inner = build_object_array(doc["sections"].get(section),
@@ -2225,8 +2249,10 @@ def main():
                "state that is preserved as-is and rarely needs changes, and '_internal' "
                "is preservation data that should not be edited. Adding or deleting "
                "objects rebuilds the whole array and may break references between "
-               "objects, so editing existing values is safer. The game mode is not "
-               "stored in the save; a save always loads in the level it came from.")
+               "objects, so editing existing values is safer. Adding or removing "
+               "waves is fine: num_waves and the preservation data are adjusted "
+               "automatically. The game mode is not stored in the save; a save "
+               "always loads in the level it came from.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     p_info = subparsers.add_parser("info", help="print a summary of a .v4 save file")
