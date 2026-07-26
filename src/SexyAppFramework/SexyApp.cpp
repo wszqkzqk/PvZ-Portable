@@ -76,7 +76,7 @@ void SexyApp::WriteToRegistry()
 	SexyAppBase::WriteToRegistry();
 }
 
-void SexyApp::HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue)
+void SexyApp::HandleCmdLineParam(std::string_view theParamName, std::string_view theParamValue)
 {
 	if (theParamName == "-version")
 	{

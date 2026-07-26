@@ -1393,7 +1393,7 @@ bool LawnApp::DebugKeyDown(int theKey)
 	return SexyAppBase::DebugKeyDown(theKey);
 }
 
-void LawnApp::HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue)
+void LawnApp::HandleCmdLineParam(std::string_view theParamName, std::string_view theParamValue)
 {
 	if (theParamName == "-tod")
 	{

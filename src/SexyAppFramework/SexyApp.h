@@ -53,7 +53,7 @@ public:
 	void					Init() override;
 	void					PreTerminate() override;
 
-	void					HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue) override;
+	void					HandleCmdLineParam(std::string_view theParamName, std::string_view theParamValue) override;
 	std::string				GetGameSEHInfo() override;
 };
 

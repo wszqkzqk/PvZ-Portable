@@ -81,10 +81,8 @@ Examples:
 - macOS: `~/Library/Application Support/io.github.wszqkzqk/PvZPortable/`
 
 You can customize these paths via command-line parameters:
-- `-resdir="<path>"`: Set the **resource directory** (where `main.pak` and `properties/` are located). This only affects where the game looks for resources, not where it saves data.
-- `-savedir="<path>"`: Set the **save data directory** (where settings, savegames, caches, and screenshots are stored). This overrides the default OS-recommended application data path.
-
-**Note:** You **MUST** use the format `-param="<Your Path>"`. Space-separated values (e.g. `-resdir path`) are **NOT** supported.
+- `-resdir <path>` / `-resdir=<path>`: Set the **resource directory** (where `main.pak` and `properties/` are located). This only affects where the game looks for resources, not where it saves data.
+- `-savedir <path>` / `-savedir=<path>`: Set the **save data directory** (where settings, savegames, caches, and screenshots are stored). This overrides the default OS-recommended application data path.
 
 ### Special Instructions for Android
 
@@ -316,11 +314,10 @@ python scripts/pvzp-v4-converter.py import level.yaml ~/.local/io.github.wszqkzq
 
 The game can record a gameplay session into a `.dmo` demo file and replay it deterministically later. Automatically named demo files are written to the current working directory:
 
-- `-record` — record to a file named after the current local time, in the form `pvzp-YYYYMMDD-HHMMSS[-N].dmo`.
-- `-play` — play back the first matching `pvzp-*.dmo` recording in descending timestamp/name order.
-- `-playnum=<N>` — play back the N-th recording in descending timestamp/name order; `1` selects the first.
-- `-recnum=<N>` — record and keep the first `N` files matching the automatic timestamp pattern in descending timestamp/name order; other `pvzp-*.dmo` files are left untouched.
-- `-demofile="<path>"` — use an explicit file for `-record`, `-recnum`, `-play`, or `-playnum` instead; using an explicit target disables automatic retention.
+- `-record [<path>]` / `-record=[<path>]` — record to a file named after the current local time, in the form `pvzp-YYYYMMDD-HHMMSS[-N].dmo`, or to an explicit `<path>` if given; an explicit target disables automatic retention.
+- `-play [<path>]` / `-play=[<path>]` — play back the first matching `pvzp-*.dmo` recording in descending timestamp/name order, or an explicit `<path>` if given.
+- `-playnum <N>` / `-playnum=<N>` — play back the N-th recording in descending timestamp/name order; `1` selects the first.
+- `-recnum <N>` / `-recnum=<N>` — record and keep the first `N` files matching the automatic timestamp pattern in descending timestamp/name order; other `pvzp-*.dmo` files are left untouched.
 
 This feature is primarily designed for debugging and regression testing.
 
