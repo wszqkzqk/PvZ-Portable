@@ -3344,17 +3344,21 @@ void SexyAppBase::HandleCmdLineParam(std::string_view theParamName, std::string_
 		else if (!mHasCustomDemoFile)
 		{
 			auto aDemoFiles = FindDemoFiles(mDemoPrefix);
-			if (!aDemoFiles.empty())
+			if (aDemoFiles.empty())
 			{
-				size_t aIndex = 0; // -play: first; -playnum: N-th in timestamp/name order
-				if (theParamName == "-playnum")
-				{
-					int aNum = 0;
-					std::from_chars(theParamValue.data(), theParamValue.data() + theParamValue.size(), aNum);
-					aIndex = static_cast<size_t>(std::max(aNum, 1) - 1);
-				}
-				mDemoFileName = aDemoFiles[std::min(aIndex, aDemoFiles.size() - 1)];
+				Popup("No demo recordings found: " + mDemoPrefix + "-*.dmo");
+				DoExit(1);
+				return;
 			}
+
+			size_t aIndex = 0; // -play: first; -playnum: N-th in timestamp/name order
+			if (theParamName == "-playnum")
+			{
+				int aNum = 0;
+				std::from_chars(theParamValue.data(), theParamValue.data() + theParamValue.size(), aNum);
+				aIndex = static_cast<size_t>(std::max(aNum, 1) - 1);
+			}
+			mDemoFileName = aDemoFiles[std::min(aIndex, aDemoFiles.size() - 1)];
 		}
 		mPlayingDemoBuffer = true;
 		mRecordingDemoBuffer = false;
@@ -3468,7 +3472,7 @@ void SexyAppBase::Init()
 		{
 			mPlayingDemoBuffer = false;
 			Popup(anError);
-			DoExit(0);
+			DoExit(1);
 			return;
 		}
 	}
