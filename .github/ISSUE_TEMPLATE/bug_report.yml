@@ -19,8 +19,7 @@ body:
       label: PvZ-Portable Version
       description: >
         Version or commit hash of PvZ-Portable you are using.
-        You can find this from the release tag, or `git describe --tags`.
-      placeholder: e.g. 0.1.4
+        You can find this from the release tag or `git describe --tags`.
     validations:
       required: true
 
@@ -36,7 +35,7 @@ body:
         - Linux (loongarch64)
         - Linux (other)
         - Windows (x86_64)
-        - Windows (arch64)
+        - Windows (arm64)
         - Windows (i686)
         - macOS (Apple Silicon)
         - macOS (Intel)
