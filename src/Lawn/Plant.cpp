@@ -879,7 +879,7 @@ bool Plant::FindStarFruitTarget()
             else
             {
                 if (aZombie->mZombieType == ZombieType::ZOMBIE_DIGGER)
-                    aZombieRect.mX += 10;
+                    aZombieRect.mWidth += 10;
 
                 float aProjectileTime = Distance2D(aCenterStarX, aCenterStarY, aZombieRect.mX + aZombieRect.mWidth / 2, aZombieRect.mY + aZombieRect.mHeight / 2) / 3.33f;
                 int aZombieHitX = aZombie->ZombieTargetLeadX(aProjectileTime) - aZombieRect.mWidth / 2;
@@ -1287,7 +1287,7 @@ void Plant::UpdateSpikeweed()
         }
         else if (mSeedType == SeedType::SEED_SPIKEROCK)
         {
-            if (mStateCountdown == 69 || mStateCountdown == 33)
+            if (mStateCountdown == 70 || mStateCountdown == 32)
             {
                 DoRowAreaDamage(20, 33U);
             }
