@@ -298,15 +298,15 @@ There's a Python script `scripts/pvzp-v4-converter.py` to inspect and modify `.v
 ```bash
 # Modify these paths as needed
 # View basic info
-python scripts/pvzp-v4-converter.py info ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
+python scripts/pvzp-v4-converter.py info ~/.local/share/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
 
 # Export to YAML for editing
-python scripts/pvzp-v4-converter.py export ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4 level.yaml
+python scripts/pvzp-v4-converter.py export ~/.local/share/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4 level.yaml
 
 # Import back to savegame
-# **BACKUP** your original .v4 file fist!
-mv ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4 ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4.bak
-python scripts/pvzp-v4-converter.py import level.yaml ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
+# **BACKUP** your original .v4 file first!
+mv ~/.local/share/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4 ~/.local/share/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4.bak
+python scripts/pvzp-v4-converter.py import level.yaml ~/.local/share/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
 ```
 
 ## Recording and Playing Back Gameplay
