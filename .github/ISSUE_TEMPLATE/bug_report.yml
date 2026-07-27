@@ -102,6 +102,17 @@ body:
     validations:
       required: true
 
+  - type: markdown
+    attributes:
+      value: >
+        **Tip:** if the bug happens during gameplay on a **desktop platform**, you can attach a
+        replay of your session. Launch the game with `-record`, reproduce the bug, then quit.
+        The game saves the recording as a `pvzp-*.dmo` file in the current working directory.
+        Keep it short, and check with `-play` that the replay shows the bug. GitHub does not
+        accept `.dmo` attachments, so zip the file before attaching it. See
+        [Recording and Playing Back Gameplay](https://github.com/wszqkzqk/PvZ-Portable#recording-and-playing-back-gameplay)
+        for details.
+
   - type: textarea
     id: steps
     attributes:
