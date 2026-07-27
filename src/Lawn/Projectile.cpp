@@ -243,7 +243,7 @@ Zombie* Projectile::FindCollisionTarget()
 			}
 
 			Rect aZombieRect = aZombie->GetZombieRect();
-			if (GetRectOverlap(aProjectileRect, aZombieRect) > 0)
+			if (GetRectOverlap(aProjectileRect, aZombieRect) >= 0)
 			{
 				if (aBestZombie == nullptr || aZombie->mX < aMinX)
 				{
