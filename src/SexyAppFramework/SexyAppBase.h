@@ -300,6 +300,7 @@ public:
 	std::string				mDemoFileName;
 	bool					mHasCustomDemoFile; // an explicit file argument overrides automatic demo file selection
 	uint					mDemoRecordFileLimit;
+	size_t					mDemoPlayIndex; // -playnum: index into the timestamp/name-ordered recording list
 	Buffer					mDemoBuffer;
 	int						mLastDemoMouseX;
 	int						mLastDemoMouseY;

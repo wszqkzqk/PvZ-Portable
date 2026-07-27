@@ -386,6 +386,7 @@ SexyAppBase::SexyAppBase()
 	mDemoFileName = mDemoPrefix + ".dmo";
 	mHasCustomDemoFile = false;
 	mDemoRecordFileLimit = 0;
+	mDemoPlayIndex = 0;
 	mPlayingDemoBuffer = false;
 	mManualShutdown = false;
 	mRecordingDemoBuffer = false;
@@ -3270,6 +3271,27 @@ void SexyAppBase::SetDouble(const std::string& theId, double theValue)
 		aPair.first->second = theValue;
 }
 
+static std::string GetTimestampedDemoFileName(std::string_view theDemoPrefix)
+{
+	time_t aNow = time(nullptr);
+	tm aNowTM = *localtime(&aNow);
+
+	std::string aBaseName = StrFormat((std::string(theDemoPrefix) + "-%04d%02d%02d-%02d%02d%02d").c_str(),
+		aNowTM.tm_year + 1900, aNowTM.tm_mon + 1, aNowTM.tm_mday, aNowTM.tm_hour, aNowTM.tm_min, aNowTM.tm_sec);
+	std::string aName = aBaseName + ".dmo";
+	const std::string aSuffixPrefix = aBaseName + '-';
+	auto aDemoFiles = FindDemoFiles(theDemoPrefix, true);
+	for (const std::string& aFileName : aDemoFiles)
+	{
+		if (aFileName == aName)
+			return aBaseName + "-2.dmo";
+		if (aFileName.starts_with(aSuffixPrefix))
+			return StrFormat("%s-%d.dmo", aBaseName.c_str(), atoi(aFileName.c_str() + aSuffixPrefix.length()) + 1);
+	}
+
+	return aName;
+}
+
 static bool ParamTakesValue(std::string_view theParamName)
 {
 	static constexpr std::string_view kValueParams[] = {
@@ -3302,6 +3324,21 @@ void SexyAppBase::DoParseCmdLine()
 		}
 	}
 
+	// Resolve the demo file only after all params are parsed, so explicit files win regardless of order
+	if (mPlayingDemoBuffer && !mHasCustomDemoFile)
+	{
+		auto aDemoFiles = FindDemoFiles(mDemoPrefix);
+		if (aDemoFiles.empty())
+		{
+			Popup("No demo recordings found");
+			DoExit(1);
+			return;
+		}
+		mDemoFileName = aDemoFiles[std::min(mDemoPlayIndex, aDemoFiles.size() - 1)];
+	}
+	else if (mRecordingDemoBuffer && !mHasCustomDemoFile)
+		mDemoFileName = GetTimestampedDemoFileName(mDemoPrefix);
+
 	mCmdLineParsed = true;
 }
 
@@ -3311,54 +3348,22 @@ void SexyAppBase::SetArgs(int argc, char** argv)
 	mArgv = argv;
 }
 
-static std::string GetTimestampedDemoFileName(std::string_view theDemoPrefix)
-{
-	time_t aNow = time(nullptr);
-	tm aNowTM = *localtime(&aNow);
-
-	std::string aBaseName = StrFormat((std::string(theDemoPrefix) + "-%04d%02d%02d-%02d%02d%02d").c_str(),
-		aNowTM.tm_year + 1900, aNowTM.tm_mon + 1, aNowTM.tm_mday, aNowTM.tm_hour, aNowTM.tm_min, aNowTM.tm_sec);
-	std::string aName = aBaseName + ".dmo";
-	const std::string aSuffixPrefix = aBaseName + '-';
-	auto aDemoFiles = FindDemoFiles(theDemoPrefix, true);
-	for (const std::string& aFileName : aDemoFiles)
-	{
-		if (aFileName == aName)
-			return aBaseName + "-2.dmo";
-		if (aFileName.starts_with(aSuffixPrefix))
-			return StrFormat("%s-%d.dmo", aBaseName.c_str(), atoi(aFileName.c_str() + aSuffixPrefix.length()) + 1);
-	}
-
-	return aName;
-}
-
 void SexyAppBase::HandleCmdLineParam(std::string_view theParamName, std::string_view theParamValue)
 {
 	if (theParamName == "-play" || theParamName == "-playnum")
 	{
+		mHasCustomDemoFile = false; // each occurrence fully redefines the request: last one wins
+		mDemoPlayIndex = 0;
 		if (theParamName == "-play" && !theParamValue.empty())
 		{
 			mDemoFileName = std::string(theParamValue);
 			mHasCustomDemoFile = true;
 		}
-		else if (!mHasCustomDemoFile)
+		else if (theParamName == "-playnum")
 		{
-			auto aDemoFiles = FindDemoFiles(mDemoPrefix);
-			if (aDemoFiles.empty())
-			{
-				Popup("No demo recordings found: " + mDemoPrefix + "-*.dmo");
-				DoExit(1);
-				return;
-			}
-
-			size_t aIndex = 0; // -play: first; -playnum: N-th in timestamp/name order
-			if (theParamName == "-playnum")
-			{
-				int aNum = 0;
-				std::from_chars(theParamValue.data(), theParamValue.data() + theParamValue.size(), aNum);
-				aIndex = static_cast<size_t>(std::max(aNum, 1) - 1);
-			}
-			mDemoFileName = aDemoFiles[std::min(aIndex, aDemoFiles.size() - 1)];
+			int aNum = 0;
+			std::from_chars(theParamValue.data(), theParamValue.data() + theParamValue.size(), aNum);
+			mDemoPlayIndex = static_cast<size_t>(std::max(aNum, 1) - 1);
 		}
 		mPlayingDemoBuffer = true;
 		mRecordingDemoBuffer = false;
@@ -3373,13 +3378,15 @@ void SexyAppBase::HandleCmdLineParam(std::string_view theParamName, std::string_
 				aNum = 5;
 			mDemoRecordFileLimit = static_cast<uint>(aNum);
 		}
-		if (theParamName == "-record" && !theParamValue.empty())
+		else
 		{
-			mDemoFileName = std::string(theParamValue);
-			mHasCustomDemoFile = true;
+			mHasCustomDemoFile = false;
+			if (!theParamValue.empty())
+			{
+				mDemoFileName = std::string(theParamValue);
+				mHasCustomDemoFile = true;
+			}
 		}
-		else if (!mHasCustomDemoFile) // choose an automatic timestamped name
-			mDemoFileName = GetTimestampedDemoFileName(mDemoPrefix);
 		mRecordingDemoBuffer = true;
 		mPlayingDemoBuffer = false;
 	}
