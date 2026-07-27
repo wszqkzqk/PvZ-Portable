@@ -18,6 +18,7 @@ depends=(
     libvorbis
     mpg123
     sdl2-compat
+    zlib
 )
 makedepends=(
     cmake
