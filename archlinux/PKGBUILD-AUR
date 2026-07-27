@@ -39,7 +39,7 @@ pkgver() {
 }
 
 build() {
-    cmake -B build -S "${pkgname}" \
+    cmake -G Ninja -B build -S "${pkgname}" \
         -DCMAKE_BUILD_TYPE='Release' \
         -DCMAKE_INSTALL_PREFIX='/usr'
     cmake --build build
