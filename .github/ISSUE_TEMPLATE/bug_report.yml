@@ -34,9 +34,9 @@ body:
         - Linux (riscv64)
         - Linux (loongarch64)
         - Linux (other)
-        - Windows (x86_64)
-        - Windows (arm64)
-        - Windows (i686)
+        - Windows (x64)
+        - Windows (ARM64)
+        - Windows (x86)
         - macOS (Apple Silicon)
         - macOS (Intel)
         - Android
