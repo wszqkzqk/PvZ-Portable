@@ -13,7 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  VCPKG_BINARY_SOURCES: clear
+  # vcpkg binary cache; restored/saved per-OS via actions/cache below
+  VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg-cache,readwrite
 
 jobs:
   build-archlinux:
@@ -119,6 +120,22 @@ jobs:
         fetch-depth: 0
 
     - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Get toolchain ID for cache key
+      shell: pwsh
+      run: |
+        $tc = $env:VCToolsVersion
+        if (-not $tc) { $tc = "unknown" }
+        $cmake = (cmake --version | Select-Object -First 1) -replace '[^0-9.]',''
+        if (-not $cmake) { $cmake = "unknown" }
+        echo "VCPKG_TC=msvc-$tc-cmake$cmake" >> $env:GITHUB_ENV
+
+    - name: Restore vcpkg binary cache
+      uses: actions/cache@v4
+      with:
+        path: vcpkg-cache
+        key: vcpkg-windows-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+        restore-keys: vcpkg-windows-${{ env.VCPKG_TC }}-
 
     - name: Install Ninja
       run: choco install ninja -y
@@ -273,6 +290,19 @@ jobs:
         tar xf "SDL2-${SDL2_TAG}.tar.gz"
         mv "SDL2-${SDL2_TAG}" sdl2-src
 
+    - name: Get toolchain ID for cache key
+      run: |
+        NDK_VER=$(grep -oP 'Pkg\.Revision = \K[\d.]+' "$ANDROID_NDK/source.properties" || echo unknown)
+        CMAKE_VER=$(cmake --version | head -1 | sed -nE 's/[^0-9]*([0-9.]+).*/\1/p')
+        echo "VCPKG_TC=ndk-$NDK_VER-cmake${CMAKE_VER:-unknown}" >> "$GITHUB_ENV"
+
+    - name: Restore vcpkg binary cache
+      uses: actions/cache@v4
+      with:
+        path: vcpkg-cache
+        key: vcpkg-android-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+        restore-keys: vcpkg-android-${{ env.VCPKG_TC }}-
+
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       with:
@@ -348,6 +378,12 @@ jobs:
           echo "PVZP_KEYSTORE_FILE=$RUNNER_TEMP/pvzp-release.keystore" >> "$GITHUB_ENV"
         fi
 
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v6
+      with:
+        # sdl2-src ships its own wrapper jar, which is not in Gradle's known checksum database
+        validate-wrappers: false
+
     - name: Build APK with Gradle
       env:
         PVZP_KEYSTORE_PASSWORD: ${{ secrets.PVZP_KEYSTORE_PASSWORD }}
@@ -381,6 +417,19 @@ jobs:
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
+
+    - name: Get toolchain ID for cache key
+      run: |
+        CLANG_VER=$(clang --version | head -1 | sed -nE 's/.*version ([0-9.]+).*/\1/p')
+        CMAKE_VER=$(cmake --version | head -1 | sed -nE 's/[^0-9]*([0-9.]+).*/\1/p')
+        echo "VCPKG_TC=clang-${CLANG_VER:-unknown}-cmake${CMAKE_VER:-unknown}" >> "$GITHUB_ENV"
+
+    - name: Restore vcpkg binary cache
+      uses: actions/cache@v4
+      with:
+        path: vcpkg-cache
+        key: vcpkg-ios-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+        restore-keys: vcpkg-ios-${{ env.VCPKG_TC }}-
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
