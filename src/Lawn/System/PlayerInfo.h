@@ -43,23 +43,23 @@ public:
     };
 
 public:
-    SeedType            mSeedType;                  //+0x0
-    GardenType          mWhichZenGarden;            //+0x4
-    int32_t             mX;                         //+0x8
-    int32_t             mY;                         //+0xC
-    FacingDirection     mFacing;                    //+0x10
-    uint32_t            mPadding1;                  //+0x14 for explicit alignment, unused
-    int64_t             mLastWateredTime;           //+0x18
-    DrawVariation       mDrawVariation;             //+0x20
-    PottedPlantAge      mPlantAge;                  //+0x24
-    int32_t             mTimesFed;                  //+0x28
-    int32_t             mFeedingsPerGrow;           //+0x2C
-    PottedPlantNeed     mPlantNeed;                 //+0x30
-    uint32_t            mPadding2;                  //+0x34, for explicit alignment, unused
-    int64_t             mLastNeedFulfilledTime;     //+0x38
-    int64_t             mLastFertilizedTime;        //+0x40
-    int64_t             mLastChocolateTime;         //+0x48
-    int64_t             mFutureAttribute[1];        //+0x50
+    SeedType            mSeedType;
+    GardenType          mWhichZenGarden;
+    int32_t             mX;
+    int32_t             mY;
+    FacingDirection     mFacing;
+    uint32_t            mPadding1;                  // for explicit alignment, unused
+    int64_t             mLastWateredTime;
+    DrawVariation       mDrawVariation;
+    PottedPlantAge      mPlantAge;
+    int32_t             mTimesFed;
+    int32_t             mFeedingsPerGrow;
+    PottedPlantNeed     mPlantNeed;
+    uint32_t            mPadding2;                  // for explicit alignment, unused
+    int64_t             mLastNeedFulfilledTime;
+    int64_t             mLastFertilizedTime;
+    int64_t             mLastChocolateTime;
+    int64_t             mFutureAttribute[1];
 
 public:
     void                InitializePottedPlant(SeedType theSeedType);
@@ -69,40 +69,40 @@ class DataSync;
 class PlayerInfo
 {
 public:
-    std::string         mName;                              //+0x0
-    uint32_t            mUseSeq;                            //+0x1C
-    uint32_t            mId;                                //+0x20
-    int32_t             mLevel;                             //+0x24
-    int32_t             mCoins;                             //+0x28
-    uint32_t            mFinishedAdventure;                 //+0x2C
-    uint32_t            mChallengeRecords[100];             //+0x30
-    uint32_t            mPurchases[80];                     //+0x1C0
-    uint32_t            mPlayTimeActivePlayer;              //+0x300
-    uint32_t            mPlayTimeInactivePlayer;            //+0x304
-    int32_t             mHasUsedCheatKeys;                  //+0x308
-    int32_t             mHasWokenStinky;                    //+0x30C
-    int32_t             mDidntPurchasePacketUpgrade;        //+0x310
-    uint32_t            mLastStinkyChocolateTime;           //+0x314
-    int32_t             mStinkyPosX;                        //+0x318
-    int32_t             mStinkyPosY;                        //+0x31C
-    int32_t             mHasUnlockedMinigames;              //+0x320
-    int32_t             mHasUnlockedPuzzleMode;             //+0x324
-    int32_t             mHasNewMiniGame;                    //+0x328
-    int32_t             mHasNewScaryPotter;                 //+0x32C
-    int32_t             mHasNewIZombie;                     //+0x330
-    int32_t             mHasNewSurvival;                    //+0x334
-    int32_t             mHasUnlockedSurvivalMode;           //+0x338
-    int32_t             mNeedsMessageOnGameSelector;        //+0x33C
-    int32_t             mNeedsMagicTacoReward;              //+0x340
-    int32_t             mHasSeenStinky;                     //+0x344
-    int32_t             mHasSeenUpsell;                     //+0x348
-    int32_t             mPlaceHolderPlayerStats;            //+0x??????
-    int32_t             mNumPottedPlants;                   //+0x350
-    PottedPlant         mPottedPlant[MAX_POTTED_PLANTS];    //+0x358
-    bool                mEarnedAchievements[20];            //+GOTY @Patoke: 0x24
-    bool                mShownAchievements[20];             //+GOTY
-    unsigned char       mZombatarAccepted;                  //+GOTY: 0x28
-    uint32_t            mZombatarHeadCount;                 //+GOTY: 0x29
+    std::string         mName;
+    uint32_t            mUseSeq;
+    uint32_t            mId;
+    int32_t             mLevel;
+    int32_t             mCoins;
+    uint32_t            mFinishedAdventure;
+    uint32_t            mChallengeRecords[100];
+    uint32_t            mPurchases[80];
+    uint32_t            mPlayTimeActivePlayer;
+    uint32_t            mPlayTimeInactivePlayer;
+    int32_t             mHasUsedCheatKeys;
+    int32_t             mHasWokenStinky;
+    int32_t             mDidntPurchasePacketUpgrade;
+    uint32_t            mLastStinkyChocolateTime;
+    int32_t             mStinkyPosX;
+    int32_t             mStinkyPosY;
+    int32_t             mHasUnlockedMinigames;
+    int32_t             mHasUnlockedPuzzleMode;
+    int32_t             mHasNewMiniGame;
+    int32_t             mHasNewScaryPotter;
+    int32_t             mHasNewIZombie;
+    int32_t             mHasNewSurvival;
+    int32_t             mHasUnlockedSurvivalMode;
+    int32_t             mNeedsMessageOnGameSelector;
+    int32_t             mNeedsMagicTacoReward;
+    int32_t             mHasSeenStinky;
+    int32_t             mHasSeenUpsell;
+    int32_t             mPlaceHolderPlayerStats;
+    int32_t             mNumPottedPlants;
+    PottedPlant         mPottedPlant[MAX_POTTED_PLANTS];
+    bool                mEarnedAchievements[20];
+    bool                mShownAchievements[20];
+    unsigned char       mZombatarAccepted;
+    uint32_t            mZombatarHeadCount;
     std::vector<unsigned char> mZombatarData;               // raw 0x48 * count
     // mini-game completion flags (20 bytes in the save after the Zombatar records) are derived from mChallengeRecords at save time; no runtime field
     unsigned char       mZombatarCreatedBefore;             // created at least one Zombatar (0/1)
@@ -111,7 +111,7 @@ public:
     PlayerInfo();
 
     void                Reset();
-    /*inline*/ void     AddCoins(int theAmount);
+    void                AddCoins(int theAmount);
     void                SyncSummary(DataSync& theSync);
     void                SyncDetails(DataSync& theSync);
     void                DeleteUserFiles();
@@ -119,7 +119,7 @@ public:
     void                SaveDetails();
     inline int          GetLevel() const { return mLevel; }
     inline void         SetLevel(int theLevel) { mLevel = theLevel; }
-    /*inline*/ void     ResetChallengeRecord(GameMode theGameMode);
+    void                ResetChallengeRecord(GameMode theGameMode);
 };
 
 #endif

@@ -321,7 +321,6 @@ void CreditsOverlay::Draw(Graphics* g)
 	mParent->DrawOverlay(g);
 }
 
-// GOTY @Patoke: 0x4367F0
 CreditScreen::CreditScreen(LawnApp* theApp)
 {
 	mApp = theApp;

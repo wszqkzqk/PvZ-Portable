@@ -41,7 +41,6 @@
 #include "../../Sexy.TodLib/TodStringFile.h"
 #include "widget/WidgetManager.h"
 
-// GOTY @Patoke: 0x48E020
 SeedChooserScreen::SeedChooserScreen()
 {
 	mApp = (LawnApp*)gSexyAppBase;

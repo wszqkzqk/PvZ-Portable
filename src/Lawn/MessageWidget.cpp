@@ -29,7 +29,6 @@
 #include "../Sexy.TodLib/Reanimator.h"
 #include "../Sexy.TodLib/TodStringFile.h"
 
-//(0x4081F1)
 MessageWidget::MessageWidget(LawnApp* theApp)
 {
 	mApp = theApp;
@@ -70,7 +69,6 @@ void MessageWidget::ClearLabel()
 	}
 }
 
-// GOTY @Patoke: inlined 0x459715
 void MessageWidget::SetLabel(std::string_view theNewLabel, MessageStyle theMessageStyle)
 {
 	std::string aLabel = TodStringTranslate(theNewLabel);
@@ -298,7 +296,6 @@ void MessageWidget::DrawReanimatedText(Graphics* g, _Font* theFont, const Color&
 	}
 }
 
-// GOTY @Patoke: inlined 0x45CAEF
 _Font* MessageWidget::GetFont()
 {
 	switch (mMessageStyle)
@@ -332,7 +329,6 @@ _Font* MessageWidget::GetFont()
 	unreachable();
 }
 
-// GOTY @Patoke: 0x45D2B0
 void MessageWidget::Draw(Graphics* g)
 {
 	if (mDuration <= 0)

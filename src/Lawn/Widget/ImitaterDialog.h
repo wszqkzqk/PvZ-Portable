@@ -38,10 +38,10 @@ public:
     SeedType                SeedHitTest(int x, int y);
     void                    UpdateCursor();
     void                    Update() override;
-    /*inline*/ void         GetSeedPosition(int theIndex, int& x, int& y);
+    void                    GetSeedPosition(int theIndex, int& x, int& y);
     void                    Draw(Graphics* g) override;
     void                    ShowToolTip();
-    /*inline*/ void         RemoveToolTip();
+    void                    RemoveToolTip();
     void                    MouseDown(int x, int y, int theClickCount) override;
     void                    MouseUp(int, int, int) override{}
 };

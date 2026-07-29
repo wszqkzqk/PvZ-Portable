@@ -161,8 +161,8 @@ public:
     unsigned int        mFoleyFlags;
 };
 
-/*inline*/ void         TodFoleyInitialize(const FoleyParams* theFoleyParamArray, int theFoleyParamArraySize);
-/*inline*/ void         TodFoleyDispose();
+void                    TodFoleyInitialize(const FoleyParams* theFoleyParamArray, int theFoleyParamArraySize);
+void                    TodFoleyDispose();
 const FoleyParams*      LookupFoley(FoleyType theFoleyType);
 
 extern int gFoleyParamArraySize;
@@ -181,8 +181,8 @@ class TodDSoundInstance : public SDLSoundInstance
 public:
     TodDSoundInstance(SDLSoundManager* theSoundManager, Mix_Chunk* theSourceSound) : SDLSoundInstance(theSoundManager, theSourceSound) { }
 
-    /*inline*/ int      GetSoundPosition();
-    /*inline*/ void     SetSoundPosition(int thePosition);
+    int                 GetSoundPosition();
+    void                SetSoundPosition(int thePosition);
 };
 
 class FoleyInstance
@@ -220,7 +220,7 @@ public:
     void                GamePause(bool theEnteringPause);
     void                PlayFoleyPitch(FoleyType theFoleyType, float thePitch);
     void                CancelPausedFoley();
-    /*inline*/ void     ApplyMusicVolume(FoleyInstance* theFoleyInstance);
+    void                ApplyMusicVolume(FoleyInstance* theFoleyInstance);
     void                RehookupSoundWithMusicVolume();
 };
 

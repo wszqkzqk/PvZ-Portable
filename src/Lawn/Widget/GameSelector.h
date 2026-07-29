@@ -81,9 +81,9 @@ public:
     NewLawnButton*              mZenGardenButton;
     NewLawnButton*              mSurvivalButton;
     NewLawnButton*              mChangeUserButton;
-    NewLawnButton*              mZombatarButton;             //+GOTY @Patoke: 0xC0
-    NewLawnButton*              mAchievementsButton;        //+GOTY @Patoke: 0xC4
-    NewLawnButton*              mQuickPlayButton;           //+GOTY @Patoke: 0xC8
+    NewLawnButton*              mZombatarButton;
+    NewLawnButton*              mAchievementsButton;
+    NewLawnButton*              mQuickPlayButton;
     Widget*                     mOverlayWidget;
     bool                        mStartingGame;
     int                         mStartingGameCounter;
@@ -105,13 +105,13 @@ public:
     ToolTipWidget*              mToolTip;
     bool                        mHasTrophy;
     bool                        mUnlockSelectorCheat;
-    int                         mSlideCounter;              //+GOTY @Patoke: 0x154
-    int                         mStartX;                    //+GOTY @Patoke: 0x158
-    int                         mStartY;                    //+GOTY @Patoke: 0x15C
-    int                         mDestX;                     //+GOTY @Patoke: 0x160
-    int                         mDestY;                     //+GOTY @Patoke: 0x164
-    ZombatarWidget*             mZombatarWidget;            //+GOTY @Patoke: 0x168
-    AchievementsWidget*         mAchievementsWidget;        //+GOTY @Patoke: 0x16C
+    int                         mSlideCounter;
+    int                         mStartX;
+    int                         mStartY;
+    int                         mDestX;
+    int                         mDestY;
+    ZombatarWidget*             mZombatarWidget;
+    AchievementsWidget*         mAchievementsWidget;
 
 public:
     GameSelector(LawnApp* theApp);
@@ -138,10 +138,10 @@ public:
     void                        AddTrophySparkle();
     void                        ClickedAdventure();
     void                        UpdateTooltip();
-    /*inline*/ bool             ShouldDoZenTuturialBeforeAdventure();
+    bool                        ShouldDoZenTuturialBeforeAdventure();
     void                        AddPreviewProfiles();
     // @Patoke: implement functions
-    /*inline*/ void             SlideTo(int theX, int theY);
+    void                        SlideTo(int theX, int theY);
     void                        ShowZombatarScreen();
     void                        ShowAchievementsScreen(); // @Patoke: unofficial name
 };

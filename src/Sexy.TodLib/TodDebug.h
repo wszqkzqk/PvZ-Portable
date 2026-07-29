@@ -43,10 +43,10 @@ void				TodTraceAndLogLn(const char* theFormat, ...);
 void				TodTraceWithoutSpamming(const char* theFormat, ...);
 void				TodHesitationTrace(...);
 void				TodAssertFailed(const char* theCondition, const char* theFile, int theLine, const char* theMsg = "", ...);
-/*inline*/ void		TodErrorMessageBox(const char* theMessage, const char* theTitle);
+void				TodErrorMessageBox(const char* theMessage, const char* theTitle);
 
-/*inline*/ void*	TodMalloc(int theSize);
-/*inline*/ void		TodFree(void* theBlock);
+void*				TodMalloc(int theSize);
+void				TodFree(void* theBlock);
 void				TodAssertInitForApp();
 
 #ifdef PVZ_DEBUG

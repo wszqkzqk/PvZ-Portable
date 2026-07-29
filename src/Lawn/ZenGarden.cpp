@@ -779,7 +779,6 @@ bool ZenGarden::PlantShouldRefreshNeed(PottedPlant* thePottedPlant)
     return mNowTM.tm_year > aLastWateredTM.tm_year || mNowTM.tm_yday > aLastWateredTM.tm_yday;
 }
 
-// GOTY @Patoke: 0x5292A0
 void ZenGarden::RefreshPlantNeeds(PottedPlant* thePottedPlant)
 {
     if (thePottedPlant->mPlantAge != PottedPlantAge::PLANTAGE_FULL || !PlantShouldRefreshNeed(thePottedPlant))
@@ -2390,7 +2389,6 @@ void ZenGarden::OpenStore()
     }
 }
 
-// GOTY @Patoke: 0x52CC50
 void ZenGarden::SetupForZenTutorial()
 {
     mBoard->mMenuButton->SetLabel("[CONTINUE_BUTTON]");

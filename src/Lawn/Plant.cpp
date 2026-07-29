@@ -103,7 +103,6 @@ Plant::Plant()
 {
 }
 
-// GOTY @Patoke: 0x461483
 void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType)
 {
     mPlantCol = theGridX;
@@ -1125,7 +1124,6 @@ void Plant::UpdateGraveBuster()
     }
 }
 
-// GOTY @Patoke: 0x463760
 void Plant::PlayBodyReanim(const char* theTrackName, ReanimLoopType theLoopType, int theBlendTime, float theAnimRate)
 {
     Reanimation* aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
@@ -1660,7 +1658,6 @@ void Plant::UpdateUmbrella()
     }
 }
 
-// GOTY @Patoke: 0x4649F0
 void Plant::UpdateCobCannon()
 {
     if (mState == PlantState::STATE_COBCANNON_ARMING)
@@ -1964,7 +1961,6 @@ void Plant::MagnetShroomAttactItem(Zombie* theZombie)
     }
 }
 
-// GOTY @Patoke: 0x4656B0
 bool Plant::DrawMagnetItemsOnTop()
 {
     if (mSeedType == SeedType::SEED_GOLD_MAGNET)
@@ -2353,7 +2349,6 @@ void Plant::Squish()
     }
 }
 
-// GOTY @Patoke: 0x4666E0
 void Plant::UpdateBowling()
 {
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
@@ -2633,7 +2628,6 @@ bool Plant::IsUpgradableTo(SeedType theUpgradedType)
     return false;
 }
 
-// GOTY @Patoke: 0x466FD0
 void Plant::UpdateReanimColor()
 {
     if (!IsOnBoard())
@@ -2719,7 +2713,6 @@ void Plant::UpdateReanimColor()
     aBodyReanim->PropogateColorToAttachments();
 }
 
-// GOTY @Patoke: 0x469649
 bool Plant::IsOnBoard()
 {
     if (!mIsOnBoard)
@@ -3532,7 +3525,6 @@ float PlantFlowerPotHeightOffset(SeedType theSeedType, float theFlowerPotScale)
     return aHeightOffset + (theFlowerPotScale * aScaleOffsetFix - aScaleOffsetFix);
 }
 
-// GOTY @Patoke: 0x468A90
 float PlantDrawHeightOffset(Board* theBoard, Plant* thePlant, SeedType theSeedType, int theCol, int theRow)
 {
     float aHeightOffset = 0.0f;
@@ -3687,7 +3679,6 @@ void Plant::GetPeaHeadOffset(int& theOffsetX, int& theOffsetY)
     theOffsetY = aTransform.mTransY;
 }
 
-// GOTY @Patoke: 0x468EB0
 void Plant::DrawMagnetItems(Graphics* g)
 {
     float aOffsetX = 0.0f;
@@ -3933,7 +3924,6 @@ void Plant::DrawShadow(Sexy::Graphics* g, float theOffsetX, float theOffsetY)
     }
 }
 
-// GOTY @Patoke: 0x469500
 void Plant::Draw(Graphics* g)
 {
     float aOffsetX = 0.0f;
@@ -4096,7 +4086,6 @@ void Plant::Draw(Graphics* g)
     }
 }
 
-// GOTY @Patoke: 0x469AF0
 void Plant::DrawSeedType(Graphics* g, SeedType theSeedType, SeedType theImitaterType, DrawVariation theDrawVariation, float thePosX, float thePosY)
 {
     Graphics aSeedG(*g);
@@ -4286,7 +4275,6 @@ void Plant::KillAllPlantsNearDoom()
     }
 }
 
-// GOTY @Patoke: 0x46A110
 void Plant::DoSpecial()
 {
     int aPosX = mX + mWidth / 2;
@@ -5033,7 +5021,6 @@ int Plant::GetCost(SeedType theSeedType, SeedType theImitaterType)
     }
 }
 
-// GOTY @Patoke: 0x46B6C0
 std::string Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType)
 {
     const PlantDefinition& aPlantDef = GetPlantDefinition(theSeedType);
@@ -5092,7 +5079,6 @@ bool Plant::IsNocturnal(SeedType theSeedtype)
         theSeedtype == SeedType::SEED_GLOOMSHROOM;
 }
 
-// GOTY @Patoke: inlined 0x40FB2B
 bool Plant::IsFungus(SeedType theSeedtype) 
 {
     return
@@ -5117,7 +5103,6 @@ bool Plant::IsAquatic(SeedType theSeedType)
         theSeedType == SeedType::SEED_CATTAIL;
 }
 
-// GOTY @Patoke: 0x469543
 bool Plant::IsFlying(SeedType theSeedtype)
 {
     return theSeedtype == SeedType::SEED_INSTANT_COFFEE;

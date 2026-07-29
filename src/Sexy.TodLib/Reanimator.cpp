@@ -410,7 +410,6 @@ void Reanimation::ReanimationInitialize(float theX, float theY, ReanimatorDefini
 		mFrameCount = 0;
 }
 
-// GOTY @Patoke: 0x4761C0
 void Reanimation::Update()
 {
 	if (mFrameCount == 0 || mDead)
@@ -542,7 +541,6 @@ void BlendTransform(ReanimatorTransform* theResult, const ReanimatorTransform& t
 	theResult->mImage = theTransform1.mImage;
 }
 
-// GOTY @Patoke: 0x476580
 void Reanimation::GetCurrentTransform(int theTrackIndex, ReanimatorTransform* theTransformCurrent)
 {
 	ReanimatorFrameTime aFrameTime;
@@ -633,7 +631,6 @@ void Reanimation::ReanimBltMatrix(Graphics* g, Image* theImage, SexyMatrix3& the
 		TodBltMatrix(g, theImage, theTransform, theClipRect, theColor, theDrawMode, theSrcRect);
 }
 
-// GOTY @Patoke: 0x4769B0
 bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, TodTriangleGroup* theTriangleGroup)
 {
 	(void)theRenderGroup;
@@ -943,7 +940,6 @@ void Reanimation::Draw(Graphics* g)
 	DrawRenderGroup(g, RENDER_GROUP_NORMAL);
 }
 
-// GOTY @Patoke: 0x477640
 int Reanimation::FindTrackIndex(const char* theTrackName)
 {
 	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
@@ -954,7 +950,6 @@ int Reanimation::FindTrackIndex(const char* theTrackName)
 	return 0;
 }
 
-// GOTY @Patoke: 0x464B18
 ReanimatorTrackInstance* Reanimation::GetTrackInstanceByName(const char* theTrackName)
 {
 	return &mTrackInstances[FindTrackIndex(theTrackName)];
@@ -1002,7 +997,6 @@ AttachEffect* Reanimation::AttachParticleToTrack(const char* theTrackName, TodPa
 	return AttachParticle(aTrackInstance->mAttachmentID, theParticleSystem, aPosition.x, aPosition.y);
 }
 
-// GOTY @Patoke: 0x477810
 void Reanimation::GetAttachmentOverlayMatrix(int theTrackIndex, SexyTransform2D& theOverlayMatrix)
 {
 	ReanimatorTransform aTransform;
@@ -1117,7 +1111,6 @@ Image* Reanimation::GetImageOverride(const char* theTrackName)
 	return GetTrackInstanceByName(theTrackName)->mImageOverride;
 }
 
-// GOTY @Patoke: 0x477BB0
 void Reanimation::SetImageOverride(const char* theTrackName, Image* theImage)
 {
 	GetTrackInstanceByName(theTrackName)->mImageOverride = theImage;
@@ -1257,7 +1250,6 @@ void Reanimation::ShowOnlyTrack(const char* theTrackName)
 	}
 }
 
-// GOTY @Patoke: 0x478120
 void Reanimation::AssignRenderGroupToTrack(const char* theTrackName, int theRenderGroup)
 {
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
@@ -1268,7 +1260,6 @@ void Reanimation::AssignRenderGroupToTrack(const char* theTrackName, int theRend
 		}
 }
 
-// GOTY @Patoke: 0x478170
 void Reanimation::AssignRenderGroupToPrefix(const char* theTrackName, int theRenderGroup)
 {
 	size_t aPrifixLength = strlen(theTrackName);
@@ -1299,7 +1290,6 @@ bool Reanimation::ShouldTriggerTimedEvent(float theEventTime)
 	else  // 若动画正好完成一次循环而重新进入下一次循环，则可触发的范围为 [0, mAnimTime] ∪ [mLastFrameTime, 1]
 		return theEventTime >= mLastFrameTime || theEventTime < mAnimTime;
 }
-// GOTY @Patoke: 0x478310
 void Reanimation::PlayReanim(const char* theTrackName, ReanimLoopType theLoopType, int theBlendTime, float theAnimRate)
 {
 	if (theBlendTime > 0)  // 当需要补间过渡时，开始混合

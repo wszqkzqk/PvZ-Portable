@@ -60,7 +60,6 @@
 
 bool gShownMoreSunTutorial = false;
 
-// GOTY @Patoke: 0x40A3C0
 Board::Board(LawnApp* theApp)
 {
 	mApp = theApp;
@@ -269,7 +268,6 @@ void BoardInitForPlayer()
 	gShownMoreSunTutorial = false;
 }
 
-// GOTY @Patoke: 0x40B320
 void Board::DisposeBoard()
 {
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN)
@@ -296,7 +294,6 @@ bool Board::AreEnemyZombiesOnScreen()
 	return false;
 }
 
-// GOTY @Patoke: 0x40B4A0
 int Board::CountZombiesOnScreen()
 {
 	int aCount = 0;
@@ -311,7 +308,6 @@ int Board::CountZombiesOnScreen()
 	return aCount;
 }
 
-// GOTY @Patoke: 0x40B3B0
 int Board::GetLiveGargantuarCount() {
 	int aCount = 0;
 	Zombie* aZombie = nullptr;
@@ -375,7 +371,6 @@ void Board::SaveGame(const std::string& theFileName)
 	LawnSaveGame(this, theFileName);
 }
 
-// GOTY @Patoke: 0x40B739
 void Board::ResetFPSStats()
 {
 	int64_t aTickCount = SDL_GetTicks();
@@ -385,7 +380,6 @@ void Board::ResetFPSStats()
 	mIntervalDrawCountStart = 1;
 }
 
-// GOTY @Patoke: 0x40B710
 bool Board::LoadGame(const std::string& theFileName)
 {
 	if (!LawnLoadGame(this, theFileName))
@@ -839,7 +833,6 @@ int Board::GetLevelRandSeed()
 	return aRndSeed;
 }
 
-// GOTY @Patoke: 0x40C9F0
 void Board::LoadBackgroundImages()
 {
 	switch (mBackground)
@@ -1384,7 +1377,6 @@ void Board::GetZenButtonRect(GameObjectType theObjectType, Rect& theRect)
 	//return theRect;
 }
 
-// GOTY @Patoke: 0x40D840
 void Board::InitLevel()
 {
 	mMainCounter = 0;
@@ -1701,7 +1693,6 @@ bool Board::ChooseSeedsOnCurrentLevel()
 	return (!mApp->IsFirstTimeAdventureMode() || mLevel > 7);
 }
 
-// GOTY @Patoke: 0x40E6A0
 void Board::StartLevel()
 {
 	mCoinBankFadeCount = 0;
@@ -1751,7 +1742,6 @@ LawnMower* Board::GetBottomLawnMower()
 	return aBottomMower;
 }
 
-// GOTY @Patoke: 0x40E860
 void Board::UpdateLevelEndSequence()
 {
 	if (mNextSurvivalStageCounter > 0)
@@ -2049,7 +2039,6 @@ bool Board::IsPlantInCursor()
 		mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_WHEEL_BARROW;
 }
 
-// GOTY @Patoke: 0x40F600
 SeedType Board::GetSeedTypeInCursor()
 {
 	if (mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEEELBARROW)
@@ -2144,7 +2133,6 @@ void Board::DoPlantingEffects(int theGridX, int theGridY, Plant* thePlant)
 	}
 }
 
-// GOTY @Patoke: 0x40FA10
 Plant* Board::AddPlant(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType)
 {
 	Plant* aPlant = NewPlant(theGridX, theGridY, theSeedType, theImitaterType);
@@ -2186,7 +2174,6 @@ Plant* Board::AddPlant(int theGridX, int theGridY, SeedType theSeedType, SeedTyp
 	return aPlant;
 }
 
-// GOTY @Patoke: 0x40FBA0
 Plant* Board::GetPumpkinAt(int theGridX, int theGridY)
 {
 	Plant* aPlant = nullptr;
@@ -2698,7 +2685,6 @@ bool Board::CanAddBobSled()
 	return false;
 }
 
-// GOTY @Patoke: 0x410700
 Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromWave)
 {
 	if (mZombies.mSize >= mZombies.mMaxSize - 1)
@@ -3687,7 +3673,6 @@ void Board::MouseDownCobcannonFire(int x, int y, int theClickCount)
 	ClearCursor();
 }
 
-// GOTY @Patoke: 0x4126F0
 void Board::MouseDownWithPlant(int x, int y, int theClickCount)
 {
 	// 右击鼠标：放下卡牌
@@ -5114,7 +5099,6 @@ void Board::StopAllZombieSounds()
 	}
 }
 
-// GOTY @Patoke: 0x415BD0
 int Board::GetSurvivalFlagsCompleted()
 {
 	int aWavesPerFlag = GetNumWavesPerFlag();
@@ -5906,7 +5890,6 @@ void Board::Update()
 	mPrevMouseY = mApp->mWidgetManager->mLastMouseY;
 }
 
-// GOTY @Patoke: 0x418940
 void Board::UpdateLayers()
 {
 	if (mWidgetManager)
@@ -6638,7 +6621,6 @@ bool Board::ProgressMeterHasFlags()
 	return true;
 }
 
-// GOTY @Patoke: 0x419E30
 void Board::DrawProgressMeter(Graphics* g)
 {
 	if (!HasProgressMeter())
@@ -6760,7 +6742,6 @@ void Board::DrawHouseDoorTop(Graphics* g)
 	}
 }
 
-// GOTY @Patoke: 0x41A700
 void Board::DrawLevel(Graphics* g)
 {
 	// ====================================================================================================
@@ -7645,7 +7626,6 @@ void Board::Draw(Graphics* g)
 	DrawGameObjects(g);
 }
 
-// GOTY @Patoke: 0x41D910
 void Board::SetMustacheMode(bool theEnableMustache)
 {
 	mApp->PlayFoley(FoleyType::FOLEY_POLEVAULT);
@@ -8605,7 +8585,6 @@ void Board::KeyChar(char theChar)
 	}
 }
 
-// GOTY @Patoke: 0x41E6E0
 void Board::AddSunMoney(int theAmount)
 {
 	mSunMoney += theAmount;
@@ -8725,7 +8704,6 @@ void Board::ProcessDeleteQueue()
 	}
 }
 
-// GOTY @Patoke: 0x41EC10
 bool Board::HasConveyorBeltSeedBank()
 {
 	return
@@ -8864,12 +8842,10 @@ bool Board::StageHasFog()
 	return !mApp->IsStormyNightLevel() && mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_INVISIGHOUL && mBackground == BackgroundType::BACKGROUND_4_FOG;
 }
 
-// GOTY @Patoke: inlined 0x41E669
 bool Board::StageIsDayWithoutPool() {
 	return mBackground == BackgroundType::BACKGROUND_1_DAY;
 }
 
-// GOTY @Patoke: inlined 0x41E5E6
 bool Board::StageIsDayWithPool() {
 	return mBackground == BackgroundType::BACKGROUND_3_POOL;
 }
@@ -9135,7 +9111,6 @@ bool GetCircleRectOverlap(int theCircleX, int theCircleY, int theRadius, const R
 	return dx * dx + dy * dy <= theRadius * theRadius;
 }
 
-// GOTY @Patoke: 0x41F6B0
 bool Board::IterateZombies(Zombie*& theZombie)
 {
 	while (mZombies.IterateNext(theZombie))
@@ -9579,7 +9554,6 @@ bool Board::PlantingRequirementsMet(SeedType theSeedType)
 	}
 }
 
-// GOTY @Patoke: 0x420670
 int Board::KillAllZombiesInRadius(int theRow, int theX, int theY, int theRadius, int theRowRange, bool theBurn, int theDamageRangeFlags)
 {
 	Zombie* aZombie = nullptr;

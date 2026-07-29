@@ -32,26 +32,26 @@ class LawnApp;
 using namespace Sexy;
 
 enum AchievementId {
-	HomeSecurity, //
-	NovelPeasPrize, //
-	BetterOffDead, //
-	ChinaShop, //
-	Spudow, //
-	Explodonator, //
-	Morticulturalist, //
-	DontPea, //
-	RollSomeHeads, //
-	Grounded, //
-	Zombologist, //
-	PennyPincher, //
-	SunnyDays, //
-	PopcornParty, //
-	GoodMorning, //
-	NoFungusAmongUs, //
-	BeyondTheGrave, //
-	Immortal, //
-	ToweringWisdom, //
-	MustacheMode, //
+	HomeSecurity,
+	NovelPeasPrize,
+	BetterOffDead,
+	ChinaShop,
+	Spudow,
+	Explodonator,
+	Morticulturalist,
+	DontPea,
+	RollSomeHeads,
+	Grounded,
+	Zombologist,
+	PennyPincher,
+	SunnyDays,
+	PopcornParty,
+	GoodMorning,
+	NoFungusAmongUs,
+	BeyondTheGrave,
+	Immortal,
+	ToweringWisdom,
+	MustacheMode,
     MAX_ACHIEVEMENTS
 };
 
@@ -66,13 +66,13 @@ extern const AchievementItem gAchievementList[MAX_ACHIEVEMENTS];
 
 class AchievementsWidget : public Widget {
 public:
-	LawnApp*	mApp;                       //+GOTY @Patoke: 0xA8
-	int			mScrollDirection;			//+GOTY @Patoke: 0xAC
-	Rect		mMoreRockRect;				//+GOTY @Patoke: 0xC0
-	int			mScrollValue;				//+GOTY @Patoke: 0xB0
-	int			mScrollDecay;				//+GOTY @Patoke: 0xB4
-	int			mDefaultScrollValue;		//+GOTY @Patoke: 0xB8
-	bool		mDidPressMoreButton;		//+GOTY @Patoke: 0xBC
+	LawnApp*	mApp;
+	int			mScrollDirection;
+	Rect		mMoreRockRect;
+	int			mScrollValue;
+	int			mScrollDecay;
+	int			mDefaultScrollValue;
+	bool		mDidPressMoreButton;
 
 	AchievementsWidget(LawnApp* theApp);
 	~AchievementsWidget() override;

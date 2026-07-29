@@ -106,8 +106,8 @@ struct ZombiePicker
 	int								mAllWavesZombieTypeCount[NUM_ZOMBIE_TYPES];
 };
 
-/*inline*/ void						ZombiePickerInitForWave(ZombiePicker* theZombiePicker);
-/*inline*/ void						ZombiePickerInit(ZombiePicker* theZombiePicker);
+void								ZombiePickerInitForWave(ZombiePicker* theZombiePicker);
+void								ZombiePickerInit(ZombiePicker* theZombiePicker);
 
 struct PlantsOnLawn
 {
@@ -238,14 +238,14 @@ public:
 	uint32_t						mGravesCleared;
 	uint32_t						mPlantsEaten;
 	uint32_t						mPlantsShoveled;
-	bool							mPeaShooterUsed;										//+GOTY @Patoke: 0x5784
-	bool							mCatapultPlantsUsed;									//+GOTY @Patoke: 0x5785
-	bool							mMushroomAndCoffeeBeansOnly;							//+GOTY @Patoke: 0x5790
-	bool							mMushroomsUsed;											//+GOTY @Patoke: 0x5791
-	uint32_t						mLevelCoinsCollected;									//+GOTY @Patoke: 0x5788
-	uint32_t						mGargantuarsKillsByCornCob;								//+GOTY @Patoke: 0x578C
-	uint32_t						mCoinsCollected;										//+GOTY @Patoke: 0x57C8
-	uint32_t						mDiamondsCollected;										//+GOTY @Patoke: 0x57CC
+	bool							mPeaShooterUsed;
+	bool							mCatapultPlantsUsed;
+	bool							mMushroomAndCoffeeBeansOnly;
+	bool							mMushroomsUsed;
+	uint32_t						mLevelCoinsCollected;
+	uint32_t						mGargantuarsKillsByCornCob;
+	uint32_t						mCoinsCollected;
+	uint32_t						mDiamondsCollected;
 	uint32_t						mPottedPlantsCollected;
 	uint32_t						mChocolateCollected;
 
@@ -257,10 +257,10 @@ public:
 	int								CountSunBeingCollected();
 	void							DrawGameObjects(Graphics* g);
 	void							ClearCursor();
-	/*inline*/ bool					AreEnemyZombiesOnScreen();
+	bool							AreEnemyZombiesOnScreen();
 	LawnMower*						FindLawnMowerInRow(int theRow);
 //  inline bool						SyncState(DataSync& theDataSync) { /* 未发现 */return true; }
-	/*inline*/ void					SaveGame(const std::string& theFileName);
+	void							SaveGame(const std::string& theFileName);
 	bool							LoadGame(const std::string& theFileName);
 	void							InitLevel();
 	void							DisplayAdvice(std::string_view theAdvice, MessageStyle theMessageStyle, AdviceType theHelpIndex);
@@ -272,7 +272,7 @@ public:
 	ZombieType						PickGraveRisingZombieType();
 	ZombieType						PickZombieType(int theZombiePoints, int theWaveIndex, ZombiePicker* theZombiePicker);
 	int								PickRowForNewZombie(ZombieType theZombieType);
-	/*inline*/ Zombie*				AddZombie(ZombieType theZombieType, int theFromWave);
+	Zombie*							AddZombie(ZombieType theZombieType, int theFromWave);
 	void							SpawnZombieWave();
 	void							RemoveAllZombies();
 	void							RemoveCutsceneZombies();
@@ -295,30 +295,30 @@ public:
 	void							ButtonMouseEnter(int) override{}
 	void							ButtonMouseLeave(int) override{}
 	void							ButtonMouseMove(int, int, int) override{}
-	/*inline*/ void					AddSunMoney(int theAmount);
+	void							AddSunMoney(int theAmount);
 	bool							TakeSunMoney(int theAmount);
-	/*inline*/ bool					CanTakeSunMoney(int theAmount);
-	/*inline*/ void					Pause(bool thePause);
+	bool							CanTakeSunMoney(int theAmount);
+	void							Pause(bool thePause);
 	inline bool						MakeEasyZombieType() { /* 未发现 */return false; }
 	void							TryToSaveGame();
-	/*inline*/ bool					NeedSaveGame();
-	/*inline*/ bool					RowCanHaveZombies(int theRow);
+	bool							NeedSaveGame();
+	bool							RowCanHaveZombies(int theRow);
 	void							ProcessDeleteQueue();
 	bool							ChooseSeedsOnCurrentLevel();
 	int								GetNumSeedsInBank();
-	/*inline*/ bool					StageIsNight();
-	/*inline*/ bool					StageHasPool();
-	/*inline*/ bool					StageHas6Rows();
-	/*inline*/ bool					StageHasFog();
-	/*inline*/ bool					StageIsDayWithoutPool();
-	/*inline*/ bool					StageIsDayWithPool();
+	bool							StageIsNight();
+	bool							StageHasPool();
+	bool							StageHas6Rows();
+	bool							StageHasFog();
+	bool							StageIsDayWithoutPool();
+	bool							StageIsDayWithPool();
 	bool							StageHasGraveStones();
 	int								PixelToGridX(int theX, int theY);
 	int								PixelToGridY(int theX, int theY);
-	/*inline*/ int					GridToPixelX(int theGridX, int theGridY);
+	int								GridToPixelX(int theGridX, int theGridY);
 	int								GridToPixelY(int theGridX, int theGridY);
-	/*inline*/ int					PixelToGridXKeepOnBoard(int theX, int theY);
-	/*inline*/ int					PixelToGridYKeepOnBoard(int theX, int theY);
+	int								PixelToGridXKeepOnBoard(int theX, int theY);
+	int								PixelToGridYKeepOnBoard(int theX, int theY);
 	void							UpdateGameObjects();
 	bool							MouseHitTest(int x, int y, HitResult* theHitResult);
 	void							MouseDownWithPlant(int x, int y, int theClickCount);
@@ -329,7 +329,7 @@ public:
 	void							UpdateToolTip();
 	Plant*							GetTopPlantAt(int theGridX, int theGridY, PlantPriority thePriority);
 	void							GetPlantsOnLawn(int theGridX, int theGridY, PlantsOnLawn* thePlantOnLawn);
-	/*inline*/ int					CountSunFlowers();
+	int								CountSunFlowers();
 	int								GetSeedPacketPositionX(int theIndex);
 	void							AddGraveStones(int theGridX, int theCount, MTRand& theLevelRNG);
 	int								GetGraveStoneCount();
@@ -338,25 +338,25 @@ public:
 	void							DrawShovel(Graphics* g);
 	void							UpdateZombieSpawning();
 	void							UpdateSunSpawning();
-	/*inline*/ void					ClearAdvice(AdviceType theHelpIndex);
+	void							ClearAdvice(AdviceType theHelpIndex);
 	bool							RowCanHaveZombieType(int theRow, ZombieType theZombieType);
-	/*inline*/ int					NumberZombiesInWave(int theWaveIndex);
+	int								NumberZombiesInWave(int theWaveIndex);
 	int								TotalZombiesHealthInWave(int theWaveIndex);
 	void							DrawDebugText(Graphics* g);
 	void							DrawUICoinBank(Graphics* g);
-	/*inline*/ void					ShowCoinBank(int theDuration = 1000);
+	void							ShowCoinBank(int theDuration = 1000);
 	void							FadeOutLevel();
 	void							DrawFadeOut(Graphics* g);
 	void							DrawIce(Graphics* g, int theGridY);
 	bool							IsIceAt(int theGridX, int theGridY);
-	/*inline*/ ZombieID				ZombieGetID(Zombie* theZombie);
-	/*inline*/ Zombie*				ZombieGet(ZombieID theZombieID);
-	/*inline*/ Zombie*				ZombieTryToGet(ZombieID theZombieID);
+	ZombieID						ZombieGetID(Zombie* theZombie);
+	Zombie*							ZombieGet(ZombieID theZombieID);
+	Zombie*							ZombieTryToGet(ZombieID theZombieID);
 	void							DrawDebugObjectRects(Graphics* g);
 	void							UpdateIce();
-	/*inline*/ int					GetIceZPos(int theRow);
-	/*inline*/ bool					CanAddBobSled();
-	/*inline*/ void					ShakeBoard(int theShakeAmountX, int theShakeAmountY);
+	int								GetIceZPos(int theRow);
+	bool							CanAddBobSled();
+	void							ShakeBoard(int theShakeAmountX, int theShakeAmountY);
 	int								CountUntriggerLawnMowers();
 	bool							IterateZombies(Zombie*& theZombie);
 	bool							IteratePlants(Plant*& thePlant);
@@ -366,11 +366,11 @@ public:
 	bool							IterateParticles(TodParticleSystem*& theParticle);
 	bool							IterateReanimations(Reanimation*& theReanimation);
 	bool							IterateGridItems(GridItem*& theGridItem);
-	/*inline*/ Zombie*				AddZombieInRow(ZombieType theZombieType, int theRow, int theFromWave);
-	/*inline*/ bool					IsPoolSquare(int theGridX, int theGridY);
+	Zombie*							AddZombieInRow(ZombieType theZombieType, int theRow, int theFromWave);
+	bool							IsPoolSquare(int theGridX, int theGridY);
 	void							PickZombieWaves();
 	void							StopAllZombieSounds();
-	/*inline*/ bool					HasLevelAwardDropped();
+	bool							HasLevelAwardDropped();
 	void							UpdateProgressMeter();
 	void							DrawUIBottom(Graphics* g);
 	void							DrawUITop(Graphics* g);
@@ -383,15 +383,15 @@ public:
 	void							PickBackground();
 	void							InitZombieWaves();
 	void							InitSurvivalStage();
-	static /*inline*/ int			MakeRenderOrder(RenderLayer theRenderLayer, int theRow, int theLayerOffset);
+	static int						MakeRenderOrder(RenderLayer theRenderLayer, int theRow, int theLayerOffset);
 	void							UpdateGame();
 	void							InitZombieWavesForLevel(int theForLevel);
 	unsigned int					SeedNotRecommendedForLevel(SeedType theSeedType);
 	void							DrawTopRightUI(Graphics* g);
 	void							DrawFog(Graphics* g);
 	void							UpdateFog();
-	/*inline*/ int					LeftFogColumn();
-	static /*inline*/ bool			IsZombieTypePoolOnly(ZombieType theZombieType);
+	int								LeftFogColumn();
+	static bool						IsZombieTypePoolOnly(ZombieType theZombieType);
 	void							DropLootPiece(int thePosX, int thePosY, int theDropFactor);
 	void							UpdateLevelEndSequence();
 	LawnMower*						GetBottomLawnMower();
@@ -401,38 +401,38 @@ public:
 	float							GetPosYBasedOnRow(float thePosX, int theRow);
 	void							NextWaveComing();
 	bool							BungeeIsTargetingCell(int theGridX, int theGridY);
-	/*inline*/ int					PlantingPixelToGridX(int theX, int theY, SeedType theSeedType);
-	/*inline*/ int					PlantingPixelToGridY(int theX, int theY, SeedType theSeedType);
+	int								PlantingPixelToGridX(int theX, int theY, SeedType theSeedType);
+	int								PlantingPixelToGridY(int theX, int theY, SeedType theSeedType);
 	Plant*							FindUmbrellaPlant(int theGridX, int theGridY);
 	void							SetTutorialState(TutorialState theTutorialState);
 	void							DoFwoosh(int theRow);
 	void							UpdateFwoosh();
 	Plant*							SpecialPlantHitTest(int x, int y);
 	void							UpdateMousePosition();
-	/*inline*/ Plant*				ToolHitTestHelper(HitResult* theHitResult);
-	/*inline*/ Plant*				ToolHitTest(int theX, int theY);
+	Plant*							ToolHitTestHelper(HitResult* theHitResult);
+	Plant*							ToolHitTest(int theX, int theY);
 	bool							CanAddGraveStoneAt(int theGridX, int theGridY);
 	void							UpdateGridItems();
-	/*inline*/ GridItem*			AddAGraveStone(int theGridX, int theGridY);
+	GridItem*						AddAGraveStone(int theGridX, int theGridY);
 	int								GetSurvivalFlagsCompleted();
 	bool							HasProgressMeter();
 	void							UpdateCursor();
 	void							UpdateTutorial();
 	SeedType						GetSeedTypeInCursor();
-	/*inline*/ int					CountPlantByType(SeedType theSeedType);
+	int								CountPlantByType(SeedType theSeedType);
 	bool							PlantingRequirementsMet(SeedType theSeedType);
 	bool							HasValidCobCannonSpot();
 	bool							IsValidCobCannonSpot(int theGridX, int theGridY);
 	bool							IsValidCobCannonSpotHelper(int theGridX, int theGridY);
 	void							MouseDownCobcannonFire(int x, int y, int theClickCount);
 	int								KillAllZombiesInRadius(int theRow, int theX, int theY, int theRadius, int theRowRange, bool theBurn, int theDamageRangeFlags); // @Patoke: modified function prototype
-	/*inline*/ int					GetSeedBankExtraWidth();
+	int								GetSeedBankExtraWidth();
 	bool							IsFlagWave(int theWaveNumber);
 	void							DrawHouseDoorTop(Graphics* g);
 	void							DrawHouseDoorBottom(Graphics* g);
 	Zombie*							GetBossZombie();
 	bool							HasConveyorBeltSeedBank();
-	/*inline*/ bool					StageHasRoof();
+	bool							StageHasRoof();
 	void							SpawnZombiesFromPool();
 	void							SpawnZombiesFromSky();
 	void							PickUpTool(GameObjectType theObjectType);
@@ -441,8 +441,8 @@ public:
 	int								CountCoinsBeingCollected();
 	void							BungeeDropZombie(BungeeDropGrid* theBungeeDropGrid, ZombieType theZombieType);
 	void							SetupBungeeDrop(BungeeDropGrid* theBungeeDropGrid);
-	/*inline*/ void					PutZombieInWave(ZombieType theZombieType, int theWaveNumber, ZombiePicker* theZombiePicker);
-	/*inline*/ void					PutInMissingZombies(int theWaveNumber, ZombiePicker* theZombiePicker);
+	void							PutZombieInWave(ZombieType theZombieType, int theWaveNumber, ZombiePicker* theZombiePicker);
+	void							PutInMissingZombies(int theWaveNumber, ZombiePicker* theZombiePicker);
 	Rect							GetShovelButtonRect();
 	void							GetZenButtonRect(GameObjectType theObjectType, Rect& theRect);
 	Plant*							NewPlant(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType = SeedType::SEED_NONE);
@@ -451,40 +451,40 @@ public:
 	void							SurvivalSaveScore();
 	int								CountZombiesOnScreen();
 	int								GetLiveGargantuarCount(); // @Patoke: implemented
-	/*inline*/ int					GetNumWavesPerSurvivalStage();
+	int								GetNumWavesPerSurvivalStage();
 	int								GetLevelRandSeed();
 	void							AddBossRenderItem(RenderItem* theRenderList, int& theCurRenderItem, Zombie* theBossZombie);
-	/*inline*/ GridItem*			GetCraterAt(int theGridX, int theGridY);
-	/*inline*/ GridItem*			GetGraveStoneAt(int theGridX, int theGridY);
-	/*inline*/ GridItem*			GetLadderAt(int theGridX, int theGridY);
-	/*inline*/ GridItem*			AddALadder(int theGridX, int theGridY);
-	/*inline*/ GridItem*			AddACrater(int theGridX, int theGridY);
+	GridItem*						GetCraterAt(int theGridX, int theGridY);
+	GridItem*						GetGraveStoneAt(int theGridX, int theGridY);
+	GridItem*						GetLadderAt(int theGridX, int theGridY);
+	GridItem*						AddALadder(int theGridX, int theGridY);
+	GridItem*						AddACrater(int theGridX, int theGridY);
 	void							InitLawnMowers();
-	/*inline*/ bool					IsPlantInCursor();
+	bool							IsPlantInCursor();
 	void							HighlightPlantsForMouse(int theMouseX, int theMouseY);
 	void							ClearFogAroundPlant(Plant* thePlant, int theSize);
-	/*inline*/ void					RemoveParticleByType(ParticleEffect theEffectType);
-	/*inline*/ GridItem*			GetScaryPotAt(int theGridX, int theGridY);
+	void							RemoveParticleByType(ParticleEffect theEffectType);
+	GridItem*						GetScaryPotAt(int theGridX, int theGridY);
 	void							PuzzleSaveStreak();
-	/*inline*/ void					ClearAdviceImmediately();
-	/*inline*/ bool					IsFinalScaryPotterStage();
-	/*inline*/ void					DisplayAdviceAgain(std::string_view theAdvice, MessageStyle theMessageStyle, AdviceType theHelpIndex);
+	void							ClearAdviceImmediately();
+	bool							IsFinalScaryPotterStage();
+	void							DisplayAdviceAgain(std::string_view theAdvice, MessageStyle theMessageStyle, AdviceType theHelpIndex);
 	GridItem*						GetSquirrelAt(int theGridX, int theGridY);
 	GridItem*						GetZenToolAt(int theGridX, int theGridY);
 	bool							IsPlantInGoldWateringCanRange(int theMouseX, int theMouseY, Plant* thePlant);
 	bool							StageHasZombieWalkInFromRight();
 	void							PlaceRake();
 	GridItem*						GetRake();
-	/*inline*/ bool					IsScaryPotterDaveTalking();
-	/*inline*/ Zombie*				GetWinningZombie();
-	/*inline*/ void					ResetFPSStats();
+	bool							IsScaryPotterDaveTalking();
+	Zombie*							GetWinningZombie();
+	void							ResetFPSStats();
 	int								CountEmptyPotsOrLilies(SeedType theSeedType);
 	GridItem*						GetGridItemAt(GridItemType theGridItemType, int theGridX, int theGridY);
 	bool							ProgressMeterHasFlags();
-	/*inline*/ bool					IsLastStandFinalStage();
-	/*inline*/ int					GetNumWavesPerFlag();
+	bool							IsLastStandFinalStage();
+	int								GetNumWavesPerFlag();
 	int								GetCurrentPlantCost(SeedType theSeedType, SeedType theImitaterType);
-	/*inline*/ bool					PlantUsesAcceleratedPricing(SeedType theSeedType);
+	bool							PlantUsesAcceleratedPricing(SeedType theSeedType);
 	void							FreezeEffectsForCutscene(bool theFreeze);
 	void							LoadBackgroundImages();
 	bool							CanUseGameObject(GameObjectType theGameObject);
@@ -493,7 +493,7 @@ public:
 	void							SetSuperMowerMode(bool theEnableSuperMower);
 	void							DrawZenWheelBarrowButton(Graphics* g, int theOffsetY);
 	void							DrawZenButtons(Graphics* g);
-	/*inline*/ void					OffsetYForPlanting(int& theY, SeedType theSeedType);
+	void							OffsetYForPlanting(int& theY, SeedType theSeedType);
 	void							SetDanceMode(bool theEnableDance);
 	void							SetFutureMode(bool theEnableFuture);
 	void							SetPinataMode(bool theEnablePinata);
@@ -501,20 +501,20 @@ public:
 	void							SetSukhbirMode(bool theEnableSukhbir);
 	bool							MouseHitTestPlant(int x, int y, HitResult* theHitResult);
 	
-	/*inline*/ Reanimation*			CreateRakeReanim(float theRakeX, float theRakeY, int theRenderOrder);
+	Reanimation*					CreateRakeReanim(float theRakeX, float theRakeY, int theRenderOrder);
 	void							CompleteEndLevelSequenceForSaving();
 	void							RemoveZombiesForRepick();
 	int								GetGraveStonesCount();
-	/*inline*/ bool					IsSurvivalStageWithRepick();
-	/*inline*/ bool					IsLastStandStageWithRepick();
+	bool							IsSurvivalStageWithRepick();
+	bool							IsLastStandStageWithRepick();
 	void							DoTypingCheck(KeyCode theKey);
 	int								CountZombieByType(ZombieType theZombieType);
-	static /*inline*/ bool			IsZombieTypeSpawnedOnly(ZombieType theZombieType);
+	static bool						IsZombieTypeSpawnedOnly(ZombieType theZombieType);
 };
 extern bool gShownMoreSunTutorial;
 
 int									GetRectOverlap(const Rect& rect1, const Rect& rect2);
 bool								GetCircleRectOverlap(int theCircleX, int theCircleY, int theRadius, const Rect& theRect);
-/*inline*/ void						BoardInitForPlayer();
+void								BoardInitForPlayer();
 
 #endif // __BOARD_H__

@@ -37,7 +37,6 @@
 #include "../../Sexy.TodLib/TodStringFile.h"
 #include "AchievementsScreen.h"
 
-// GOTY @Patoke: 0x4063E0
 AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowingAchievements)
 {
 	mApp = theApp;
@@ -297,7 +296,6 @@ void AwardScreen::DrawAwardSeed(Graphics* g)
 	g->SetScale(1, 1, 0, 0);
 }
 
-// GOTY @Patoke: 0x4081C0
 void AwardScreen::Draw(Graphics* g)
 {
 	g->SetLinearBlend(true);
@@ -433,7 +431,6 @@ void AwardScreen::Draw(Graphics* g)
 	g->FillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 }
 
-// GOTY @Patoke: 0x408FE0
 void AwardScreen::Update()
 {
 	Widget::Update();
@@ -484,7 +481,6 @@ void AwardScreen::KeyDown(KeyCode theKey)
 	}
 }
 
-// GOTY @Patoke: 0x409530
 void AwardScreen::StartButtonPressed()
 {
 	if (mApp->GetDialog(DIALOG_STORE))
@@ -586,7 +582,6 @@ void AwardScreen::StartButtonPressed()
 	}
 }
 
-// GOTY @Patoke: 0x4097A0
 void AwardScreen::MouseDown(int x, int y, int theClickCount)
 {
 	(void)x;(void)y;
@@ -596,7 +591,6 @@ void AwardScreen::MouseDown(int x, int y, int theClickCount)
 	}
 }
 
-// GOTY @Patoke: 0x409840
 void AwardScreen::MouseUp(int x, int y, int theClickCount)
 {
 	(void)x;(void)y;
@@ -615,7 +609,6 @@ void AwardScreen::MouseUp(int x, int y, int theClickCount)
 }
 
 // @Patoke: implement functions
-// GOTY @Patoke: 0x407C20
 void AwardScreen::DrawAchievements(Graphics* g) {
 	g->SetColorizeImages(true);
 	// Rect aTextWrap = Rect(0, 0, 0, 77); // unused
@@ -643,7 +636,6 @@ void AwardScreen::DrawAchievements(Graphics* g) {
 	}
 }
 
-// GOTY @Patoke: 0x409400
 void AwardScreen::AchievementsContinuePressed() {
 	if (mAwardType == AWARD_ACHIEVEMENTONLY) {
 		mApp->KillAwardScreen();

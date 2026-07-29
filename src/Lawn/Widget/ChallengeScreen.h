@@ -63,7 +63,7 @@ public:
     ~ChallengeScreen() override;
     void                        SetUnlockChallengeIndex(ChallengePage thePage, bool theIsIZombie = false);
     int                         MoreTrophiesNeeded(int theChallengeIndex);
-    /*inline*/ bool             ShowPageButtons();
+    bool                        ShowPageButtons();
     void                        UpdateButtons();
     int                         AccomplishmentsNeeded(int theChallengeIndex);
     void                        DrawButton(Graphics* g, int theChallengeIndex);
@@ -82,8 +82,8 @@ public:
     void                        MouseDown(int x, int y, int theClickCount) override;
 //  virtual void                KeyChar(char theChar);
 
-    /*inline*/ bool             IsScaryPotterLevel(GameMode theGameMode);
-    /*inline*/ bool             IsIZombieLevel(GameMode theGameMode);
+    bool                        IsScaryPotterLevel(GameMode theGameMode);
+    bool                        IsIZombieLevel(GameMode theGameMode);
 };
 
 class ChallengeDefinition

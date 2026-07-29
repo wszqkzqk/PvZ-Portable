@@ -233,11 +233,11 @@ public:
     static std::string       GetNameString(SeedType theSeedType, SeedType theImitaterType = SeedType::SEED_NONE);
     static std::string       GetToolTip(SeedType theSeedType);
     static int              GetRefreshTime(SeedType theSeedType, SeedType theImitaterType = SeedType::SEED_NONE);
-    static /*inline*/ bool  IsNocturnal(SeedType theSeedtype);
-    static /*inline*/ bool  IsFungus(SeedType theSeedType);
-    static /*inline*/ bool  IsAquatic(SeedType theSeedType);
-    static /*inline*/ bool  IsFlying(SeedType theSeedtype);
-    static /*inline*/ bool  IsUpgrade(SeedType theSeedtype);
+    static bool             IsNocturnal(SeedType theSeedtype);
+    static bool             IsFungus(SeedType theSeedType);
+    static bool             IsAquatic(SeedType theSeedType);
+    static bool             IsFlying(SeedType theSeedtype);
+    static bool             IsUpgrade(SeedType theSeedtype);
     void                    UpdateAbilities();
     void                    Squish();
     void                    DoRowAreaDamage(int theDamage, unsigned int theDamageFlags);
@@ -246,7 +246,7 @@ public:
     Rect                    GetPlantAttackRect(PlantWeapon thePlantWeapon = PlantWeapon::WEAPON_PRIMARY);
     Zombie*                 FindSquashTarget();
     void                    UpdateSquash();
-    /*inline*/ bool         NotOnGround();
+    bool                    NotOnGround();
     void                    DoSquashDamage();
     void                    BurnRow(int theRow);
     void                    IceZombies();
@@ -254,7 +254,7 @@ public:
     void                    UpdateGraveBuster();
     TodParticleSystem*      AddAttachedParticle(int thePosX, int thePosY, int theRenderPosition, ParticleEffect theEffect);
     void                    GetPeaHeadOffset(int& theOffsetX, int& theOffsetY);
-    /*inline*/ bool         MakesSun();
+    bool                    MakesSun();
     static void             DrawSeedType(Graphics* g, SeedType theSeedType, SeedType theImitaterType, DrawVariation theDrawVariation, float thePosX, float thePosY);
     void                    KillAllPlantsNearDoom();
     bool                    IsOnHighGround();
@@ -294,7 +294,7 @@ public:
     void                    UpdateCobCannon();
     void                    CobCannonFire(int theTargetX, int theTargetY);
     void                    UpdateGoldMagnetShroom();
-    /*inline*/ bool         IsOnBoard();
+    bool                    IsOnBoard();
     void                    RemoveEffects();
     void                    UpdateCoffeeBean();
     void                    UpdateUmbrella();
@@ -307,8 +307,8 @@ public:
     void                    UpdateReanim();
     void                    SpikeRockTakeDamage();
     bool                    IsSpiky();
-    static /*inline*/ void  PreloadPlantResources(SeedType theSeedType);
-    /*inline*/ bool         IsInPlay();
+    static void             PreloadPlantResources(SeedType theSeedType);
+    bool                    IsInPlay();
     void                    UpdateNeedsFood() { ; }
     void                    PlayIdleAnim(float theRate);
     void                    UpdateFlowerPot();
@@ -336,4 +336,4 @@ public:
 };
 extern const PlantDefinition gPlantDefs[SeedType::NUM_SEED_TYPES];
 
-/*inline*/ const PlantDefinition& GetPlantDefinition(SeedType theSeedType);
+const PlantDefinition& GetPlantDefinition(SeedType theSeedType);

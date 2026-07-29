@@ -146,7 +146,6 @@ void AlmanacDialog::RemovedFromManager(WidgetManager* theWidgetManager)
 	ClearPlantsAndZombies();
 }
 
-// GOTY @Patoke: 0x402C50
 void AlmanacDialog::SetupPlant()
 {
 	ClearPlantsAndZombies();
@@ -167,7 +166,6 @@ void AlmanacDialog::SetupPlant()
 	mPlant->mY = aPosY;
 }
 
-// GOTY @Patoke: 0x402D90
 void AlmanacDialog::SetupZombie()
 {
 	ClearPlantsAndZombies();
@@ -365,7 +363,6 @@ void AlmanacDialog::DrawPlants(Graphics* g)
 	}
 }
 
-// GOTY @Patoke: 0x403DE0
 void AlmanacDialog::DrawZombies(Graphics* g)
 {
 	g->DrawImage(Sexy::IMAGE_ALMANAC_ZOMBIEBACK, 0, 0);
@@ -572,7 +569,6 @@ bool AlmanacDialog::ZombieHasSilhouette(ZombieType theZombieType)
 	return mApp->HasFinishedAdventure() || mApp->mPlayerInfo->GetLevel() > GetZombieDefinition(ZombieType::ZOMBIE_YETI).mStartingLevel;
 }
 
-// GOTY @Patoke: 0x404C50
 bool AlmanacDialog::ZombieIsShown(ZombieType theZombieType)
 {
 	// 试玩模式下，仅展示潜水僵尸及其之前出现的僵尸
@@ -601,7 +597,6 @@ bool AlmanacDialog::ZombieIsShown(ZombieType theZombieType)
 	return false;
 }
 
-// GOTY @Patoke: 0x404D50
 bool AlmanacDialog::ZombieHasDescription(ZombieType theZombieType)
 {
 	int aLevel = mApp->mPlayerInfo->GetLevel();
@@ -637,7 +632,6 @@ void AlmanacDialog::GetZombiePosition(ZombieType theZombieType, int& x, int& y)
 	}
 }
 
-// GOTY @Patoke: 0x404DD0
 ZombieType AlmanacDialog::ZombieHitTest(int x, int y)
 {
 	if (mMouseVisible && mOpenPage == AlmanacPage::ALMANAC_PAGE_ZOMBIES)
@@ -667,7 +661,6 @@ void AlmanacDialog::MouseUp(int x, int y, int theClickCount)
 	else if (mIndexButton->IsMouseOver())	SetPage(ALMANAC_PAGE_INDEX);
 }
 
-// GOTY @Patoke: 0x404F10
 void AlmanacDialog::MouseDown(int x, int y, int theClickCount)
 {
 	(void)theClickCount;

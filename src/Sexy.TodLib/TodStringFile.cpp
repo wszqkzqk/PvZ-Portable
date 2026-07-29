@@ -29,7 +29,7 @@ int gTodStringFormatCount;
 TodStringListFormat* gTodStringFormats;
 
 const int gLawnStringFormatCount = 12;
-TodStringListFormat gLawnStringFormats[12] = {    // GOTY @Patoke: 0x7248EC
+TodStringListFormat gLawnStringFormats[12] = {
 	{ "NORMAL",           nullptr,    Color(40,   50,     90,     255),       0,      0U },
 	{ "FLAVOR",           nullptr,    Color(143,  67,     27,     255),       0,      1U },
 	{ "KEYWORD",          nullptr,    Color(143,  67,     27,     255),       0,      0U },
@@ -171,7 +171,6 @@ std::string TodStringListFind(std::string_view theName)
 	}
 }
 
-// GOTY @Patoke: 0x523B90
 std::string TodStringTranslate(std::string_view theString)
 {
 	if (theString.size() >= 3 && theString[0] == '[')
@@ -209,7 +208,6 @@ bool TodStringListExists(std::string_view theString)
 	return false;
 }
 
-// GOTY @Patoke: 0x523E20
 void TodWriteStringSetFormat(const char* theFormat, TodStringListFormat& theCurrentFormat)
 {
 	for (int i = 0; i < gTodStringFormatCount; i++)
@@ -317,7 +315,6 @@ int TodWriteWordWrappedHelper(Graphics* g, const std::string& theString, int the
 	return TodWriteString(g, theString, theX, theY, theCurrentFormat, theWidth, theJustification, drawString, theOffset, theLength);
 }
 
-// GOTY @Patoke: 0x5241C0
 int TodDrawStringWrappedHelper(Graphics* g, const std::string& theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification, bool drawString)
 {
 	int theMaxChars = theText.size();
@@ -496,7 +493,6 @@ int TodDrawStringWrappedHelper(Graphics* g, const std::string& theText, const Re
 	return (*aCurrentFormat.mNewFont)->GetDescent() + aYOffset - aLineSpacing;
 }
 
-// GOTY @Patoke: 0x5246A0
 void TodDrawStringWrapped(Graphics* g, std::string_view theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification)
 {
 	std::string aTextFinal = TodStringTranslate(theText);

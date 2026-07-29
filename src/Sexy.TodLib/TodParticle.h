@@ -203,8 +203,8 @@ public:
     int32_t                     mEmitterDefCount;
 };
 
-extern int gParticleDefCount;                       // [0x6A9F08]
-extern TodParticleDefinition* gParticleDefArray;    // [0x6A9F0C]。于 LawnApp::LoadingThreadProc() 函数中读取并赋值
+extern int gParticleDefCount;
+extern TodParticleDefinition* gParticleDefArray;    // 由 LawnApp::LoadingThreadProc() 函数中读取并赋值
 
 // ====================================================================================================
 // ★ 【粒子参数】
@@ -217,14 +217,14 @@ public:
     ParticleEffect              mParticleEffect;
     const char*                 mParticleFileName;
 };
-extern int gParticleParamArraySize;                 // [0x6A9F10]
-extern const ParticleParams* gParticleParamArray;         // [0x6A9F14]
+extern int gParticleParamArraySize;
+extern const ParticleParams* gParticleParamArray;
 
 bool                            TodParticleLoadADef(TodParticleDefinition* theParticleDef, const char* theParticleFileName);
 void                            TodParticleLoadDefinitions(const ParticleParams* theParticleParamArray, int theParticleParamArraySize);
 void                            TodParticleFreeDefinitions();
 
-extern const ParticleParams gLawnParticleArray[static_cast<int>(ParticleEffect::NUM_PARTICLES)];  // 0x6A0FF0
+extern const ParticleParams gLawnParticleArray[static_cast<int>(ParticleEffect::NUM_PARTICLES)];
 
 // ######################################################################################################################################################
 // ############################################################ 以下正式开始粒子系统相关声明 ############################################################
@@ -285,7 +285,7 @@ public:
     void							DisposeHolder();
     TodParticleSystem*				AllocParticleSystemFromDef(float theX, float theY, int theRenderOrder, TodParticleDefinition* theDefinition, ParticleEffect theParticleEffect);
     TodParticleSystem*				AllocParticleSystem(float theX, float theY, int theRenderOrder, ParticleEffect theParticleEffect);
-    /*inline*/ bool					IsOverLoaded();
+    bool							IsOverLoaded();
 };
 
 class ParticleRenderParams
@@ -371,12 +371,12 @@ public:
 	void							DeleteAll();
 	void							UpdateParticleField(TodParticle* theParticle, ParticleField* theParticleField, float theParticleTimeValue, int theFieldIndex);
 	void							UpdateSystemField(ParticleField* theParticleField, float theParticleTimeValue, int theFieldIndex);
-    /*inline*/ float				SystemTrackEvaluate(FloatParameterTrack& theTrack, ParticleSystemTracks theSystemTrack);
-	static /*inline*/ float			ParticleTrackEvaluate(FloatParameterTrack& theTrack, TodParticle* theParticle, ParticleTracks theParticleTrack);
+    float							SystemTrackEvaluate(FloatParameterTrack& theTrack, ParticleSystemTracks theSystemTrack);
+	static float					ParticleTrackEvaluate(FloatParameterTrack& theTrack, TodParticle* theParticle, ParticleTracks theParticleTrack);
 	void							DeleteParticle(TodParticle* theParticle);
 	void							DeleteNonCrossFading();
 };
-/*inline*/ float                    CrossFadeLerp(float theFrom, float theTo, bool theFromIsSet, bool theToIsSet, float theFraction);
+float                               CrossFadeLerp(float theFrom, float theTo, bool theFromIsSet, bool theToIsSet, float theFraction);
 void								RenderParticle(Graphics* g, TodParticle* theParticle, const Color& theColor, ParticleRenderParams* theParams, TodTriangleGroup* theTriangleGroup);
 
 class TodParticleSystem

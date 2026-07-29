@@ -125,7 +125,6 @@ bool GameButton::IsButtonDown()
 	return mIsDown && mIsOver && !mDisabled && !mBtnNoDraw;
 }
 
-// GOTY @Patoke: 0x44AAC0
 void GameButton::Draw(Graphics* g)
 {
 	if (mBtnNoDraw)
@@ -237,7 +236,6 @@ bool GameButton::IsMouseOver()
 	return Rect(mX, mY, mWidth, mHeight).Contains(aMouseX, aMouseY);
 }
 
-// GOTY @Patoke: 0x44AF50
 void GameButton::Update()
 {
 	WidgetManager* aManager = mApp->mWidgetManager;
@@ -310,7 +308,6 @@ LawnStoneButton* MakeButton(int theId, ButtonListener* theListener, std::string_
 	return aButton;
 }
 
-// GOTY @Patoke: 0x44B2B0
 NewLawnButton::NewLawnButton(Image* theComponentImage, int theId, ButtonListener* theListener) : DialogButton(theComponentImage, theId, theListener)
 {
 	mHiliteFont = nullptr;
@@ -328,7 +325,6 @@ NewLawnButton::~NewLawnButton()
 	//	delete mHiliteFont;
 }
 
-// GOTY @Patoke: 0x44B383
 void NewLawnButton::Draw(Graphics* g)
 {
 	if (mBtnNoDraw)
@@ -396,7 +392,6 @@ void NewLawnButton::Draw(Graphics* g)
 	}
 }
 
-// GOTY @Patoke: 0x44B7C0
 bool NewLawnButton::IsPointVisible(int x, int y)
 {
 	if (!mUsePolygonShape)
@@ -405,7 +400,6 @@ bool NewLawnButton::IsPointVisible(int x, int y)
 	return TodIsPointInPolygon(mPolygonShape, 4, SexyVector2(x, y));
 }
 
-// GOTY @Patoke: 0x44B810
 NewLawnButton* MakeNewButton(int theId, ButtonListener* theListener, std::string_view theText, _Font* theFont, Image* theImageNormal, Image* theImageOver, Image* theImageDown)
 {
 	NewLawnButton* aButton = new NewLawnButton(nullptr, theId, theListener);

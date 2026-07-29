@@ -72,15 +72,15 @@ public:
     void                    Update();
     void                    Draw(Graphics* g);
     void                    Collect();
-    /*inline*/ int          GetSunValue();
-    static /*inline*/ int   GetCoinValue(CoinType theCoinType);
+    int                     GetSunValue();
+    static int              GetCoinValue(CoinType theCoinType);
     void                    UpdateFade();
     void                    UpdateFall();
     void                    ScoreCoin();
     void                    UpdateCollected();
     Color                   GetColor();
-    /*inline*/ bool         IsMoney();
-    /*inline*/ bool         IsSun();
+    bool                    IsMoney();
+    bool                    IsSun();
     float                   GetSunScale();
     inline bool             IsOnGround() { return false; }
     SeedType                GetFinalSeedPacketType();
@@ -95,7 +95,7 @@ public:
     void                    PlayLaunchSound();
     void                    PlayGroundSound();
 
-    static /*inline*/ bool  IsMoney(CoinType theType);
+    static bool             IsMoney(CoinType theType);
 };
 
 #endif

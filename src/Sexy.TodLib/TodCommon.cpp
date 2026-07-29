@@ -411,7 +411,6 @@ float TodAnimateCurveFloat(int theTimeStart, int theTimeEnd, int theTimeAge, flo
 	return TodCurveEvaluateClamped(aWarpedAge, thePositionStart, thePositionEnd, theCurve);
 }
 
-// GOTY @Patoke: 0x51BEA0
 int TodAnimateCurve(int theTimeStart, int theTimeEnd, int theTimeAge, int thePositionStart, int thePositionEnd, TodCurves theCurve)
 {
 	return FloatRoundToInt(TodAnimateCurveFloat(theTimeStart, theTimeEnd, theTimeAge, thePositionStart, thePositionEnd, theCurve));
@@ -623,7 +622,6 @@ void TodDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& t
 	}
 }
 
-// GOTY @Patoke: 0x51C863
 void TodDrawImageCelF(Graphics* g, Image* theImageStrip, float thePosX, float thePosY, int theCelCol, int theCelRow)
 {
 	TOD_ASSERT(theCelCol >= 0 && theCelCol < theImageStrip->mNumCols);
@@ -805,7 +803,6 @@ void TodDrawImageCelScaledF(Graphics* g, Image* theImageStrip, float thePosX, fl
 	TodBltMatrix(g, theImageStrip, aTransform, g->mClipRect, aColor, g->mDrawMode, aSrcRect);
 }
 
-// GOTY @Patoke: 0x51CC90
 void TodDrawImageScaledF(Graphics* g, Image* theImage, float thePosX, float thePosY, float theScaleX, float theScaleY)
 {
 	if (theScaleX == 1.0f && theScaleY == 1.0f)
@@ -1007,7 +1004,6 @@ void SexyMatrix3Multiply(SexyMatrix3& m, const SexyMatrix3& l, const SexyMatrix3
 	}
 }
 
-// GOTY @Patoke: 0x51D2C0
 Color GetFlashingColor(uint32_t theCounter, int theFlashTime)
 {
 	int aTimeAge = static_cast<int>(theCounter % static_cast<uint32_t>(theFlashTime));
@@ -1029,7 +1025,6 @@ Color ColorAdd(const Color& theColor1, const Color& theColor2)
 	return Color(ClampInt(r, 0, 255), ClampInt(g, 0, 255), ClampInt(b, 0, 255), ClampInt(a, 0, 255));  // 线性减淡
 }
 
-// GOTY @Patoke: 0x51D3C0
 int ColorComponentMultiply(int theColor1, int theColor2)
 {
 	return ClampInt(theColor1 * theColor2 / 255, 0, 255);  // 正片叠底
@@ -1045,13 +1040,11 @@ Color ColorsMultiply(const Color& theColor1, const Color& theColor2)
 	);  // 正片叠底
 }
 
-// GOTY @Patoke: inlined 0x51D4C0
 bool TodLoadResources(const std::string& theGroup)
 {
 	return ((TodResourceManager*)gSexyAppBase->mResourceManager)->TodLoadResources(theGroup);
 }
 
-// GOTY @Patoke: 0x51D4C0
 bool TodResourceManager::TodLoadResources(const std::string& theGroup)
 {
 	if (IsGroupLoaded(theGroup))
@@ -1276,7 +1269,6 @@ std::string TodReplaceNumberString(std::string_view theText, const char* theStri
 	return aFinalString;
 }
 
-// GOTY @Patoke: 0x51DB00
 bool TodIsPointInPolygon(const SexyVector2* thePolygonPoint, int theNumberPolygonPoints, const SexyVector2& theCheckPoint)
 {
 	TOD_ASSERT(theNumberPolygonPoints >= 3);

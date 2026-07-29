@@ -111,7 +111,6 @@ Zombie::Zombie()
 {
 }
 
-// GOTY @Patoke: 0x5329A0
 void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Zombie* theParentZombie, int theFromWave)
 {
     TOD_ASSERT(theType >= 0 && theType <= ZombieType::NUM_ZOMBIE_TYPES);
@@ -1133,7 +1132,6 @@ void Zombie::BungeeDropZombie(Zombie* theDroppedZombie, int theGridX, int theGri
     theDroppedZombie->mRenderOrder = mRenderOrder + 1;
 }
 
-// GOTY @Patoke: 0x535110
 void Zombie::PickRandomSpeed()
 {
     if (mZombiePhase == ZombiePhase::PHASE_SNORKEL_WALKING_IN_POOL)
@@ -2807,7 +2805,6 @@ ZombieID Zombie::SummonBackupDancer(int theRow, int thePosX)
     return mBoard->ZombieGetID(aZombie);
 }
 
-// GOTY @Patoke: 0x539000
 void Zombie::SummonBackupDancers()
 {
     if (!mHasHead)
@@ -2832,7 +2829,6 @@ void Zombie::SummonBackupDancers()
     }
 }
 
-// GOTY @Patoke: 0x5390E0
 bool Zombie::NeedsMoreBackupDancers()
 {
     for (int i = 0; i < NUM_BACKUP_DANCERS; i++)
@@ -2856,7 +2852,6 @@ bool Zombie::NeedsMoreBackupDancers()
     return false;
 }
 
-// GOTY @Patoke: 0x53919E
 void Zombie::PlayZombieReanim(const char* theTrackName, ReanimLoopType theLoopType, int theBlendTime, float theAnimRate)
 {
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
@@ -2871,7 +2866,6 @@ void Zombie::PlayZombieReanim(const char* theTrackName, ReanimLoopType theLoopTy
     UpdateAnimSpeed();
 }
 
-// GOTY @Patoke: 0x539210
 void Zombie::UpdateZombieBackupDancer()
 {
     if (mIsEating)
@@ -2917,7 +2911,6 @@ void Zombie::UpdateZombieBackupDancer()
     }
 }
 
-// GOTY @Patoke: 0x539360
 void Zombie::UpdateZombieDancer()
 {
     if (mIsEating)
@@ -3307,7 +3300,6 @@ void Zombie::UpdateZombieFalling()
     }
 }
 
-// GOTY @Patoke: 0x522CE0
 void Zombie::OverrideParticleScale(TodParticleSystem* aParticle)
 {
     if (aParticle)
@@ -3316,7 +3308,6 @@ void Zombie::OverrideParticleScale(TodParticleSystem* aParticle)
     }
 }
 
-// GOTY @Patoke: 0x539F60
 void Zombie::OverrideParticleColor(TodParticleSystem* aParticle)
 {
     if (aParticle)
@@ -3334,7 +3325,6 @@ void Zombie::OverrideParticleColor(TodParticleSystem* aParticle)
     }
 }
 
-// GOTY @Patoke: 0x539FC0
 void Zombie::DropFlag()
 {
     if (mZombieType != ZombieType::ZOMBIE_FLAG || !mHasObject)
@@ -3467,7 +3457,6 @@ void Zombie::SetupReanimForLostHead()
     ReanimShowPrefix("anim_tongue", RENDER_GROUP_HIDDEN);
 }
 
-// GOTY @Patoke: 0x53A1DB
 void Zombie::DropHead(unsigned int theDamageFlags)
 {
     if (!CanLoseBodyParts() || !mHasHead)
@@ -3655,7 +3644,6 @@ void Zombie::DropHead(unsigned int theDamageFlags)
     mApp->PlayFoley(FoleyType::FOLEY_LIMBS_POP);
 }
 
-// GOTY @Patoke: 0x53A730
 void Zombie::SetupReanimForLostArm(unsigned int theDamageFlags)
 {
     switch (mZombieType)
@@ -4391,7 +4379,6 @@ void Zombie::UpdateClimbingLadder()
     }
 }
 
-// GOTY @Patoke: 0x53B9F1
 void Zombie::UpdateActions()
 {
     if (mZombieHeight == ZombieHeight::HEIGHT_UP_LADDER)
@@ -5575,7 +5562,6 @@ void Zombie::DrawBungeeTarget(Graphics* g)
     g->DrawImageF(IMAGE_BUNGEETARGET, aTargetX, aTargetY + mAltitude);
 }
 
-// GOTY @Patoke: 0x53D710
 void Zombie::DrawDancerReanim(Graphics* g)
 {
     Color aSpotLightColor;
@@ -5622,7 +5608,6 @@ void Zombie::DrawDancerReanim(Graphics* g)
     }
 }
 
-// GOTY @Patoke: 0x53D950
 void Zombie::DrawReanim(Graphics* g, const ZombieDrawPosition& theDrawPos, int theBaseRenderGroup)
 {
     Reanimation* aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
@@ -6155,7 +6140,6 @@ int Zombie::GetDancerFrame()
 #endif
 }
 
-// GOTY @Patoke: 0x53E900
 ZombiePhase Zombie::GetDancerPhase()
 {
     int aFrame = GetDancerFrame();
@@ -6209,7 +6193,6 @@ void Zombie::DrawIceTrap(Graphics* g, const ZombieDrawPosition& theDrawPos, bool
     TodDrawImageScaledF(g, theFront ? IMAGE_ICETRAP : IMAGE_ICETRAP2, aOffsetX, aOffsetY, aScale, aScale);
 }
 
-// GOTY @Patoke: 0x53EAD0
 void Zombie::DrawButter(Graphics* g, const ZombieDrawPosition& theDrawPos)
 {
     float aOffsetX = mPosX + theDrawPos.mImageOffsetX + theDrawPos.mHeadX + 11.0f;
@@ -6260,7 +6243,6 @@ void Zombie::DrawButter(Graphics* g, const ZombieDrawPosition& theDrawPos)
     TodDrawImageScaledF(g, IMAGE_REANIM_CORNPULT_BUTTER_SPLAT, aOffsetX, aOffsetY, aScale, aScale);
 }
 
-// GOTY @Patoke: 0x53EC85
 void Zombie::Draw(Graphics* g)
 {
     if (mZombieHeight == ZombieHeight::HEIGHT_GETTING_BUNGEE_DROPPED)
@@ -6929,7 +6911,6 @@ void Zombie::CheckForPool()
     }
 }
 
-// GOTY @Patoke: 0x540350
 bool Zombie::IsOnHighGround()
 {
     return IsOnBoard() && mBoard->mGridSquareType[mBoard->PixelToGridXKeepOnBoard(mX + 75, mY)][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND;
@@ -8846,7 +8827,6 @@ void Zombie::DetachShield()
     mShieldHealth = 0;
 }
 
-// GOTY @Patoke: 0x543BB0
 void Zombie::ReanimShowPrefix(const char* theTrackPrefix, int theRenderGroup)
 {
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
@@ -8856,7 +8836,6 @@ void Zombie::ReanimShowPrefix(const char* theTrackPrefix, int theRenderGroup)
     }
 }
 
-// GOTY @Patoke: 0x543C00
 void Zombie::ReanimShowTrack(const char* theTrackName, int theRenderGroup)
 {
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
@@ -9524,7 +9503,6 @@ void Zombie::DrawShadow(Graphics* g)
     g->ClearClipRect();
 }
 
-// GOTY @Patoke: 0x54505E
 void Zombie::GetTrackPosition(const char* theTrackName, float& thePosX, float& thePosY)
 {
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);

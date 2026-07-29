@@ -109,7 +109,6 @@ constinit const ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
 	{ .mChallengeMode = GameMode::GAMEMODE_INTRO, .mChallengeIconIndex = 10, .mPage = ChallengePage::CHALLENGE_PAGE_LIMBO, .mRow = 2, .mCol = 3, .mChallengeName = "Intro" }
 };
 
-// GOTY @Patoke: 0x430810
 ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 {
 	mLockShakeX = 0;

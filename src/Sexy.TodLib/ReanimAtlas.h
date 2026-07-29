@@ -59,12 +59,12 @@ public:
     ~ReanimAtlas();
 
     void                            ReanimAtlasCreate(ReanimatorDefinition* theReanimDef);
-    /*inline*/ void                 AddImage(Image* theImage);
-    /*inline*/ int                  FindImage(Image* theImage);
+    void                            AddImage(Image* theImage);
+    int                             FindImage(Image* theImage);
     bool                            ImageFits(int theImageCount, const Rect& rectTest, int theMaxWidth);
     bool                            ImageFindPlaceOnSide(ReanimAtlasImage* theAtlasImageToPlace, int theImageCount, int theMaxWidth, bool theToRight);
-    /*inline*/ bool                 ImageFindPlace(ReanimAtlasImage* theAtlasImageToPlace, int theImageCount, int theMaxWidth);
-    /*inline*/ bool                 PlaceAtlasImage(ReanimAtlasImage* theAtlasImageToPlace, int theImageCount, int theMaxWidth);
+    bool                            ImageFindPlace(ReanimAtlasImage* theAtlasImageToPlace, int theImageCount, int theMaxWidth);
+    bool                            PlaceAtlasImage(ReanimAtlasImage* theAtlasImageToPlace, int theImageCount, int theMaxWidth);
     int                             PickAtlasWidth();
     void                            ArrangeImages(int& theAtlasWidth, int& theAtlasHeight);
     ReanimAtlasImage*               GetEncodedReanimAtlas(Image* theImage);

@@ -49,11 +49,11 @@ public:
     bool                        mPreloaded;
     bool                        mPlacedZombies;
     bool                        mPlacedLawnItems;
-    int                         mCrazyDaveCountDown;              //+0x38 Countdown for Crazy Dave's upsell dialog
-    int                         mCrazyDaveLastTalkIndex;          //+0x3C Index of Crazy Dave's upsell dialog lines
-    bool                        mUpsellHideBoard;                 //+0x40 Whether to hide the board during upsell
-    ChallengeScreen*            mUpsellChallengeScreen;           //+0x44 The challenge screen inserted during upsell
-    bool                        mPreUpdatingBoard;                //+0x48 Whether the board is pre-updating during scene setup
+    int                         mCrazyDaveCountDown;              // Countdown for Crazy Dave's upsell dialog
+    int                         mCrazyDaveLastTalkIndex;          // Index of Crazy Dave's upsell dialog lines
+    bool                        mUpsellHideBoard;                 // Whether to hide the board during upsell
+    ChallengeScreen*            mUpsellChallengeScreen;           // The challenge screen inserted during upsell
+    bool                        mPreUpdatingBoard;                // Whether the board is pre-updating during scene setup
 	std::vector<std::string> mLoadedResourceNames;
 
 public:
@@ -64,43 +64,43 @@ public:
     void                        CancelIntro();
     void                        Update();
     void                        AnimateBoard();
-    /*inline*/ void             StartSeedChooser();
-    /*inline*/ void             EndSeedChooser();
-    /*inline*/ int              CalcPosition(int theTimeStart, int theTimeEnd, int thePositionStart, int thePositionEnd);
+    void                        StartSeedChooser();
+    void                        EndSeedChooser();
+    int                         CalcPosition(int theTimeStart, int theTimeEnd, int thePositionStart, int thePositionEnd);
     void                        PlaceStreetZombies();
     void                        AddGraveStoneParticles();
     void                        PlaceAZombie(ZombieType theZombieType, int theGridX, int theGridY);
     bool                        CanZombieGoInGridSpot(ZombieType theZombieType, int theGridX, int theGridY, bool theZombieGrid[5][5]);
-    /*inline*/ bool             IsSurvivalRepick();
-    /*inline*/ bool             IsAfterSeedChooser();
+    bool                        IsSurvivalRepick();
+    bool                        IsAfterSeedChooser();
     void                        AddFlowerPots();
     void                        UpdateZombiesWon();
     void                        StartZombiesWon();
-    /*inline*/ bool             ShowZombieWalking();
-    /*inline*/ bool             IsCutSceneOver();
+    bool                        ShowZombieWalking();
+    bool                        IsCutSceneOver();
     void                        ZombieWonClick();
     void                        MouseDown(int theX, int theY);
     void                        KeyDown(KeyCode theKey);
-    /*inline*/ void             AdvanceCrazyDaveDialog(bool theJustSkipping);
+    void                        AdvanceCrazyDaveDialog(bool theJustSkipping);
     void                        ShowShovel();
     bool                        CanGetPacketUpgrade();
     bool                        CanGetPacketUpgrade(int theIndex);
     void                        FindPlaceForStreetZombies(ZombieType theZombieType, bool theZombieGrid[5][5], int& thePosX, int& thePosY);
     void                        FindAndPlaceZombie(ZombieType theZombieType, bool theZombieGrid[5][5]);
-    static /*inline*/ bool      Is2x2Zombie(ZombieType theZombieType);
+    static bool                 Is2x2Zombie(ZombieType theZombieType);
     void                        PreloadResources();
-    /*inline*/ bool             IsBeforePreloading();
-    /*inline*/ bool             IsShowingCrazyDave();
+    bool                        IsBeforePreloading();
+    bool                        IsShowingCrazyDave();
     bool                        IsNonScrollingCutscene();
     bool                        IsScrolledLeftAtStart();
-    /*inline*/ bool             IsInShovelTutorial();
+    bool                        IsInShovelTutorial();
     void                        PlaceLawnItems();
     bool                        CanGetSecondPacketUpgrade();
     int                         ParseDelayTimeFromMessage();
     int                         ParseTalkTimeFromMessage();
     void                        ClearUpsellBoard();
     void                        LoadIntroBoard();
-    /*inline*/ void             AddUpsellZombie(ZombieType theZombieType, int thePixelX, int theGridY);
+    void                        AddUpsellZombie(ZombieType theZombieType, int thePixelX, int theGridY);
     void                        LoadUpsellBoardPool();
     void                        LoadUpsellBoardFog();
     void                        LoadUpsellChallengeScreen();
@@ -109,7 +109,7 @@ public:
     void                        DrawUpsell(Graphics* g);
     void                        UpdateIntro();
     void                        DrawIntro(Graphics* g);
-    /*inline*/ bool             ShouldRunUpsellBoard();
+    bool                        ShouldRunUpsellBoard();
 };
 
 #endif

@@ -500,7 +500,6 @@ void Projectile::DoSplashDamage(Zombie* theZombie)
 	}
 }
 
-// GOTY @Patoke: 0x471B41
 void Projectile::UpdateLobMotion()
 {
 	if (mProjectileType == ProjectileType::PROJECTILE_COBBIG && mPosZ < -700.0f)

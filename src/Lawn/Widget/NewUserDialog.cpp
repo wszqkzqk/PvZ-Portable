@@ -24,7 +24,6 @@
 #include "../../Resources.h"
 #include "widget/WidgetManager.h"
 
-// GOTY @Patoke: 0x460F20
 NewUserDialog::NewUserDialog(LawnApp* theApp, bool isRename) : LawnDialog(
 	theApp, 
 	isRename ? Dialogs::DIALOG_RENAMEUSER : Dialogs::DIALOG_CREATEUSER, 

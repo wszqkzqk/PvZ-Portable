@@ -42,11 +42,11 @@ class PakCollection;
 class PakRecord
 {
 public:
-	PakCollection*			mCollection;			//+0x0：指向该资源文件所在的资源包的 PakCollection
-	std::string				mFileName;				//+0x4：资源文件的名称及路径（路径从 .pak 开始），例如 sounds\zombie_falling_1.ogg
-	int64_t				mFileTime;				//+0x20：八字节型的资源文件的时间戳
-	int						mStartPos;				//+0x28：该资源文件在资源包中的位置（即在 mCollection->mDataPtr 中的偏移量）
-	int						mSize;					//+0x2C：资源文件的大小，单位为 Byte（字节数）
+	PakCollection*			mCollection;			// 指向该资源文件所在的资源包的 PakCollection
+	std::string				mFileName;				// 资源文件的名称及路径（路径从 .pak 开始），例如 sounds\zombie_falling_1.ogg
+	int64_t				mFileTime;				// 八字节型的资源文件的时间戳
+	int						mStartPos;				// 该资源文件在资源包中的位置（即在 mCollection->mDataPtr 中的偏移量）
+	int						mSize;					// 资源文件的大小，单位为 Byte（字节数）
 };
 
 typedef std::map<std::string, PakRecord> PakRecordMap;
@@ -59,7 +59,7 @@ class PakCollection
 public:
 	//HANDLE					mFileHandle;
 	//HANDLE					mMappingHandle;
-	void*						mDataPtr;				//+0x8：资源包中的所有数据
+	void*						mDataPtr;				// 资源包中的所有数据
 
 	explicit PakCollection(size_t size) { mDataPtr = malloc(size); }
 
@@ -92,8 +92,8 @@ public:
 class PakInterface : public PakInterfaceBase
 {
 public:
-	PakCollectionList		mPakCollectionList;		//+0x4：通过 AddPakFile() 添加的各个资源包的内存映射文件数据的链表
-	PakRecordMap			mPakRecordMap;			//+0x10：所有已添加的资源包中的所有资源文件的、从文件名到文件数据的映射容器
+	PakCollectionList		mPakCollectionList;		// 通过 AddPakFile() 添加的各个资源包的内存映射文件数据的链表
+	PakRecordMap			mPakRecordMap;			// 所有已添加的资源包中的所有资源文件的、从文件名到文件数据的映射容器
 
 	static std::string		NormalizePakPath(std::string_view theFileName);
 

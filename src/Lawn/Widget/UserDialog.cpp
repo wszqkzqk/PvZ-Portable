@@ -171,7 +171,6 @@ void UserDialog::ListClicked(int theId, int theIdx, int theClickCount)
     }
 }
 
-// GOTY @Patoke: 0x5278C0
 void UserDialog::ButtonDepress(int theId)
 {
     LawnDialog::ButtonDepress(theId);

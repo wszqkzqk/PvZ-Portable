@@ -57,7 +57,6 @@ GameSelectorOverlay::GameSelectorOverlay(GameSelector* theGameSelector)
 	mHasAlpha = true;
 }
 
-// GOTY @Patoke: 0x44B8D0
 GameSelector::GameSelector(LawnApp* theApp)
 {
 	TodHesitationTrace("pregameselector");
@@ -404,7 +403,6 @@ GameSelector::~GameSelector()
 	delete mToolTip;
 }
 
-// GOTY @Patoke: 0x44CDD0
 void GameSelector::SyncButtons()
 {
 	bool aAlmanacAvailable = mApp->CanShowAlmanac() || mUnlockSelectorCheat;
@@ -501,7 +499,6 @@ void GameSelector::SyncButtons()
 	}
 }
 
-// GOTY @Patoke: 0x44D230
 void GameSelector::AddTrophySparkle()
 {
 	TOD_ASSERT(mTrophyParticleID == PARTICLESYSTEMID_NULL);
@@ -509,7 +506,6 @@ void GameSelector::AddTrophySparkle()
 	mTrophyParticleID = mApp->ParticleGetID(aTrophyParticle);
 }
 
-// GOTY @Patoke: 0x44D270
 void GameSelector::SyncProfile(bool theShowLoading)
 {
 	if (theShowLoading)
@@ -578,7 +574,6 @@ void GameSelector::SyncProfile(bool theShowLoading)
 	ReportAchievement::AchievementInitForPlayer(mApp); // @Patoke: add call
 }
 
-// GOTY @Patoke: seems to be inlined? 0x44DCC6
 void GameSelector::Draw(Graphics* g)
 {
 	if (mApp->GetDialog(Dialogs::DIALOG_STORE) || mApp->GetDialog(Dialogs::DIALOG_ALMANAC))
@@ -632,7 +627,6 @@ void GameSelector::Draw(Graphics* g)
 	}
 }
 
-// GOTY @Patoke: 0x44D750
 void GameSelector::DrawOverlay(Graphics* g)
 {
 	g->SetLinearBlend(true);
@@ -740,7 +734,6 @@ void GameSelector::DrawOverlay(Graphics* g)
 	mToolTip->Draw(g);
 }
 
-// GOTY @Patoke: 0x44DE6D
 void GameSelector::UpdateTooltip()
 {
 	if (!mApp->HasFinishedAdventure() || mApp->GetDialog(Dialogs::DIALOG_MESSAGE))
@@ -775,7 +768,6 @@ void GameSelector::UpdateTooltip()
 	mToolTip->Update();
 }
 
-// GOTY @Patoke: 0x44E030
 void GameSelector::Update()
 {
 	Widget::Update();
@@ -1001,7 +993,6 @@ void GameSelector::Update()
 	aSelectorReanim->SetImageOverride("woodsign3", (mZombatarButton->mIsOver || mZombatarButton->mIsDown) ? Sexy::IMAGE_REANIM_SELECTORSCREEN_WOODSIGN3_PRESS : nullptr);
 }
 
-// GOTY @Patoke: 0x44EA40
 void GameSelector::TrackButton(DialogButton* theButton, const char* theTrackName, float theOffsetX, float theOffsetY)
 {
 	Reanimation* aSelectorReanim = mApp->ReanimationGet(mSelectorReanimID);
@@ -1080,7 +1071,6 @@ void GameSelector::OrderInManagerChanged()
 	//mWidgetManager->PutInfront(mQuickPlayButton, this);
 }
 
-// GOTY @Patoke: 0x44EB11
 void GameSelector::KeyDown(KeyCode theKey)
 {
 	if (theKey == KeyCode::KEYCODE_ESCAPE)
@@ -1163,7 +1153,6 @@ void GameSelector::KeyDown(KeyCode theKey)
 	}
 }
 
-// GOTY @Patoke: 0x44EEE0
 void GameSelector::KeyChar(char theChar)
 {
 	if (mStartingGame)
@@ -1203,7 +1192,6 @@ void GameSelector::KeyChar(char theChar)
 	}
 }
 
-// GOTY @Patoke: 0x44F040
 void GameSelector::MouseDown(int x, int y, int theClickCount)
 {
 	(void)theClickCount;
@@ -1221,7 +1209,6 @@ void GameSelector::MouseDown(int x, int y, int theClickCount)
 		mStartingGameCounter = 450;
 }
 
-// GOTY @Patoke: 0x44F1A0
 void GameSelector::ButtonMouseEnter(int theId)
 {
 	if ((theId == GameSelector::GameSelector_Minigame && mMinigamesLocked) ||
@@ -1232,7 +1219,6 @@ void GameSelector::ButtonMouseEnter(int theId)
 	mApp->PlayFoley(FoleyType::FOLEY_BLEEP);
 }
 
-// GOTY @Patoke: 0x44F220
 void GameSelector::ButtonPress(int theId)
 {
 	if (theId == GameSelector::GameSelector_Adventure || theId == GameSelector::GameSelector_Minigame ||
@@ -1243,7 +1229,6 @@ void GameSelector::ButtonPress(int theId)
 		mApp->PlaySample(Sexy::SOUND_TAP);
 }
 
-// GOTY @Patoke: 0x44F270
 void GameSelector::ClickedAdventure()
 {
 	if (mApp->IsTrialStageLocked() && (mLevel >= 25 || mApp->HasFinishedAdventure()))
@@ -1289,13 +1274,11 @@ void GameSelector::ClickedAdventure()
 			aHandReanim->mTrackInstances[i].mIgnoreClipRect = true;
 }
 
-// GOTY @Patoke: 0x44F590
 bool GameSelector::ShouldDoZenTuturialBeforeAdventure()
 {
 	return !mApp->HasFinishedAdventure() && mApp->mPlayerInfo->GetLevel() == 45 && mApp->mPlayerInfo->mNumPottedPlants == 0;
 }
 
-// GOTY @Patoke: 0x44F5C0
 void GameSelector::ButtonDepress(int theId)
 {
 	if (mSlideCounter > 0)
@@ -1386,7 +1369,6 @@ void GameSelector::ButtonDepress(int theId)
 	}
 }
 
-// GOTY @Patoke: 0x44F880
 void GameSelector::AddPreviewProfiles()
 {
 	PlayerInfo* aProfile;
@@ -1490,7 +1472,6 @@ void GameSelector::AddPreviewProfiles()
 }
 
 // @Patoke: implemented functions
-// GOTY @Patoke: 0x450140
 void GameSelector::SlideTo(int theX, int theY)
 {
 	if (mSlideCounter > 0)
@@ -1513,7 +1494,6 @@ void GameSelector::ShowZombatarScreen()
 		mZombatarWidget->Open();
 }
 
-// GOTY @Patoke: 0x450200
 void GameSelector::ShowAchievementsScreen()
 {
 	SlideTo(0, -mApp->mHeight);

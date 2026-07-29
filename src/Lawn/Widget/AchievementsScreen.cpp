@@ -64,7 +64,6 @@ constinit const AchievementItem gAchievementList[MAX_ACHIEVEMENTS] = {
 	{ "Mustache Mode", "Enable Mustache Mode" }
 };
 
-// GOTY @Patoke: 0x401000
 AchievementsWidget::AchievementsWidget(LawnApp* theApp) {
 	mApp = theApp;
 	mWidth = 800;
@@ -77,12 +76,10 @@ AchievementsWidget::AchievementsWidget(LawnApp* theApp) {
 	mMoreRockRect = Rect(710, 470, IMAGE_ACHEESEMENTS_MORE_ROCK->mWidth - 25, IMAGE_ACHEESEMENTS_MORE_ROCK->mHeight - 50);
 }
 
-// GOTY @Patoke: 0x4010E0
 AchievementsWidget::~AchievementsWidget() {
 
 }
 
-// GOTY @Patoke: 0x401A10
 void AchievementsWidget::Update() {
 	MarkDirty();
 	if (mScrollValue <= 0)
@@ -109,7 +106,6 @@ void AchievementsWidget::Update() {
 	mScrollValue = std::max(mScrollValue, 0);
 }
 
-// GOTY @Patoke: 0x401160
 void AchievementsWidget::Draw(Graphics* g) {
 	g->DrawImage(IMAGE_SELECTORSCREEN_ACHIEVEMENTS_BG, 0, 0);
 
@@ -178,7 +174,6 @@ void AchievementsWidget::Draw(Graphics* g) {
 	}
 }
 
-// GOTY @Patoke: 0x4019D0
 void AchievementsWidget::KeyDown(KeyCode theKey) {
 	if (theKey == KEYCODE_UP) {
 		mScrollValue = mDefaultScrollValue;
@@ -194,7 +189,6 @@ void AchievementsWidget::KeyDown(KeyCode theKey) {
 	}
 }
 
-// GOTY @Patoke: 0x4017F0
 void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
 	(void)theClickCount;
 	if (aBackButtonRect.Contains(x, y))
@@ -204,7 +198,6 @@ void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
 		mApp->PlaySample(SOUND_GRAVEBUTTON);
 }
 
-// GOTY @Patoke: 0x401890
 void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
 	Point aPos = Point(x, y);
 	if (aBackButtonRect.Contains(aPos)) {
@@ -221,7 +214,6 @@ void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
 	(void)theClickCount;
 }
 
-// GOTY @Patoke: 0x4019A0
 void AchievementsWidget::MouseWheel(int theDelta) {
 	mScrollValue = mDefaultScrollValue;
 
@@ -231,7 +223,6 @@ void AchievementsWidget::MouseWheel(int theDelta) {
 		mScrollDirection = -1;
 }
 
-// GOTY @Patoke: 0x459670
 void ReportAchievement::GiveAchievement(LawnApp* theApp, int theAchievement, bool theForceGive) {
 	// todo @Patoke: finish adding the achievement give events
 	if (!theApp->mPlayerInfo)
@@ -256,7 +247,6 @@ void ReportAchievement::GiveAchievement(LawnApp* theApp, int theAchievement, boo
 	}
 }
 
-// GOTY @Patoke: 0x44D5B0
 void ReportAchievement::AchievementInitForPlayer(LawnApp* theApp) {
 	if (!theApp || !theApp->mPlayerInfo)
 		return;

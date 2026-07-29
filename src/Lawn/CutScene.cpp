@@ -334,7 +334,6 @@ bool CutScene::Is2x2Zombie(ZombieType theZombieType)
 	return theZombieType == ZombieType::ZOMBIE_GARGANTUAR || theZombieType == ZombieType::ZOMBIE_REDEYE_GARGANTUAR;
 }
 
-// GOTY @Patoke: 0x43C840
 void CutScene::PreloadResources()
 {
 	TodHesitationTrace("pre-CutScene::PreloadResources()");
@@ -685,7 +684,6 @@ bool CutScene::CanGetPacketUpgrade(int theUpgradeIndex)
 		mApp->mPlayerInfo->mDidntPurchasePacketUpgrade < 2;
 }
 
-// GOTY @Patoke: 0x43DB50
 void CutScene::StartLevelIntro()
 {
 	mCutsceneTime = 0;
@@ -1409,7 +1407,6 @@ bool CutScene::IsShowingCrazyDave()
 	return mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && (mCrazyDaveTime > 0 && mCutsceneTime < TimePanRightEnd + mCrazyDaveTime);
 }
 
-// GOTY @Patoke: 0x43F440
 void CutScene::Update()
 {
 	if (mPreUpdatingBoard)

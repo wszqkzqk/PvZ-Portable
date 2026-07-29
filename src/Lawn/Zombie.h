@@ -197,14 +197,14 @@ public:
     void                            EatPlant(Plant* thePlant);
     void                            Update();
     void                            DieNoLoot();
-    /*inline*/ void                 DieWithLoot();
+    void                            DieWithLoot();
     void                            Draw(Graphics* g);
 //  void                            DrawZombie(Graphics* g, const ZombieDrawPosition& theDrawPos);
 //  void                            DrawZombieWithParts(Graphics* g, const ZombieDrawPosition& theDrawPos);
     void                            DrawZombiePart(Graphics* g, Image* theImage, int theFrame, int theRow, const ZombieDrawPosition& theDrawPos);
     void                            DrawBungeeCord(Graphics* g, int theOffsetX);
     void                            TakeDamage(int theDamage, unsigned int theDamageFlags);
-    /*inline*/ void                 SetRow(int theRow);
+    void                            SetRow(int theRow);
     float                           GetPosYBasedOnRow(int theRow);
     void                            ApplyChill(bool theIsIceTrap);
     void                            UpdateZombieBungee();
@@ -228,7 +228,7 @@ public:
     bool                            IsOnHighGround();
     void                            DropLoot();
     bool                            TrySpawnLevelAward();
-    /*inline*/ void                 StartZombieSound();
+    void                            StartZombieSound();
     void                            StopZombieSound();
     void                            UpdateZombieJackInTheBox();
     void                            DrawZombieHead(Graphics* g, const ZombieDrawPosition& theDrawPos, int theFrame);
@@ -241,8 +241,8 @@ public:
     Plant*                          IsStandingOnSpikeweed();
     void                            CheckForZombieStep();
     void                            CountExpectedMowers() { ; }
-    /*inline*/ void                 OverrideParticleColor(TodParticleSystem* aParticle);
-    /*inline*/ void                 OverrideParticleScale(TodParticleSystem* aParticle);
+    void                            OverrideParticleColor(TodParticleSystem* aParticle);
+    void                            OverrideParticleScale(TodParticleSystem* aParticle);
     void                            PoolSplash(bool theInToPoolSound);
     void                            UpdateZombieFlyer();
     void                            UpdateZombiePogo();
@@ -272,13 +272,13 @@ public:
     void                            StartEating();
     void                            StopEating();
     void                            UpdateAnimSpeed();
-    /*inline*/ void                 ReanimShowPrefix(const char* theTrackPrefix, int theRenderGroup);
+    void                            ReanimShowPrefix(const char* theTrackPrefix, int theRenderGroup);
     void                            PlayDeathAnim(unsigned int theDamageFlags);
     void                            UpdateDeath();
     void                            DrawShadow(Graphics* g);
     bool                            HasShadow();
     Reanimation*                    LoadReanim(ReanimationType theReanimationType);
-    /*inline*/ int                  TakeFlyingDamage(int theDamage, unsigned int theDamageFlags);
+    int                             TakeFlyingDamage(int theDamage, unsigned int theDamageFlags);
     int                             TakeShieldDamage(int theDamage, unsigned int theDamageFlags);
     int                             TakeHelmDamage(int theDamage, unsigned int theDamageFlags);
     void                            TakeBodyDamage(int theDamage, unsigned int theDamageFlags);
@@ -288,8 +288,8 @@ public:
     void                            GetTrackPosition(const char* theTrackName, float& thePosX, float& thePosY);
     void                            LoadPlainZombieReanim();
     void                            ShowDoorArms(bool theShow);
-    /*inline*/ void                 ReanimShowTrack(const char* theTrackName, int theRenderGroup);
-    /*inline*/ void                 PlayZombieAppearSound();
+    void                            ReanimShowTrack(const char* theTrackName, int theRenderGroup);
+    void                            PlayZombieAppearSound();
     void                            StartMindControlled();
     bool                            IsFlying();
     void                            DropHead(unsigned int theDamageFlags);
@@ -304,16 +304,16 @@ public:
     void                            UpdateBurn();
     bool                            ZombieNotWalking();
     Zombie*                         FindZombieTarget();
-    /*inline*/ void                 PlayZombieReanim(const char* theTrackName, ReanimLoopType theLoopType, int theBlendTime, float theAnimRate);
+    void                            PlayZombieReanim(const char* theTrackName, ReanimLoopType theLoopType, int theBlendTime, float theAnimRate);
     void                            UpdateZombieBackupDancer();
     ZombiePhase                     GetDancerPhase();
     bool                            IsMovingAtChilledSpeed();
     void                            StartWalkAnim(int theBlendTime);
     Reanimation*                    AddAttachedReanim(int thePosX, int thePosY, ReanimationType theReanimType);
     void                            DragUnder();
-    static /*inline*/ void          SetupDoorArms(Reanimation* aReanim, bool theShow);
+    static void                     SetupDoorArms(Reanimation* aReanim, bool theShow);
     static void                     SetupReanimLayers(Reanimation* aReanim, ZombieType theZombieType);
-    /*inline*/ bool                 IsOnBoard();
+    bool                            IsOnBoard();
     void                            DrawButter(Graphics* g, const ZombieDrawPosition& theDrawPos);
     bool                            IsImmobilizied();
     void                            ApplyButter();
@@ -333,7 +333,7 @@ public:
     void                            ReanimIgnoreClipRect(const char* theTrackName, bool theIgnoreClipRect);
     void                            SetAnimRate(float theAnimRate);
     void                            ApplyAnimRate(float theAnimRate);
-    /*inline*/ bool                 IsDeadOrDying();
+    bool                            IsDeadOrDying();
     void                            DrawDancerReanim(Graphics* g);
     void                            DrawBungeeReanim(Graphics* g);
     void                            DrawBungeeTarget(Graphics* g);
@@ -403,21 +403,21 @@ public:
     bool                            HasYuckyFaceImage();
     bool                            IsTangleKelpTarget();
     bool                            IsFireResistant();
-    /*inline*/ void                 EnableMustache(bool theEnableMustache);
-    /*inline*/ void                 EnableFuture(bool theEnableFuture);
-    /*inline*/ void                 EnableDance();
+    void                            EnableMustache(bool theEnableMustache);
+    void                            EnableFuture(bool theEnableFuture);
+    void                            EnableDance();
     void                            BungeeDropPlant();
     void                            RemoveButter();
     void                            BalloonPropellerHatSpin(bool theSpinning);
     void                            DoDaisies();
-    static /*inline*/ bool          ZombieTypeCanGoOnHighGround(ZombieType theZombieType);
-    static /*inline*/ bool          ZombieTypeCanGoInPool(ZombieType theZombieType);
+    static bool                     ZombieTypeCanGoOnHighGround(ZombieType theZombieType);
+    static bool                     ZombieTypeCanGoInPool(ZombieType theZombieType);
     void                            SetupWaterTrack(const char* theTrackName);
     void                            BurnRow(int theRow);
     void                            SetupReanimForLostHead();
     void                            SetupReanimForLostArm(unsigned int theDamageFlags);
     bool                            IsSquashTarget(Plant* theExcept);
-    static /*inline*/ bool			IsZombotany(ZombieType theZombieType);
+    static bool			            IsZombotany(ZombieType theZombieType);
 };
 
 class ZombieDefinition
@@ -433,6 +433,6 @@ public:
 };
 extern const ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES];
 
-/*inline*/ const ZombieDefinition&            GetZombieDefinition(ZombieType theZombieType);
+const ZombieDefinition&            GetZombieDefinition(ZombieType theZombieType);
 
 #endif

@@ -431,7 +431,6 @@ bool Coin::IsPresentWithAdvice()
     return mType == CoinType::COIN_PRESENT_MINIGAMES || mType == CoinType::COIN_PRESENT_PUZZLE_MODE || mType == CoinType::COIN_PRESENT_SURVIVAL_MODE;
 }
 
-// GOTY @Patoke: 0x4336C0
 void Coin::ScoreCoin()
 {
     Die();
@@ -605,7 +604,6 @@ void Coin::UpdateFall()
     }
 }
 
-// GOTY @Patoke: 0x433BD0
 void Coin::UpdateCollected()
 {
     int aDestX, aDestY;
@@ -1046,7 +1044,6 @@ void Coin::TryAutoCollectAfterLevelAward()
     }
 }
 
-// GOTY @Patoke: 0x434DC0
 void Coin::Collect()
 {
     if (mDead)
@@ -1332,7 +1329,6 @@ void Coin::PlayGroundSound()
     }
 }
 
-// GOTY @Patoke: 0x435850
 void Coin::PlayCollectSound()
 {
     if (mType == CoinType::COIN_USABLE_SEED_PACKET)
@@ -1407,7 +1403,6 @@ void Coin::MouseDown(int x, int y, int theClickCount)
     }
 }
 
-// GOTY @Patoke: 0x435B20
 void Coin::Die()
 {
     TOD_ASSERT(!mBoard || mBoard->mCursorObject->mCoinID != static_cast<CoinID>(mBoard->mCoins.DataArrayGetID(this)));

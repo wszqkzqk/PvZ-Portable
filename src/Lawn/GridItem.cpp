@@ -152,7 +152,6 @@ void GridItem::DrawIZombieBrain(Graphics* g)
     g->SetColorizeImages(false);
 }
 
-// GOTY @Patoke: 0x450673
 void GridItem::DrawGraveStone(Graphics* g)
 {
     if (mGridItemCounter <= 0)
@@ -236,7 +235,6 @@ void GridItem::DrawStinky(Graphics* g)
     aStinkyReanim->mEnableExtraAdditiveDraw = false;
 }
 
-// GOTY @Patoke: 0x450B39
 void GridItem::DrawCrater(Graphics* g)
 {
     float aXPos = mBoard->GridToPixelX(mGridX, mGridY) - 8.0f;

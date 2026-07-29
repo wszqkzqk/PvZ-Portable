@@ -27,10 +27,10 @@
 #include "graphics/Graphics.h"
 #include "graphics/GLInterface.h"
 
-int gParticleDefCount;                      // [0x6A9F08]
-TodParticleDefinition* gParticleDefArray;   // [0x6A9F0C]
-int gParticleParamArraySize;				// [0x6A9F10]
-const ParticleParams* gParticleParamArray;		// [0x6A9F14]
+int gParticleDefCount;
+TodParticleDefinition* gParticleDefArray;
+int gParticleParamArraySize;
+const ParticleParams* gParticleParamArray;
 
 constinit const ParticleParams gLawnParticleArray[ParticleEffect::NUM_PARTICLES] = {
 	{ .mParticleEffect = ParticleEffect::PARTICLE_MELONSPLASH, .mParticleFileName = "particles/MelonImpact.xml" },
@@ -139,7 +139,7 @@ constinit const ParticleParams gLawnParticleArray[ParticleEffect::NUM_PARTICLES]
 	{ .mParticleEffect = ParticleEffect::PARTICLE_STARBURST, .mParticleFileName = "particles/Starburst.xml" },
 	{ .mParticleEffect = ParticleEffect::PARTICLE_CREDITS_FOG, .mParticleFileName = "particles/Credits_fog.xml" },
 	{ .mParticleEffect = ParticleEffect::PARTICLE_PERSENT_PICK_UP_ARROW, .mParticleFileName = "particles/UpsellArrow.xml" },
-};  // 0x6A0FF0
+};
 
 // (ecx = *theParticleFileName, *theParticleDef)  //esp -= 4
 bool TodParticleLoadADef(TodParticleDefinition* theParticleDef, const char* theParticleFileName)
@@ -722,7 +722,6 @@ void TodParticleEmitter::DeleteAll()
 	}
 }
 
-// GOTY @Patoke: 0x521A20
 void TodParticleSystem::Update()
 {
 	if (!mDontUpdate)
@@ -1124,7 +1123,6 @@ void TodParticleSystem::OverrideExtraAdditiveDraw(const char* theEmitterName, bo
 	}
 }
 
-// GOTY @Patoke: 0x522CB0
 void TodParticleSystem::OverrideImage(const char* theEmitterName, Image* theImage)
 {
 	for (TodListNode<ParticleEmitterID>* aNode = mEmitterList.mHead; aNode != nullptr; aNode = aNode->mNext)

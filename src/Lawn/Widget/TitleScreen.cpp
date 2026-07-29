@@ -35,7 +35,6 @@
 #include "../../GameConstants.h"
 #include "../System/Music.h"
 
-// GOTY @Patoke: 0x498220
 TitleScreen::TitleScreen(LawnApp* theApp)
 {
 	mCurBarWidth = 0.0f;
@@ -216,7 +215,6 @@ void TitleScreen::Draw(Graphics* g)
 	}
 }
 
-// GOTY @Patoke: 0x498A20
 void TitleScreen::Update()
 {
 	Widget::Update();

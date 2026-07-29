@@ -27,7 +27,6 @@
 using namespace Sexy;
 static int gProfileVersion = 14;
 
-// GOTY @Patoke: 0x46EBC0
 PlayerInfo* ProfileMgr::GetAnyProfile()
 {
     if (mProfileMap.size() == 0)
@@ -180,7 +179,6 @@ void ProfileMgr::DeleteOldestProfile()
     DeleteProfile(anOldest);
 }
 
-// GOTY @Patoke: 0x46F7C0
 PlayerInfo* ProfileMgr::GetProfile(const std::string& theName)
 {
     auto anItr = mProfileMap.find(theName);

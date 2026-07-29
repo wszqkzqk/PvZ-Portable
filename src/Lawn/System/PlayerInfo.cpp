@@ -235,7 +235,6 @@ void PlayerInfo::LoadDetails()
 	}
 }
 
-// GOTY @Patoke: 0x46D750
 void PlayerInfo::SaveDetails()
 {
 	DataWriter aWriter;

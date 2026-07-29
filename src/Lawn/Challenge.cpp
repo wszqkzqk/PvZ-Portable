@@ -1997,7 +1997,6 @@ void Challenge::UpdateStormyNight()
 	}
 }
 
-// GOTY @Patoke: 0x426320
 void Challenge::UpdateSlotMachine()
 {
 	int aSunMoney = ClampInt(mBoard->mSunMoney, 0, 2000);
@@ -3715,7 +3714,6 @@ void Challenge::ScaryPotterFillColumnWithPlant(int theCol, SeedType theSeedType,
 	}
 }
 
-// GOTY @Patoke: 0x42AFA0
 void Challenge::ScaryPotterPlacePot(ScaryPotType theScaryPotType, ZombieType theZombieType, SeedType theSeedType, int theCount, TodWeightedGridArray* theGridArray, int theGridArrayCount)
 {
 	ScaryPotType aPotType = theScaryPotType;
@@ -3739,7 +3737,6 @@ void Challenge::ScaryPotterPlacePot(ScaryPotType theScaryPotType, ZombieType the
 	}
 }
 
-// GOTY @Patoke: 0x42B040
 void Challenge::ScaryPotterChangePotType(GridItemState thePotType, int theCount)
 {
 	TodWeightedArray aPotArray[MAX_SCARY_POTS];
@@ -3769,7 +3766,6 @@ void Challenge::ScaryPotterChangePotType(GridItemState thePotType, int theCount)
 	}
 }
 
-// GOTY @Patoke: 0x42B0E0
 void Challenge::ScaryPotterPopulate()
 {
 	int aGridArrayCount = 0;
@@ -4175,7 +4171,6 @@ void Challenge::ScaryPotterJackExplode(int thePosX, int thePosY)
 	}
 }
 
-// GOTY @Patoke: 0x42C9F0
 void Challenge::PuzzleNextStageClear()
 {
 	mApp->PlaySample(Sexy::SOUND_HUGE_WAVE);
@@ -4338,7 +4333,6 @@ void Challenge::IZombieSetupPlant(Plant* thePlant)
 	thePlant->UpdateReanim();
 }
 
-// GOTY @Patoke: 0x42D250
 void Challenge::IZombiePlacePlantInSquare(SeedType theSeedType, int theGridX, int theGridY)
 {
 	if (mBoard->CanPlantAt(theGridX, theGridY, theSeedType) == PLANTING_OK)
@@ -4347,7 +4341,6 @@ void Challenge::IZombiePlacePlantInSquare(SeedType theSeedType, int theGridX, in
 	}
 }
 
-// GOTY @Patoke: 0x42D2B0
 void Challenge::IZombiePlacePlants(SeedType theSeedType, int theCount, int theGridY)
 {
 	// 关卡中植物（或限制红线）的列数
@@ -4409,7 +4402,6 @@ void Challenge::IZombiePlacePlants(SeedType theSeedType, int theCount, int theGr
 	}
 }
 
-// GOTY @Patoke: 0x42D440
 void Challenge::IZombieInitLevel()
 {
 	mChallengeScore = 0;
@@ -4723,7 +4715,6 @@ int Challenge::IsZombieSeedType(SeedType theSeedType)
 		theSeedType == SEED_ZOMBIE_IMP;
 }
 
-// GOTY @Patoke: 0x42E280
 void Challenge::IZombieSetPlantFilterEffect(Plant* thePlant, FilterEffect theFilterEffect)
 {
 	Reanimation* aBodyReanim = mApp->ReanimationTryToGet(thePlant->mBodyReanimID);
@@ -4736,7 +4727,6 @@ void Challenge::IZombieSetPlantFilterEffect(Plant* thePlant, FilterEffect theFil
 	if (aHeadReanim3)	aHeadReanim3->mFilterEffect = theFilterEffect;
 }
 
-// GOTY @Patoke: 0x42E3D4
 void Challenge::IZombieDrawPlant(Graphics* g, Plant* thePlant)
 {
 	Reanimation* aReanim = mApp->ReanimationTryToGet(thePlant->mBodyReanimID);
@@ -5309,7 +5299,6 @@ void Challenge::TreeOfWisdomInit()
 	mChallengeStateCounter = RandRangeInt(700, 1500);
 }
 
-// GOTY @Patoke: 0x42FF00
 void Challenge::TreeOfWisdomGrow()
 {
 	mApp->mPlayerInfo->mChallengeRecords[mApp->GetCurrentChallengeIndex()]++;

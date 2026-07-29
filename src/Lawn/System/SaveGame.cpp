@@ -3087,7 +3087,6 @@ static void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 	}
 }
 
-// GOTY @Patoke: 0x48CBC0
 bool LawnLoadGame(Board* theBoard, const std::string& theFilePath)
 {
 	if (LawnLoadGameV4(theBoard, theFilePath))

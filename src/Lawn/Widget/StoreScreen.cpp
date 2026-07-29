@@ -535,7 +535,6 @@ void StoreScreen::DrawOverlay(Graphics* g)
     }
 }
 
-// GOTY @Patoke: 0x4578F0
 void StoreScreen::SetBubbleText(int theCrazyDaveMessage, int theTime, bool theClickToContinue)
 {
     mApp->CrazyDaveTalkIndex(theCrazyDaveMessage);
@@ -926,7 +925,6 @@ bool StoreScreen::CanAffordItem(StoreItem theStoreItem)
     return mApp->mPlayerInfo->mCoins >= GetItemCost(theStoreItem);
 }
 
-// GOTY @Patoke: 0x497340
 void StoreScreen::PurchaseItem(StoreItem theStoreItem)
 {
     mApp->SetCursor(CURSOR_POINTER);
@@ -1183,7 +1181,6 @@ void StoreScreen::EnableButtons(bool theEnable)
     mBackButton->SetDisabled(!theEnable);
 }
 
-// GOTY @Patoke: 0x498110
 void StoreScreen::SetupForIntro(int theDialogIndex)
 {
     mStartDialog = theDialogIndex;

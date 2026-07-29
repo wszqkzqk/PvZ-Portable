@@ -166,7 +166,6 @@ std::string GetSavedGameName(GameMode theGameMode, int theProfileId)
     return GetAppDataPath(StrFormat("userdata/game%d_%d.v4", theProfileId, static_cast<int>(theGameMode)));
 }
 
-// GOTY @Patoke: 0x45A200
 std::string GetLegacySavedGameName(GameMode theGameMode, int theProfileId)
 {
     return GetAppDataPath(StrFormat("userdata/game%d_%d.dat", theProfileId, static_cast<int>(theGameMode)));
