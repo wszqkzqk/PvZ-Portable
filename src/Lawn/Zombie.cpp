@@ -56,8 +56,8 @@ constexpr const int RENDER_GROUP_BOSS_FIREBALL_TOP = 8;
 constexpr const int ZOMBIE_LIMP_SPEED_FACTOR = 2;
 constexpr const int POGO_BOUNCE_TIME = 80;
 constexpr const int DOLPHIN_JUMP_TIME = 120;
-constexpr const int JackInTheBoxZombieRadius = 115;
-constexpr const int JackInTheBoxPlantRadius = 90;
+constexpr const int JACK_IN_THE_BOX_ZOMBIE_RADIUS = 115;
+constexpr const int JACK_IN_THE_BOX_PLANT_RADIUS = 90;
 constexpr const int BOBSLED_CRASH_TIME = 150;
 constexpr const int ZOMBIE_BACKUP_DANCER_RISE_HEIGHT = -200;
 constexpr const int BOSS_FLASH_HEALTH_FRACTION = 10;
@@ -2052,12 +2052,12 @@ void Zombie::UpdateZombieJackInTheBox()
             int aPosY = mY + mHeight / 2;
             if (mMindControlled)
             {
-                mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, JackInTheBoxZombieRadius, 1, true, 127);
+                mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, JACK_IN_THE_BOX_ZOMBIE_RADIUS, 1, true, 127);
             }
             else
             {
-                mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, JackInTheBoxZombieRadius, 1, true, 255);
-                mBoard->KillAllPlantsInRadius(aPosX, aPosY, JackInTheBoxPlantRadius);
+                mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, JACK_IN_THE_BOX_ZOMBIE_RADIUS, 1, true, 255);
+                mBoard->KillAllPlantsInRadius(aPosX, aPosY, JACK_IN_THE_BOX_PLANT_RADIUS);
             }
 
             mApp->AddTodParticle(aPosX, aPosY, Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 0), ParticleEffect::PARTICLE_JACKEXPLODE);
