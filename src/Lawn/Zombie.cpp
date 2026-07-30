@@ -43,6 +43,32 @@
 #include "../Sexy.TodLib/Attachment.h"
 #include "../Sexy.TodLib/TodParticle.h"
 
+constexpr const int ZOMBIE_START_RANDOM_OFFSET = 40;
+constexpr const int BUNGEE_ZOMBIE_HEIGHT = 3000;
+constexpr const int RENDER_GROUP_SHIELD = 1;
+constexpr const int RENDER_GROUP_ARMS = 2;
+constexpr const int RENDER_GROUP_OVER_SHIELD = 3;
+constexpr const int RENDER_GROUP_BOSS_BACK_LEG = 4;
+constexpr const int RENDER_GROUP_BOSS_FRONT_LEG = 5;
+constexpr const int RENDER_GROUP_BOSS_BACK_ARM = 6;
+constexpr const int RENDER_GROUP_BOSS_FIREBALL_ADDITIVE = 7;
+constexpr const int RENDER_GROUP_BOSS_FIREBALL_TOP = 8;
+constexpr const int ZOMBIE_LIMP_SPEED_FACTOR = 2;
+constexpr const int POGO_BOUNCE_TIME = 80;
+constexpr const int DOLPHIN_JUMP_TIME = 120;
+constexpr const int JackInTheBoxZombieRadius = 115;
+constexpr const int JackInTheBoxPlantRadius = 90;
+constexpr const int BOBSLED_CRASH_TIME = 150;
+constexpr const int ZOMBIE_BACKUP_DANCER_RISE_HEIGHT = -200;
+constexpr const int BOSS_FLASH_HEALTH_FRACTION = 10;
+constexpr const int TICKS_BETWEEN_EATS = 4;
+constexpr const int DAMAGE_PER_EAT = TICKS_BETWEEN_EATS;
+constexpr const float THOWN_ZOMBIE_GRAVITY = 0.05f;
+constexpr const float CHILLED_SPEED_FACTOR = 0.4f;
+constexpr const float CLIP_HEIGHT_LIMIT = -100.0f;
+constexpr const float CLIP_HEIGHT_OFF = -200.0f;
+constexpr Color ZOMBIE_MINDCONTROLLED_COLOR = Color(128, 64, 192, 255);
+
 static std::string ZombatarTrackName(const char* thePrefix, int theIndex)
 {
     return Sexy::StrFormat("%s%02d", thePrefix, theIndex);

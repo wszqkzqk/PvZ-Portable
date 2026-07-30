@@ -31,6 +31,9 @@
 #include "../Sexy.TodLib/FilterEffect.h"
 #include "misc/SexyMatrix.h"
 
+constexpr const int SLOT_MACHINE_TIME = 400;
+constexpr const int CONVEYOR_SPEED = 4;
+
 SeedPacket::SeedPacket()
 {
 	mSlotMachiningPosition = 0.0f;

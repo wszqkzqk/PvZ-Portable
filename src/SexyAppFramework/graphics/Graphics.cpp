@@ -34,6 +34,8 @@
 
 using namespace Sexy;
 
+const int MAX_TEMP_SPANS = 8192;
+
 Image GraphicsState::mStaticImage;
 const Point* Graphics::mPFPoints;
 

@@ -31,8 +31,6 @@
 #define ZEN_MAX_GRIDSIZE_X 8
 #define ZEN_MAX_GRIDSIZE_Y 4
 
-constexpr const float STINKY_SLEEP_POS_Y = 461.0f;
-
 class LawnApp;
 class Board;
 class Plant;

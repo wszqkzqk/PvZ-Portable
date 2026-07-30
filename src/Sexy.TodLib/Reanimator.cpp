@@ -32,6 +32,8 @@
 #include "misc/PerfTimer.h"
 #include "graphics/MemoryImage.h"
 
+constexpr const int NO_BASE_POSE = -2;
+
 unsigned int gReanimatorDefCount;
 ReanimatorDefinition* gReanimatorDefArray;
 unsigned int gReanimationParamArraySize;

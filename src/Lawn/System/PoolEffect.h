@@ -26,9 +26,6 @@
 #include <vector>
 #include "../../ConstEnums.h"
 
-constexpr const int CAUSTIC_IMAGE_WIDTH = 128;
-constexpr const int CAUSTIC_IMAGE_HEIGHT = 64;
-
 namespace Sexy
 {
 	class MemoryImage;

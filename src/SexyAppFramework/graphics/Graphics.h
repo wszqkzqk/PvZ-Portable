@@ -38,8 +38,6 @@ class _Font;
 class SexyMatrix3;
 class Transform;
 
-const int MAX_TEMP_SPANS = 8192;
-
 struct Edge
 {
     double mX;

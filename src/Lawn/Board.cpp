@@ -58,6 +58,18 @@
 //#define SEXY_MEMTRACE
 //#include "../SexyAppFramework/memmgr.h"
 
+constexpr const int ZOMBIE_COUNTDOWN_FIRST_WAVE = 1800;
+constexpr const int ZOMBIE_COUNTDOWN = 2500;
+constexpr const int ZOMBIE_COUNTDOWN_RANGE = 600;
+constexpr const int ZOMBIE_COUNTDOWN_BEFORE_FLAG = 4500;
+constexpr const int ZOMBIE_COUNTDOWN_BEFORE_REPICK = 5499;
+constexpr const int ZOMBIE_COUNTDOWN_MIN = 400;
+constexpr const int SUN_COUNTDOWN = 425;
+constexpr const int SUN_COUNTDOWN_RANGE = 275;
+constexpr const int SUN_COUNTDOWN_MAX = 950;
+constexpr const int FOG_BLOW_RETURN_TIME = 2000;
+constexpr const int FLAG_RAISE_TIME = 100;
+
 bool gShownMoreSunTutorial = false;
 
 // GOTY @Patoke: 0x40A3C0

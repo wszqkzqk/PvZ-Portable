@@ -29,6 +29,9 @@
 #include "graphics/Graphics.h"
 #include "graphics/GLInterface.h"
 
+constexpr const int CAUSTIC_IMAGE_WIDTH = 128;
+constexpr const int CAUSTIC_IMAGE_HEIGHT = 64;
+
 //effect documentation by @windowslover1234
 
 void PoolEffect::PoolEffectInitialize()

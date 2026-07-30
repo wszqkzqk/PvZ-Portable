@@ -43,6 +43,16 @@
 #include "widget/WidgetManager.h"
 #include "AchievementsScreen.h"
 
+constexpr const int STORESCREEN_ITEMOFFSET_1_X = 422;
+constexpr const int STORESCREEN_ITEMOFFSET_1_Y = 206;
+constexpr const int STORESCREEN_ITEMOFFSET_2_X = 372;
+constexpr const int STORESCREEN_ITEMOFFSET_2_Y = 310;
+constexpr const int STORESCREEN_ITEMSIZE = 74;
+constexpr const int STORESCREEN_COINBANK_X = 650;
+constexpr const int STORESCREEN_COINBANK_Y = 559;
+constexpr const int STORESCREEN_PAGESTRING_X = 470;
+constexpr const int STORESCREEN_PAGESTRING_Y = 500;
+
 static StoreItem gStoreItemSpots[NUM_STORE_PAGES][MAX_PAGE_SPOTS] =
 {
     { STORE_ITEM_PACKET_UPGRADE,    STORE_ITEM_POOL_CLEANER,        STORE_ITEM_RAKE,                STORE_ITEM_ROOF_CLEANER,

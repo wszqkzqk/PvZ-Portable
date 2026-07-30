@@ -25,8 +25,6 @@
 #include "../../Sexy.TodLib/TodCommon.h"
 #include "widget/Dialog.h"
 
-constexpr const int DIALOG_HEADER_OFFSET = 45;
-
 class LawnApp;
 class LawnDialog;
 class Reanimation;

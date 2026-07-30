@@ -29,6 +29,9 @@
 #include "../../GameConstants.h"
 #include "widget/WidgetManager.h"
 
+constexpr const int IMITATER_DIALOG_WIDTH = 500;
+constexpr const int IMITATER_DIALOG_HEIGHT = 600;
+
 ImitaterDialog::ImitaterDialog() : 
 	LawnDialog(gLawnApp, Dialogs::DIALOG_IMITATER, true, "[CHOOSE_SEED_TO_COPY]", "", "[DIALOG_BUTTON_OK]", Dialog::BUTTONS_YES_NO)
 {

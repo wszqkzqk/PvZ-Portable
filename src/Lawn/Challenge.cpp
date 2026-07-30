@@ -52,6 +52,15 @@
 #include "widget/WidgetManager.h"
 #include "Widget/AchievementsScreen.h"
 
+constexpr const int BEGHOULED_WINNING_SCORE = 75;
+constexpr const int SLOT_MACHINE_WINNING_SCORE = 2000;
+constexpr const int ZOMBIQUARIUM_WINNING_SCORE = 1000;
+constexpr const int I_ZOMBIE_WINNING_SCORE = 5;
+constexpr const int MAX_PORTALS = 4;
+constexpr const int MAX_SQUIRRELS = 7;
+constexpr const int MAX_SCARY_POTS = 54;
+constexpr const int STORM_FLASH_TIME = 150;
+
 int gZombieWaves[NUM_LEVELS] = {
 	4,  6,  8,  10, 8,  10, 20, 10, 20, 20,
 	10, 20, 10, 20, 10, 10, 20, 10, 20, 20,

@@ -41,6 +41,8 @@
 #include "graphics/Graphics.h"
 #include "../Sexy.TodLib/TodStringFile.h"
 
+constexpr const float STINKY_SLEEP_POS_Y = 461.0f;
+
 constinit const static SpecialGridPlacement gGreenhouseGridPlacement[] =
 {
     { .mPixelX = 73, .mPixelY = 73, .mGridX = 0, .mGridY = 0 },

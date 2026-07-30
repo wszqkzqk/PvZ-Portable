@@ -131,8 +131,6 @@ enum
     RENDER_GROUP_NORMAL = 0
 };
 
-constexpr const int NO_BASE_POSE = -2;
-
 class ReanimationHolder
 {
 public:

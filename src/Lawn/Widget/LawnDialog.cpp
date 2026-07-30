@@ -32,6 +32,7 @@
 #include "../../Sexy.TodLib/TodStringFile.h"
 #include "graphics/ImageFont.h"
 
+constexpr const int DIALOG_HEADER_OFFSET = 45;
 
 LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::string& theDialogHeader, const std::string& theDialogLines, const std::string& theDialogFooter, int theButtonMode) :
 	Dialog(nullptr, nullptr, theId, isModal, theDialogHeader, theDialogLines, "", BUTTONS_NONE)

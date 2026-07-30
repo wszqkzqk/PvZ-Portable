@@ -33,15 +33,6 @@
 #define ART_CHALLEGE_SIZE_X MAX_GRID_SIZE_X
 #define MAX_PICK_GRID_SIZE 50
 
-constexpr const int BEGHOULED_WINNING_SCORE = 75;
-constexpr const int SLOT_MACHINE_WINNING_SCORE = 2000;
-constexpr const int ZOMBIQUARIUM_WINNING_SCORE = 1000;
-constexpr const int I_ZOMBIE_WINNING_SCORE = 5;
-constexpr const int MAX_PORTALS = 4;
-constexpr const int MAX_SQUIRRELS = 7;
-constexpr const int MAX_SCARY_POTS = 54;
-constexpr const int STORM_FLASH_TIME = 150;
-
 using namespace Sexy;
 
 class LawnApp;
