@@ -29,6 +29,7 @@
 #include "../../Resources.h"
 #include "../../GameConstants.h"
 #include "../../PvzpLib/PvzpStringFile.h"
+#include "../../PvzpLib/PvzpCommon.h"
 #include "graphics/Graphics.h"
 #include "graphics/Font.h"
 #include "misc/KeyCodes.h"
@@ -136,6 +137,13 @@ constexpr int ZOMBATAR_CONFIRM_TEXT_HEIGHT = 100;
 constexpr int ZOMBATAR_CONFIRM_ACCEPT_LABEL_X = 195;
 constexpr int ZOMBATAR_CONFIRM_BACK_LABEL_X = 435;
 constexpr int ZOMBATAR_CONFIRM_LABEL_Y = 335;
+
+constexpr int ZOMBATAR_TRANSITION_TICKS = 90;		// transition duration in update ticks (100 Hz)
+constexpr int ZOMBATAR_VEIL_X = 58;					// black veil rect over the parts sheet
+constexpr int ZOMBATAR_VEIL_Y = 125;
+constexpr int ZOMBATAR_VEIL_RIGHT_INSET = 63;		// veil width = widget-bg width - 63
+constexpr int ZOMBATAR_VEIL_HEIGHT = 331;
+constexpr Color ZOMBATAR_PAGE_BTN_DISABLED_TINT(108, 109, 140, 40);
 
 constexpr int SlotForPart(ZombatarPage thePage)
 {
@@ -340,7 +348,9 @@ ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 	mMouseY = -1;
 	mHoverGridCell = -1;
 	mHoverColorCell = -1;
+	mHoverTab = -1;
 	mDeleteHover = false;
+	mTransitionTimer = 0;
 	mPreviewZombie = nullptr;
 
 	mBackButton = MakeNewButton(ZOMBATAR_BTN_BACK, this, "", nullptr,
@@ -447,6 +457,28 @@ void ZombatarWidget::Update()
 	{
 		CreatePreviewZombie();
 	}
+
+	if (mState == ZOMBATAR_STATE_TO_CONFIRM || mState == ZOMBATAR_STATE_FROM_CONFIRM)
+	{
+		mTransitionTimer--;	// dec-then-use
+		bool aToConfirm = mState == ZOMBATAR_STATE_TO_CONFIRM;
+		int aFromX = aToConfirm ? ZOMBATAR_FINISHED_X : ZOMBATAR_ACCEPT_X;
+		int aFromY = aToConfirm ? ZOMBATAR_FINISHED_Y : ZOMBATAR_CONFIRM_BTN_Y;
+		int aToX = aToConfirm ? ZOMBATAR_ACCEPT_X : ZOMBATAR_FINISHED_X;
+		int aToY = aToConfirm ? ZOMBATAR_CONFIRM_BTN_Y : ZOMBATAR_FINISHED_Y;
+		int aBtnW = IMAGE_ZOMBATAR_FINISHED_BUTTON ? IMAGE_ZOMBATAR_FINISHED_BUTTON->mWidth : 103;
+		int aBtnH = IMAGE_ZOMBATAR_FINISHED_BUTTON ? IMAGE_ZOMBATAR_FINISHED_BUTTON->mHeight : 26;
+		mFinishedButton->Resize(
+			PvzpAnimateCurve(ZOMBATAR_TRANSITION_TICKS, 0, mTransitionTimer, aFromX, aToX, PvzpCurves::CURVE_LINEAR),
+			PvzpAnimateCurve(ZOMBATAR_TRANSITION_TICKS, 0, mTransitionTimer, aFromY, aToY, PvzpCurves::CURVE_LINEAR),
+			aBtnW, aBtnH);
+		if (mTransitionTimer <= 0)
+		{
+			mTransitionTimer = 0;
+			ChangeState(aToConfirm ? ZOMBATAR_STATE_CONFIRM : ZOMBATAR_STATE_CREATE);
+		}
+	}
+
 	MarkDirty();
 }
 
@@ -985,14 +1017,10 @@ void ZombatarWidget::DrawAvatarBox(Graphics* g)
 		ClampCurrentIndex();
 		aRecord = mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE;
 	}
-	else if (mState == ZOMBATAR_STATE_CREATE || mState == ZOMBATAR_STATE_CONFIRM)
+	else
 	{
 		EncodeRecord(aDraft);
 		aRecord = aDraft;
-	}
-	else
-	{
-		return;
 	}
 
 	mPreviewZombie->ApplyZombatarHead(aRecord);
@@ -1030,8 +1058,10 @@ void ZombatarWidget::Draw(Graphics* g)
 		DrawList(g);
 	else if (mState == ZOMBATAR_STATE_CONFIRM)
 		DrawConfirm(g);
-	else
+	else if (mState == ZOMBATAR_STATE_CREATE)
 		DrawCreate(g);
+	else
+		DrawTransition(g);
 
 	if (IMAGE_ZOMBATAR_DISPLAY_WINDOW)
 		g->DrawImage(IMAGE_ZOMBATAR_DISPLAY_WINDOW, 5, 0);
@@ -1088,7 +1118,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 	for (int i = 0; i < NUM_ZOMBATAR_PAGES; i++)
 	{
 		Rect aRect = GetCategoryRect(i);
-		g->DrawImage(GetCategoryImage(static_cast<ZombatarPage>(i), i == mPage, aRect.Contains(mMouseX, mMouseY)), aRect.mX, aRect.mY);
+		g->DrawImage(GetCategoryImage(static_cast<ZombatarPage>(i), i == mPage, i == mHoverTab), aRect.mX, aRect.mY);
 	}
 
 	if (mPage == ZOMBATAR_PAGE_SKIN)
@@ -1219,6 +1249,30 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 	}
 }
 
+void ZombatarWidget::DrawTransition(Graphics* g)
+{
+	DrawCreate(g);
+
+	if (mMaxSubPages > 0)	// the page buttons are widgets but belong to the sheet, so draw them here
+	{
+		g->SetColorizeImages(true);
+		g->SetColor(ZOMBATAR_PAGE_BTN_DISABLED_TINT);
+		if (IMAGE_ZOMBATAR_PREV_BUTTON)
+			g->DrawImage(IMAGE_ZOMBATAR_PREV_BUTTON, ZOMBATAR_PREV_PAGE_X, ZOMBATAR_PAGE_BTN_Y);
+		if (IMAGE_ZOMBATAR_NEXT_BUTTON)
+			g->DrawImage(IMAGE_ZOMBATAR_NEXT_BUTTON, ZOMBATAR_NEXT_PAGE_X, ZOMBATAR_PAGE_BTN_Y);
+		g->SetColorizeImages(false);
+	}
+
+	int aPanelW = IMAGE_ZOMBATAR_WIDGET_BG ? IMAGE_ZOMBATAR_WIDGET_BG->mWidth : ZOMBATAR_PANEL_WIDTH;
+	int aAlpha = PvzpAnimateCurve(ZOMBATAR_TRANSITION_TICKS, 0, mTransitionTimer,
+		mState == ZOMBATAR_STATE_TO_CONFIRM ? 0 : 255, mState == ZOMBATAR_STATE_TO_CONFIRM ? 255 : 0,
+		PvzpCurves::CURVE_LINEAR);
+	g->SetColor(Color(0, 0, 0, aAlpha));
+	g->FillRect(ZOMBATAR_VEIL_X, ZOMBATAR_VEIL_Y, aPanelW - ZOMBATAR_VEIL_RIGHT_INSET, ZOMBATAR_VEIL_HEIGHT);
+	g->SetColor(Color::White);
+}
+
 void ZombatarWidget::DrawConfirm(Graphics* g)
 {
 	g->DrawImage(IMAGE_ZOMBATAR_WIDGET_BG, ZOMBATAR_PANEL_X, ZOMBATAR_PANEL_Y);
@@ -1243,9 +1297,15 @@ void ZombatarWidget::DrawConfirm(Graphics* g)
 void ZombatarWidget::ChangeState(ZombatarWidgetState theState)
 {
 	mState = theState;
-	mHoverGridCell = -1;
-	mHoverColorCell = -1;
-	mDeleteHover = false;
+	if (theState == ZOMBATAR_STATE_TO_CONFIRM || theState == ZOMBATAR_STATE_FROM_CONFIRM)
+		mTransitionTimer = ZOMBATAR_TRANSITION_TICKS;	// hover cells intentionally stay frozen
+	else
+	{
+		mHoverGridCell = -1;
+		mHoverColorCell = -1;
+		mHoverTab = -1;
+		mDeleteHover = false;
+	}
 	UpdateButtonState();
 }
 
@@ -1264,16 +1324,17 @@ void ZombatarWidget::UpdateButtonState()
 	bool aList = mState == ZOMBATAR_STATE_LIST;
 	bool aCreate = mState == ZOMBATAR_STATE_CREATE;
 	bool aConfirm = mState == ZOMBATAR_STATE_CONFIRM;
+	bool aTransition = mState == ZOMBATAR_STATE_TO_CONFIRM || mState == ZOMBATAR_STATE_FROM_CONFIRM;
 
 	int aTotal = GetTotalItemsForPage(mPage);
 	mMaxSubPages = (aTotal > ZOMBATAR_GRID_PAGE) ? (aTotal - 1) / ZOMBATAR_GRID_PAGE : 0;
 	mSubPage = std::clamp(mSubPage, 0, mMaxSubPages);
 	bool aPaged = aCreate && mMaxSubPages > 0;
 
-	mBackButton->SetVisible(aCreate || aList || aConfirm);
+	mBackButton->SetVisible(aCreate || aList || aConfirm || aTransition);
 	mConfirmBackButton->SetVisible(aConfirm);
 	mViewButton->SetVisible(aCreate && aCount > 0);
-	mFinishedButton->SetVisible(aCreate || aConfirm);
+	mFinishedButton->SetVisible(aCreate || aConfirm || aTransition);
 	mNewButton->SetVisible(aList);
 	mPrevPortraitButton->SetVisible(aList && aCount > 1);
 	mNextPortraitButton->SetVisible(aList && aCount > 1);
@@ -1289,7 +1350,7 @@ void ZombatarWidget::UpdateButtonState()
 
 	if (aConfirm)
 		mFinishedButton->Resize(ZOMBATAR_ACCEPT_X, ZOMBATAR_CONFIRM_BTN_Y, 103, 26);
-	else
+	else if (aCreate)
 		mFinishedButton->Resize(ZOMBATAR_FINISHED_X, ZOMBATAR_FINISHED_Y, 103, 26);
 }
 
@@ -1299,6 +1360,7 @@ void ZombatarWidget::MouseMove(int x, int y)
 	mMouseY = y;
 	mHoverGridCell = -1;
 	mHoverColorCell = -1;
+	mHoverTab = -1;
 
 	if (mState == ZOMBATAR_STATE_LIST)
 	{
@@ -1308,6 +1370,15 @@ void ZombatarWidget::MouseMove(int x, int y)
 
 	if (mState != ZOMBATAR_STATE_CREATE)
 		return;
+
+	for (int i = 0; i < NUM_ZOMBATAR_PAGES; i++)
+	{
+		if (GetCategoryRect(i).Contains(x, y))
+		{
+			mHoverTab = i;
+			break;
+		}
+	}
 
 	int aItemCount = GetSubPageItemCount();
 	for (int i = 0; i < aItemCount; i++)
@@ -1449,7 +1520,8 @@ void ZombatarWidget::ButtonDepress(int theId)
 		break;
 
 	case ZOMBATAR_BTN_CONFIRM_BACK:
-		ChangeState(ZOMBATAR_STATE_CREATE);
+		if (mState == ZOMBATAR_STATE_CONFIRM)
+			ChangeState(ZOMBATAR_STATE_FROM_CONFIRM);
 		break;
 
 	case ZOMBATAR_BTN_VIEW:
@@ -1461,7 +1533,7 @@ void ZombatarWidget::ButtonDepress(int theId)
 		if (mState == ZOMBATAR_STATE_CREATE)
 		{
 			if (CanSaveNewHead())
-				ChangeState(ZOMBATAR_STATE_CONFIRM);
+				ChangeState(ZOMBATAR_STATE_TO_CONFIRM);
 			else
 				ShowMaxHeadsMessage();
 		}
@@ -1526,12 +1598,21 @@ void ZombatarWidget::ButtonDepress(int theId)
 
 void ZombatarWidget::KeyDown(KeyCode theKey)
 {
-	if (theKey == KEYCODE_ESCAPE)
+	if (theKey != KEYCODE_ESCAPE)
+		return;
+
+	switch (mState)
 	{
-		if (mState == ZOMBATAR_STATE_CONFIRM)
-			ChangeState(ZOMBATAR_STATE_CREATE);
-		else
-			BackToSelector();
+	case ZOMBATAR_STATE_TO_CONFIRM:
+		mState = ZOMBATAR_STATE_FROM_CONFIRM;
+		mTransitionTimer = ZOMBATAR_TRANSITION_TICKS - mTransitionTimer;	// reverse the slide from its current position
+		break;
+	case ZOMBATAR_STATE_CONFIRM:
+		ChangeState(ZOMBATAR_STATE_FROM_CONFIRM);
+		break;
+	default:
+		BackToSelector();
+		break;
 	}
 }
 

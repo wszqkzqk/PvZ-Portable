@@ -51,7 +51,9 @@ enum ZombatarWidgetState
 {
 	ZOMBATAR_STATE_LIST,
 	ZOMBATAR_STATE_CREATE,
-	ZOMBATAR_STATE_CONFIRM
+	ZOMBATAR_STATE_CONFIRM,
+	ZOMBATAR_STATE_TO_CONFIRM,		// slide-in transition from CREATE to CONFIRM
+	ZOMBATAR_STATE_FROM_CONFIRM		// slide-out transition from CONFIRM back to CREATE
 };
 
 class ZombatarWidget : public Widget, public ButtonListener
@@ -82,7 +84,9 @@ public:
 	int							mMouseY;
 	int							mHoverGridCell;
 	int							mHoverColorCell;
+	int							mHoverTab;
 	bool						mDeleteHover;
+	int							mTransitionTimer;
 	int							mPart[NUM_ZOMBATAR_PAGES];
 	int							mColor[NUM_ZOMBATAR_PAGES];
 
@@ -133,6 +137,7 @@ private:
 	void						DrawList(Graphics* g);
 	void						DrawCreate(Graphics* g);
 	void						DrawConfirm(Graphics* g);
+	void						DrawTransition(Graphics* g);
 	void						DrawAvatar(Graphics* g, int theX, int theY, const unsigned char* theRecord);
 	void						DrawDraftAvatar(Graphics* g, int theX, int theY);
 	void						DrawColorSwatches(Graphics* g, int thePaletteBase, int theCount, int theSavedColor);
