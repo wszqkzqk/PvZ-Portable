@@ -1102,7 +1102,10 @@ bool TodResourceManager::TodLoadNextResource()
 	{
 		BaseRes* aRes = *mCurResGroupListItr;
 		if (aRes->mFromProgram)
+		{
+			mCurResGroupListItr++;
 			continue;
+		}
 
 		switch (aRes->mType)
 		{
