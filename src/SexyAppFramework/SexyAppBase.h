@@ -56,9 +56,9 @@ class Image;
 class GLImage;
 class Widget;
 class SoundManager;
+class _Font;
 class MusicInterface;
 class MemoryImage;
-class HTTPTransfer;
 class Dialog;
 
 class ResourceManager;
@@ -262,6 +262,7 @@ public:
 	Image*					mCustomCursorImage;
 	int						mCustomCursorImageNum;
 	SoundManager*			mSoundManager;
+	_Font*					mDefaultFont = nullptr; // app-injected fallback for widgets without an explicit font
 	WidgetSafeDeleteList	mSafeDeleteList;
 	bool					mMouseIn;	
 	bool					mRunning;

@@ -24,11 +24,10 @@
 
 #include "EditWidget.h"
 #include <algorithm>
-#include "graphics/ImageFont.h"
+#include "graphics/Font.h"
 #include "WidgetManager.h"
 #include "SexyAppBase.h"
 #include "EditListener.h"
-#include "../../Resources.h" // bad
 
 using namespace Sexy;
 
@@ -124,9 +123,10 @@ void EditWidget::SetFont(_Font* theFont, _Font* theWidthCheckFont)
 
 void EditWidget::Draw(Graphics* g) // Already translated
 {	
+	if ((mFont == nullptr) && (mWidgetManager->mApp->mDefaultFont != nullptr))
+		mFont = mWidgetManager->mApp->mDefaultFont->Duplicate();
 	if (mFont == nullptr)
-		mFont = FONT_PICO129->Duplicate();
-		//mFont = new SysFont(mWidgetManager->mApp, "Arial Unicode MS", 10, false);
+		return;
 
 	std::string_view aString = mString;
 

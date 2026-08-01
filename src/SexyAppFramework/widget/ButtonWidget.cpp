@@ -24,11 +24,10 @@
 
 #include "ButtonWidget.h"
 #include "graphics/Image.h"
-//#include "graphics/SysFont.h"
-#include "graphics/ImageFont.h"
+#include "graphics/Font.h"
 #include "WidgetManager.h"
 #include "ButtonListener.h"
-#include "../../Resources.h" // bad
+#include "SexyAppBase.h"
 
 using namespace Sexy;
 
@@ -96,9 +95,8 @@ void ButtonWidget::Draw(Graphics* g)
 	if (mBtnNoDraw)
 		return;
 
-	if ((mFont == nullptr) && (mLabel.length() > 0))
-		mFont = FONT_PICO129->Duplicate();
-		//mFont = new SysFont(mWidgetManager->mApp, "Arial Unicode MS", 10);
+	if ((mFont == nullptr) && (mLabel.length() > 0) && (mWidgetManager->mApp->mDefaultFont != nullptr))
+		mFont = mWidgetManager->mApp->mDefaultFont->Duplicate();
 
 	bool isDown = mIsDown && mIsOver && !mDisabled;
 	isDown ^= mInverted;

@@ -30,9 +30,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-//#include "graphics/SysFont.h"
-#include "graphics/ImageFont.h"
-#include "../../Resources.h" // bad
+#include "graphics/Font.h"
 
 using namespace Sexy;
 
@@ -178,12 +176,13 @@ void Dialog::SetLinesFont(_Font* theFont)
 
 void Dialog::EnsureFonts()
 {
+	_Font* aDefaultFont = gSexyAppBase->mDefaultFont;
+	if (aDefaultFont == nullptr)
+		return;
 	if (mHeaderFont == nullptr)
-		mHeaderFont = FONT_PICO129->Duplicate();
-		//mHeaderFont = new SysFont(gSexyAppBase, "Arial Unicode MS", 14);
+		mHeaderFont = aDefaultFont->Duplicate();
 	if (mLinesFont == nullptr)
-		mLinesFont = FONT_PICO129->Duplicate();
-		//mLinesFont = new SysFont(gSexyAppBase, "Arial Unicode MS", 12);
+		mLinesFont = aDefaultFont->Duplicate();
 }
 
 int	Dialog::GetPreferredHeight(int theWidth)

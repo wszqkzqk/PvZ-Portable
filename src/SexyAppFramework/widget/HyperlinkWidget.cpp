@@ -24,10 +24,9 @@
 
 #include "HyperlinkWidget.h"
 #include "graphics/Graphics.h"
-#include "graphics/ImageFont.h"
-//#include "graphics/SysFont.h"
+#include "graphics/Font.h"
 #include "WidgetManager.h"
-#include "../../Resources.h" // bad
+#include "SexyAppBase.h"
 
 using namespace Sexy;
 
@@ -43,9 +42,10 @@ HyperlinkWidget::HyperlinkWidget(int theId, ButtonListener* theButtonListener) :
 
 void HyperlinkWidget::Draw(Graphics* g)
 {
+	if ((mFont == nullptr) && (mWidgetManager->mApp->mDefaultFont != nullptr))
+		mFont = mWidgetManager->mApp->mDefaultFont->Duplicate();
 	if (mFont == nullptr)
-		mFont = FONT_PICO129->Duplicate();
-		//mFont = new SysFont(mWidgetManager->mApp, "Arial Unicode MS", 10); //baz changed
+		return;
 
 	int aFontX = (mWidth - mFont->StringWidth(mLabel))/2;
 	int aFontY = (mHeight + mFont->GetAscent())/2 - 1;

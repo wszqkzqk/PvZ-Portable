@@ -19,9 +19,10 @@
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
 
-//#include <corecrt.h>
 #include <time.h>
 #include "LawnApp.h"
+#include "Resources.h"
+#include "Lawn/LawnCommon.h"
 #include "Lawn/Board.h"
 #include "Lawn/Plant.h"
 #include "Lawn/Zombie.h"
@@ -1794,6 +1795,7 @@ void LawnApp::LoadingThreadProc()
 	LoadGroup("LoadingFonts", 54);
 	if (mLoadingFailed || mShutdown || mCloseRequest)
 		return;
+	mDefaultFont = FONT_PICO129; // framework widgets fall back to this when no font is set
 
 	aHesitationResources.EndBracket();
 	TodTrace("loading '%s' %d ms", "resources", static_cast<int>(aTimer.GetDuration()));
