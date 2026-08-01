@@ -23,19 +23,19 @@
 
 #if (TRI0==0) 
 #define PTYPE uint32_t
-#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel8888.cpp"
+#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel8888.inc"
 #define NAME0 8888
 #elif (TRI0==1)
 #define PTYPE uint32_t
-#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel888.cpp"
+#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel888.inc"
 #define NAME0 0888
 #elif (TRI0==2)
 #define PTYPE uint16_t
-#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel565.cpp"
+#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel565.inc"
 #define NAME0 0565
 #elif (TRI0==3)
 #define PTYPE uint16_t
-#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel555.cpp"
+#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel555.inc"
 #define NAME0 0555
 #endif
 
@@ -240,7 +240,7 @@ void	funcname(SWHelper::SWVertex* pVerts, void* pFrameBuffer, const unsigned int
 
 				int		x0 = (lx + 0xffff) & 0xffff0000;
 				int		x1 = (sx + 0xffff) & 0xffff0000;
-#include "graphics/SWTri/SWTri_Loop.cpp"
+#include "graphics/SWTri/SWTri_Loop.inc"
 			}
 		}
 		else if (mid > v1->x)
@@ -251,7 +251,7 @@ void	funcname(SWHelper::SWVertex* pVerts, void* pFrameBuffer, const unsigned int
 
 				int	x0 = (sx + 0xffff) & 0xffff0000;
 				int	x1 = (lx + 0xffff) & 0xffff0000;
-#include "graphics/SWTri/SWTri_Loop.cpp"
+#include "graphics/SWTri/SWTri_Loop.inc"
 			}
 		}
 	}
@@ -279,7 +279,7 @@ void	funcname(SWHelper::SWVertex* pVerts, void* pFrameBuffer, const unsigned int
 
 			int	x0 = (lx + 0xffff) & 0xffff0000;
 			int	x1 = (sx + 0xffff) & 0xffff0000;
-#include "graphics/SWTri/SWTri_Loop.cpp"
+#include "graphics/SWTri/SWTri_Loop.inc"
 		}
 	}
 	else if (mid > v1->x)
@@ -290,7 +290,7 @@ void	funcname(SWHelper::SWVertex* pVerts, void* pFrameBuffer, const unsigned int
 
 			int	x0 = (sx + 0xffff) & 0xffff0000;
 			int	x1 = (lx + 0xffff) & 0xffff0000;
-#include "graphics/SWTri/SWTri_Loop.cpp"
+#include "graphics/SWTri/SWTri_Loop.inc"
 		}
 	}
 }

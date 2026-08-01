@@ -30,21 +30,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -52,21 +52,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -76,21 +76,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -98,21 +98,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -124,21 +124,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -146,21 +146,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -170,21 +170,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -192,21 +192,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -220,21 +220,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -242,21 +242,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -266,21 +266,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -288,21 +288,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -314,21 +314,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -336,21 +336,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -360,21 +360,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -382,21 +382,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -410,21 +410,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -432,21 +432,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -456,21 +456,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -478,21 +478,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -504,21 +504,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -526,21 +526,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -550,21 +550,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -572,21 +572,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -600,21 +600,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -622,21 +622,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -646,21 +646,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -668,21 +668,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -694,21 +694,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -716,21 +716,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -740,21 +740,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
@@ -762,21 +762,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #define TRI5 1
-#include "SWTri_DrawTriangle.cpp"
+#include "SWTri_DrawTriangle.inc"
 
 #undef TRI5
 #undef TRI4

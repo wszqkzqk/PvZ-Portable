@@ -48,12 +48,6 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 	src/Lawn/System/*.cpp
 )
 
-# these files are included and must not be built in the project
-list(REMOVE_ITEM SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/TodDrawTriangle.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/TodDrawTriangleInc.cpp
-)
-
 set(LOW_MEMORY OFF CACHE BOOL "Enable low memory mode")
 set(DOWNSCALE_COUNT 1 CACHE STRING "Image downscale count")
 if(NINTENDO_SWITCH)

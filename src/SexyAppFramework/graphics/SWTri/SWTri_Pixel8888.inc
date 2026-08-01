@@ -26,11 +26,11 @@
 
 	#if defined(TEXTURED)
 	{
-		#include "SWTri_GetTexel.cpp"
+		#include "SWTri_GetTexel.inc"
 		
 		if (alpha > 0x08)
 		{
-			#include "SWTri_TexelARGB.cpp"
+			#include "SWTri_TexelARGB.inc"
 				
 			#if defined(GLOBAL_ARGB) || defined (TEX_ALPHA) || defined(MOD_ARGB)
 			{
