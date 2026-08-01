@@ -40,7 +40,7 @@ std::string Sexy::DIALOG_NO_STRING				= "NO";
 std::string Sexy::DIALOG_OK_STRING				= "OK";
 std::string Sexy::DIALOG_CANCEL_STRING			= "CANCEL";
 
-static int gDialogColors[][3] =
+static const int gDialogColors[][3] =
 {{255, 255, 255},
 {255, 255, 0},
 {255, 255, 255},
@@ -104,17 +104,19 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 	mDragging = false;
 	mPriority = 1;
 
+	int aColors[NUM_COLORS][3];
+	memcpy(aColors, gDialogColors, sizeof(aColors));
 	if (theButtonComponentImage == nullptr)
 	{
-		gDialogColors[COLOR_BUTTON_TEXT][0] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT][1] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT][2] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT_HILITE][0] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT_HILITE][1] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT_HILITE][2] = 0;
+		aColors[COLOR_BUTTON_TEXT][0] = 0;
+		aColors[COLOR_BUTTON_TEXT][1] = 0;
+		aColors[COLOR_BUTTON_TEXT][2] = 0;
+		aColors[COLOR_BUTTON_TEXT_HILITE][0] = 0;
+		aColors[COLOR_BUTTON_TEXT_HILITE][1] = 0;
+		aColors[COLOR_BUTTON_TEXT_HILITE][2] = 0;
 	}
 
-	SetColors(gDialogColors, NUM_COLORS);
+	SetColors(aColors, NUM_COLORS);
 }
 
 
