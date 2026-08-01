@@ -22,6 +22,8 @@
 #include "Trail.h"
 #include "Definition.h"
 #include <algorithm>
+#include "graphics/Graphics.h"
+#include "graphics/TriVertex.h"
 
 int gTrailDefCount;
 TrailDefinition* gTrailDefArray;

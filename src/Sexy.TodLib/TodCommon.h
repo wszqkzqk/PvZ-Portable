@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <cmath>
 #include <cfloat>
-#include "../Lawn/LawnCommon.h"
+#include "../ConstEnums.h"  // TodCurves, DrawStringJustification
 #include "../SexyAppFramework/Common.h"
 #include "TodDebug.h"
 #include "misc/ResourceManager.h"
@@ -35,7 +35,9 @@ namespace Sexy
 {
 	class Graphics;
 	class SexyMatrix;
+	class SexyMatrix3;
 	class SexyVector2;
+	class MemoryImage;
 };
 //using namespace std;
 using namespace Sexy;
@@ -154,9 +156,10 @@ int						TodVsnprintf(char* theBuffer, int theSize, const char* theFormat, va_li
 TodAllocator*			FindGlobalAllocator(int theSize);
 void                    FreeGlobalAllocators();
 
-std::string				TodGetCurrentLevelName();
-bool					TodHasUsedCheatKeys();
-bool					TodAppCloseRequest();
+// App-injected hooks, assigned in main.cpp.
+extern bool (*gAppCloseRequest)();
+extern bool (*gAppHasUsedCheatKeys)();
+extern std::string (*gGetCurrentLevelName)();
 
 //====================================================================================================//
 /*inline*/ int			RandRangeInt(int theMin, int theMax);

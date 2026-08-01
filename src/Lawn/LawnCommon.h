@@ -24,7 +24,7 @@
 
 #include "../ConstEnums.h"
 #include "graphics/Graphics.h"
-#include "widget//EditWidget.h"
+#include "widget/EditWidget.h"
 #include <time.h>
 
 using namespace Sexy;

@@ -24,16 +24,15 @@
 #include <algorithm>
 #include "TodDebug.h"
 #include "TodCommon.h"
-#include "../LawnApp.h"
 #include "EffectSystem.h"
 #include "../Resources.h"
 #include "TodStringFile.h"
 #include "../GameConstants.h"
 #include "graphics/Font.h"
-#include "misc/Debug.h"
 #include "graphics/GLImage.h"
 #include "graphics/Graphics.h"
 #include "graphics/ImageFont.h"
+#include "graphics/MemoryImage.h"
 #include "misc/PerfTimer.h"
 #include "misc/SexyMatrix.h"
 #include "graphics/GLInterface.h"
@@ -111,21 +110,6 @@ void Tod_SWTri_AddAllDrawTriFuncs()
 	SWTri_AddDrawTriFunc(true, true, true, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);
 	SWTri_AddDrawTriFunc(true, true, true, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);
 	SWTri_AddDrawTriFunc(true, true, true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);
-}
-
-std::string TodGetCurrentLevelName()
-{
-	return "Unknown level";
-}
-
-bool TodHasUsedCheatKeys()
-{
-	return false;
-}
-
-bool TodAppCloseRequest()
-{
-	return false;
 }
 
 intptr_t TodPickFromWeightedArray(const TodWeightedArray* theArray, int theCount)

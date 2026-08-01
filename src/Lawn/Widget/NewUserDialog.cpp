@@ -22,6 +22,7 @@
 #include "NewUserDialog.h"
 #include "../../LawnApp.h"
 #include "../../Resources.h"
+#include "../LawnCommon.h"
 #include "widget/WidgetManager.h"
 
 // GOTY @Patoke: 0x460F20

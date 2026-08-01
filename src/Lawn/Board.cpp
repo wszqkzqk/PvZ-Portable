@@ -24,6 +24,7 @@
 #include <SDL.h>
 #include "ZenGarden.h"
 #include "BoardInclude.h"
+#include "LawnCommon.h"
 #include "System/Music.h"
 #include "System/SaveGame.h"
 #include "Widget/LawnDialog.h"
@@ -42,7 +43,6 @@
 #include "widget/Dialog.h"
 #include "misc/MTRand.h"
 #include "../Sexy.TodLib/TodParticle.h"
-//#include "graphics/SysFont.h"
 #include "../Sexy.TodLib/EffectSystem.h"
 #include "../Sexy.TodLib/TodStringFile.h"
 #include "graphics/ImageFont.h"
@@ -54,9 +54,6 @@
 //#define SEXY_PERF_ENABLED
 #include "misc/PerfTimer.h"
 #include "Widget/AchievementsScreen.h"
-
-//#define SEXY_MEMTRACE
-//#include "../SexyAppFramework/memmgr.h"
 
 constexpr const int ZOMBIE_COUNTDOWN_FIRST_WAVE = 1800;
 constexpr const int ZOMBIE_COUNTDOWN = 2500;

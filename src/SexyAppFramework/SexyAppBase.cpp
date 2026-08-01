@@ -56,7 +56,6 @@
 #endif
 
 #include "SexyAppBase.h"
-//#include "misc/SEHCatcher.h"
 #include "widget/WidgetManager.h"
 #include "widget/Widget.h"
 #include "misc/Debug.h"
@@ -64,7 +63,6 @@
 #include "graphics/GLInterface.h"
 #include "graphics/GLImage.h"
 #include "graphics/MemoryImage.h"
-//#include "misc/HTTPTransfer.h"
 #include "widget/Dialog.h"
 #include "imagelib/ImageLib.h"
 #include "sound/SDLSoundManager.h"
@@ -74,7 +72,6 @@
 #include "misc/PerfTimer.h"
 #include "misc/MTRand.h"
 #include "misc/ModVal.h"
-//#include "graphics/SysFont.h"
 #include "misc/ResourceManager.h"
 #include "sound/SDLMusicInterface.h"
 #include <mutex>

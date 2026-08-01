@@ -20,6 +20,7 @@
  */
 
 #include "../Board.h"
+#include "../LawnCommon.h"
 #include "GameButton.h"
 #include "StoreScreen.h"
 #include "ZombatarWidget.h"

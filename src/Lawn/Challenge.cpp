@@ -21,6 +21,7 @@
 
 #include "Coin.h"
 #include "Board.h"
+#include "LawnCommon.h"
 #include "Plant.h"
 #include "Zombie.h"
 #include "GridItem.h"

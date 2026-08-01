@@ -21,6 +21,7 @@
 
 #include "LawnApp.h"
 #include "Resources.h"
+#include "Sexy.TodLib/TodCommon.h" // declares the app-injected hooks defined below
 #include "Sexy.TodLib/TodStringFile.h"
 #include <cstdlib>
 #include <vector>

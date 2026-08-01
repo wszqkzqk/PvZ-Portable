@@ -25,6 +25,7 @@
 #include "Reanimator.h"
 #include "ReanimAtlas.h"
 #include "misc/PerfTimer.h"
+#include "graphics/Graphics.h"
 #include "graphics/MemoryImage.h"
 
 ReanimAtlas::ReanimAtlas()

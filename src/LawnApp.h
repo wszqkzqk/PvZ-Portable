@@ -339,10 +339,6 @@ bool								LawnGetCloseRequest();
 bool								LawnHasUsedCheatKeys();
 void								BetaSubmitFunc();
 
-extern bool (*gAppCloseRequest)();
-extern bool (*gAppHasUsedCheatKeys)();
-extern std::string (*gGetCurrentLevelName)();
-
 extern bool gIsPartnerBuild;
 extern bool gFastMo;
 extern bool gSlowMo;

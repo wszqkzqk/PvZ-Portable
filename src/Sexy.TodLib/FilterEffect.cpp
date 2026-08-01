@@ -22,6 +22,7 @@
 #include "TodDebug.h"
 #include "TodCommon.h"
 #include "FilterEffect.h"
+#include "graphics/Graphics.h"
 #include "graphics/MemoryImage.h"
 #include <algorithm>
 

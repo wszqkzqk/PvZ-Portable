@@ -25,6 +25,11 @@
 #include "LawnDialog.h"
 #include "widget/EditListener.h"
 
+namespace Sexy
+{
+	class EditWidget;
+}
+
 class CheatDialog : public LawnDialog, public EditListener
 {
 public:

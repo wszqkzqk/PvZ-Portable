@@ -24,6 +24,7 @@
 #include "../Coin.h"
 #include "../Board.h"
 #include "../Plant.h"
+#include "../LawnCommon.h"
 #include "LawnDialog.h"
 #include "GameButton.h"
 #include "StoreScreen.h"
