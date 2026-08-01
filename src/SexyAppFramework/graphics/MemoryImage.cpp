@@ -662,7 +662,7 @@ void MemoryImage::NormalDrawLineAA(double theStartX, double theStartY, double th
 		{\
 			int aDestAlpha = dest >> 24;\
 			int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;\
-			a = 255 * a / aNewDestAlpha;\
+			a = (aNewDestAlpha == 0) ? 0 : 255 * a / aNewDestAlpha;\
 			oma = 256 - a;\
 			*(p) = (aNewDestAlpha << 24) |\
 					((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |\
@@ -685,7 +685,7 @@ void MemoryImage::NormalDrawLineAA(double theStartX, double theStartY, double th
 		{\
 			int aDestAlpha = dest >> 24;\
 			int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;\
-			a = 255 * a / aNewDestAlpha;\
+			a = (aNewDestAlpha == 0) ? 0 : 255 * a / aNewDestAlpha;\
 			oma = 256 - a;\
 			*(p) = (aNewDestAlpha << 24) |\
 					((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |\
@@ -1241,7 +1241,7 @@ void MemoryImage::FillRect(const Rect& theRect, const Color& theColor, int theDr
 				int aDestAlpha = dest >> 24;
 				int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * oldAlpha) / 255;
 									
-				int newAlpha = 255 * oldAlpha / aNewDestAlpha;
+				int newAlpha = (aNewDestAlpha == 0) ? 0 : 255 * oldAlpha / aNewDestAlpha; // fully transparent: color weight is moot
 
 				int oma = 256 - newAlpha;
 
