@@ -71,7 +71,6 @@
 #include "misc/PropertiesParser.h"
 #include "misc/PerfTimer.h"
 #include "misc/MTRand.h"
-#include "misc/ModVal.h"
 #include "misc/ResourceManager.h"
 #include "sound/SDLMusicInterface.h"
 #include <mutex>
