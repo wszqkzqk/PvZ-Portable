@@ -311,7 +311,7 @@ char* PakInterface::FGetS(char* thePtr, int theSize, PFILE* theFile)
 	if (theFile->mRecord != nullptr)
 	{
 		int anIdx = 0;
-		while (anIdx < theSize)
+		while (anIdx < theSize - 1) // fgets semantics: at most theSize-1 chars plus the NUL
 		{
 			if (theFile->mPos >= theFile->mRecord->mSize)
 			{
