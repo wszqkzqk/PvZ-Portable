@@ -53,11 +53,7 @@ GLImage::~GLImage()
 
 void GLImage::Create(int theWidth, int theHeight)
 {
-	delete [] mBits;
-
-	mBits = nullptr;
-
-	BitsChanged();	
+	MemoryImage::Create(theWidth, theHeight);
 }
 
 void GLImage::FillScanLinesWithCoverage(Span* theSpans, int theSpanCount, const Color& theColor, int theDrawMode, const uint8_t* theCoverage, int theCoverX, int theCoverY, int theCoverWidth, int theCoverHeight)
