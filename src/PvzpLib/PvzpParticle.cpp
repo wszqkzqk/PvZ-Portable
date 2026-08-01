@@ -297,7 +297,7 @@ void PvzpParticleEmitter::PvzpEmitterInitialize(float theX, float theY, PvzpPart
 	mImageOverride = nullptr;
 	mSystemDuration = 0;
 	mEmitterDef = theEmitterDef;
-	mParticleList.SetAllocator(&theSystem->mParticleHolder->mEmitterListNodeAllocator);
+	mParticleList.SetAllocator(&theSystem->mParticleHolder->mParticleListNodeAllocator);
 
 	if (FloatTrackIsSet(mEmitterDef->mSystemDuration))
 		mSystemDuration = FloatTrackEvaluate(mEmitterDef->mSystemDuration, 0.0f, Sexy::Rand(1.0f));
