@@ -40,15 +40,26 @@ std::string Sexy::DIALOG_NO_STRING				= "NO";
 std::string Sexy::DIALOG_OK_STRING				= "OK";
 std::string Sexy::DIALOG_CANCEL_STRING			= "CANCEL";
 
-static int gDialogColors[][3] =
-{{255, 255, 255},
-{255, 255, 0},
-{255, 255, 255},
-{255, 255, 255},
-{255, 255, 255},
+struct DialogColorScheme
+{
+	Color mHeader;
+	Color mLines;
+	Color mFooter;
+	Color mButtonText;
+	Color mButtonTextHilite;
+	Color mBkg;
+	Color mOutline;
+};
 
-{80, 80, 80},
-{255, 255, 255}};
+static constexpr DialogColorScheme gDefaultDialogColors{
+	.mHeader = Color(255, 255, 255),
+	.mLines = Color(255, 255, 0),
+	.mFooter = Color(255, 255, 255),
+	.mButtonText = Color(255, 255, 255),
+	.mButtonTextHilite = Color(255, 255, 255),
+	.mBkg = Color(80, 80, 80),
+	.mOutline = Color(255, 255, 255),
+};
 
 Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int theId, bool isModal, const std::string& theDialogHeader, const std::string& theDialogLines, const std::string& theDialogFooter, int theButtonMode)
 {
@@ -104,17 +115,20 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 	mDragging = false;
 	mPriority = 1;
 
+	DialogColorScheme aColors = gDefaultDialogColors;
 	if (theButtonComponentImage == nullptr)
 	{
-		gDialogColors[COLOR_BUTTON_TEXT][0] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT][1] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT][2] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT_HILITE][0] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT_HILITE][1] = 0;
-		gDialogColors[COLOR_BUTTON_TEXT_HILITE][2] = 0;
+		aColors.mButtonText = Color(0, 0, 0);
+		aColors.mButtonTextHilite = Color(0, 0, 0);
 	}
 
-	SetColors(gDialogColors, NUM_COLORS);
+	SetColor(COLOR_HEADER, aColors.mHeader);
+	SetColor(COLOR_LINES, aColors.mLines);
+	SetColor(COLOR_FOOTER, aColors.mFooter);
+	SetColor(COLOR_BUTTON_TEXT, aColors.mButtonText);
+	SetColor(COLOR_BUTTON_TEXT_HILITE, aColors.mButtonTextHilite);
+	SetColor(COLOR_BKG, aColors.mBkg);
+	SetColor(COLOR_OUTLINE, aColors.mOutline);
 }
 
 
@@ -219,9 +233,9 @@ void Dialog::Draw(Graphics* g)
 	}
 	else
 	{
-		g->SetColor(GetColor(COLOR_OUTLINE, Color(gDialogColors[COLOR_OUTLINE])));
+		g->SetColor(GetColor(COLOR_OUTLINE, gDefaultDialogColors.mOutline));
 		g->DrawRect(12, 12, mWidth - 12*2 - 1, mHeight - 12*2 - 1);
-		g->SetColor(GetColor(COLOR_BKG, Color(gDialogColors[COLOR_BKG])));
+		g->SetColor(GetColor(COLOR_BKG, gDefaultDialogColors.mBkg));
 		g->FillRect(12+1, 12+1, mWidth - 12*2 - 2, mHeight - 12*2 - 2);
 
 		g->SetColor(Color(0, 0, 0, 128));
