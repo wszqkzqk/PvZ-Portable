@@ -34,6 +34,8 @@ void RGB_to_HSL(float r, float g, float b, float& h, float& s, float& l)
 	minval = std::min(minval, b);
 
 	l = (minval + maxval) / 2;  //luminosity
+	h = 0.0f;
+	s = 0.0f;
 	if (l <= 0.0f)
 		return;
 
