@@ -240,7 +240,7 @@ bool FontData::GetColorFromDataElement(DataElement* theElement, Color& theColor)
 	if (theElement->mIsList)
 	{
 		DoubleVector aFactorVector;
-		if (!DataToDoubleVector(theElement, &aFactorVector) && (aFactorVector.size() == 4))
+		if (!DataToDoubleVector(theElement, &aFactorVector) || (aFactorVector.size() != 4))
 			return false;
 
 		theColor = Color(
