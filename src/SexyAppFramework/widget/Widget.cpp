@@ -379,7 +379,7 @@ int Widget::GetWordWrappedHeight(Graphics* g, int theWidth, std::string_view the
 
 int Widget::GetNumDigits(int theNumber)
 {		
-	int aDivisor = 10;
+	int64_t aDivisor = 10;
 	int aNumDigits = 1;
 	while (theNumber >= aDivisor)
 	{
@@ -392,7 +392,7 @@ int Widget::GetNumDigits(int theNumber)
 
 void Widget::WriteNumberFromStrip(Graphics* g, int theNumber, int theX, int theY, Image* theNumberStrip, int aSpacing)
 {
-	int aDivisor = 10;
+	int64_t aDivisor = 10;
 	int aNumDigits = 1;
 	while (theNumber >= aDivisor)
 	{
