@@ -236,7 +236,7 @@ void Buffer::FromWebString(std::string_view theString)
 		else if ((aChar >= 'A') && (aChar <= 'F'))
 			aVal = (aChar - 'A') + 10;
 		else if ((aChar >= 'a') && (aChar <= 'f'))
-			aVal = (aChar - 'f') + 10;
+			aVal = (aChar - 'a') + 10;
 
 		aSizeBits += (aVal << ((7 - aDigitNum) * 4));
 	}
