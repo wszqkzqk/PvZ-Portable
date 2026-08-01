@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12...4.0)
 
-project(pvz-portable LANGUAGES C CXX ASM)
+project(pvz-portable LANGUAGES C CXX)
 
 include(CMake/ProjectVersion.cmake)
 
@@ -58,20 +58,6 @@ if(NINTENDO_SWITCH)
 	)
 	list(APPEND PLAT_INCLUDES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/switch
-	)
-elseif(NINTENDO_3DS)
-	set(LOW_MEMORY ON)
-	set(DOWNSCALE_COUNT 2)
-	ctr_add_shader_library(colored ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/3ds/graphics/colored.v.pica)
-	ctr_add_shader_library(textured ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/3ds/graphics/textured.v.pica)
-	dkp_add_embedded_binary_library(shaders colored textured)
-	list(APPEND SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/3ds/graphics/Window.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/3ds/graphics/GLInterface.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/3ds/Input.cpp
-	)
-	list(APPEND PLAT_INCLUDES
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/3ds
 	)
 elseif(EMSCRIPTEN)
 	# libopenmpt has no Emscripten port; must be pre-built with emmake.
@@ -289,19 +275,6 @@ elseif (NINTENDO_SWITCH)
 	nx_create_nro(pvz-portable
 		NACP pvz-portable.nacp
 		ICON ${CMAKE_CURRENT_SOURCE_DIR}/icon-switch.jpg
-	)
-elseif (NINTENDO_3DS)
-	target_link_libraries(pvz-portable PRIVATE citro3d shaders)
-
-	ctr_generate_smdh(pvz-portable.smdh
-		NAME "PvZ Portable"
-		DESCRIPTION "A community-driven re-implementation of Plants vs. Zombies GOTY Edition"
-		AUTHOR "wszqkzqk, etc., a community-driven port"
-		ICON "${CMAKE_CURRENT_SOURCE_DIR}/icon-3ds.png"
-	)
-
-	ctr_create_3dsx(pvz-portable
-		SMDH pvz-portable.smdh
 	)
 elseif (ANDROID)
 	target_link_libraries(pvz-portable PRIVATE GLESv2 EGL android log)

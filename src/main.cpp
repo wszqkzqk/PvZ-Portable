@@ -31,14 +31,6 @@ using namespace Sexy;
 #include <shellapi.h>
 #endif
 
-#ifdef __3DS__
-#include <3ds.h>
-#include <malloc.h>
-extern "C" {
-	unsigned int __stacksize__ = 512 * 1024;
-}
-#endif
-
 #ifdef __SWITCH__
 #include <switch.h>
 #endif
@@ -94,10 +86,6 @@ int main(int argc, char** argv)
 {
 #ifdef __SWITCH__
 	consoleDebugInit(debugDevice_SVC);
-#endif
-
-#ifdef __3DS__
-	osSetSpeedupEnable(true);
 #endif
 
 #ifdef _WIN32

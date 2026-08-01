@@ -48,8 +48,6 @@
 #include <switch.h>
 #include <locale>
 #include <codecvt>
-#elif defined(__3DS__)
-#include <3ds.h>
 #elif defined(__EMSCRIPTEN__)
 #include <emscripten.h>
 #include <emscripten/html5.h>
@@ -177,8 +175,6 @@ SexyAppBase::SexyAppBase()
 
 #ifdef __SWITCH__
 	mResourceDir = "sdmc:/switch/PvZPortable/";
-#elif defined(__3DS__)
-	mResourceDir = "sdmc:/3ds/PvZPortable/";
 #elif defined(__ANDROID__) && !defined(__TERMUX__)
 	const char* aExtPath = SDL_AndroidGetExternalStoragePath();
 	if (aExtPath)
@@ -228,7 +224,7 @@ SexyAppBase::SexyAppBase()
 	mWidth = 640;
 	mHeight = 480;
 	mFullscreenBits = 16;
-#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__) || defined(__3DS__)
+#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__)
 	mIsWindowed = false;
 #else
 	mIsWindowed = true;
@@ -285,7 +281,7 @@ SexyAppBase::SexyAppBase()
 	mLastDrawTick = SDL_GetTicks();
 	mNextDrawTick = SDL_GetTicks();
 	mSysCursor = true;	
-#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__) || defined(__3DS__)
+#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__)
 	mForceFullscreen = true;
 #else
 	mForceFullscreen = false;
@@ -1365,7 +1361,7 @@ void SexyAppBase::ReadFromRegistry()
 	if (RegistryReadInteger("Muted", &anInt))
 		mMuteCount = anInt;
 
-#if !defined(__IPHONEOS__) && (!defined(__ANDROID__) || defined(__TERMUX__)) && !defined(__SWITCH__) && !defined(__3DS__) && !defined(__EMSCRIPTEN__)
+#if !defined(__IPHONEOS__) && (!defined(__ANDROID__) || defined(__TERMUX__)) && !defined(__SWITCH__) && !defined(__EMSCRIPTEN__)
 	if (RegistryReadInteger("ScreenMode", &anInt))
 		mIsWindowed = anInt == 0;
 #endif
@@ -1973,7 +1969,7 @@ void SexyAppBase::Popup(const std::string& theString)
 		ErrorApplicationConfig c;
 		errorApplicationCreate(&c, "Fatal error", theString.c_str());
 		errorApplicationShow(&c);
-#elif !defined(__3DS__) && !defined(__EMSCRIPTEN__)
+#elif !defined(__EMSCRIPTEN__)
 		if (std::this_thread::get_id() == mPrimaryThreadId)
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "FATAL ERROR", theString.c_str(), NULL);
 #endif
@@ -2422,7 +2418,7 @@ void SexyAppBase::StartCursorThread()
 
 void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
 {
-#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__) || defined(__3DS__)
+#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__)
 	// Mobile/console platforms are always fullscreen; skip mode switching entirely.
 	Set3DAcclerated(is3d);
 	return;
@@ -3508,7 +3504,7 @@ void SexyAppBase::Init()
 	{
 		SetAppDataFolder("/saves/");
 	}
-#elif !defined(__SWITCH__) && !defined(__3DS__)
+#elif !defined(__SWITCH__)
 	{
 		char* aPrefPath = SDL_GetPrefPath("io.github.wszqkzqk", "PvZPortable"); // Avoid conflict with official Plants vs. Zombies
 		if (aPrefPath)

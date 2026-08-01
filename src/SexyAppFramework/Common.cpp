@@ -301,7 +301,7 @@ bool Sexy::IsPathRooted(std::string_view thePath)
 	if (aPath.has_root_path())
 		return true;
 
-#if defined(__SWITCH__) || defined(__3DS__)
+#if defined(__SWITCH__)
 	const size_t aColonPos = thePath.find(':');
 	if (aColonPos == std::string_view::npos || aColonPos == 0 || aColonPos + 1 >= thePath.size())
 		return false;
