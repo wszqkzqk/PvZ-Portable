@@ -110,6 +110,10 @@ bool LawnHasUsedCheatKeys()
 
 LawnApp::LawnApp()
 {
+	// Replace the base-class resource manager with the Tod-capable subclass.
+	delete mResourceManager;
+	mResourceManager = new TodResourceManager(this);
+
 	mBoard = nullptr;
 	mGameSelector = nullptr;
 	mChallengeScreen = nullptr;

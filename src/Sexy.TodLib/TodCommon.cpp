@@ -1033,7 +1033,7 @@ Color ColorsMultiply(const Color& theColor1, const Color& theColor2)
 // GOTY @Patoke: inlined 0x51D4C0
 bool TodLoadResources(const std::string& theGroup)
 {
-	return ((TodResourceManager*)gSexyAppBase->mResourceManager)->TodLoadResources(theGroup);
+	return static_cast<TodResourceManager*>(gSexyAppBase->mResourceManager)->TodLoadResources(theGroup);
 }
 
 // GOTY @Patoke: 0x51D4C0
@@ -1075,7 +1075,7 @@ bool TodResourceManager::TodLoadResources(const std::string& theGroup)
 
 void TodAddImageToMap(SharedImageRef* theImage, const std::string& thePath)
 { 
-	((TodResourceManager*)gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
+	static_cast<TodResourceManager*>(gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
 }
 
 void TodResourceManager::AddImageToMap(SharedImageRef* theImage, const std::string& thePath)
@@ -1090,7 +1090,7 @@ void TodResourceManager::AddImageToMap(SharedImageRef* theImage, const std::stri
 
 bool TodLoadNextResource()
 {
-	return ((TodResourceManager*)gSexyAppBase->mResourceManager)->TodLoadNextResource();
+	return static_cast<TodResourceManager*>(gSexyAppBase->mResourceManager)->TodLoadNextResource();
 }
 
 bool TodResourceManager::TodLoadNextResource()
@@ -1170,12 +1170,12 @@ bool TodResourceManager::TodLoadNextResource()
 
 bool TodFindImagePath(Image* theImage, std::string* thePath)
 {
-	return ((TodResourceManager*)gSexyAppBase->mResourceManager)->FindImagePath(theImage, thePath);
+	return static_cast<TodResourceManager*>(gSexyAppBase->mResourceManager)->FindImagePath(theImage, thePath);
 }
 
 // @Patoke implemented
 bool TodFindFontPath(_Font* theFont, std::string* thePath) {
-	return ((TodResourceManager*)gSexyAppBase->mResourceManager)->FindFontPath(theFont, thePath);
+	return static_cast<TodResourceManager*>(gSexyAppBase->mResourceManager)->FindFontPath(theFont, thePath);
 }
 
 bool TodResourceManager::FindFontPath(_Font* theFont, std::string* thePath)
