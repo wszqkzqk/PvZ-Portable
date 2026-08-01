@@ -149,7 +149,7 @@ void PvzpTraceWithoutSpamming(const char* theFormat, ...)
 {
 	static uint64_t gLastTraceTime = 0LL;
 	uint64_t aTime = time(nullptr);
-	if (aTime < gLastTraceTime)
+	if (aTime <= gLastTraceTime) // at most one trace per second
 		return;
 
 	gLastTraceTime = aTime;
