@@ -594,9 +594,10 @@ bool SeedChooserScreen::FlyersAreComming()
 
 bool SeedChooserScreen::FlyProtectionCurrentlyPlanted()
 {
-	Plant* aPlant = nullptr;
-	while (mBoard->IteratePlants(aPlant))
+	for (Plant* aPlant : mBoard->mPlants)
 	{
+		if (aPlant->mDead)
+			continue;
 		if (aPlant->mSeedType == SEED_CATTAIL || aPlant->mSeedType == SEED_CACTUS)
 		{
 			return true;

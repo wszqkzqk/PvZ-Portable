@@ -358,14 +358,6 @@ public:
 	/*inline*/ bool					CanAddBobSled();
 	/*inline*/ void					ShakeBoard(int theShakeAmountX, int theShakeAmountY);
 	int								CountUntriggerLawnMowers();
-	bool							IterateZombies(Zombie*& theZombie);
-	bool							IteratePlants(Plant*& thePlant);
-	bool							IterateProjectiles(Projectile*& theProjectile);
-	bool							IterateCoins(Coin*& theCoin);
-	bool							IterateLawnMowers(LawnMower*& theLawnMower);
-	bool							IterateParticles(TodParticleSystem*& theParticle);
-	bool							IterateReanimations(Reanimation*& theReanimation);
-	bool							IterateGridItems(GridItem*& theGridItem);
 	/*inline*/ Zombie*				AddZombieInRow(ZombieType theZombieType, int theRow, int theFromWave);
 	/*inline*/ bool					IsPoolSquare(int theGridX, int theGridY);
 	void							PickZombieWaves();

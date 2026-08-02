@@ -500,9 +500,10 @@ void ZenGarden::MouseDownWithMoneySign(Plant* thePlant)
         {
             memmove(aPottedPlant, aPottedPlant + 1, aNumPlantsAfterThis * sizeof(PottedPlant));
 
-            Plant* aUpdatePlant = nullptr;
-            while (mBoard->IteratePlants(aUpdatePlant))
+            for (Plant* aUpdatePlant : mBoard->mPlants)
             {
+                if (aUpdatePlant->mDead)
+                    continue;
                 if (aUpdatePlant->mPottedPlantIndex > thePlant->mPottedPlantIndex)
                 {
                     aUpdatePlant->mPottedPlantIndex--;
@@ -896,9 +897,10 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
 {
     Plant* aPlantToFeed = nullptr;
     {
-        Plant* aPlant = nullptr;
-        while (mBoard->IteratePlants(aPlant))
+        for (Plant* aPlant : mBoard->mPlants)
         {
+            if (aPlant->mDead)
+                continue;
             if (aPlant->mHighlighted && aPlant->mPottedPlantIndex != -1)
             {
                 aPlantToFeed = aPlant;
@@ -1010,9 +1012,10 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType)
 {
     if (theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_GOLD_WATERING_CAN)
     {
-        Plant* aPlant = nullptr;
-        while (mBoard->IteratePlants(aPlant))
+        for (Plant* aPlant : mBoard->mPlants)
         {
+            if (aPlant->mDead)
+                continue;
             if (mBoard->IsPlantInGoldWateringCanRange(x, y, aPlant))
             {
                 PottedPlant* aPottedPlant = PottedPlantFromIndex(aPlant->mPottedPlantIndex);
@@ -1318,9 +1321,10 @@ void ZenGarden::StinkyPickGoal(GridItem* theStinky)
     Coin* aBestCoin = nullptr;
     float aCurWeight = 0.0f;
     {
-        Coin* aCoin = nullptr;
-        while (mBoard->IterateCoins(aCoin))
+        for (Coin* aCoin : mBoard->mCoins)
         {
+            if (aCoin->mDead)
+                continue;
             if (!aCoin->mIsBeingCollected && aCoin->mPosY == aCoin->mGroundY)
             {
                 float aWeight = Distance2D(aCoin->mPosX, aCoin->mPosY + 30.0f, theStinky->mPosX, theStinky->mPosY);
@@ -1589,9 +1593,10 @@ void ZenGarden::StinkyUpdate(GridItem* theStinky)
         theStinky->mGridItemCounter--;
     }
 
-    Coin* aCoin = nullptr;
-    while (mBoard->IterateCoins(aCoin))
+    for (Coin* aCoin : mBoard->mCoins)
     {
+        if (aCoin->mDead)
+            continue;
         if (!aCoin->mIsBeingCollected && Distance2D(aCoin->mPosX, aCoin->mPosY + 30.0f, theStinky->mPosX, theStinky->mPosY) < 20.0f)
         {
             aCoin->PlayCollectSound();
@@ -1755,9 +1760,10 @@ void ZenGarden::ZenGardenUpdate()
 
     UpdatePlantNeeds();
     {
-        Plant* aPlant = nullptr;
-        while (mBoard->IteratePlants(aPlant))
+        for (Plant* aPlant : mBoard->mPlants)
         {
+            if (aPlant->mDead)
+                continue;
             if (aPlant->mPottedPlantIndex != -1)
             {
                 PottedPlantUpdate(aPlant);
@@ -1765,9 +1771,10 @@ void ZenGarden::ZenGardenUpdate()
         }
     }
     {
-        GridItem* aGridItem = nullptr;
-        while (mBoard->IterateGridItems(aGridItem))
+        for (GridItem* aGridItem : mBoard->mGridItems)
         {
+            if (aGridItem->mDead)
+                continue;
             if (aGridItem->mGridItemType == GridItemType::GRIDITEM_ZEN_TOOL)
             {
                 ZenToolUpdate(aGridItem);
@@ -1790,9 +1797,10 @@ void ZenGarden::ZenGardenUpdate()
 
 GridItem* ZenGarden::GetStinky()
 {
-    GridItem* aGridItem = nullptr;
-    while (mBoard->IterateGridItems(aGridItem))
+    for (GridItem* aGridItem : mBoard->mGridItems)
     {
+        if (aGridItem->mDead)
+            continue;
         if (aGridItem->mGridItemType == GridItemType::GRIDITEM_STINKY)
         {
             return aGridItem;
@@ -2424,9 +2432,10 @@ SeedType ZenGarden::PickRandomSeedType()
 void ZenGarden::LeaveGarden()
 {
     {
-        GridItem* aGridItem = nullptr;
-        while (mBoard->IterateGridItems(aGridItem))
+        for (GridItem* aGridItem : mBoard->mGridItems)
         {
+            if (aGridItem->mDead)
+                continue;
             if (aGridItem->mGridItemType == GridItemType::GRIDITEM_ZEN_TOOL)
             {
                 DoFeedingTool(aGridItem->mPosX, aGridItem->mPosY, aGridItem->mGridItemState);
@@ -2441,9 +2450,10 @@ void ZenGarden::LeaveGarden()
         }
     }
     {
-        Coin* aCoin = nullptr;
-        while (mBoard->IterateCoins(aCoin))
+        for (Coin* aCoin : mBoard->mCoins)
         {
+            if (aCoin->mDead)
+                continue;
             if (aCoin->mIsBeingCollected)
             {
                 aCoin->ScoreCoin();

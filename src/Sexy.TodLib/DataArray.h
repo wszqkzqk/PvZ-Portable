@@ -22,6 +22,7 @@
 #ifndef __DATAARRAY_H__
 #define __DATAARRAY_H__
 
+#include <iterator>
 #include <memory>
 #include <new>
 #include "TodDebug.h"
@@ -94,8 +95,7 @@ public:
 
 	void DataArrayFreeAll()
 	{
-		T* aItem = nullptr;
-		while (IterateNext(aItem))
+		for (T* aItem : *this)
 			DataArrayFree(aItem);
 
 		mFreeListHead = 0U;
@@ -110,25 +110,47 @@ public:
 		return anId;
 	}
 
-	bool IterateNext(T*& theItem)
+	// Index-ascending, live-slots-only iteration; end re-checked against the live mMaxUsedCount.
+	// The item address is resolved on dereference, so freeing it mid-loop is safe.
+	class Iterator
 	{
-		unsigned int anIndex = 0U;
-		if (theItem != nullptr)
+		const DataArray*	mArray;
+		unsigned int		mIndex;
+
+	public:
+		Iterator(const DataArray* theArray, unsigned int theIndex) : mArray(theArray), mIndex(theIndex) {}
+
+		T* operator*() const
 		{
-			DataArrayItem* aItem = static_cast<DataArrayItem*>(std::launder(theItem));
-			anIndex = static_cast<unsigned int>(aItem - mItems.get()) + 1U;
+			return &mArray->mItems[mIndex];
 		}
 
-		while (anIndex < mMaxUsedCount)
+		Iterator& operator++()
 		{
-			if (mItemIds[anIndex] & DATA_ARRAY_KEY_MASK)
+			do
 			{
-				theItem = &mItems[anIndex];
-				return true;
-			}
-			anIndex++;
+				mIndex++;
+			} while (mIndex < mArray->mMaxUsedCount && !(mArray->mItemIds[mIndex] & DATA_ARRAY_KEY_MASK));
+			return *this;
 		}
-		return false;
+
+		bool operator==(std::default_sentinel_t) const
+		{
+			return mIndex >= mArray->mMaxUsedCount;
+		}
+	};
+
+	Iterator begin() const
+	{
+		Iterator anIterator(this, 0U);
+		if (mMaxUsedCount != 0U && !(mItemIds[0] & DATA_ARRAY_KEY_MASK))
+			++anIterator;
+		return anIterator;
+	}
+
+	std::default_sentinel_t end() const
+	{
+		return std::default_sentinel;
 	}
 
 	T* DataArrayAlloc()

@@ -78,41 +78,34 @@ void EffectSystem::EffectSystemFreeAll()
 
 void EffectSystem::ProcessDeleteQueue()
 {
-	TodParticleSystem* aParticle = nullptr;
-	while (mParticleHolder->mParticleSystems.IterateNext(aParticle))
+	for (TodParticleSystem* aParticle : mParticleHolder->mParticleSystems)
 		if (aParticle->mDead)
 			mParticleHolder->mParticleSystems.DataArrayFree(aParticle);
 
-	Trail* aTrail = nullptr;
-	while (mTrailHolder->mTrails.IterateNext(aTrail))
+	for (Trail* aTrail : mTrailHolder->mTrails)
 		if (aTrail->mDead)
 			mTrailHolder->mTrails.DataArrayFree(aTrail);
 
-	Reanimation* aReanim = nullptr;
-	while (mReanimationHolder->mReanimations.IterateNext(aReanim))
+	for (Reanimation* aReanim : mReanimationHolder->mReanimations)
 		if (aReanim->mDead)
 			mReanimationHolder->mReanimations.DataArrayFree(aReanim);
 
-	Attachment* aAttachment = nullptr;
-	while (mAttachmentHolder->mAttachments.IterateNext(aAttachment))
+	for (Attachment* aAttachment : mAttachmentHolder->mAttachments)
 		if (aAttachment->mDead)
 			mAttachmentHolder->mAttachments.DataArrayFree(aAttachment);
 }
 
 void EffectSystem::Update()
 {
-	TodParticleSystem* aParticle = nullptr;
-	while (mParticleHolder->mParticleSystems.IterateNext(aParticle))
+	for (TodParticleSystem* aParticle : mParticleHolder->mParticleSystems)
 		if (!aParticle->mIsAttachment)
 			aParticle->Update();
 
-	Trail* aTrail = nullptr;
-	while (mTrailHolder->mTrails.IterateNext(aTrail))
+	for (Trail* aTrail : mTrailHolder->mTrails)
 		if (!aTrail->mIsAttachment)
 			aTrail->Update();
 
-	Reanimation* aReanim = nullptr;
-	while (mReanimationHolder->mReanimations.IterateNext(aReanim))
+	for (Reanimation* aReanim : mReanimationHolder->mReanimations)
 		if (!aReanim->mIsAttachment)
 			aReanim->Update();
 }

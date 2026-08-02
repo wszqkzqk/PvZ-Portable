@@ -43,6 +43,7 @@
 #include "../Sexy.TodLib/Attachment.h"
 #include "../Sexy.TodLib/Reanimator.h"
 #include "../Sexy.TodLib/TodParticle.h"
+#include "../Sexy.TodLib/EffectSystem.h"
 #include "../Sexy.TodLib/TodStringFile.h"
 #include "misc/PerfTimer.h"
 #include "widget/WidgetManager.h"
@@ -995,9 +996,10 @@ void CutScene::CancelIntro()
 
 		if (mBoard->mLevel == 5)
 		{
-			Plant* aPlant = nullptr;
-			while (mBoard->IteratePlants(aPlant))
+			for (Plant* aPlant : mBoard->mPlants)
 			{
+				if (aPlant->mDead)
+					continue;
 				aPlant->Die();
 			}
 			mBoard->mChallenge->mShowBowlingLine = true;
@@ -1048,9 +1050,10 @@ void CutScene::CancelIntro()
 
 void CutScene::AddGraveStoneParticles()
 {
-	GridItem* aGridItem = nullptr;
-	while (mBoard->IterateGridItems(aGridItem))
+	for (GridItem* aGridItem : mBoard->mGridItems)
 	{
+		if (aGridItem->mDead)
+			continue;
 		if (aGridItem->mGridItemType == GridItemType::GRIDITEM_GRAVESTONE)
 		{
 			aGridItem->AddGraveStoneParticles();
@@ -1810,16 +1813,18 @@ void CutScene::ClearUpsellBoard()
 	mBoard->mGridItems.DataArrayFreeAll();
 	mBoard->mLawnMowers.DataArrayFreeAll();
 
-	TodParticleSystem* aParticle = nullptr;
-	while (mBoard->IterateParticles(aParticle))
+	for (TodParticleSystem* aParticle : mBoard->mApp->mEffectSystem->mParticleHolder->mParticleSystems)
 	{
+		if (aParticle->mDead)
+			continue;
 		aParticle->ParticleSystemDie();
 	}
 	ReanimationID aDaveReanimID = mApp->mCrazyDaveReanimID;
 	ReanimationID aBlinkReanimID = mApp->mCrazyDaveBlinkReanimID;
-	Reanimation* aReanim = nullptr;
-	while (mBoard->IterateReanimations(aReanim))
+	for (Reanimation* aReanim : mBoard->mApp->mEffectSystem->mReanimationHolder->mReanimations)
 	{
+		if (aReanim->mDead)
+			continue;
 		ReanimationID aReanimID = mApp->ReanimationGetID(aReanim);
 		if (aReanimID != aDaveReanimID && aReanimID != aBlinkReanimID)
 		{

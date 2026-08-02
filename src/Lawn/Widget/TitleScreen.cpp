@@ -210,8 +210,7 @@ void TitleScreen::Draw(Graphics* g)
 		TodBltMatrix(g, IMAGE_REANIM_SODROLLCAP, aTransform, g->mClipRect, Color::White, g->mDrawMode, aSrcRect);
 	}
 
-	Reanimation* aReanim = nullptr;
-	while (mApp->mEffectSystem->mReanimationHolder->mReanimations.IterateNext(aReanim))
+	for (Reanimation* aReanim : mApp->mEffectSystem->mReanimationHolder->mReanimations)
 	{
 		aReanim->Draw(g);
 	}

@@ -1054,8 +1054,7 @@ void CreditScreen::Draw(Graphics* g)
     }
     aCreditsReanim->DrawRenderGroup(g, 3);
 
-    TodParticleSystem* aParticle = nullptr;
-    while (mApp->mEffectSystem->mParticleHolder->mParticleSystems.IterateNext(aParticle))
+    for (TodParticleSystem* aParticle : mApp->mEffectSystem->mParticleHolder->mParticleSystems)
     {
         if (!aParticle->mIsAttachment && !aParticle->mDead)
         {
@@ -1351,8 +1350,7 @@ void CreditScreen::UpdateMovie()
         }
         if (aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 336.0f))
         {
-            TodParticleSystem* aParticle = nullptr;
-            while (mApp->mEffectSystem->mParticleHolder->mParticleSystems.IterateNext(aParticle))
+            for (TodParticleSystem* aParticle : mApp->mEffectSystem->mParticleHolder->mParticleSystems)
             {
                 if (aParticle->mEffectType == ParticleEffect::PARTICLE_MELONSPLASH)
                 {

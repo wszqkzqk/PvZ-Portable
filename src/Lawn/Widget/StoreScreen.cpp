@@ -537,8 +537,7 @@ void StoreScreen::Draw(Graphics* g)
 
 void StoreScreen::DrawOverlay(Graphics* g)
 {
-    Coin* aCoin = nullptr;
-    while (mCoins.IterateNext(aCoin))
+    for (Coin* aCoin : mCoins)
     {
         if (!aCoin->mDead)
         {
@@ -654,8 +653,7 @@ void StoreScreen::Update()
     mApp->UpdateCrazyDave();
 
     // 更新 DataArray<Coin> 中的所有 Coin
-    Coin* aCoin = nullptr;
-    while (mCoins.IterateNext(aCoin))
+    for (Coin* aCoin : mCoins)
     {
         if (!aCoin->mDead)
         {

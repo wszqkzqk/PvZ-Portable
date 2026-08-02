@@ -2404,16 +2404,14 @@ static bool ReadChunkV4(uint32_t theChunkType, const unsigned char* theData, siz
 static void FixBoardAfterLoad(Board* theBoard)
 {
 	{
-		Plant* aPlant = nullptr;
-		while (theBoard->mPlants.IterateNext(aPlant))
+		for (Plant* aPlant : theBoard->mPlants)
 		{
 			aPlant->mApp = theBoard->mApp;
 			aPlant->mBoard = theBoard;
 		}
 	}
 	{
-		Zombie* aZombie = nullptr;
-		while (theBoard->mZombies.IterateNext(aZombie))
+		for (Zombie* aZombie : theBoard->mZombies)
 		{
 			aZombie->mApp = theBoard->mApp;
 			aZombie->mBoard = theBoard;
@@ -2519,32 +2517,28 @@ static void FixBoardAfterLoad(Board* theBoard)
 		}
 	}
 	{
-		Projectile* aProjectile = nullptr;
-		while (theBoard->mProjectiles.IterateNext(aProjectile))
+		for (Projectile* aProjectile : theBoard->mProjectiles)
 		{
 			aProjectile->mApp = theBoard->mApp;
 			aProjectile->mBoard = theBoard;
 		}
 	}
 	{
-		Coin* aCoin = nullptr;
-		while (theBoard->mCoins.IterateNext(aCoin))
+		for (Coin* aCoin : theBoard->mCoins)
 		{
 			aCoin->mApp = theBoard->mApp;
 			aCoin->mBoard = theBoard;
 		}
 	}
 	{
-		LawnMower* aLawnMower = nullptr;
-		while (theBoard->mLawnMowers.IterateNext(aLawnMower))
+		for (LawnMower* aLawnMower : theBoard->mLawnMowers)
 		{
 			aLawnMower->mApp = theBoard->mApp;
 			aLawnMower->mBoard = theBoard;
 		}
 	}
 	{
-		GridItem* aGridItem = nullptr;
-		while (theBoard->mGridItems.IterateNext(aGridItem))
+		for (GridItem* aGridItem : theBoard->mGridItems)
 		{
 			aGridItem->mApp = theBoard->mApp;
 			aGridItem->mBoard = theBoard;
@@ -3041,22 +3035,19 @@ static void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 	SyncDataArray(theContext, theBoard->mApp->mEffectSystem->mAttachmentHolder->mAttachments);
 
 	{
-		TodParticleSystem* aParticle = nullptr;
-		while (theBoard->mApp->mEffectSystem->mParticleHolder->mParticleSystems.IterateNext(aParticle))
+		for (TodParticleSystem* aParticle : theBoard->mApp->mEffectSystem->mParticleHolder->mParticleSystems)
 		{
 			SyncParticleSystem(theBoard, aParticle, theContext);
 		}
 	}
 	{
-		Reanimation* aReanimation = nullptr;
-		while (theBoard->mApp->mEffectSystem->mReanimationHolder->mReanimations.IterateNext(aReanimation))
+		for (Reanimation* aReanimation : theBoard->mApp->mEffectSystem->mReanimationHolder->mReanimations)
 		{
 			SyncReanimation(theBoard, aReanimation, theContext);
 		}
 	}
 	{
-		Trail* aTrail = nullptr;
-		while (theBoard->mApp->mEffectSystem->mTrailHolder->mTrails.IterateNext(aTrail))
+		for (Trail* aTrail : theBoard->mApp->mEffectSystem->mTrailHolder->mTrails)
 		{
 			SyncTrail(theBoard, aTrail, theContext);
 		}

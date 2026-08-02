@@ -692,8 +692,7 @@ Attachment* AttachmentHolder::AllocAttachment()
 {
 	if (mAttachments.mSize + 1 >= mAttachments.mMaxSize)
 	{
-		Attachment* aAttachment = nullptr;
-		while (mAttachments.IterateNext(aAttachment))
+		for (Attachment* aAttachment : mAttachments)
 		{
 			PruneDeadEffects(aAttachment);
 			if (aAttachment->mDead)

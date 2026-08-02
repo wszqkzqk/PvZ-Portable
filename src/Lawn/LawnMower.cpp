@@ -204,9 +204,10 @@ void LawnMower::Update()
     }
 
     Rect aAttackRect = GetLawnMowerAttackRect();
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS)
             continue;
 

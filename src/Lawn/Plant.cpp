@@ -675,9 +675,10 @@ void Plant::DoRowAreaDamage(int theDamage, unsigned int theDamageFlags)
     int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
     Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         int aDiffY = (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) ? 0 : (aZombie->mRow - mRow);
         if (mSeedType == SeedType::SEED_GLOOMSHROOM)
         {
@@ -863,9 +864,10 @@ bool Plant::FindStarFruitTarget()
     int aCenterStarX = mX + 40;
     int aCenterStarY = mY + 40;
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         Rect aZombieRect = aZombie->GetZombieRect();
         if (aZombie->EffectedByDamage(aDamageRangeFlags))
         {
@@ -1316,9 +1318,10 @@ void Plant::UpdateScaredyShroom()
 
     bool aHasZombieNearby = false;
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         Rect aZombieRect = aZombie->GetZombieRect();
         int aDiffY = (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) ? 0 : (aZombie->mRow - mRow);
         if (!aZombie->mMindControlled && !aZombie->IsDeadOrDying() && aDiffY <= 1 && aDiffY >= -1 && GetCircleRectOverlap(mX, mY + 20.0f, 120, aZombieRect))
@@ -1376,9 +1379,10 @@ void Plant::UpdateTorchwood()
 {
     Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
 
-    Projectile* aProjectile = nullptr;
-    while (mBoard->IterateProjectiles(aProjectile))
+    for (Projectile* aProjectile : mBoard->mProjectiles)
     {
+        if (aProjectile->mDead)
+            continue;
         if ((aProjectile->mRow == mRow) && 
             (aProjectile->mProjectileType == ProjectileType::PROJECTILE_PEA || aProjectile->mProjectileType == ProjectileType::PROJECTILE_SNOWPEA))
         {
@@ -1403,9 +1407,10 @@ void Plant::DoSquashDamage()
     int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
     Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if ((aZombie->mRow == mRow || aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) && aZombie->EffectedByDamage(aDamageRangeFlags))
         {
             Rect aZombieRect = aZombie->GetZombieRect();
@@ -1425,9 +1430,10 @@ Zombie* Plant::FindSquashTarget()
     int aClosestRange = 0;
     Zombie* aClosestZombie = nullptr;
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if ((aZombie->mRow == mRow || aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) &&
             aZombie->mHasHead && !aZombie->IsTangleKelpTarget() && aZombie->EffectedByDamage(aDamageRangeFlags))
         {
@@ -2055,9 +2061,10 @@ void Plant::UpdateMagnetShroom()
         float aClosestDistance = 0.0f;
         Zombie* aClosestZombie = nullptr;
 
-        Zombie* aZombie = nullptr;
-        while (mBoard->IterateZombies(aZombie))
+        for (Zombie* aZombie : mBoard->mZombies)
         {
+            if (aZombie->mDead)
+                continue;
             int aDiffY = aZombie->mRow - mRow;
             Rect aZombieRect = aZombie->GetZombieRect();
 
@@ -2116,9 +2123,10 @@ void Plant::UpdateMagnetShroom()
         float aClosestLadderDist = 0.0f;
         GridItem* aClosestLadder = nullptr;
         
-        GridItem* aGridItem = nullptr;
-        while (mBoard->IterateGridItems(aGridItem))
+        for (GridItem* aGridItem : mBoard->mGridItems)
         {
+            if (aGridItem->mDead)
+                continue;
             if (aGridItem->mGridItemType == GridItemType::GRIDITEM_LADDER)
             {
                 int aDiffX = abs(aGridItem->mGridX - mPlantCol);
@@ -2160,9 +2168,10 @@ Coin* Plant::FindGoldMagnetTarget()
     Coin* aClosestCoin = nullptr;
     float aClosestDistance = 0.0f;
 
-    Coin* aCoin = nullptr;
-    while (mBoard->IterateCoins(aCoin))
+    for (Coin* aCoin : mBoard->mCoins)
     {
+        if (aCoin->mDead)
+            continue;
         if (aCoin->IsMoney() && aCoin->mCoinMotion != CoinMotion::COIN_MOTION_FROM_PRESENT && !aCoin->mIsBeingCollected && aCoin->mCoinAge >= 50)
         {
             float aDistance = Distance2D(mX + mWidth / 2, mY + mHeight / 2, aCoin->mPosX + aCoin->mWidth / 2, aCoin->mPosY + aCoin->mHeight / 2);
@@ -2214,9 +2223,10 @@ void Plant::GoldMagnetFindTargets()
 
 bool Plant::IsAGoldMagnetAboutToSuck()
 {
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (!aPlant->NotOnGround() && aPlant->mSeedType == SeedType::SEED_GOLD_MAGNET && aPlant->mState == PlantState::STATE_MAGNETSHROOM_SUCKING)
         {
             Reanimation* aBodyReanim = mApp->ReanimationGet(aPlant->mBodyReanimID);
@@ -4204,9 +4214,10 @@ void Plant::MouseDown(int x, int y, int theClickCount)
 
 void Plant::IceZombies()
 {
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         aZombie->HitIceTrap();
     }
 
@@ -4228,9 +4239,10 @@ void Plant::BurnRow(int theRow)
 {
     int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if ((aZombie->mZombieType == ZombieType::ZOMBIE_BOSS || aZombie->mRow == theRow) && aZombie->EffectedByDamage(aDamageRangeFlags))
         {
             aZombie->RemoveColdEffects();
@@ -4238,9 +4250,10 @@ void Plant::BurnRow(int theRow)
         }
     }
 
-    GridItem* aGridItem = nullptr;
-    while (mBoard->IterateGridItems(aGridItem))
+    for (GridItem* aGridItem : mBoard->mGridItems)
     {
+        if (aGridItem->mDead)
+            continue;
         if (aGridItem->mGridY == theRow && aGridItem->mGridItemType == GridItemType::GRIDITEM_LADDER)
         {
             aGridItem->GridItemDie();
@@ -4257,9 +4270,10 @@ void Plant::BurnRow(int theRow)
 
 void Plant::BlowAwayFliers()
 {
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if (!aZombie->IsDeadOrDying())
         {
             // Verified as a pure function, safe to remove
@@ -4277,9 +4291,10 @@ void Plant::BlowAwayFliers()
 
 void Plant::KillAllPlantsNearDoom()
 {
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mRow == mRow && aPlant->mPlantCol == mPlantCol)
         {
             aPlant->Die();
@@ -4774,9 +4789,10 @@ Zombie* Plant::FindTargetZombie(int theRow, PlantWeapon thePlantWeapon)
     int aHighestWeight = 0;
     Zombie* aBestZombie = nullptr;
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         int aRowDeviation = aZombie->mRow - theRow;
         if (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS)
         {
@@ -4911,9 +4927,10 @@ int Plant::DistanceToClosestZombie()
     Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
     int aClosestDistance = 1000;
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if (aZombie->mRow == mRow && aZombie->EffectedByDamage(aDamageRangeFlags))
         {
             Rect aZombieRect = aZombie->GetZombieRect();

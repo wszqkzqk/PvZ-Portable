@@ -158,9 +158,10 @@ Plant* Projectile::FindCollisionTargetPlant()
 {
 	Rect aProjectileRect = GetProjectileRect();
 
-	Plant* aPlant = nullptr;
-	while (mBoard->IteratePlants(aPlant))
+	for (Plant* aPlant : mBoard->mPlants)
 	{
+		if (aPlant->mDead)
+			continue;
 		if (aPlant->mRow != mRow)
 			continue;
 
@@ -200,9 +201,10 @@ bool Projectile::PeaAboutToHitTorchwood()
 	if (mProjectileType != ProjectileType::PROJECTILE_PEA && mProjectileType != ProjectileType::PROJECTILE_SNOWPEA)
 		return false;
 
-	Plant* aPlant = nullptr;
-	while (mBoard->IteratePlants(aPlant))
+	for (Plant* aPlant : mBoard->mPlants)
 	{
+		if (aPlant->mDead)
+			continue;
 		if (aPlant->mSeedType == SeedType::SEED_TORCHWOOD && aPlant->mRow == mRow && !aPlant->NotOnGround() && mHitTorchwoodGridX != aPlant->mPlantCol)
 		{
 			Rect aPlantAttackRect = aPlant->GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
@@ -228,9 +230,10 @@ Zombie* Projectile::FindCollisionTarget()
 	Zombie* aBestZombie = nullptr;
 	int aMinX = 0;
 
-	Zombie* aZombie = nullptr;
-	while (mBoard->IterateZombies(aZombie))
+	for (Zombie* aZombie : mBoard->mZombies)
 	{
+		if (aZombie->mDead)
+			continue;
 		if ((aZombie->mZombieType == ZombieType::ZOMBIE_BOSS || aZombie->mRow == mRow) && aZombie->EffectedByDamage(static_cast<unsigned int>(mDamageRangeFlags)))
 		{
 			if (aZombie->mZombiePhase == ZombiePhase::PHASE_SNORKEL_WALKING_IN_POOL && mPosZ <= 45.0f)
@@ -459,9 +462,10 @@ void Projectile::DoSplashDamage(Zombie* theZombie)
 	const ProjectileDefinition& aProjectileDef = GetProjectileDef();
 
 	int aZombiesGetSplashed = 0;
-	Zombie* aZombie = nullptr;
-	while (mBoard->IterateZombies(aZombie))
+	for (Zombie* aZombie : mBoard->mZombies)
 	{
+		if (aZombie->mDead)
+			continue;
 		if (aZombie != theZombie && IsZombieHitBySplash(aZombie))
 		{
 			aZombiesGetSplashed++;
@@ -483,9 +487,10 @@ void Projectile::DoSplashDamage(Zombie* theZombie)
 		aSplashDamage = std::max(aSplashDamage, 1);
 	}
 
-	aZombie = nullptr;
-	while (mBoard->IterateZombies(aZombie))
+	for (Zombie* aZombie : mBoard->mZombies)
 	{
+		if (aZombie->mDead)
+			continue;
 		if (IsZombieHitBySplash(aZombie))
 		{
 			unsigned int aDamageFlags = GetDamageFlags(aZombie);

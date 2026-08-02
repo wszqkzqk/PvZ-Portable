@@ -1064,9 +1064,10 @@ int Zombie::CountBungeesTargetingSunFlowers()
 {
     int aCount = 0;
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if (!aZombie->IsDeadOrDying() && aZombie->mZombieType == ZombieType::ZOMBIE_BUNGEE && aZombie->mTargetCol != -1)
         {
             Plant* aPlant = mBoard->GetTopPlantAt(aZombie->mTargetCol, aZombie->mRow, PlantPriority::TOPPLANT_BUNGEE_ORDER);
@@ -1252,9 +1253,10 @@ void Zombie::BungeeLiftTarget()
         return;
 
 #ifdef DO_FIX_BUGS
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if (aZombie->mZombieType == ZombieType::ZOMBIE_BUNGEE && aZombie != this && aZombie->mTargetPlantID == mTargetPlantID)
         {
             aZombie->mTargetPlantID = PlantID::PLANTID_NULL;  // 修复类似于 IZ 蹦极刷阳光的 Bug
@@ -1553,9 +1555,10 @@ Plant* Zombie::FindCatapultTarget()
 {
     Plant* aTarget = nullptr;
 
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mRow == mRow && mX >= aPlant->mX + 100 && !aPlant->NotOnGround() && !aPlant->IsSpiky())
         {
             if (aTarget == nullptr || aPlant->mPlantCol < aTarget->mPlantCol)
@@ -1793,9 +1796,10 @@ void Zombie::UpdateZombiePolevaulter()
 
 bool Zombie::IsTanglekelpTarget()
 {
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mSeedType == SeedType::SEED_TANGLEKELP && aPlant->mTargetZombieID == mBoard->ZombieGetID(this))
         {
             return true;
@@ -2356,9 +2360,10 @@ void Zombie::UpdateZombiePeaHead()
 
 void Zombie::BurnRow(int theRow)  // 此函数专用于在定义了 DO_FIX_BUGS 时修复火爆辣椒僵尸的 Bug
 {
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if ((aZombie->mZombieType == ZombieType::ZOMBIE_BOSS || aZombie->mRow == theRow) && aZombie->EffectedByDamage(127))
         {
             aZombie->RemoveColdEffects();
@@ -2366,9 +2371,10 @@ void Zombie::BurnRow(int theRow)  // 此函数专用于在定义了 DO_FIX_BUGS 
         }
     }
 
-    GridItem* aGridItem = nullptr;
-    while (mBoard->IterateGridItems(aGridItem))
+    for (GridItem* aGridItem : mBoard->mGridItems)
     {
+        if (aGridItem->mDead)
+            continue;
         if (aGridItem->mGridY == theRow && aGridItem->mGridItemType == GridItemType::GRIDITEM_LADDER)
         {
             aGridItem->GridItemDie();
@@ -2401,9 +2407,10 @@ void Zombie::UpdateZombieJalapenoHead()
         }
         else
         {
-            Plant* aPlant = nullptr;
-            while (mBoard->IteratePlants(aPlant))
+            for (Plant* aPlant : mBoard->mPlants)
             {
+                if (aPlant->mDead)
+                    continue;
                 //Rect aPlantRect = aPlant->GetPlantRect();
                 if (aPlant->mRow == mRow && !aPlant->NotOnGround())
                 {
@@ -2413,9 +2420,10 @@ void Zombie::UpdateZombieJalapenoHead()
             }
         }
 #else
-        Plant* aPlant = nullptr;
-        while (mBoard->IteratePlants(aPlant))
+        for (Plant* aPlant : mBoard->mPlants)
         {
+            if (aPlant->mDead)
+                continue;
             //Rect aPlantRect = aPlant->GetPlantRect();
             if (aPlant->mRow == mRow && !aPlant->NotOnGround())
             {
@@ -2558,9 +2566,10 @@ void Zombie::UpdateZombieSquashHead()
             {
                 Rect aAttackRect(aDestX - 73, mPosY + 4, 65, 90);  // 具体数值未实测，待定
 
-                Zombie* aZombie = nullptr;
-                while (mBoard->IterateZombies(aZombie))
+                for (Zombie* aZombie : mBoard->mZombies)
                 {
+                    if (aZombie->mDead)
+                        continue;
                     if ((aZombie->mRow == mRow || aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) && aZombie->EffectedByDamage(13U))
                     {
                         Rect aZombieRect = aZombie->GetZombieRect();
@@ -3079,9 +3088,10 @@ bool Zombie::ZombiquariumFindClosestBrain()
 
     GridItem* aBrainClosest = nullptr;
     float aDistanceClosest = 0.0f;
-    GridItem* aGridItem = nullptr;
-    while (mBoard->IterateGridItems(aGridItem))
+    for (GridItem* aGridItem : mBoard->mGridItems)
     {
+        if (aGridItem->mDead)
+            continue;
         if (aGridItem->mGridItemType == GridItemType::GRIDITEM_BRAIN && aGridItem->mGridItemCounter >= 15)
         {
             float aDistance = Distance2D(aGridItem->mPosX + 15.0f, aGridItem->mPosY + 15.0f, mPosX + 50.0f, mPosY + 40.0f);
@@ -4217,9 +4227,10 @@ Plant* Zombie::IsStandingOnSpikeweed()
 
     Rect aZombieRect = GetZombieRect();
 
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mRow == mRow && aPlant->IsSpiky() && !aPlant->NotOnGround() && (!mOnHighGround || aPlant->IsOnHighGround()))
         {
             Rect aPlantAttackRect = aPlant->GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
@@ -6424,9 +6435,10 @@ Plant* Zombie::FindPlantTarget(ZombieAttackType theAttackType)
 {
     Rect aAttackRect = GetZombieAttackRect();
 
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mRow == mRow)
         {
             Rect aPlantRect = aPlant->GetPlantRect();
@@ -6447,9 +6459,10 @@ Zombie* Zombie::FindZombieTarget()
 
     Rect aAttackRect = GetZombieAttackRect();
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if (mMindControlled != aZombie->mMindControlled && 
             !aZombie->IsFlying() && 
             aZombie->mZombiePhase != ZombiePhase::PHASE_DIGGER_TUNNELING && 
@@ -6474,9 +6487,10 @@ Zombie* Zombie::FindZombieTarget()
 
 void Zombie::SquishAllInSquare(int theX, int theY, ZombieAttackType theAttackType)
 {
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mRow == theY && aPlant->mPlantCol == theX)
         {
             if (theAttackType == ZombieAttackType::ATTACKTYPE_DRIVE_OVER && aPlant->IsSpiky())
@@ -6554,9 +6568,10 @@ void Zombie::CheckSquish(ZombieAttackType theAttackType)
 {
     Rect aAttackRect = GetZombieAttackRect();
 
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mRow == mRow)
         {
             Rect aPlantRect = aPlant->GetPlantRect();
@@ -7480,9 +7495,10 @@ void Zombie::StopZombieSound()
 
         if (mBoard)
         {
-            Zombie* aZombie = nullptr;
-            while (mBoard->IterateZombies(aZombie))
+            for (Zombie* aZombie : mBoard->mZombies)
             {
+                if (aZombie->mDead)
+                    continue;
                 if (aZombie->mHasHead && !aZombie->IsDeadOrDying() && aZombie->IsOnBoard() && 
                     (aZombie->mZombieType == ZombieType::ZOMBIE_DANCER || aZombie->mZombieType == ZombieType::ZOMBIE_BACKUP_DANCER))
                 {
@@ -8422,9 +8438,10 @@ bool Zombie::IsTangleKelpTarget()
     if (mZombieHeight == ZombieHeight::HEIGHT_DRAGGED_UNDER)
         return true;
 
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mSeedType == SeedType::SEED_TANGLEKELP && aPlant->mTargetZombieID == mBoard->ZombieGetID(this))
         {
             return true;
@@ -8438,9 +8455,10 @@ bool Zombie::IsSquashTarget(Plant* theExcept)
 {
     ZombieID anId = mBoard->ZombieGetID(this);
 
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant != theExcept && aPlant->mSeedType == SeedType::SEED_SQUASH && aPlant->mTargetZombieID == anId)
         {
             return true;
@@ -9762,9 +9780,10 @@ void Zombie::BossRVAttack()
 
 void Zombie::BossRVLanding()
 {
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mRow >= mTargetRow && aPlant->mRow <= mTargetRow + 1 && aPlant->mPlantCol >= mTargetCol && aPlant->mPlantCol <= mTargetCol + 2)
         {
             aPlant->Squish();
@@ -9891,9 +9910,10 @@ void Zombie::BossStompAttack()
 
 bool Zombie::BossCanStompRow(int theRow)
 {
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (!aPlant->NotOnGround() && aPlant->mRow >= theRow && aPlant->mRow <= theRow + 1 && aPlant->mPlantCol >= 5)
         {
             return true;
@@ -9904,9 +9924,10 @@ bool Zombie::BossCanStompRow(int theRow)
 
 void Zombie::BossStompContact()
 {
-    Plant* aPlant = nullptr;
-    while (mBoard->IteratePlants(aPlant))
+    for (Plant* aPlant : mBoard->mPlants)
     {
+        if (aPlant->mDead)
+            continue;
         if (aPlant->mRow >= mTargetRow && aPlant->mRow <= mTargetRow + 1 && aPlant->mPlantCol >= 5)
         {
             aPlant->Squish();
@@ -10152,9 +10173,10 @@ void Zombie::UpdateBossFireball()
 
     SquishAllInSquare(mBoard->PixelToGridX(aPosX + 75, aPosY), mFireballRow, ZombieAttackType::ATTACKTYPE_DRIVE_OVER);
 
-    LawnMower* aLawnMower = nullptr;
-    while (mBoard->IterateLawnMowers(aLawnMower))
+    for (LawnMower* aLawnMower : mBoard->mLawnMowers)
     {
+        if (aLawnMower->mDead)
+            continue;
         if (aLawnMower->mMowerState != LawnMowerState::MOWER_SQUISHED && aLawnMower->mRow == mFireballRow && 
             aLawnMower->mPosX > aPosX && aLawnMower->mPosX < aPosX + 50.0f)
         {
@@ -10482,9 +10504,10 @@ void Zombie::BossDie()
 
     mApp->mMusic->FadeOut(200);
 
-    Zombie* aZombie = nullptr;
-    while (mBoard->IterateZombies(aZombie))
+    for (Zombie* aZombie : mBoard->mZombies)
     {
+        if (aZombie->mDead)
+            continue;
         if (aZombie != this && !aZombie->IsDeadOrDying())
         {
             aZombie->DieWithLoot();
