@@ -156,11 +156,6 @@ int						TodVsnprintf(char* theBuffer, int theSize, const char* theFormat, va_li
 TodAllocator*			FindGlobalAllocator(int theSize);
 void                    FreeGlobalAllocators();
 
-// App-injected hooks, assigned in main.cpp.
-extern bool (*gAppCloseRequest)();
-extern bool (*gAppHasUsedCheatKeys)();
-extern std::string (*gGetCurrentLevelName)();
-
 //====================================================================================================//
 /*inline*/ int			RandRangeInt(int theMin, int theMax);
 /*inline*/ float		RandRangeFloat(float theMin, float theMax);

@@ -25,6 +25,7 @@
 #include "Reanimator.h"
 #include "Attachment.h"
 #include "SexyAppBase.h"
+#include "../LawnApp.h"
 #include "ReanimAtlas.h"
 #include "EffectSystem.h"
 #include "../GameConstants.h"
@@ -372,7 +373,7 @@ void ReanimationCreateAtlas(ReanimatorDefinition* theDefinition, ReanimationType
 	TodHesitationTrace("atlas '%s'", aParam.mReanimFileName);
 	int aDuration = std::max(aTimer.GetDuration(), 0.0);
 	if (aDuration > 20 && theReanimationType != ReanimationType::REANIM_NONE)  //（仅内测版）创建时间过长的报告
-		TodTraceAndLogLn("LOADING:Long atlas '%s' %d ms on %s", aParam.mReanimFileName, aDuration, gGetCurrentLevelName().c_str());
+		TodTraceAndLogLn("LOADING:Long atlas '%s' %d ms on %s", aParam.mReanimFileName, aDuration, LawnGetCurrentLevelName().c_str());
 }
 
 void ReanimationPreload(ReanimationType theReanimationType)
@@ -1172,15 +1173,15 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 	TodTrace("'%s'\n", aReanimParams->mReanimFileName);
 	if (theIsPreloading)
 	{
-		if (gSexyAppBase->mShutdown || gAppCloseRequest())  // 预加载时若程序退出，则取消加载
+		if (gSexyAppBase->mShutdown || LawnGetCloseRequest())  // 预加载时若程序退出，则取消加载
 			return;
 	}
 	else  // < 以下部分仅内测版执行 >
 	{
-		if (gAppHasUsedCheatKeys())
-			TodTraceAndLogLn("Cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, gGetCurrentLevelName().c_str());
+		if (LawnHasUsedCheatKeys())
+			TodTraceAndLogLn("Cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, LawnGetCurrentLevelName().c_str());
 		else
-			TodTraceAndLogLn("Non-cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, gGetCurrentLevelName().c_str());
+			TodTraceAndLogLn("Non-cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, LawnGetCurrentLevelName().c_str());
 	}  // < 以上部分仅内测版执行 >
 
 	PerfTimer aTimer;
@@ -1194,7 +1195,7 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 	}
 	int aDuration = aTimer.GetDuration();
 	if (aDuration > 100)  //（仅内测版）创建时间过长的报告
-		TodTraceAndLogLn("LOADING:Long reanim '%s' %d ms on %s", aReanimParams->mReanimFileName, aDuration, gGetCurrentLevelName().c_str());
+		TodTraceAndLogLn("LOADING:Long reanim '%s' %d ms on %s", aReanimParams->mReanimFileName, aDuration, LawnGetCurrentLevelName().c_str());
 }
 
 void ReanimatorLoadDefinitions(const ReanimationParams* theReanimationParamArray, int theReanimationParamArraySize)

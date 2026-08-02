@@ -21,7 +21,6 @@
 
 #include "LawnApp.h"
 #include "Resources.h"
-#include "Sexy.TodLib/TodCommon.h" // declares the app-injected hooks defined below
 #include "Sexy.TodLib/TodStringFile.h"
 #include <cstdlib>
 #include <vector>
@@ -47,10 +46,6 @@ extern "C" {
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-
-bool (*gAppCloseRequest)();
-bool (*gAppHasUsedCheatKeys)();
-std::string (*gGetCurrentLevelName)();
 
 #ifdef _WIN32
 static std::vector<std::string> gUtf8ArgsStorage;
@@ -110,9 +105,6 @@ int main(int argc, char** argv)
 #endif
 
 	TodStringListSetColors(gLawnStringFormats, gLawnStringFormatCount);
-	gGetCurrentLevelName = LawnGetCurrentLevelName;
-	gAppCloseRequest = LawnGetCloseRequest;
-	gAppHasUsedCheatKeys = LawnHasUsedCheatKeys;
 	gExtractResourcesByName = Sexy::ExtractResourcesByName;
 	gLawnApp = new LawnApp();
 	gLawnApp->SetArgs(argc, argv);
