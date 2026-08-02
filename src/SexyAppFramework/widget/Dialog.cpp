@@ -176,13 +176,10 @@ void Dialog::SetLinesFont(_Font* theFont)
 
 void Dialog::EnsureFonts()
 {
-	_Font* aDefaultFont = gSexyAppBase->mDefaultFont;
-	if (aDefaultFont == nullptr)
-		return;
 	if (mHeaderFont == nullptr)
-		mHeaderFont = aDefaultFont->Duplicate();
+		mHeaderFont = gSexyAppBase->mDefaultFont->Duplicate();
 	if (mLinesFont == nullptr)
-		mLinesFont = aDefaultFont->Duplicate();
+		mLinesFont = gSexyAppBase->mDefaultFont->Duplicate();
 }
 
 int	Dialog::GetPreferredHeight(int theWidth)
