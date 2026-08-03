@@ -71,6 +71,10 @@ constexpr int ZOMBATAR_GRID_GAP = -4;
 constexpr int ZOMBATAR_GRID_BIAS_X = 50;
 constexpr int ZOMBATAR_CELL_INSET = 9;
 constexpr int ZOMBATAR_CELL_ZOMBIE_MARGIN = 10;
+constexpr int ZOMBATAR_ALIGN_TOP = 0x02;
+constexpr int ZOMBATAR_ALIGN_BOTTOM = 0x04;
+constexpr int ZOMBATAR_ALIGN_LEFT = 0x08;
+constexpr int ZOMBATAR_ALIGN_RIGHT = 0x10;
 constexpr Color ZOMBATAR_CELL_DIM_COLOR(0x80, 0x80, 0x80, 0x80);
 
 constexpr int ZOMBATAR_COLOR_COLS = 9;
@@ -208,6 +212,18 @@ constexpr int GetPartColorMode(ZombatarPage thePage, int thePartIndex)
 	}
 }
 
+constexpr int ZombatarGridAlign(ZombatarPage thePage, int theIndex)
+{
+	switch (thePage)
+	{
+	case ZOMBATAR_PAGE_CLOTHES: return theIndex == 5 ? 0 : ZOMBATAR_ALIGN_RIGHT | ZOMBATAR_ALIGN_BOTTOM;
+	case ZOMBATAR_PAGE_FACIAL_HAIR: return (theIndex == 14 || theIndex == 21 || theIndex == 23) ? ZOMBATAR_ALIGN_BOTTOM : 0;
+	case ZOMBATAR_PAGE_HAIR: return (theIndex == 11 || theIndex == 15) ? ZOMBATAR_ALIGN_TOP : 0;
+	case ZOMBATAR_PAGE_HATS: return (theIndex >= 6 && theIndex <= 8) ? ZOMBATAR_ALIGN_TOP : 0;
+	default: return 0;
+	}
+}
+
 struct ZombatarDrawPart
 {
 	ZombatarPage mPage;
@@ -223,7 +239,7 @@ constexpr int ZombatarColorBaseForMode(int theMode)
 	return theMode == ZOMBATAR_COLOR_MODE_1 ? ZOMBATAR_PART_COLOR_BASE : ZOMBATAR_PART_COLOR_BASE_2;
 }
 
-static Rect FitIconRect(Image* theImage, const Rect& theCell)
+static Rect FitIconRect(Image* theImage, const Rect& theCell, int theAlign)
 {
 	int aCellW = theCell.mWidth;
 	int aCellH = theCell.mHeight;
@@ -243,7 +259,13 @@ static Rect FitIconRect(Image* theImage, const Rect& theCell)
 		aW = static_cast<int>(aW * (static_cast<float>(aAvailH) / static_cast<float>(aH)));
 		aH = aAvailH;
 	}
-	return Rect(theCell.mX + (aCellW - aW) / 2, theCell.mY + (aCellH - aH) / 2, aW, aH);
+	int aX = theCell.mX + (aCellW - aW) / 2;
+	int aY = theCell.mY + (aCellH - aH) / 2;
+	if (theAlign & ZOMBATAR_ALIGN_TOP) aY = theCell.mY + ZOMBATAR_CELL_INSET;
+	else if (theAlign & ZOMBATAR_ALIGN_BOTTOM) aY = theCell.mY + aCellH - ZOMBATAR_CELL_INSET - aH;
+	if (theAlign & ZOMBATAR_ALIGN_LEFT) aX = theCell.mX + ZOMBATAR_CELL_INSET;
+	else if (theAlign & ZOMBATAR_ALIGN_RIGHT) aX = theCell.mX + aCellW - ZOMBATAR_CELL_INSET - aW;
+	return Rect(aX, aY, aW, aH);
 }
 
 constexpr int ZOMBATAR_ITEMS_PER_PAGE[NUM_ZOMBATAR_PAGES] = { 0, 16, 24, 14, 16, 12, 15, 14, 5 };
@@ -1090,7 +1112,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 		Image* aImage = (mPage == ZOMBATAR_PAGE_BACKDROPS) ? GetBackgroundImage(aPartIndex) : GetPartImage(mPage, aPartIndex);
 		if (aImage)
 		{
-			Rect aIconRect = FitIconRect(aImage, aRect);
+			Rect aIconRect = FitIconRect(aImage, aRect, ZombatarGridAlign(mPage, aPartIndex));
 			Image* aMask = GetPartMaskImage(mPage, aPartIndex);
 			if (aMask)
 			{
