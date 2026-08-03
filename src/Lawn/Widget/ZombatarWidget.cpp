@@ -1039,6 +1039,8 @@ void ZombatarWidget::DrawMainBackground(Graphics* g)
 
 void ZombatarWidget::DrawList(Graphics* g)
 {
+	g->DrawImage(IMAGE_ZOMBATAR_WIDGET_BG, ZOMBATAR_PANEL_X, ZOMBATAR_PANEL_Y);
+
 	int aCount = GetHeadCount();
 	ClampCurrentIndex();
 	if (aCount <= 0)
