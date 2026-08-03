@@ -118,8 +118,6 @@ public:
     int						mTextDownOffsetY;
 	int						mButtonOffsetX;		// static layout offset, set once at creation
 	int						mButtonOffsetY;
-	int						mSlideOffsetX;		// displacement from GameSelector's slide animation
-	int						mSlideOffsetY;
 	bool					mUsePolygonShape;
 	SexyVector2				mPolygonShape[4];
 
@@ -130,9 +128,6 @@ public:
     void					Draw(Graphics* g) override;
 	bool					IsPointVisible(int x, int y) override;
     void					SetLabel(std::string_view theLabel);
-	void					SetSlideOffset(int theX, int theY) { mSlideOffsetX = theX; mSlideOffsetY = theY; }
-	int						GetDrawOffsetX() const { return mButtonOffsetX + mSlideOffsetX; }
-	int						GetDrawOffsetY() const { return mButtonOffsetY + mSlideOffsetY; }
 };
 
 LawnStoneButton*			MakeButton(int theId, ButtonListener* theListener, std::string_view theText);

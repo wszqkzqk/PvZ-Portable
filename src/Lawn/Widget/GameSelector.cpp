@@ -362,28 +362,29 @@ GameSelector::GameSelector(LawnApp* theApp)
 	mAchievementsWidget = new AchievementsWidget(this->mApp);
 	mAchievementsWidget->Move(0, mApp->mHeight);
 
-	mSlidingButtons = {
-		mAdventureButton,
-		mMinigameButton,
-		mPuzzleButton,
-		mOptionsButton,
-		mQuitButton,
-		mHelpButton,
-		mStoreButton,
-		mAlmanacButton,
-		mZenGardenButton,
-		mSurvivalButton,
-		mChangeUserButton,
-		mZombatarButton,
-		mAchievementsButton,
-		mQuickPlayButton
-	};
+	// Add as children in z-order (bottom to top); mQuickPlayButton is unused and stays unadded.
+	AddWidget(mAchievementsButton);
+	AddWidget(mZombatarButton);
+	AddWidget(mChangeUserButton);
+	AddWidget(mSurvivalButton);
+	AddWidget(mZenGardenButton);
+	AddWidget(mPuzzleButton);
+	AddWidget(mMinigameButton);
+	AddWidget(mAdventureButton);
+	AddWidget(mOptionsButton);
+	AddWidget(mQuitButton);
+	AddWidget(mHelpButton);
+	AddWidget(mStoreButton);
+	AddWidget(mAlmanacButton);
+	AddWidget(mOverlayWidget);
 
 	TodHesitationTrace("gameselectorinit");
 }
 
 GameSelector::~GameSelector()
 {
+	RemoveAllWidgets(false); // children are deleted manually below
+
 	if (mAdventureButton)
 		delete mAdventureButton;
 	if (mMinigameButton)
@@ -619,18 +620,18 @@ void GameSelector::Draw(Graphics* g)
 		float aFractionalOffsetY = fmod(aTransform.mTransY, 1.0f);
 		g->DrawImageF(
 			mOptionsButton->mButtonImage,
-			mOptionsButton->mX + mOptionsButton->GetDrawOffsetX() + aFractionalOffsetX,
-			mOptionsButton->mY + mOptionsButton->GetDrawOffsetY() + aFractionalOffsetY
+			mOptionsButton->mX + mOptionsButton->mButtonOffsetX + aFractionalOffsetX,
+			mOptionsButton->mY + mOptionsButton->mButtonOffsetY + aFractionalOffsetY
 		);
 		g->DrawImageF(
 			mQuitButton->mButtonImage,
-			mQuitButton->mX + mQuitButton->GetDrawOffsetX() + aFractionalOffsetX,
-			mQuitButton->mY + mQuitButton->GetDrawOffsetY() + aFractionalOffsetY
+			mQuitButton->mX + mQuitButton->mButtonOffsetX + aFractionalOffsetX,
+			mQuitButton->mY + mQuitButton->mButtonOffsetY + aFractionalOffsetY
 		);
 		g->DrawImageF(
 			mHelpButton->mButtonImage, 
-			mHelpButton->mX + mHelpButton->GetDrawOffsetX() + aFractionalOffsetX, 
-			mHelpButton->mY + mHelpButton->GetDrawOffsetY() + aFractionalOffsetY
+			mHelpButton->mX + mHelpButton->mButtonOffsetX + aFractionalOffsetX, 
+			mHelpButton->mY + mHelpButton->mButtonOffsetY + aFractionalOffsetY
 		);
 	}
 
@@ -807,20 +808,8 @@ void GameSelector::Update()
 		int aNewY = TodAnimateCurve(75, 0, mSlideCounter, mStartY, mDestY, TodCurves::CURVE_EASE_IN_OUT);
 		Move(aNewX, aNewY);
 
-		// @Patoke: not from the original binaries but fixes bugs
-		mOverlayWidget->Move(aNewX, aNewY);
 		mZombatarWidget->Move(aNewX + BOARD_WIDTH, aNewY);
 		mAchievementsWidget->mY = aNewY + mApp->mHeight;
-		for (NewLawnButton* aButton : mSlidingButtons)
-			aButton->SetSlideOffset(aNewX, aNewY);
-
-		// Make sure these are drawn even outside of bounds (force redraw)
-		mAchievementsButton->MarkDirty();
-		mOptionsButton->MarkDirty();
-		mHelpButton->MarkDirty();
-		mQuitButton->MarkDirty();
-		mStoreButton->MarkDirty();
-		mZenGardenButton->MarkDirty();
 
 		mSlideCounter--;
 	}
@@ -1024,67 +1013,22 @@ void GameSelector::AddedToManager(WidgetManager* theWidgetManager)
 {
 	Widget::AddedToManager(theWidgetManager);
 
-	theWidgetManager->AddWidget(mAdventureButton);
-	theWidgetManager->AddWidget(mMinigameButton);
-	theWidgetManager->AddWidget(mPuzzleButton);
-	theWidgetManager->AddWidget(mOptionsButton);
-	theWidgetManager->AddWidget(mQuitButton);
-	theWidgetManager->AddWidget(mHelpButton);
-	theWidgetManager->AddWidget(mStoreButton);
-	theWidgetManager->AddWidget(mAlmanacButton);
-	theWidgetManager->AddWidget(mSurvivalButton);
-	theWidgetManager->AddWidget(mZenGardenButton);
-	theWidgetManager->AddWidget(mChangeUserButton);
-	theWidgetManager->AddWidget(mOverlayWidget);
-	theWidgetManager->AddWidget(mZombatarButton); // @Patoke: add new widgets
 	theWidgetManager->AddWidget(mZombatarWidget);
-	theWidgetManager->AddWidget(mAchievementsButton);
 	theWidgetManager->AddWidget(mAchievementsWidget);
-	//theWidgetManager->AddWidget(mQuickPlayButton);
 }
 
 void GameSelector::RemovedFromManager(WidgetManager* theWidgetManager)
 {
 	Widget::RemovedFromManager(theWidgetManager);
 
-	theWidgetManager->RemoveWidget(mAdventureButton);
-	theWidgetManager->RemoveWidget(mMinigameButton);
-	theWidgetManager->RemoveWidget(mPuzzleButton);
-	theWidgetManager->RemoveWidget(mOptionsButton);
-	theWidgetManager->RemoveWidget(mQuitButton);
-	theWidgetManager->RemoveWidget(mHelpButton);
-	theWidgetManager->RemoveWidget(mStoreButton);
-	theWidgetManager->RemoveWidget(mAlmanacButton);
-	theWidgetManager->RemoveWidget(mSurvivalButton);
-	theWidgetManager->RemoveWidget(mZenGardenButton);
-	theWidgetManager->RemoveWidget(mChangeUserButton);
-	theWidgetManager->RemoveWidget(mOverlayWidget);
-	theWidgetManager->RemoveWidget(mZombatarButton); // @Patoke: new widgets
 	theWidgetManager->RemoveWidget(mZombatarWidget);
-	theWidgetManager->RemoveWidget(mAchievementsButton);
 	theWidgetManager->RemoveWidget(mAchievementsWidget);
-	//theWidgetManager->RemoveWidget(mQuickPlayButton);
 }
 
 void GameSelector::OrderInManagerChanged()
 {
 	mWidgetManager->PutInfront(mAchievementsWidget, this);
-	mWidgetManager->PutInfront(mOverlayWidget, this);
-	mWidgetManager->PutInfront(mAlmanacButton, this);
-	mWidgetManager->PutInfront(mStoreButton, this);
-	mWidgetManager->PutInfront(mHelpButton, this);
-	mWidgetManager->PutInfront(mQuitButton, this);
-	mWidgetManager->PutInfront(mOptionsButton, this);
-	mWidgetManager->PutInfront(mAdventureButton, this);
-	mWidgetManager->PutInfront(mMinigameButton, this);
-	mWidgetManager->PutInfront(mPuzzleButton, this);
-	mWidgetManager->PutInfront(mZenGardenButton, this);
-	mWidgetManager->PutInfront(mSurvivalButton, this);
-	mWidgetManager->PutInfront(mChangeUserButton, this);
-	mWidgetManager->PutInfront(mZombatarButton, this); // @Patoke: z order for new widgets
-	mWidgetManager->PutInfront(mAchievementsButton, this);
 	mWidgetManager->BringToFront(mZombatarWidget);
-	//mWidgetManager->PutInfront(mQuickPlayButton, this);
 }
 
 // GOTY @Patoke: 0x44EB11

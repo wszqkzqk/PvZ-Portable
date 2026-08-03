@@ -318,8 +318,6 @@ NewLawnButton::NewLawnButton(Image* theComponentImage, int theId, ButtonListener
 	mTextDownOffsetY = 0;
 	mButtonOffsetX = 0;
 	mButtonOffsetY = 0;
-	mSlideOffsetX = 0;
-	mSlideOffsetY = 0;
 	mUsePolygonShape = false;
 	SetColor(ButtonWidget::COLOR_BKG, Color::White);
 }
@@ -337,8 +335,6 @@ void NewLawnButton::Draw(Graphics* g)
 		return;
 
 	bool isDown = (mIsDown && mIsOver && !mDisabled) ^ mInverted;
-	int aOffsetX = GetDrawOffsetX();
-	int aOffsetY = GetDrawOffsetY();
 	int aFontX = mTextOffsetX + mTranslateX;
 	int aFontY = mTextOffsetY + mTranslateY;
 	if (mFont)
@@ -356,19 +352,19 @@ void NewLawnButton::Draw(Graphics* g)
 	{
 		g->SetColor(mColors[ButtonWidget::COLOR_BKG]);
 		if (mDisabled && HaveButtonImage(mDisabledImage, mDisabledRect))
-			DrawButtonImage(g, mDisabledImage, mDisabledRect, aOffsetX, aOffsetY);
+			DrawButtonImage(g, mDisabledImage, mDisabledRect, mButtonOffsetX, mButtonOffsetY);
 		else if (mOverAlpha > 0.0f && HaveButtonImage(mOverImage, mOverRect))
 		{
 			if (HaveButtonImage(mButtonImage, mNormalRect) && mOverAlpha < 1.0f)  // 未完全过渡结束
-				DrawButtonImage(g, mButtonImage, mNormalRect, aOffsetX, aOffsetY);
+				DrawButtonImage(g, mButtonImage, mNormalRect, mButtonOffsetX, mButtonOffsetY);
 
 			g->mColor.mAlpha = mOverAlpha * 255;
-			DrawButtonImage(g, mOverImage, mOverRect, aOffsetX, aOffsetY);
+			DrawButtonImage(g, mOverImage, mOverRect, mButtonOffsetX, mButtonOffsetY);
 		}
 		else if ((mIsOver || mIsDown) && HaveButtonImage(mOverImage, mOverRect))
-			DrawButtonImage(g, mOverImage, mOverRect, aOffsetX, aOffsetY);
+			DrawButtonImage(g, mOverImage, mOverRect, mButtonOffsetX, mButtonOffsetY);
 		else if (HaveButtonImage(mButtonImage, mNormalRect))
-			DrawButtonImage(g, mButtonImage, mNormalRect, aOffsetX, aOffsetY);
+			DrawButtonImage(g, mButtonImage, mNormalRect, mButtonOffsetX, mButtonOffsetY);
 
 		g->SetColorizeImages(false);
 		if (mIsOver)
@@ -387,11 +383,11 @@ void NewLawnButton::Draw(Graphics* g)
 	{
 		g->SetColor(mColors[ButtonWidget::COLOR_BKG]);
 		if (HaveButtonImage(mDownImage, mDownRect))
-			DrawButtonImage(g, mDownImage, mDownRect, aOffsetX + mTranslateX, aOffsetY + mTranslateY);
+			DrawButtonImage(g, mDownImage, mDownRect, mButtonOffsetX + mTranslateX, mButtonOffsetY + mTranslateY);
 		else if (HaveButtonImage(mOverImage, mOverRect))
-			DrawButtonImage(g, mOverImage, mOverRect, aOffsetX + mTranslateX, aOffsetY + mTranslateY);
+			DrawButtonImage(g, mOverImage, mOverRect, mButtonOffsetX + mTranslateX, mButtonOffsetY + mTranslateY);
 		else
-			DrawButtonImage(g, mButtonImage, mNormalRect, aOffsetX + mTranslateX, aOffsetY + mTranslateY);
+			DrawButtonImage(g, mButtonImage, mNormalRect, mButtonOffsetX + mTranslateX, mButtonOffsetY + mTranslateY);
 
 		g->SetColorizeImages(false);
 		g->SetFont(mHiliteFont ? mHiliteFont : mFont);
