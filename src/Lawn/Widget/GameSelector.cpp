@@ -362,6 +362,23 @@ GameSelector::GameSelector(LawnApp* theApp)
 	mAchievementsWidget = new AchievementsWidget(this->mApp);
 	mAchievementsWidget->Move(0, mApp->mHeight);
 
+	mSlidingButtons = {
+		mAdventureButton,
+		mMinigameButton,
+		mPuzzleButton,
+		mOptionsButton,
+		mQuitButton,
+		mHelpButton,
+		mStoreButton,
+		mAlmanacButton,
+		mZenGardenButton,
+		mSurvivalButton,
+		mChangeUserButton,
+		mZombatarButton,
+		mAchievementsButton,
+		mQuickPlayButton
+	};
+
 	TodHesitationTrace("gameselectorinit");
 }
 
@@ -602,18 +619,18 @@ void GameSelector::Draw(Graphics* g)
 		float aFractionalOffsetY = fmod(aTransform.mTransY, 1.0f);
 		g->DrawImageF(
 			mOptionsButton->mButtonImage,
-			mOptionsButton->mX + mOptionsButton->mButtonOffsetX + aFractionalOffsetX,
-			mOptionsButton->mY + mOptionsButton->mButtonOffsetY + aFractionalOffsetY
+			mOptionsButton->mX + mOptionsButton->GetDrawOffsetX() + aFractionalOffsetX,
+			mOptionsButton->mY + mOptionsButton->GetDrawOffsetY() + aFractionalOffsetY
 		);
 		g->DrawImageF(
 			mQuitButton->mButtonImage,
-			mQuitButton->mX + mQuitButton->mButtonOffsetX + aFractionalOffsetX,
-			mQuitButton->mY + mQuitButton->mButtonOffsetY + aFractionalOffsetY
+			mQuitButton->mX + mQuitButton->GetDrawOffsetX() + aFractionalOffsetX,
+			mQuitButton->mY + mQuitButton->GetDrawOffsetY() + aFractionalOffsetY
 		);
 		g->DrawImageF(
 			mHelpButton->mButtonImage, 
-			mHelpButton->mX + mHelpButton->mButtonOffsetX + aFractionalOffsetX, 
-			mHelpButton->mY + mHelpButton->mButtonOffsetY + aFractionalOffsetY
+			mHelpButton->mX + mHelpButton->GetDrawOffsetX() + aFractionalOffsetX, 
+			mHelpButton->mY + mHelpButton->GetDrawOffsetY() + aFractionalOffsetY
 		);
 	}
 
@@ -794,20 +811,8 @@ void GameSelector::Update()
 		mOverlayWidget->Move(aNewX, aNewY);
 		mZombatarWidget->Move(aNewX + BOARD_WIDTH, aNewY);
 		mAchievementsWidget->mY = aNewY + mApp->mHeight;
-		mAdventureButton->SetOffset(aNewX, aNewY);
-		mMinigameButton->SetOffset(aNewX, aNewY);
-		mPuzzleButton->SetOffset(aNewX, aNewY);
-		mOptionsButton->SetOffset(aNewX, aNewY + 15);
-		mQuitButton->SetOffset(aNewX, aNewY + 5);
-		mHelpButton->SetOffset(aNewX, aNewY + 30);
-		mStoreButton->SetOffset(aNewX, aNewY);
-		mAlmanacButton->SetOffset(aNewX, aNewY);
-		mZenGardenButton->SetOffset(aNewX, aNewY);
-		mSurvivalButton->SetOffset(aNewX, aNewY);
-		mChangeUserButton->SetOffset(aNewX, aNewY);
-		mZombatarButton->SetOffset(aNewX, aNewY);
-		mAchievementsButton->SetOffset(aNewX, aNewY);
-		mQuickPlayButton->SetOffset(aNewX, aNewY);
+		for (NewLawnButton* aButton : mSlidingButtons)
+			aButton->SetSlideOffset(aNewX, aNewY);
 
 		// Make sure these are drawn even outside of bounds (force redraw)
 		mAchievementsButton->MarkDirty();

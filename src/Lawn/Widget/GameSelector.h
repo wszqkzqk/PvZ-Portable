@@ -22,6 +22,7 @@
 #ifndef __GAMESELECTOR_H__
 #define __GAMESELECTOR_H__
 
+#include <vector>
 #include "../../ConstEnums.h"
 #include "widget/Widget.h"
 #include "widget/ButtonListener.h"
@@ -84,6 +85,7 @@ public:
     NewLawnButton*              mZombatarButton;             //+GOTY @Patoke: 0xC0
     NewLawnButton*              mAchievementsButton;        //+GOTY @Patoke: 0xC4
     NewLawnButton*              mQuickPlayButton;           //+GOTY @Patoke: 0xC8
+    std::vector<NewLawnButton*> mSlidingButtons;            // buttons that follow the slide animation
     Widget*                     mOverlayWidget;
     bool                        mStartingGame;
     int                         mStartingGameCounter;
