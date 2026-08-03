@@ -372,41 +372,12 @@ GameSelector::GameSelector(LawnApp* theApp)
 
 GameSelector::~GameSelector()
 {
-	RemoveAllWidgets(false); // children are deleted manually below
+	RemoveAllWidgets(true);
 
-	if (mAdventureButton)
-		delete mAdventureButton;
-	if (mMinigameButton)
-		delete mMinigameButton;
-	if (mPuzzleButton)
-		delete mPuzzleButton;
-	if (mOptionsButton)
-		delete mOptionsButton;
-	if (mQuitButton)
-		delete mQuitButton;
-	if (mHelpButton)
-		delete mHelpButton;
-	if (mOverlayWidget)
-		delete mOverlayWidget;
-	if (mStoreButton)
-		delete mStoreButton;
-	if (mAlmanacButton)
-		delete mAlmanacButton;
-	if (mZenGardenButton)
-		delete mZenGardenButton;
-	if (mSurvivalButton)
-		delete mSurvivalButton;
-	if (mChangeUserButton)
-		delete mChangeUserButton;
-	// @Patoke: new widgets
-	if (mZombatarButton)
-		delete mZombatarButton;
 	if (mZombatarWidget)
-		delete mZombatarWidget;
-	if (mAchievementsButton)
-		delete mAchievementsButton;
+		delete mZombatarWidget; // top-level widget, not covered by RemoveAllWidgets
 	if (mAchievementsWidget)
-		delete mAchievementsWidget;
+		delete mAchievementsWidget; // top-level widget, not covered by RemoveAllWidgets
 
 	delete mToolTip;
 }
