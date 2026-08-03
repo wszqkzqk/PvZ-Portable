@@ -181,17 +181,6 @@ GameSelector::GameSelector(LawnApp* theApp)
 	mAchievementsButton->mBtnNoDraw = mHasTrophy;
 	mAchievementsButton->mMouseVisible = false;
 
-	mQuickPlayButton = MakeNewButton(
-		GameSelector::GameSelector_QuickPlay,
-		this,
-		"",
-		nullptr,
-		Sexy::IMAGE_QUICKPLAY_BACK_BUTTON,
-		Sexy::IMAGE_QUICKPLAY_BACK_BUTTON_HIGHLIGHT,
-		Sexy::IMAGE_QUICKPLAY_BACK_BUTTON_HIGHLIGHT
-	);
-	mQuickPlayButton->Resize(mApp->mWidth - 150, 455, Sexy::IMAGE_QUICKPLAY_BACK_BUTTON->mWidth, Sexy::IMAGE_QUICKPLAY_BACK_BUTTON->mHeight);
-
 	mZenGardenButton = MakeNewButton(
 		GameSelector::GameSelector_ZenGarden, 
 		this, 
@@ -362,7 +351,7 @@ GameSelector::GameSelector(LawnApp* theApp)
 	mAchievementsWidget = new AchievementsWidget(this->mApp);
 	mAchievementsWidget->Move(0, mApp->mHeight);
 
-	// Add as children in z-order (bottom to top); mQuickPlayButton is unused and stays unadded.
+	// Add as children in z-order (bottom to top).
 	AddWidget(mAchievementsButton);
 	AddWidget(mZombatarButton);
 	AddWidget(mChangeUserButton);
@@ -418,8 +407,6 @@ GameSelector::~GameSelector()
 		delete mAchievementsButton;
 	if (mAchievementsWidget)
 		delete mAchievementsWidget;
-	if (mQuickPlayButton)
-		delete mQuickPlayButton;
 
 	delete mToolTip;
 }
@@ -1330,9 +1317,6 @@ void GameSelector::ButtonDepress(int theId)
 		break;
 	case GameSelector::GameSelector_Achievements:
 		ShowAchievementsScreen();
-		break;
-	case GameSelector::GameSelector_QuickPlay:
-		// GameSelector::ShowQuickPlayScreen();
 		break;
 	}
 }
