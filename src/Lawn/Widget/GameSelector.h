@@ -63,7 +63,6 @@ private:
         GameSelector_ZenGarden = 109,
         GameSelector_Survival = 110,
         GameSelector_Zombatar = 111, // @Patoke: add stuff after 110
-        GameSelector_AchievementsBack = 112,
         GameSelector_Achievements = 113
     };
 

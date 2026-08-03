@@ -585,7 +585,6 @@ void GameSelector::SyncProfile(bool theShowLoading)
 	ReportAchievement::AchievementInitForPlayer(mApp); // @Patoke: add call
 }
 
-// GOTY @Patoke: seems to be inlined? 0x44DCC6
 void GameSelector::Draw(Graphics* g)
 {
 	if (mApp->GetDialog(Dialogs::DIALOG_STORE) || mApp->GetDialog(Dialogs::DIALOG_ALMANAC))
@@ -1311,9 +1310,6 @@ void GameSelector::ButtonDepress(int theId)
 		break;
 	case GameSelector::GameSelector_Zombatar:
 		ShowZombatarScreen();
-		break;
-	case GameSelector::GameSelector_AchievementsBack: // @Patoke: seems to be unused
-		//SlideTo(0, 0);
 		break;
 	case GameSelector::GameSelector_Achievements:
 		ShowAchievementsScreen();
