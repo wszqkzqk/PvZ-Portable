@@ -52,18 +52,18 @@ private:
     enum
     {
         GameSelector_Adventure = 100,
-        GameSelector_Minigame = 101,
-        GameSelector_Puzzle = 102,
-        GameSelector_Options = 103,
-        GameSelector_Help = 104,
-        GameSelector_Quit = 105,
-        GameSelector_ChangeUser = 106,
-        GameSelector_Store = 107,
-        GameSelector_Almanac = 108,
-        GameSelector_ZenGarden = 109,
-        GameSelector_Survival = 110,
-        GameSelector_Zombatar = 111, // @Patoke: add stuff after 110
-        GameSelector_Achievements = 113
+        GameSelector_Minigame,
+        GameSelector_Puzzle,
+        GameSelector_Options,
+        GameSelector_Help,
+        GameSelector_Quit,
+        GameSelector_ChangeUser,
+        GameSelector_Store,
+        GameSelector_Almanac,
+        GameSelector_ZenGarden,
+        GameSelector_Survival,
+        GameSelector_Zombatar,
+        GameSelector_Achievements
     };
 
 public:
