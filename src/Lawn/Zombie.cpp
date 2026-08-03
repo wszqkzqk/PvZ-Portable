@@ -49,6 +49,7 @@ constexpr const int BUNGEE_ZOMBIE_HEIGHT = 3000;
 constexpr const int RENDER_GROUP_SHIELD = 1;
 constexpr const int RENDER_GROUP_ARMS = 2;
 constexpr const int RENDER_GROUP_OVER_SHIELD = 3;
+constexpr const int RENDER_GROUP_ZOMBATAR_HEAD = 3;
 constexpr const int RENDER_GROUP_BOSS_BACK_LEG = 4;
 constexpr const int RENDER_GROUP_BOSS_FRONT_LEG = 5;
 constexpr const int RENDER_GROUP_BOSS_BACK_ARM = 6;
@@ -3398,6 +3399,7 @@ void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
 
     ReanimatorTrackInstance* aTrackInstance = aBodyReanim->GetTrackInstanceByName("anim_head1");
     aTrackInstance->mImageOverride = IMAGE_BLANK;
+    aBodyReanim->AssignRenderGroupToTrack("anim_head1", RENDER_GROUP_ZOMBATAR_HEAD);
     aBodyReanim->AssignRenderGroupToPrefix("anim_head2", RENDER_GROUP_HIDDEN);
     aBodyReanim->AssignRenderGroupToPrefix("anim_hair", RENDER_GROUP_HIDDEN);
     aBodyReanim->mFrameBasePose = 0;
@@ -5798,6 +5800,11 @@ void Zombie::DrawReanim(Graphics* g, const ZombieDrawPosition& theDrawPos, int t
         aBodyReanim->mExtraAdditiveColor = aExtraAdditiveColor;
         aBodyReanim->mEnableExtraAdditiveDraw = aEnableExtraAdditiveDraw;
         aBodyReanim->DrawRenderGroup(g, RENDER_GROUP_OVER_SHIELD);
+    }
+
+    if (mZombatarHeadReanimID != ReanimationID::REANIMATIONID_NULL)
+    {
+        aBodyReanim->DrawRenderGroup(g, RENDER_GROUP_ZOMBATAR_HEAD);
     }
 
     g->ClearClipRect();
