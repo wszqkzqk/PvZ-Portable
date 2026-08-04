@@ -133,10 +133,11 @@ jobs:
       uses: actions/cache@v4
       with:
         path: vcpkg-cache
-        key: vcpkg-windows-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+        # Triplet is in the key so the x86 and x64 jobs don't share caches.
+        key: vcpkg-windows-x64-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
         restore-keys: |
-          vcpkg-windows-${{ env.VCPKG_TC }}-
-          vcpkg-windows-
+          vcpkg-windows-x64-${{ env.VCPKG_TC }}-
+          vcpkg-windows-x64-
 
     - name: Install Ninja
       run: choco install ninja -y
@@ -159,6 +160,60 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: pvz-portable-windows-msvc-x64
+        path: dist/
+
+  # 32-bit coverage build: catches pointer-size/alignment assumptions.
+  build-windows-msvc-x86:
+    name: Build for Windows (MSVC x86)
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
+
+    # Key tracks the MSVC toolset (part of vcpkg's ABI hash) but not the system CMake version: vcpkg builds ports with its own pinned CMake.
+    - name: Get toolchain ID for cache key
+      shell: pwsh
+      run: |
+        $tc = $env:VCToolsVersion
+        if (-not $tc) { $tc = "unknown" }
+        echo "VCPKG_TC=msvc-$tc" >> $env:GITHUB_ENV
+
+    - name: Restore vcpkg binary cache
+      uses: actions/cache@v4
+      with:
+        path: vcpkg-cache
+        # Triplet is in the key so the x86 and x64 jobs don't share caches.
+        key: vcpkg-windows-x86-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+        restore-keys: |
+          vcpkg-windows-x86-${{ env.VCPKG_TC }}-
+          vcpkg-windows-x86-
+
+    - name: Install Ninja
+      run: choco install ninja -y
+
+    - name: Setup vcpkg (manifest mode)
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgJsonGlob: vcpkg.json
+
+    - name: Compile PvZ-Portable for Windows (MSVC)
+      shell: pwsh
+      run: |
+        cmake -G "Ninja" -B build -DCMAKE_BUILD_TYPE=Release -DCONSOLE=OFF -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x86-windows-static
+        cmake --build build
+
+        New-Item -ItemType Directory -Force -Path dist | Out-Null
+        Copy-Item build/pvz-portable.exe dist/
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: pvz-portable-windows-msvc-x86
         path: dist/
 
   # build-switch:
