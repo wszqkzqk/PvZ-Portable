@@ -121,21 +121,22 @@ jobs:
 
     - uses: ilammy/msvc-dev-cmd@v1
 
+    # Key tracks the MSVC toolset (part of vcpkg's ABI hash) but not the system CMake version: vcpkg builds ports with its own pinned CMake.
     - name: Get toolchain ID for cache key
       shell: pwsh
       run: |
         $tc = $env:VCToolsVersion
         if (-not $tc) { $tc = "unknown" }
-        $cmake = (cmake --version | Select-Object -First 1) -replace '[^0-9.]',''
-        if (-not $cmake) { $cmake = "unknown" }
-        echo "VCPKG_TC=msvc-$tc-cmake$cmake" >> $env:GITHUB_ENV
+        echo "VCPKG_TC=msvc-$tc" >> $env:GITHUB_ENV
 
     - name: Restore vcpkg binary cache
       uses: actions/cache@v4
       with:
         path: vcpkg-cache
         key: vcpkg-windows-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
-        restore-keys: vcpkg-windows-${{ env.VCPKG_TC }}-
+        restore-keys: |
+          vcpkg-windows-${{ env.VCPKG_TC }}-
+          vcpkg-windows-
 
     - name: Install Ninja
       run: choco install ninja -y
@@ -290,18 +291,20 @@ jobs:
         tar xf "SDL2-${SDL2_TAG}.tar.gz"
         mv "SDL2-${SDL2_TAG}" sdl2-src
 
+    # Key tracks the NDK version (compiler + chainload toolchain are in vcpkg's ABI hash) but not the system CMake version: vcpkg builds ports with its own pinned CMake.
     - name: Get toolchain ID for cache key
       run: |
         NDK_VER=$(grep -oP 'Pkg\.Revision = \K[\d.]+' "$ANDROID_NDK/source.properties" || echo unknown)
-        CMAKE_VER=$(cmake --version | head -1 | sed -nE 's/[^0-9]*([0-9.]+).*/\1/p')
-        echo "VCPKG_TC=ndk-$NDK_VER-cmake${CMAKE_VER:-unknown}" >> "$GITHUB_ENV"
+        echo "VCPKG_TC=ndk-$NDK_VER" >> "$GITHUB_ENV"
 
     - name: Restore vcpkg binary cache
       uses: actions/cache@v4
       with:
         path: vcpkg-cache
         key: vcpkg-android-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
-        restore-keys: vcpkg-android-${{ env.VCPKG_TC }}-
+        restore-keys: |
+          vcpkg-android-${{ env.VCPKG_TC }}-
+          vcpkg-android-
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
@@ -418,18 +421,20 @@ jobs:
       with:
         fetch-depth: 0
 
+    # Key tracks the clang version (part of vcpkg's ABI hash) but not the system CMake version: vcpkg builds ports with its own pinned CMake.
     - name: Get toolchain ID for cache key
       run: |
         CLANG_VER=$(clang --version | head -1 | sed -nE 's/.*version ([0-9.]+).*/\1/p')
-        CMAKE_VER=$(cmake --version | head -1 | sed -nE 's/[^0-9]*([0-9.]+).*/\1/p')
-        echo "VCPKG_TC=clang-${CLANG_VER:-unknown}-cmake${CMAKE_VER:-unknown}" >> "$GITHUB_ENV"
+        echo "VCPKG_TC=clang-${CLANG_VER:-unknown}" >> "$GITHUB_ENV"
 
     - name: Restore vcpkg binary cache
       uses: actions/cache@v4
       with:
         path: vcpkg-cache
         key: vcpkg-ios-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
-        restore-keys: vcpkg-ios-${{ env.VCPKG_TC }}-
+        restore-keys: |
+          vcpkg-ios-${{ env.VCPKG_TC }}-
+          vcpkg-ios-
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
@@ -526,7 +531,7 @@ jobs:
 
   release:
     name: Release
-    needs: ['build-archlinux', 'build-windows-msys2-ucrt64', 'build-windows-msvc-x64', 'build-macos', 'build-android', 'build-ios', 'build-wasm']
+    needs: ['build-archlinux', 'build-windows-msys2-ucrt64', 'build-windows-msvc-x64', 'build-windows-msvc-x86', 'build-macos', 'build-android', 'build-ios', 'build-wasm']
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
@@ -545,8 +550,11 @@ jobs:
         chmod +x artifacts/pvz-portable-archlinux/pvz-portable
         mv artifacts/pvz-portable-archlinux/pvz-portable release_files/pvz-portable-archlinux-x86_64
 
-        echo "Preparing Windows MSVC file..."
+        echo "Preparing Windows MSVC x64 file..."
         mv artifacts/pvz-portable-windows-msvc-x64/pvz-portable.exe release_files/pvz-portable-windows-msvc-x64-static.exe
+
+        echo "Preparing Windows MSVC x86 file..."
+        mv artifacts/pvz-portable-windows-msvc-x86/pvz-portable.exe release_files/pvz-portable-windows-msvc-x86-static.exe
 
         echo "Preparing Windows MSYS2 file..."
         mv artifacts/pvz-portable-windows-msys2-ucrt64/pvz-portable.exe release_files/pvz-portable-windows-ucrt64-static.exe
