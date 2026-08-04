@@ -49,7 +49,6 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 set(LOW_MEMORY OFF CACHE BOOL "Enable low memory mode")
-set(DOWNSCALE_COUNT 1 CACHE STRING "Image downscale count")
 if(NINTENDO_SWITCH)
 	set(VORBIS_LIB vorbisfile vorbis)
 	list(APPEND SOURCES
@@ -193,7 +192,6 @@ set_target_properties(pvz-portable PROPERTIES CXX_EXTENSIONS OFF)
 if (LOW_MEMORY)
 	target_compile_definitions(pvz-portable PRIVATE LOW_MEMORY)
 endif()
-target_compile_definitions(pvz-portable PRIVATE IMG_DOWNSCALE=${DOWNSCALE_COUNT})
 
 if(EMSCRIPTEN)
 	set_property(TARGET pvz-portable APPEND PROPERTY LINK_DEPENDS

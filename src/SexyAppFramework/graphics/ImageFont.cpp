@@ -851,7 +851,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 								(aRectElement.size() == 4))
 
 							{
-								Rect aRect = Rect(aRectElement[0]/IMG_DOWNSCALE, aRectElement[1]/IMG_DOWNSCALE, aRectElement[2]/IMG_DOWNSCALE, aRectElement[3]/IMG_DOWNSCALE);
+								Rect aRect = Rect(aRectElement[0], aRectElement[1], aRectElement[2], aRectElement[3]);
 
 								if ((aRect.mX < 0) || (aRect.mY < 0) ||
 									(aRect.mX + aRect.mWidth > anImageWidth) || (aRect.mY + aRect.mHeight > anImageHeight))
