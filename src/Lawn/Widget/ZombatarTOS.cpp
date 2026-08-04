@@ -41,12 +41,12 @@
 
 using namespace Sexy;
 
-constexpr int TOS_DIALOG_W = 600;
-constexpr int TOS_DIALOG_H = 450;
+constexpr int TOS_DIALOG_WIDTH = 600;
+constexpr int TOS_DIALOG_HEIGHT = 450;
 constexpr int TOS_SLIDER_X = 500;
 constexpr int TOS_SLIDER_Y = 140;
-constexpr int TOS_SLIDER_W = 29;
-constexpr int TOS_SLIDER_H = 135;
+constexpr int TOS_SLIDER_WIDTH = 29;
+constexpr int TOS_SLIDER_HEIGHT = 135;
 constexpr int TOS_BACK_X = 40;
 constexpr int TOS_ACCEPT_X = 450;
 constexpr int TOS_BUTTON_Y = 344;
@@ -54,12 +54,12 @@ constexpr int TOS_CHECK_X = 400;
 constexpr int TOS_CHECK_Y = 340;
 constexpr int TOS_TEXT_X = 50;
 constexpr int TOS_TEXT_Y = 130;
-constexpr int TOS_TEXT_W = 435;
-constexpr int TOS_CLIP_H = 160;
+constexpr int TOS_TEXT_WIDTH = 435;
+constexpr int TOS_CLIP_HEIGHT = 160;
 constexpr int TOS_ARROW_X = 420;
 constexpr int TOS_ARROW_Y = 290;
-constexpr int TOS_CHECK_W = 45;
-constexpr int TOS_CHECK_H = 45;
+constexpr int TOS_CHECK_WIDTH = 45;
+constexpr int TOS_CHECK_HEIGHT = 45;
 
 ZombatarTOS::ZombatarTOS(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_ZOMBATAR_TOS, true, "[ZOMBATAR_TOS_HEADER]", "", "", Dialog::BUTTONS_NONE)
 {
@@ -80,7 +80,7 @@ ZombatarTOS::ZombatarTOS(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_Z
 
 	mTOSCheckbox = MakeNewCheckbox(ZombatarTOS::ZombatarTOS_Checkbox, this, false);
 
-	Resize(0, 0, TOS_DIALOG_W, TOS_DIALOG_H);
+	Resize(0, 0, TOS_DIALOG_WIDTH, TOS_DIALOG_HEIGHT);
 }
 
 ZombatarTOS::~ZombatarTOS()
@@ -118,10 +118,10 @@ void ZombatarTOS::Resize(int theX, int theY, int theWidth, int theHeight)
 	int aAcceptWidth = IMAGE_ZOMBATAR_ACCEPT_BUTTON ? IMAGE_ZOMBATAR_ACCEPT_BUTTON->mWidth : aBackWidth;
 	int aAcceptHeight = IMAGE_ZOMBATAR_ACCEPT_BUTTON ? IMAGE_ZOMBATAR_ACCEPT_BUTTON->mHeight : aBackHeight;
 
-	mTOSSlider->Resize(TOS_SLIDER_X, TOS_SLIDER_Y, TOS_SLIDER_W, TOS_SLIDER_H);
+	mTOSSlider->Resize(TOS_SLIDER_X, TOS_SLIDER_Y, TOS_SLIDER_WIDTH, TOS_SLIDER_HEIGHT);
 	mBackButton->Resize(TOS_BACK_X, TOS_BUTTON_Y, aBackWidth, aBackHeight);
 	mAcceptButton->Resize(TOS_ACCEPT_X, TOS_BUTTON_Y, aAcceptWidth, aAcceptHeight);
-	mTOSCheckbox->Resize(TOS_CHECK_X, TOS_CHECK_Y, TOS_CHECK_W, TOS_CHECK_H);
+	mTOSCheckbox->Resize(TOS_CHECK_X, TOS_CHECK_Y, TOS_CHECK_WIDTH, TOS_CHECK_HEIGHT);
 }
 
 void ZombatarTOS::Draw(Graphics* g)
@@ -131,14 +131,14 @@ void ZombatarTOS::Draw(Graphics* g)
 	if (mBodyText.empty())
 		mBodyText = PvzpStringTranslate("[ZOMBATAR_TOS]");
 	if (mTextHeight <= 0)
-		mTextHeight = PvzpDrawStringWrappedHelper(g, mBodyText, Rect(0, 0, TOS_TEXT_W, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
+		mTextHeight = PvzpDrawStringWrappedHelper(g, mBodyText, Rect(0, 0, TOS_TEXT_WIDTH, 0), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT, false);
 
-	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_H);
+	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_HEIGHT);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 
 	g->PushState();
-	g->ClipRect(Rect(TOS_TEXT_X, TOS_TEXT_Y, TOS_TEXT_W, TOS_CLIP_H));
-	PvzpDrawStringWrapped(g, mBodyText, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_W, mTextHeight), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT);
+	g->ClipRect(Rect(TOS_TEXT_X, TOS_TEXT_Y, TOS_TEXT_WIDTH, TOS_CLIP_HEIGHT));
+	PvzpDrawStringWrapped(g, mBodyText, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_WIDTH, mTextHeight), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT);
 	g->PopState();
 
 	if (mFlashArrow && IMAGE_ZOMBATAR_TOS_ARROW)
@@ -214,10 +214,10 @@ void ZombatarTOS::KeyDown(KeyCode theKey)
 
 void ZombatarTOS::MouseWheel(int theDelta)
 {
-	if (mTextHeight <= TOS_CLIP_H)
+	if (mTextHeight <= TOS_CLIP_HEIGHT)
 		return;
 
-	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_H);
+	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_HEIGHT);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 	aOffset -= theDelta * 12;
 	mTOSSlider->SetValue(std::max(0.0, std::min(1.0, static_cast<double>(aOffset) / aMaxScroll)));
