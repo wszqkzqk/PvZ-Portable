@@ -102,9 +102,13 @@ constexpr int ZOMBATAR_NEXT_PAGE_X = 497;
 constexpr int ZOMBATAR_PAGE_BTN_Y = 372;
 
 constexpr int ZOMBATAR_LIST_PORTRAIT_Y = 175;
-constexpr int ZOMBATAR_LIST_CUR_X = 239;
-constexpr int ZOMBATAR_LIST_PREV_X = 57;
-constexpr int ZOMBATAR_LIST_NEXT_X = 421;
+constexpr int ZOMBATAR_LIST_SPACING = 40;
+constexpr int ZOMBATAR_LIST_CENTER_INSET = 30;
+constexpr int ZOMBATAR_LIST_CLIP_X = 58;
+constexpr int ZOMBATAR_LIST_CLIP_Y = 125;
+constexpr int ZOMBATAR_LIST_CLIP_RIGHT = 63;
+constexpr int ZOMBATAR_LIST_CLIP_BOTTOM = 163;
+constexpr int ZOMBATAR_LIST_FILL_BOTTOM = 269;
 constexpr int ZOMBATAR_LIST_COUNTER_X = 221;
 constexpr int ZOMBATAR_LIST_COUNTER_Y = 161;
 constexpr int ZOMBATAR_LIST_DELETE_X = 351;
@@ -1046,11 +1050,22 @@ void ZombatarWidget::DrawList(Graphics* g)
 	if (aCount <= 0)
 		return;
 
-	if (mCurrentIndex > 0)
-		DrawAvatar(g, ZOMBATAR_LIST_PREV_X, ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + (mCurrentIndex - 1) * ZOMBATAR_RECORD_SIZE);
-	DrawAvatar(g, ZOMBATAR_LIST_CUR_X, ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE);
-	if (mCurrentIndex + 1 < aCount)
-		DrawAvatar(g, ZOMBATAR_LIST_NEXT_X, ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + (mCurrentIndex + 1) * ZOMBATAR_RECORD_SIZE);
+	int aPanelW = IMAGE_ZOMBATAR_WIDGET_BG ? IMAGE_ZOMBATAR_WIDGET_BG->mWidth : ZOMBATAR_PANEL_W;
+	int aBlankW = IMAGE_ZOMBATAR_BACKGROUND_BLANK ? IMAGE_ZOMBATAR_BACKGROUND_BLANK->mWidth : 179;
+	// separate truncating divisions, do not merge
+	int aPortraitX = ZOMBATAR_PANEL_X + (aPanelW - ZOMBATAR_LIST_CENTER_INSET) / 2 + ZOMBATAR_LIST_SPACING / 2 - aBlankW / 2;
+
+	g->ClipRect(Rect(ZOMBATAR_LIST_CLIP_X, ZOMBATAR_LIST_CLIP_Y, aPanelW - ZOMBATAR_LIST_CLIP_RIGHT, BOARD_HEIGHT - ZOMBATAR_LIST_CLIP_BOTTOM));
+	g->SetColor(Color::Black);
+	g->FillRect(ZOMBATAR_LIST_CLIP_X, ZOMBATAR_LIST_CLIP_Y, aPanelW - ZOMBATAR_LIST_CLIP_RIGHT, BOARD_HEIGHT - ZOMBATAR_LIST_FILL_BOTTOM);
+	for (int i = -1; i <= 1; i++)
+	{
+		int aIndex = mCurrentIndex + i;
+		if (aIndex >= 0 && aIndex < aCount)
+			DrawAvatar(g, aPortraitX + i * (ZOMBATAR_LIST_SPACING + aBlankW), ZOMBATAR_LIST_PORTRAIT_Y, mApp->mPlayerInfo->mZombatarData.data() + aIndex * ZOMBATAR_RECORD_SIZE);
+	}
+	g->ClearClipRect();
+	g->SetColor(Color::White);
 
 	DrawAvatar(g, ZOMBATAR_PREVIEW_X, ZOMBATAR_PREVIEW_Y, mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE);
 
