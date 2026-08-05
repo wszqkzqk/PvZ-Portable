@@ -113,7 +113,6 @@ void SDLMusicInterface::ResumeMusic(int theSongId)
 	if (anItr != mMusicMap.end())
 	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
-		//gBass->BASS_ChannelResume(aMusicInfo->GetHandle());
 		Mix_ResumeMusicStream(aMusicInfo->mHMusic);
 	}
 }
@@ -231,7 +230,6 @@ void SDLMusicInterface::SetSongVolume(int theSongId, double theVolume)
 		SDLMusicInfo* aMusicInfo = &anItr->second;
 
 		aMusicInfo->mVolume = theVolume;
-		//gBass->BASS_ChannelSetAttribute(aMusicInfo->GetHandle(), BASS_ATTRIB_VOL, (int) (aMusicInfo->mVolume));
 		Mix_VolumeMusicStream(aMusicInfo->mHMusic, (int)(aMusicInfo->mVolume*128));
 	}
 }
@@ -299,7 +297,6 @@ void SDLMusicInterface::Update()
 					Mix_HaltMusicStream(aMusicInfo->mHMusic);
 			}
 
-			//gBass->BASS_ChannelSetAttribute(aMusicInfo->GetHandle(), BASS_ATTRIB_VOL, (int) (aMusicInfo->mVolume));
 			Mix_VolumeMusicStream(aMusicInfo->mHMusic, (int)(aMusicInfo->mVolume*128));
 		}
 

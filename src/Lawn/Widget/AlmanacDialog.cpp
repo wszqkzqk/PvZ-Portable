@@ -146,7 +146,6 @@ void AlmanacDialog::RemovedFromManager(WidgetManager* theWidgetManager)
 	ClearPlantsAndZombies();
 }
 
-// GOTY @Patoke: 0x402C50
 void AlmanacDialog::SetupPlant()
 {
 	ClearPlantsAndZombies();
@@ -167,7 +166,6 @@ void AlmanacDialog::SetupPlant()
 	mPlant->mY = aPosY;
 }
 
-// GOTY @Patoke: 0x402D90
 void AlmanacDialog::SetupZombie()
 {
 	ClearPlantsAndZombies();
@@ -358,14 +356,13 @@ void AlmanacDialog::DrawPlants(Graphics* g)
 		std::string aRechargeStr = PvzpReplaceString(
 			"{KEYWORD}{WAIT_TIME}: {STAT}{WAIT_TIME_LENGTH}", 
 			"{WAIT_TIME_LENGTH}",
-			aPlantDef.mRefreshTime == 750 ? "[WAIT_TIME_SHORT]" : aPlantDef.mRefreshTime == 3000 ? "[WAIT_TIME_LONG]" : "[WAIT_TIME_VERY_LONG]" // @Patoke: fix typo XD
+			aPlantDef.mRefreshTime == 750 ? "[WAIT_TIME_SHORT]" : aPlantDef.mRefreshTime == 3000 ? "[WAIT_TIME_LONG]" : "[WAIT_TIME_VERY_LONG]"
 		);
 		aRechargeStr = PvzpReplaceString(aRechargeStr, "{WAIT_TIME}", "[WAIT_TIME]");
 		PvzpDrawStringWrapped(g, aRechargeStr, Rect(600, 520, 139, 50), Sexy::FONT_BRIANNETOD12, Color(40, 50, 90), DS_ALIGN_RIGHT);
 	}
 }
 
-// GOTY @Patoke: 0x403DE0
 void AlmanacDialog::DrawZombies(Graphics* g)
 {
 	g->DrawImage(Sexy::IMAGE_ALMANAC_ZOMBIEBACK, 0, 0);
@@ -503,8 +500,7 @@ void AlmanacDialog::DrawZombies(Graphics* g)
 			}
 		}
 	}
-	// todo @Patoke: fix stuff that have another formatter after them, ex: "{KEYWORD}Weakness:{STAT} fume-shroom{METAL} and magnet-shroom{KEYWORD}" (magnet-shroom will show with the {KEYWORD} colors)
-	// @Patoke: added extra check for the zamboni zombie
+	// todo: fix stuff that have another formatter after them, ex: "{KEYWORD}Weakness:{STAT} fume-shroom{METAL} and magnet-shroom{KEYWORD}" (magnet-shroom will show with the {KEYWORD} colors)
 	PvzpDrawStringWrapped(g, aDescription, Rect(484, mSelectedZombie == ZombieType::ZOMBIE_ZAMBONI ? 372 : 377, 258, 170), Sexy::FONT_BRIANNETOD12, Color(40, 50, 90), aAlign);
 }
 
@@ -564,65 +560,59 @@ SeedType AlmanacDialog::SeedHitTest(int x, int y)
 
 bool AlmanacDialog::ZombieHasSilhouette(ZombieType theZombieType)
 {
-	// 除雪人僵尸以外的其他僵尸，或者雪人僵尸已经可以刷出（已经到达或完成冒险模式二周目 4-10 关卡），则不会显示为剪影
+	// only the Yeti can be a silhouette, and not once it can spawn
 	if (theZombieType != ZombieType::ZOMBIE_YETI || mApp->CanSpawnYetis())
 		return false;
 
-	// 排除上述情况后，若已完成雪人僵尸出现的关卡（冒险模式一周目 4-10 关卡），则雪人僵尸显示为剪影
+	// the silhouette shows once adventure is finished or the Yeti's debut level is passed
 	return mApp->HasFinishedAdventure() || mApp->mPlayerInfo->GetLevel() > GetZombieDefinition(ZombieType::ZOMBIE_YETI).mStartingLevel;
 }
 
-// GOTY @Patoke: 0x404C50
 bool AlmanacDialog::ZombieIsShown(ZombieType theZombieType)
 {
-	// 试玩模式下，仅展示潜水僵尸及其之前出现的僵尸
+	// trial mode only shows zombies up to the Snorkel Zombie
 	if (mApp->IsTrialStageLocked() && theZombieType > ZombieType::ZOMBIE_SNORKEL)
 		return false;
 
-	// 对于雪人僵尸，要求其可以在刷怪中出现（已经到达或完成冒险模式二周目 4-10 关卡），
-	// 或已得知其存在但未解锁其形象（已经完成冒险模式一周目 4-10 关卡，但未到达二周目 4-10 关卡）
+	// the Yeti is shown once it can spawn, or earlier as a silhouette
 	if (theZombieType == ZombieType::ZOMBIE_YETI)
 		return mApp->CanSpawnYetis() || ZombieHasSilhouette(ZombieType::ZOMBIE_YETI);
 
-	// 对于冒险模式中出现的僵尸
+	// zombies encountered in adventure mode
 	if (theZombieType <= ZombieType::ZOMBIE_BOSS)
 	{
-		// 冒险模式一周目完成后，图鉴展示所有僵尸
+		// once adventure is finished, every zombie is shown
 		if (mApp->HasFinishedAdventure())
 			return true;
 
 		int aLevel = mApp->mPlayerInfo->GetLevel();
 		int aStart = GetZombieDefinition(theZombieType).mStartingLevel;
-		// 要求已经达到僵尸首次出现的关卡
-		// 对于不能通过自然刷怪出现的僵尸（小鬼僵尸、雪橇僵尸小队、伴舞僵尸），额外要求已通过其首次出现的关卡或已击败过该僵尸
+		// must have reached the zombie's debut level; spawn-only zombies also require passing it or defeating the zombie once
 		return aStart <= aLevel && (aStart != aLevel || !Board::IsZombieTypeSpawnedOnly(theZombieType) || gZombieDefeated[theZombieType]);
 	}
 
 	return false;
 }
 
-// GOTY @Patoke: 0x404D50
 bool AlmanacDialog::ZombieHasDescription(ZombieType theZombieType)
 {
 	int aLevel = mApp->mPlayerInfo->GetLevel();
 	int aStart = GetZombieDefinition(theZombieType).mStartingLevel;
 
-	// 对于雪人僵尸
 	if (theZombieType == ZombieType::ZOMBIE_YETI)
 	{
-		// 当雪人僵尸不可在刷怪中出现时（冒险模式二周目 4-10 关卡之前），不显示僵尸描述
+		// no description until the Yeti can spawn
 		if (!mApp->CanSpawnYetis())
 			return false;
-		// 从第三周目开始，总是显示雪人僵尸的描述
+		// from the third playthrough on, the description always shows
 		if (mApp->mPlayerInfo->mFinishedAdventure >= 2)
 			return true;
 	}
-	// 对于雪人僵尸外的其他僵尸，当冒险模式已完成时，总是显示僵尸的描述
+	// other zombies always show their description once adventure is finished
 	else if (mApp->HasFinishedAdventure())
 		return true;
 
-	// 雪人僵尸在二周目 4-10 关卡至三周目之间，或其他僵尸在冒险模式一周目中的情况，
-	// 要求已经达到僵尸首次出现的关卡，且已通过其首次出现的关卡或已击败过该僵尸
+	// otherwise require reaching the zombie's debut level, plus passing it or defeating the zombie
 	return aStart <= aLevel && (aStart != aLevel || gZombieDefeated[theZombieType]);
 }
 
@@ -637,7 +627,6 @@ void AlmanacDialog::GetZombiePosition(ZombieType theZombieType, int& x, int& y)
 	}
 }
 
-// GOTY @Patoke: 0x404DD0
 ZombieType AlmanacDialog::ZombieHitTest(int x, int y)
 {
 	if (mMouseVisible && mOpenPage == AlmanacPage::ALMANAC_PAGE_ZOMBIES)
@@ -645,7 +634,6 @@ ZombieType AlmanacDialog::ZombieHitTest(int x, int y)
 		for (int i = 0; i < NUM_ALMANAC_ZOMBIES; i++)
 		{
 			ZombieType aZombieType = GetZombieType(i);
-			// @Patoke: added IsShown check
 			if (aZombieType != ZombieType::ZOMBIE_INVALID && ZombieIsShown(aZombieType))
 			{
 				int aZombieX, aZombieY;
@@ -667,7 +655,6 @@ void AlmanacDialog::MouseUp(int x, int y, int theClickCount)
 	else if (mIndexButton->IsMouseOver())	SetPage(ALMANAC_PAGE_INDEX);
 }
 
-// GOTY @Patoke: 0x404F10
 void AlmanacDialog::MouseDown(int x, int y, int theClickCount)
 {
 	(void)theClickCount;

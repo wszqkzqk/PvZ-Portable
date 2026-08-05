@@ -30,7 +30,6 @@ bool gNeedRecalcVariableToIdMap = false;
 
 bool Sexy::ExtractResourcesByName(ResourceManager* theResourceManager, const char* theName)
 {
-	// @Patoke: updated these, please use compiletime hashes
 	if (!strcmp(theName, "DelayLoad_Almanac")) return ExtractDelayLoad_AlmanacResources(theResourceManager);
 	if (!strcmp(theName, "DelayLoad_AwardScreen")) return ExtractDelayLoad_AwardScreenResources(theResourceManager);
 	if (!strcmp(theName, "DelayLoad_Background1")) return ExtractDelayLoad_Background1Resources(theResourceManager);
@@ -46,7 +45,6 @@ bool Sexy::ExtractResourcesByName(ResourceManager* theResourceManager, const cha
 	if (!strcmp(theName, "DelayLoad_GreenHouseOverlay")) return ExtractDelayLoad_GreenHouseOverlayResources(theResourceManager);
 	if (!strcmp(theName, "DelayLoad_MushroomGarden")) return ExtractDelayLoad_MushroomGardenResources(theResourceManager);
 	if (!strcmp(theName, "DelayLoad_Store")) return ExtractDelayLoad_StoreResources(theResourceManager);
-//	if (!strcmp(theName, "DelayLoad_TreeOfWisdom")) return ExtractDelayLoad_TreeOfWisdomResources(theResourceManager);
 	if (!strcmp(theName, "DelayLoad_Zombatar")) return ExtractDelayLoad_ZombatarResources(theResourceManager);
 	if (!strcmp(theName, "DelayLoad_ZombieFinalNote")) return ExtractDelayLoad_ZombieFinalNoteResources(theResourceManager);
 	if (!strcmp(theName, "DelayLoad_ZombieNote")) return ExtractDelayLoad_ZombieNoteResources(theResourceManager);
@@ -2318,13 +2316,8 @@ bool Sexy::ExtractLoadingSoundsResources(ResourceManager* theManager)
 	return true;
 }
 
-// [Beta v0.1.1 Only]
-//Image* Sexy::IMAGE_GOOGLYEYE;
-//Image* Sexy::IMAGE_SQUIRREL;
-
 bool (*gExtractResourcesByName)(Sexy::ResourceManager* theResourceManager, const char* theName);
 
-// @Patoke: updated these
 void* gResources[static_cast<int>(Sexy::ResourceId::RESOURCE_ID_MAX)] =
 {
 	&Sexy::IMAGE_BLANK,

@@ -171,8 +171,6 @@ StoreScreen::~StoreScreen()
 
 StoreItem StoreScreen::GetStoreItemType(int theSpotIndex)
 {
-    // 这个函数原版是穷举判断的，这里优化一下……
-
     if (mPage < NUM_STORE_PAGES && theSpotIndex < MAX_PAGE_SPOTS)
     {
         if (mPage == STORE_PAGE_SLOT_UPGRADES && theSpotIndex == 6 && mApp->IsTrialStageLocked())
@@ -546,7 +544,6 @@ void StoreScreen::DrawOverlay(Graphics* g)
     }
 }
 
-// GOTY @Patoke: 0x4578F0
 void StoreScreen::SetBubbleText(int theCrazyDaveMessage, int theTime, bool theClickToContinue)
 {
     mApp->CrazyDaveTalkIndex(theCrazyDaveMessage);
@@ -652,7 +649,6 @@ void StoreScreen::Update()
     mApp->mMusic->MakeSureMusicIsPlaying(MUSIC_TUNE_TITLE_CRAZY_DAVE_MAIN_THEME);
     mApp->UpdateCrazyDave();
 
-    // 更新 DataArray<Coin> 中的所有 Coin
     for (Coin* aCoin : mCoins)
     {
         if (!aCoin->mDead)
@@ -788,7 +784,7 @@ void StoreScreen::Update()
     }
 
     UpdateMouse();
-    // 如果进入商店时为试玩版，而当前为完整版，且可以与按钮进行交互，则可以判断玩家已购买完整版
+    // store opened in trial mode and now unlocked: the player just purchased the full version
     if (CanInteractWithButtons() && mTrialLockedWhenStoreOpened && !mApp->IsTrialStageLocked())
     {
         mPurchasedFullVersion = true;
@@ -828,15 +824,15 @@ void StoreScreen::ButtonPress(int theId)
 
 bool StoreScreen::IsPageShown(StorePages thePage)
 {
-    // 试玩模式下，仅显示默认页
+    // trial mode only shows the default page
     if (mApp->IsTrialStageLocked()) return thePage == STORE_PAGE_SLOT_UPGRADES;
-    // 一周目完成后，所有页全解锁
+    // finishing adventure unlocks all pages
     if (mApp->HasFinishedAdventure()) return true;
-    // 到达或已通过冒险模式 5-2 关卡时，显示紫卡页
+    // the plant upgrades page requires reaching adventure 5-2 (level 42)
     if (thePage == STORE_PAGE_PLANT_UPGRADES) return mApp->mPlayerInfo->mLevel >= 42;
-    // 到达或已通过冒险模式 5-5 关卡时，显示花园工具页
+    // the zen garden page requires reaching adventure 5-5 (level 45)
     if (thePage == STORE_PAGE_ZEN1) return mApp->mPlayerInfo->mLevel >= 45;
-    // 冒险模式未完成时，不显示智慧树工具页
+    // hide the Tree of Wisdom page until adventure is finished
     return thePage != STORE_PAGE_ZEN2;
 }
 
@@ -936,7 +932,6 @@ bool StoreScreen::CanAffordItem(StoreItem theStoreItem)
     return mApp->mPlayerInfo->mCoins >= GetItemCost(theStoreItem);
 }
 
-// GOTY @Patoke: 0x497340
 void StoreScreen::PurchaseItem(StoreItem theStoreItem)
 {
     mApp->SetCursor(CURSOR_POINTER);
@@ -944,7 +939,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
     mApp->CrazyDaveStopTalking();
     if (!CanAffordItem(theStoreItem))
     {
-        // @Patoke: fix locals
+        // the localization key names for this dialog are wrong
         Dialog* aDialog = mApp->DoDialog(DIALOG_NOT_ENOUGH_MONEY, true,
             mApp->GetString("NOT_ENOUGH_MONEY", "Not enough money"),
             mApp->GetString("CANNOT_AFFORD_ITEM",
@@ -1080,12 +1075,9 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
             }
 
             if (aGiveAchievement) {
-                ReportAchievement::GiveAchievement(mApp, Morticulturalist, aGiveAchievement); // @Patoke: add achievement
+                ReportAchievement::GiveAchievement(mApp, Morticulturalist, aGiveAchievement);
                 SetBubbleText(4000, 800, false);
-                // todo @Patoke: add these?
-                //*(a2 + 412) = 150;
-                //*(a2 + 416) = 0;
-                //*(a2 + 584) = 1;
+                // todo: add these?
             }
 
             mApp->WriteCurrentUserConfig();
@@ -1098,7 +1090,7 @@ void StoreScreen::AdvanceCrazyDaveDialog()
     if (!mBubbleClickToContinue)
         return;
 
-    // “嘿，我的邻居！我有一些新东西出售啦！”
+    // "Hey neighbor! I've got some new things to sell!"
     if (mApp->mCrazyDaveMessageIndex == 3100)
     {
         mHatchTimer = 150;
@@ -1193,7 +1185,6 @@ void StoreScreen::EnableButtons(bool theEnable)
     mBackButton->SetDisabled(!theEnable);
 }
 
-// GOTY @Patoke: 0x498110
 void StoreScreen::SetupForIntro(int theDialogIndex)
 {
     mStartDialog = theDialogIndex;

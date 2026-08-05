@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 生成的包含文件。
-// 供 LawnProject.rc 使用
+// Microsoft Visual C++ generated include file.
+// Used by LawnProject.rc
 //
 #define IDC_CURSOR1                     102
 #define IDI_APP_ICON                    103

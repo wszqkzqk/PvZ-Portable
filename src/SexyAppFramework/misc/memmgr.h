@@ -25,7 +25,6 @@
 #ifndef __SEXYMEMMGR_H__
 #define __SEXYMEMMGR_H__
 
-//////////////////////////////////////////////////////////////////////////
 //						HOW TO USE THIS FILE
 //
 //			In the desired .CPP file (NOT header file), AFTER ALL of your
@@ -35,7 +34,6 @@
 //  will appear in a file called mem_leaks.txt and they will also be printed out
 //  in the output window when the program exits.
 //
-//////////////////////////////////////////////////////////////////////////
 
 
 #include <list>

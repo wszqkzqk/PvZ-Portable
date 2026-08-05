@@ -64,8 +64,6 @@ void SDLSoundInstance::RehupVolume()
 
 void SDLSoundInstance::RehupPan()
 {
-	//if (mSoundBuffer != nullptr)
-		//mSoundBuffer->SetPan(mBasePan + mPan);
 }
 
 // SDL_mixer chunk pitching

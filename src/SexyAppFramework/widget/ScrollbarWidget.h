@@ -24,7 +24,6 @@
 
 // ScrollbarWidget.h: interface for the ScrollbarWidget class.
 //
-//////////////////////////////////////////////////////////////////////
 
 #ifndef __SCROLLBARWIDGET_H__
 #define __SCROLLBARWIDGET_H__

@@ -844,7 +844,6 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 						for (uint32_t i = 0; i < aCharsVector.size(); i++)
 						{
 							std::vector<int> aRectElement;
-							//std::wstring aWString = UTF8StringToWString(aCharsVector[i]);
 							char32_t first_char = UTF8CharToUTF32Char(aCharsVector[i]);
 
 							if ((DataToIntVector(aRectList.mElementVector[i], &aRectElement)) &&
@@ -1001,7 +1000,6 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 					{
 						if (aCharsVector[i].length() == 1)
 						{
-							//aLayer->mCharData[(uchar) aCharsVector[i][0]].mOrder = aCharOrdersVector[i];
 							aLayer->GetCharData(aCharsVector[i][0])->mOrder = aCharOrdersVector[i];
 						}
 						else
@@ -1417,7 +1415,7 @@ int ImageFont::CharWidthKern(char32_t theChar, char32_t thePrevChar)
 
 		if (aLayerPointSize == 0)
 		{
-			aCharWidth = anActiveFontLayer->mBaseFontLayer->GetCharData(theChar)/*mCharData[(uchar) theChar].*/->mWidth * mScale;
+			aCharWidth = anActiveFontLayer->mBaseFontLayer->GetCharData(theChar)->mWidth * mScale;
 
 			if (thePrevChar != 0)
 			{
@@ -1429,7 +1427,7 @@ int ImageFont::CharWidthKern(char32_t theChar, char32_t thePrevChar)
 		}
 		else
 		{
-			aCharWidth = (anActiveFontLayer->mBaseFontLayer->GetCharData(theChar)/*mCharData[(uchar) theChar].*/->mWidth * aPointSize / aLayerPointSize);
+			aCharWidth = (anActiveFontLayer->mBaseFontLayer->GetCharData(theChar)->mWidth * aPointSize / aLayerPointSize);
 
 			if (thePrevChar != 0)
 			{
@@ -1472,8 +1470,6 @@ void ImageFont::DrawStringEx(Graphics* g, int theX, int theY, std::string_view t
 		gRenderHead[aPoolIdx] = nullptr;
 		gRenderTail[aPoolIdx] = nullptr;
 	}
-
-	// int aXPos = theX; // unused
 
 	if (theDrawnAreas != nullptr)
 		theDrawnAreas->clear();
@@ -1593,8 +1589,6 @@ void ImageFont::DrawStringEx(Graphics* g, int theX, int theY, std::string_view t
 				gRenderTail[anOrderIdx]->mNext = aRenderCommand;
 				gRenderTail[anOrderIdx] = aRenderCommand;
 			}
-
-			//aRenderCommandMap.insert(RenderCommandMap::value_type(aPriority, aRenderCommand));
 
 			if (theDrawnAreas != nullptr)
 			{

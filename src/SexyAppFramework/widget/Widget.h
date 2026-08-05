@@ -85,7 +85,6 @@ public:
 	virtual void			DrawOverlay(Graphics* g);
 	virtual void			DrawOverlay(Graphics* g, int thePriority);
 	void					Update() override;
-//	virtual void			UpdateF(float theFrac);
 	virtual void			GotFocus();
 	virtual void			LostFocus();	
 	virtual void			KeyChar(char theChar);
@@ -104,7 +103,7 @@ public:
 	virtual void			MouseWheel(int theDelta);
 	virtual bool			IsPointVisible(int x, int y);
 	
-	//////// Helper functions
+	// Helper functions
 	
 	virtual Rect			WriteCenteredLine(Graphics* g, int anOffset, std::string_view theLine);
 	virtual Rect			WriteCenteredLine(Graphics* g, int anOffset, std::string_view theLine, Color theColor1, Color theColor2, const Point& theShadowOffset = Point(1,2));
@@ -118,7 +117,7 @@ public:
 	virtual Rect			GetInsetRect();	
 	void					DeferOverlay(int thePriority = 0);	
 
-	//////// Layout functions
+	// Layout functions
 	int						Left()							{ return mX; } 
 	int						Top()							{ return mY; }
 	int						Right()							{ return mX + mWidth; }
@@ -129,7 +128,7 @@ public:
 	void					Layout(int theLayoutFlags, Widget *theRelativeWidget, int theLeftPad = 0, int theTopPad = 0, int theWidthPad = 0, int theHeightPad = 0);
 };
 
-/////// Layout flags used in Widget::Layout method
+// Layout flags used in Widget::Layout method
 enum LayoutFlags
 {
 	LAY_SameWidth		=		0x0001,

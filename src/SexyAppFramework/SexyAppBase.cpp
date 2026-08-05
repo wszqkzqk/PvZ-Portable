@@ -234,10 +234,8 @@ SexyAppBase::SexyAppBase()
 	mPreferredY = -1;
 	mIsScreenSaver = false;
 	mAllowMonitorPowersave = true;
-	//mHWnd = nullptr;
 	mGLInterface = nullptr;	
 	mMusicInterface = nullptr;
-	//mInvisHWnd = nullptr;
 	mFrameTime = 10;
 	mNonDrawCount = 0;
 	mDrawCount = 0;
@@ -289,7 +287,6 @@ SexyAppBase::SexyAppBase()
 	mHasFocus = true;			
 	mCustomCursorsEnabled = false;	
 	mCustomCursorDirty = false;
-	//mOverrideCursor = nullptr;
 	mIsOpeningURL = false;		
 	mInitialized = false;	
 	mLastShutdownWasGraceful = true;	
@@ -1041,8 +1038,6 @@ bool SexyAppBase::RegistryWrite(const std::string& theValueName, uint32_t theTyp
 		return mDemoBuffer.ReadNumBits(1, false) != 0;		
 	}
 
-	//HKEY aGameKey;
-	
 	std::string aKeyName = RemoveTrailingSlash("SOFTWARE\\" + mRegKey);
 	std::string aValueName;
 
@@ -1167,7 +1162,6 @@ void SexyAppBase::RegistryEraseValue(const std::string& _theValueName)
 	if (mRegKey.length() == 0)
 		return;
 
-	//HKEY aGameKey;
 	std::string aKeyName = RemoveTrailingSlash("SOFTWARE\\" + mRegKey);
 	std::string aValueName;
 
@@ -1562,7 +1556,6 @@ bool SexyAppBase::EraseFile(const std::string& theFileName)
 void SexyAppBase::SEHOccured()
 {
 	SetMusicVolume(0);
-	//::ShowWindow(mHWnd, SW_HIDE);
 	mSEHOccured = true;
 	EnforceCursor();
 }
@@ -1702,7 +1695,6 @@ bool SexyAppBase::DoUpdateFrames()
 		if ((mLoadingThreadCompleted) && (!mLoaded) && (mDemoLoadingComplete))
 		{			
 			mLoaded = true;
-			//::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
 			mYieldMainThread = false;
 			LoadingThreadCompleted();
 		}
@@ -1720,7 +1712,6 @@ bool SexyAppBase::DoUpdateFrames()
 	{
 		if ((mLoadingThreadCompleted) && (!mLoaded))
 		{
-			//::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
 			mLoaded = true;
 			mYieldMainThread = false;
 			LoadingThreadCompleted();
@@ -1755,7 +1746,7 @@ void SexyAppBase::Redraw(Rect* theClipRect)
 	mGLInterface->Redraw(theClipRect);
 }
 
-///////////////////////////// FPS Stuff
+// FPS stuff
 static PerfTimer gFPSTimer;
 static int gFrameCount;
 static int gFPSDisplay;
@@ -1780,7 +1771,7 @@ static void CalculateFPS()
 	}
 }
 
-///////////////////////////// FPS Stuff to draw mouse coords
+// FPS stuff to draw mouse coords
 static void FPSDrawCoords(int theX, int theY)
 {
 	(void)theX;
@@ -1788,7 +1779,7 @@ static void FPSDrawCoords(int theX, int theY)
 	// FPS coordinate drawing not implemented
 }
 
-///////////////////////////// Demo TimeLeft Stuff
+// Demo TimeLeft stuff
 static GLImage* gDemoTimeLeftImage = nullptr;
 static void CalculateDemoTimeLeft()
 {
@@ -1930,7 +1921,6 @@ void SexyAppBase::EndPopup()
 	if (mWidgetManager->mDownButtons)
 	{
 		mWidgetManager->DoMouseUps();
-		//ReleaseCapture();
 	}
 }
 
@@ -2051,7 +2041,6 @@ void SexyAppBase::RehupFocus()
 			mWidgetManager->LostFocus();
 			LostFocus();
 
-			//ReleaseCapture();
 			mWidgetManager->DoMouseUps();
 		}
 	}
@@ -2390,12 +2379,10 @@ void SexyAppBase::StartLoadingThread()
 	if (!mLoadingThreadStarted)
 	{
 		mYieldMainThread = true; 
-		//::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);		
 		mLoadingThreadStarted = true;
 #ifdef __EMSCRIPTEN__
 		LoadingThreadProcStub(this);
 #else
-		//_beginthread(LoadingThreadProcStub, 0, this);
 		mLoadingThread = std::thread(LoadingThreadProcStub, this); // keep joinable: detach() throws on devkitA64/libnx
 #endif
 	}
@@ -2449,18 +2436,13 @@ void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
 	//  stealing it away for ourselves
 	if (!mIsOpeningURL)
 	{
-		//::ShowWindow(mHWnd, SW_NORMAL);
-		//::SetForegroundWindow(mHWnd);
 	}
 	else
 	{
-		// Show it but don't activate it
-		//::ShowWindow(mHWnd, SW_SHOWNOACTIVATE);
 	}
 
 	if (mSoundManager!=nullptr)
 	{
-		//mSoundManager->SetCooperativeWindow(mHWnd);
 	}	
 
 	mLastTime = SDL_GetTicks();
@@ -2587,9 +2569,6 @@ void SexyAppBase::UpdateFTimeAcc()
 	mLastTimeCheck = aCurTime;
 }
 
-//int aNumCalls = 0;
-//uint32_t aLastCheck = 0;
-
 bool SexyAppBase::Process(bool allowSleep)
 {
 	if (mLoadingFailed)
@@ -2629,7 +2608,6 @@ bool SexyAppBase::Process(bool allowSleep)
 				uint aLastUpdateCount = mUpdateCount;
 								
 				// Actual updating code below
-				//////////////////////////////////////////////////////////////////////////
 				
 				bool hadRealUpdate = DoUpdateFrames();
 
@@ -2658,8 +2636,6 @@ bool SexyAppBase::Process(bool allowSleep)
 					DoUpdateFramesF(static_cast<float>(anUpdatesPerUpdateF));					
 					ProcessSafeDeleteList();
 				}
-
-				//////////////////////////////////////////////////////////////////////////				
 
 				// If the update count doesn't change, its because we are
 				//  playing back a demo and need to read more
@@ -2690,7 +2666,6 @@ bool SexyAppBase::Process(bool allowSleep)
 	{
 		uint32_t aStartTime = SDL_GetTicks();
 		
-		// uint32_t aCurTime = aStartTime; // Unused
 		int aCumSleepTime = 0;
 		
 		// When we are VSynching, only calculate this FTimeAcc right after drawing
@@ -2780,7 +2755,6 @@ bool SexyAppBase::Process(bool allowSleep)
 				mPendingUpdatesAcc -= 1.0;
 			}					
 
-			//aNumCalls++;
 			DoUpdateFramesF(static_cast<float>(anUpdatesPerUpdateF));
 			ProcessSafeDeleteList();		
 		
@@ -3023,14 +2997,6 @@ void SexyAppBase::Start()
 	if (mAutoStartLoadingThread)
 		StartLoadingThread();
 
-	//::ShowWindow(mHWnd, SW_SHOW);
-	//::SetFocus(mHWnd);
-
-	//timeBeginPeriod(1);
-
-	//int aCount = 0; // unused
-	//int aSleepCount = 0; // unused
-
 	uint32_t aStartTime = SDL_GetTicks();
 
 	mRunning = true;
@@ -3047,7 +3013,6 @@ void SexyAppBase::Start()
 	WaitForLoadingThread();
 
 	Sexy::PrintF("Seconds       = %g\r\n", (SDL_GetTicks() - aStartTime) / 1000.0);
-	//Sexy::PrintF("Count         = %d\r\n", aCount);
 	Sexy::PrintF("Sleep Count   = %u\r\n", mSleepCount);
 	Sexy::PrintF("Update Count  = %u\r\n", mUpdateCount);
 	Sexy::PrintF("Draw Count    = %u\r\n", mDrawCount);
@@ -3057,8 +3022,6 @@ void SexyAppBase::Start()
 	{
 		Sexy::PrintF("Avg FPS       = %" PRIu64 "\r\n", static_cast<uint64_t>(mDrawCount) * 1000 / (mDrawTime+mScreenBltTime));
 	}
-
-	//timeEndPeriod(1);	
 
 	PreTerminate();
 
@@ -3081,11 +3044,6 @@ bool SexyAppBase::LoadProperties(const std::string& theFileName, bool required, 
 	}
 	if (checkSig)
 	{
-		//if (!CheckSignature(aBuffer, theFileName))
-		//{
-			//Popup(GetString("PROPERTIES_SIG_FAILED", "Signature check failed on ") + (theFileName + "'"));
-			//return false;
-		//}
 	}
 
 	PropertiesParser aPropertiesParser(this);
@@ -4219,7 +4177,6 @@ void SexyAppBase::Remove3DData(MemoryImage* theMemoryImage)
 
 bool SexyAppBase::Is3DAccelerated()
 {
-	//return mDDInterface->mIs3D;
 	return true;
 }
 

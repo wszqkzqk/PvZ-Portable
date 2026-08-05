@@ -44,8 +44,7 @@
 #include <memory>
 #include <vector>
 
-static constexpr const char* FILE_COMPILE_TIME_STRING = "Jul  2 201011:47:03"; // The compile time of 1.2.0.1073 GOTY
-//static constexpr const char* FILE_COMPILE_TIME_STRING = "Dec 10 201014:56:46" // The compile time of 1.2.0.1096 GOTY Steam
+static constexpr const char* FILE_COMPILE_TIME_STRING = "Jul  2 201011:47:03"; // save files are tied to this exact timestamp string
 static constexpr const uint32_t SAVE_FILE_MAGIC_NUMBER = 0xFEEDDEAD;
 static constexpr const uint32_t SAVE_FILE_VERSION = 2U;
 static const uint32_t SAVE_FILE_DATE = crc32(0, (Bytef*)FILE_COMPILE_TIME_STRING, strlen(FILE_COMPILE_TIME_STRING));
@@ -3078,7 +3077,6 @@ static void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 	}
 }
 
-// GOTY @Patoke: 0x48CBC0
 bool LawnLoadGame(Board* theBoard, const std::string& theFilePath)
 {
 	if (LawnLoadGameV4(theBoard, theFilePath))

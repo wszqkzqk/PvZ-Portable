@@ -318,7 +318,7 @@ void Widget::MouseUp(int, int, int, int){}
 void Widget::MouseWheel(int){}
 
 
-//////// Helper functions
+// Helper functions
 
 Rect Widget::WriteCenteredLine(Graphics* g, int anOffset, std::string_view theLine)
 {

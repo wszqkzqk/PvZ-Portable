@@ -104,7 +104,6 @@ Plant::Plant()
 {
 }
 
-// GOTY @Patoke: 0x461483
 void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType)
 {
     mPlantCol = theGridX;
@@ -1128,7 +1127,6 @@ void Plant::UpdateGraveBuster()
     }
 }
 
-// GOTY @Patoke: 0x463760
 void Plant::PlayBodyReanim(const char* theTrackName, ReanimLoopType theLoopType, int theBlendTime, float theAnimRate)
 {
     Reanimation* aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
@@ -1465,7 +1463,7 @@ Zombie* Plant::FindSquashTarget()
                     if (aZombie->IsWalkingBackwards() || aZombieRect.mX + aZombieRect.mWidth >= aPlantX)
                     {
                         if (mBoard->ZombieGetID(aZombie) == mTargetZombieID)
-                            return aZombie;  // 是锁定的目标僵尸，则直接返回该僵尸
+                            return aZombie;
 
                         if (aClosestZombie == nullptr || aRange < aClosestRange)
                         {
@@ -1667,7 +1665,6 @@ void Plant::UpdateUmbrella()
     }
 }
 
-// GOTY @Patoke: 0x4649F0
 void Plant::UpdateCobCannon()
 {
     if (mState == PlantState::STATE_COBCANNON_ARMING)
@@ -1971,7 +1968,6 @@ void Plant::MagnetShroomAttactItem(Zombie* theZombie)
     }
 }
 
-// GOTY @Patoke: 0x4656B0
 bool Plant::DrawMagnetItemsOnTop()
 {
     if (mSeedType == SeedType::SEED_GOLD_MAGNET)
@@ -2117,8 +2113,6 @@ void Plant::UpdateMagnetShroom()
             MagnetShroomAttactItem(aClosestZombie);
             return;
         }
-
-        ////////////////////
 
         float aClosestLadderDist = 0.0f;
         GridItem* aClosestLadder = nullptr;
@@ -2364,7 +2358,6 @@ void Plant::Squish()
     }
 }
 
-// GOTY @Patoke: 0x4666E0
 void Plant::UpdateBowling()
 {
     Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
@@ -2482,7 +2475,7 @@ void Plant::UpdateBowling()
             {
                 mApp->PlayFoley(FoleyType::FOLEY_SPAWN_SUN);
                 mBoard->AddCoin(aPosX, aPosY, CoinType::COIN_GOLD, CoinMotion::COIN_MOTION_COIN);
-                ReportAchievement::GiveAchievement(mApp, RollSomeHeads, true); // @Patoke: add achievement
+                ReportAchievement::GiveAchievement(mApp, RollSomeHeads, true);
             }
         }
 
@@ -2644,7 +2637,6 @@ bool Plant::IsUpgradableTo(SeedType theUpgradedType)
     return false;
 }
 
-// GOTY @Patoke: 0x466FD0
 void Plant::UpdateReanimColor()
 {
     if (!IsOnBoard())
@@ -2730,7 +2722,6 @@ void Plant::UpdateReanimColor()
     aBodyReanim->PropogateColorToAttachments();
 }
 
-// GOTY @Patoke: 0x469649
 bool Plant::IsOnBoard()
 {
     if (!mIsOnBoard)
@@ -3543,7 +3534,6 @@ float PlantFlowerPotHeightOffset(SeedType theSeedType, float theFlowerPotScale)
     return aHeightOffset + (theFlowerPotScale * aScaleOffsetFix - aScaleOffsetFix);
 }
 
-// GOTY @Patoke: 0x468A90
 float PlantDrawHeightOffset(Board* theBoard, Plant* thePlant, SeedType theSeedType, int theCol, int theRow)
 {
     float aHeightOffset = 0.0f;
@@ -3698,7 +3688,6 @@ void Plant::GetPeaHeadOffset(int& theOffsetX, int& theOffsetY)
     theOffsetY = aTransform.mTransY;
 }
 
-// GOTY @Patoke: 0x468EB0
 void Plant::DrawMagnetItems(Graphics* g)
 {
     float aOffsetX = 0.0f;
@@ -3944,7 +3933,6 @@ void Plant::DrawShadow(Sexy::Graphics* g, float theOffsetX, float theOffsetY)
     }
 }
 
-// GOTY @Patoke: 0x469500
 void Plant::Draw(Graphics* g)
 {
     float aOffsetX = 0.0f;
@@ -4107,7 +4095,6 @@ void Plant::Draw(Graphics* g)
     }
 }
 
-// GOTY @Patoke: 0x469AF0
 void Plant::DrawSeedType(Graphics* g, SeedType theSeedType, SeedType theImitaterType, DrawVariation theDrawVariation, float thePosX, float thePosY)
 {
     Graphics aSeedG(*g);
@@ -4263,7 +4250,6 @@ void Plant::BurnRow(int theRow)
     Zombie* aBossZombie = mBoard->GetBossZombie();
     if (aBossZombie && aBossZombie->mFireballRow == theRow)
     {
-        // 注：原版中将 Zombie::BossDestroyIceballInRow(int) 函数改为了 Zombie::BossDestroyIceball()，冰球是否位于目标行的判断则移动至此处进行
         aBossZombie->BossDestroyIceballInRow();
     }
 }
@@ -4302,7 +4288,6 @@ void Plant::KillAllPlantsNearDoom()
     }
 }
 
-// GOTY @Patoke: 0x46A110
 void Plant::DoSpecial()
 {
     int aPosX = mX + mWidth / 2;
@@ -4326,7 +4311,7 @@ void Plant::DoSpecial()
         mApp->PlayFoley(FoleyType::FOLEY_JUICY);
 
         if (mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, 115, 1, true, aDamageRangeFlags) >= 10)
-            ReportAchievement::GiveAchievement(mApp, Explodonator, true); // @Patoke: add achievement
+            ReportAchievement::GiveAchievement(mApp, Explodonator, true);
 
         mApp->AddPvzpParticle(aPosX, aPosY, static_cast<int>(RenderLayer::RENDER_LAYER_TOP), ParticleEffect::PARTICLE_POWIE);
         mBoard->ShakeBoard(3, -4);
@@ -4390,7 +4375,7 @@ void Plant::DoSpecial()
 
         mApp->PlaySample(SOUND_POTATO_MINE);
         if (mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, 60, 0, false, aDamageRangeFlags) >= 1)
-            ReportAchievement::GiveAchievement(mApp, Spudow, true); // @Patoke: add achievement
+            ReportAchievement::GiveAchievement(mApp, Spudow, true);
 
         int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
         mApp->AddPvzpParticle(aPosX + 20.0f, aPosY, aRenderPosition, ParticleEffect::PARTICLE_POTATO_MINE);
@@ -4872,7 +4857,7 @@ Zombie* Plant::FindTargetZombie(int theRow, PlantWeapon thePlantWeapon)
                 if (aZombie->mZombieType == ZombieType::ZOMBIE_POLEVAULTER)
                 {
                     aAttackRect.mX += 40;
-                    aAttackRect.mWidth -= 40;  // 原版经典土豆地雷 Bug 及“四撑杆引雷”的原理
+                    aAttackRect.mWidth -= 40;  // classic potato mine quirk; lets pole-vaulters set off the mine ("four pole-vaulters" trick)
                 }
 
                 if (aZombie->mZombieType == ZombieType::ZOMBIE_BUNGEE && aZombie->mTargetCol != mPlantCol)
@@ -4898,15 +4883,13 @@ Zombie* Plant::FindTargetZombie(int theRow, PlantWeapon thePlantWeapon)
                 continue;
             }
 
-            ////////////////////
-
             int aWeight = -aZombieRect.mX;
             if (mSeedType == SeedType::SEED_CATTAIL)
             {
                 aWeight = -Distance2D(mX + 40.0f, mY + 40.0f, aZombieRect.mX + aZombieRect.mWidth / 2, aZombieRect.mY + aZombieRect.mHeight / 2);
                 if (aZombie->IsFlying())
                 {
-                    aWeight += 10000;  // 优先攻击飞行单位
+                    aWeight += 10000;
                 }
             }
 
@@ -5051,7 +5034,6 @@ int Plant::GetCost(SeedType theSeedType, SeedType theImitaterType)
     }
 }
 
-// GOTY @Patoke: 0x46B6C0
 std::string Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType)
 {
     const PlantDefinition& aPlantDef = GetPlantDefinition(theSeedType);
@@ -5110,7 +5092,6 @@ bool Plant::IsNocturnal(SeedType theSeedtype)
         theSeedtype == SeedType::SEED_GLOOMSHROOM;
 }
 
-// GOTY @Patoke: inlined 0x40FB2B
 bool Plant::IsFungus(SeedType theSeedtype) 
 {
     return
@@ -5135,7 +5116,6 @@ bool Plant::IsAquatic(SeedType theSeedType)
         theSeedType == SeedType::SEED_CATTAIL;
 }
 
-// GOTY @Patoke: 0x469543
 bool Plant::IsFlying(SeedType theSeedtype)
 {
     return theSeedtype == SeedType::SEED_INSTANT_COFFEE;

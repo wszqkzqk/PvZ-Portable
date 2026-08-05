@@ -37,74 +37,61 @@ using namespace Sexy;
 #define MAX_PARTICLES_SIZE 900
 #define MAX_PARTICLE_FIELDS 4
 
-// ######################################################################################################################################################
-// ############################################################# 以下为粒子系统定义相关内容 #############################################################
-// ######################################################################################################################################################
+// Particle system definitions
 
 enum ParticleFlags : int32_t
 {
-    PARTICLE_RANDOM_LAUNCH_SPIN,        // 随机发射旋转，指定粒子在发射时使用 [0, 2π] 内随机的初始旋转角度
-    PARTICLE_ALIGN_LAUNCH_SPIN,         // 对齐发射角度，指定粒子在发射时的初始旋转角度与发射方向一致（优先级低于随机发射旋转）
-    PARTICLE_ALIGN_TO_PIXELS,           // 对齐至像素，指定粒子渲染时的坐标四舍五入地对齐至整数像素值
-    PARTICLE_SYSTEM_LOOPS,              // 系统循环，指定发射器在生命周期结束后立即回到周期起始的时刻
-    PARTICLE_PARTICLE_LOOPS,            // 粒子循环，指定粒子在生命周期结束后立即回到周期起始的时刻
-    PARTICLE_PARTICLES_DONT_FOLLOW,     // 粒子不跟随，指定当粒子发射器的位置移动时，已发射的粒子不随之移动
-    PARTICLE_RANDOM_START_TIME,         // 随机初始时刻，指定粒子初始时的存在时间为 0 至最大持续时间之间的随机值
-    PARTICLE_DIE_IF_OVERLOADED,         // 过载限制，指定在粒子数量过多时，该发射器所属的粒子系统无法被创建
-    PARTICLE_ADDITIVE,                  // 叠加模式，指定粒子渲染时固定使用叠加（Additive）模式
-    PARTICLE_FULLSCREEN,                // 全屏模式，指定粒子在渲染时改为填充一个屏幕大小的矩形
-    PARTICLE_SOFTWARE_ONLY,             // 仅软件渲染，指定粒子仅在未开启 3D 加速时可被渲染
-    PARTICLE_HARDWARE_ONLY              // 仅硬件渲染，指定粒子仅在已开启 3D 加速时可被渲染
+    PARTICLE_RANDOM_LAUNCH_SPIN,        // random initial spin in [0, 2π] at launch
+    PARTICLE_ALIGN_LAUNCH_SPIN,         // initial spin aligns with the launch direction (lower priority than random launch spin)
+    PARTICLE_ALIGN_TO_PIXELS,           // render position rounded to integer pixels
+    PARTICLE_SYSTEM_LOOPS,              // emitter restarts its cycle when its lifetime ends
+    PARTICLE_PARTICLE_LOOPS,            // particle restarts its cycle when its lifetime ends
+    PARTICLE_PARTICLES_DONT_FOLLOW,     // launched particles don't move with the emitter
+    PARTICLE_RANDOM_START_TIME,         // particle starts at a random age within its duration
+    PARTICLE_DIE_IF_OVERLOADED,         // the particle system fails to be created when overloaded
+    PARTICLE_ADDITIVE,                  // always rendered in additive mode
+    PARTICLE_FULLSCREEN,                // rendered as a screen-filling rect
+    PARTICLE_SOFTWARE_ONLY,             // rendered only without 3D acceleration
+    PARTICLE_HARDWARE_ONLY              // rendered only with 3D acceleration
 };
 
 enum ParticleFieldType : int32_t
 {
     FIELD_INVALID,
-    FIELD_FRICTION,                     // 摩擦力场：该场内粒子的速度按一定比例不断衰减
-    FIELD_ACCELERATION,                 // 加速度场：该场内粒子以一定加速度做加速运动
-    FIELD_ATTRACTOR,                    // 弹性力场：该场内粒子加速度的大小和方向均受到粒子与发射器之间距离大小的影响
-    FIELD_MAX_VELOCITY,                 // 限速场：该场内粒子速度的大小不能超过一定的上限值
-    FIELD_VELOCITY,                     // 匀速场：该场内粒子速度的大小总是为一给定值
-    FIELD_POSITION,                     // 定位场：该场内粒子的位置总是为一给定值
-    FIELD_SYSTEM_POSITION,              // 系统定位场：仅发射器可用，该场内发射器的位置总是为一给定值
-    FIELD_GROUND_CONSTRAINT,            // 地面限制：粒子的纵向位置不能低于地面，且接触地面时会触发弹起效果
-    FIELD_SHAKE,                        // 震动：粒子的坐标会有随机 -1.0 到 +1.0 的偏移，每帧独立计算
-    FIELD_CIRCLE,                       // 引力场：该场内粒子围绕发射器中心做圆周运动（考虑误差，实为螺线运动）
-    FIELD_AWAY,                         // 斥力场：该场内粒子沿径向不断远离发射器中心
+    FIELD_FRICTION,                     // friction: velocity decays proportionally
+    FIELD_ACCELERATION,                 // acceleration: velocity increases by a fixed acceleration
+    FIELD_ATTRACTOR,                    // attractor: acceleration depends on the distance to the emitter
+    FIELD_MAX_VELOCITY,                 // velocity magnitude clamped to a limit
+    FIELD_VELOCITY,                     // constant drift velocity
+    FIELD_POSITION,                     // position pinned to a given value
+    FIELD_SYSTEM_POSITION,              // emitter only: emitter position pinned to a given value
+    FIELD_GROUND_CONSTRAINT,            // vertical position can't go below the ground; bounces on contact
+    FIELD_SHAKE,                        // shake: random -1.0..+1.0 position offset each frame
+    FIELD_CIRCLE,                       // circle: orbits the emitter center (a spiral in practice due to error)
+    FIELD_AWAY,                         // away: moves radially away from the emitter center
     PARTICLE_FIELD_COUNT
-};  // 粒子场相关内容详见 PvzpParticleEmitter::UpdateParticleField() 函数（系统定位场为 PvzpParticleEmitter::UpdateSystemField() 函数）
+};  // see PvzpParticleEmitter::UpdateParticleField() (UpdateSystemField() for FIELD_SYSTEM_POSITION)
 
-// ################################################################################
-// ▲ 以下粒子系统定义相关的各类型的实例与 XML 中的格式的对应关系示例简图
-// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Correspondence between the definition types and the XML format:
 // <Emitter>                                                         —
 //                       ↓←Node→↓                                ↑
 //     <SpawnRate>[.5 2] [2.5 4.5],40 [5 10]</SpawnRate>    PvzpEmitterDefinition
 //     ↑←      FloatParameterTrack::mNodes        →↑             ↓
 // </Emitter>                                                        —
-// ################################################################################
-// 【!】XML 中没有给出的定义项，将会在读取结束后被赋予该项的默认值
+// Definition items omitted in the XML get their default values after loading
 
-// ====================================================================================================
-// ★ 【浮点参数轨道节点】
-// ----------------------------------------------------------------------------------------------------
-// 每个节点描述属性数值随时间变化的一个阶段。
-// ====================================================================================================
+// Each node describes one stage of a value's change over time
 class FloatParameterTrackNode
 {
 public:
-    float                       mTime;                          // 阶段的起始时间
-    float                       mLowValue;                      // 阶段内数据允许的最小值
-    float                       mHighValue;                     // 阶段内数据允许的最大值
-    PvzpCurves                   mCurveType;                     // 从当前阶段过渡至下一阶段的缓动效果曲线
-    PvzpCurves                   mDistribution;                  // 阶段内数据在最小值和最大值之间的概率分布曲线
+    float                       mTime;                          // start time of the stage
+    float                       mLowValue;                      // minimum value allowed in the stage
+    float                       mHighValue;                     // maximum value allowed in the stage
+    PvzpCurves                   mCurveType;                     // easing curve of the transition to the next stage
+    PvzpCurves                   mDistribution;                  // probability distribution between min and max in the stage
 };
 
-// ====================================================================================================
-// ★ 【浮点参数轨道】
-// ----------------------------------------------------------------------------------------------------
-// 每条轨道描述发射器的一种属性的数值随时间的变化规律和取值范围。
-// ====================================================================================================
+// Each track describes how one emitter attribute varies over time and its allowed range
 class FloatParameterTrack
 {
 public:
@@ -112,17 +99,13 @@ public:
     int32_t                     mCountNodes;
 };
 
-// ====================================================================================================
-// ★ 【粒子场】
-// ----------------------------------------------------------------------------------------------------
-// 发射器中粒子运动的物理环境。多个粒子场可以叠加存在，最多叠加 4 个。
-// ====================================================================================================
+// Physical environment for particle motion; up to 4 fields can be stacked
 class ParticleField
 {
 public:
-    ParticleFieldType           mFieldType;                     // 场的类型，决定了场对粒子运动的影响方式
-    FloatParameterTrack         mX;                             // 场在水平方向（横向）上对粒子的影响
-    FloatParameterTrack         mY;                             // 场在竖直方向（纵向）上对粒子的影响
+    ParticleFieldType           mFieldType;                     // field type, determines how the field affects particle motion
+    FloatParameterTrack         mX;                             // field effect along the X axis
+    FloatParameterTrack         mY;                             // field effect along the Y axis
 };
 
 struct EmitterFieldArray
@@ -132,11 +115,7 @@ public:
 	int32_t count;
 };
 
-// ====================================================================================================
-// ★ 【发射器定义】
-// ----------------------------------------------------------------------------------------------------
-// 粒子发射器的定义数据描述了其各种行为的参数的变化规律和范围。
-// ====================================================================================================
+// Describes the variation and range of a particle emitter's behavior parameters
 class PvzpEmitterDefinition
 {
 public:
@@ -191,11 +170,7 @@ public:
     FloatParameterTrack         mAnimationRate;
 };
 
-// ====================================================================================================
-// ★ 【粒子系统定义】
-// ----------------------------------------------------------------------------------------------------
-// 粒子系统的定义数据，是粒子系统中各个粒子发射器的定义数据的集合。
-// ====================================================================================================
+// The set of emitter definitions that make up a particle system
 class PvzpParticleDefinition
 {
 public:
@@ -204,13 +179,9 @@ public:
 };
 
 extern int gParticleDefCount;                       // [0x6A9F08]
-extern PvzpParticleDefinition* gParticleDefArray;    // [0x6A9F0C]。于 LawnApp::LoadingThreadProc() 函数中读取并赋值
+extern PvzpParticleDefinition* gParticleDefArray;    // [0x6A9F0C], loaded and assigned in LawnApp::LoadingThreadProc()
 
-// ====================================================================================================
-// ★ 【粒子参数】
-// ----------------------------------------------------------------------------------------------------
-// 用于描述一种粒子系统类型与该粒子系统的数据文件的文件名之间的对应关系。
-// ====================================================================================================
+// Maps a particle system type to the file name of its data file
 class ParticleParams
 {
 public:
@@ -226,9 +197,7 @@ void                            PvzpParticleFreeDefinitions();
 
 extern const ParticleParams gLawnParticleArray[static_cast<int>(ParticleEffect::NUM_PARTICLES)];  // 0x6A0FF0
 
-// ######################################################################################################################################################
-// ############################################################ 以下正式开始粒子系统相关声明 ############################################################
-// ######################################################################################################################################################
+// Particle system declarations
 
 enum ParticleSystemTracks : int32_t
 {

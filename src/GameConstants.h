@@ -24,9 +24,7 @@
 #include "ConstEnums.h"
 constexpr const double PI = 3.141592653589793;
 
-// ============================================================
 // Constants
-// ============================================================
 constexpr const int BOARD_WIDTH = 800;
 constexpr const int BOARD_HEIGHT = 600;
 constexpr const int WIDE_BOARD_WIDTH = 800;
@@ -45,9 +43,7 @@ constexpr const int SEED_CHOOSER_OFFSET_Y = 516;
 constexpr const int SEED_PACKET_WIDTH = 50;
 constexpr const int SEED_PACKET_HEIGHT = 70;
 
-// ============================================================
 // About levels
-// ============================================================
 constexpr const int ADVENTURE_AREAS = 5;
 constexpr const int LEVELS_PER_AREA = 10;
 constexpr const int NUM_LEVELS = ADVENTURE_AREAS * LEVELS_PER_AREA;

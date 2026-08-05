@@ -62,7 +62,6 @@ public:
 	std::vector<AchievementScreenItem>	mAchievementItems;		//+GOTY @Patoke: 0xC0
 
 public:
-	// @Patoke: added argument
 	AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowingAchievements = false);
 	~AwardScreen() override;
 
@@ -78,7 +77,6 @@ public:
 	void				StartButtonPressed();
 	void				MouseDown(int x, int y, int theClickCount) override;
 	void				MouseUp(int x, int y, int theClickCount) override;
-	// @Patoke: implement functions
 	void				DrawAchievements(Graphics* g);
 	void				AchievementsContinuePressed();
 };

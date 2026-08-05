@@ -28,7 +28,6 @@
 #include "../../PvzpLib/PvzpFoley.h"
 #include "../../PvzpLib/PvzpStringFile.h"
 
-// GOTY @Patoke: 0x435E40
 ContinueDialog::ContinueDialog(LawnApp* theApp) : LawnDialog(
 	theApp, 
 	Dialogs::DIALOG_CONTINUE, 

@@ -55,9 +55,7 @@ static constexpr char32_t WIN1252_TO_UNICODE[32] = {
 	0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0x009D, 0x017E, 0x0178
 };
 
-//----------------------------------------------------------------------------
 // Generate the table of CRC remainders for all possible bytes.
-//----------------------------------------------------------------------------
 static constexpr std::array<uint32_t, 256> GenerateCRCTable()
 {
 	std::array<uint32_t, 256> table{};
@@ -78,9 +76,7 @@ static constexpr std::array<uint32_t, 256> GenerateCRCTable()
 
 static constexpr std::array<uint32_t, 256> crc_table = GenerateCRCTable();
 
-//----------------------------------------------------------------------------
 // Update the CRC on the data block one byte at a time.
-//----------------------------------------------------------------------------
 static uint32_t UpdateCRC(uint32_t crc_accum,
 						const char *data_blk_ptr,
 						int data_blk_size)

@@ -29,7 +29,7 @@ int gPvzpStringFormatCount;
 PvzpStringListFormat* gPvzpStringFormats;
 
 const int gLawnStringFormatCount = 12;
-PvzpStringListFormat gLawnStringFormats[12] = {    // GOTY @Patoke: 0x7248EC
+PvzpStringListFormat gLawnStringFormats[12] = {
 	{ "NORMAL",           nullptr,    Color(40,   50,     90,     255),       0,      0U },
 	{ "FLAVOR",           nullptr,    Color(143,  67,     27,     255),       0,      1U },
 	{ "KEYWORD",          nullptr,    Color(143,  67,     27,     255),       0,      0U },
@@ -41,7 +41,7 @@ PvzpStringListFormat gLawnStringFormats[12] = {    // GOTY @Patoke: 0x7248EC
 	{ "SHORTLINE",        nullptr,    Color(0,    0,      0,      0),         -9,     0U },
 	{ "EXTRASHORTLINE",   nullptr,    Color(0,    0,      0,      0),         -14,    0U },
 	{ "CREDITS1",         nullptr,    Color(0,    0,      0,      0),         3,      0U },
-	{ "CREDITS2",         nullptr,    Color(0,    0,      0,      0),         2,      0U } // @Patoke: wrong size (2 duplicates)
+	{ "CREDITS2",         nullptr,    Color(0,    0,      0,      0),         2,      0U } // wrong size (2 duplicates)
 };
 
 PvzpStringListFormat::PvzpStringListFormat()
@@ -66,9 +66,9 @@ void PvzpStringListSetColors(PvzpStringListFormat* theFormats, int theCount)
 bool PvzpStringListReadName(const char*& thePtr, std::string& theName)
 {
 	const char* aNameStart = strchr(thePtr, '[');
-	if (aNameStart == nullptr)  // 如果文本中不存在“[”
+	if (aNameStart == nullptr)
 	{
-		if (strspn(thePtr, " \n\r\t") != strlen(thePtr))  // 如果文本不全是空白字符
+		if (strspn(thePtr, " \n\r\t") != strlen(thePtr))  // the remaining text is not all whitespace
 		{
 			PvzpTrace("Failed to find string name");
 			return false;
@@ -80,21 +80,21 @@ bool PvzpStringListReadName(const char*& thePtr, std::string& theName)
 	else
 	{
 		const char* aNameEnd = strchr(aNameStart + 1, ']');
-		if (aNameEnd == nullptr)  // 如果“[”后不存在“]”
+		if (aNameEnd == nullptr)
 		{
 			PvzpTrace("Failed to find ']'");
 			return false;
 		}
 
 		int aCount = aNameEnd - aNameStart - 1;
-		theName = Sexy::Trim(std::string(aNameStart + 1, aCount));  // 取得中括号之间的部分并去除字符串前后的空白字符
+		theName = Sexy::Trim(std::string(aNameStart + 1, aCount));
 		if (theName.size() == 0)
 		{
 			PvzpTrace("Name Too Short");
 			return false;
 		}
 
-		thePtr += aCount + 2;  // 移动读取指针至“]”后
+		thePtr += aCount + 2;  // advance past ']'
 		return true;
 	}
 }
@@ -104,7 +104,7 @@ void PvzpStringRemoveReturnChars(std::string& theString)
 	for (size_t i = 0; i < theString.size(); )
 	{
 		if (theString[i] == '\r')
-			theString.replace(i, 1, "", 0);  // 原版中此处的“1”和“""”已内联至函数内部
+			theString.replace(i, 1, "", 0);
 		else
 			i++;
 	}
@@ -114,9 +114,9 @@ bool PvzpStringListReadValue(const char*& thePtr, std::string& theValue)
 {
 	const char* aValueEnd = strchr(thePtr, '[');
 	int aLen = aValueEnd ? aValueEnd - thePtr : strlen(thePtr);
-	theValue = Sexy::Trim(std::string(thePtr, aLen));  // 如果存在下一个“[”，则取到“[”前为止；否则，取剩下的全部
-	PvzpStringRemoveReturnChars(theValue);  // 移除所有的换行符
-	thePtr += aLen;  // 移动读取指针至“[”处（或结尾处）
+	theValue = Sexy::Trim(std::string(thePtr, aLen));  // up to the next '[', or the rest of the text
+	PvzpStringRemoveReturnChars(theValue);
+	thePtr += aLen;  // advance to the next '[' (or the end)
 	return true;
 }
 
@@ -128,11 +128,11 @@ bool PvzpStringListReadItems(const char* theFileText)
 
 	for (;;)
 	{
-		if (!PvzpStringListReadName(aPtr, aName))  // 读取一个标签
+		if (!PvzpStringListReadName(aPtr, aName))
 			return false;
-		if (aName.size() == 0)  // 读取成功但没有读取到标签，表明读取完成
+		if (aName.size() == 0)  // a successful read with an empty name means reading is done
 			return true;
-		if (!PvzpStringListReadValue(aPtr, aValue))  // 读取对应的内容
+		if (!PvzpStringListReadValue(aPtr, aValue))
 			return false;
 
 		std::string aNameUpper = Sexy::StringToUpper(aName);
@@ -171,12 +171,11 @@ std::string PvzpStringListFind(std::string_view theName)
 	}
 }
 
-// GOTY @Patoke: 0x523B90
 std::string PvzpStringTranslate(std::string_view theString)
 {
 	if (theString.size() >= 3 && theString[0] == '[')
 	{
-		std::string_view aName = theString.substr(1, theString.size() - 2);  // 取"["与"]"中间的部分
+		std::string_view aName = theString.substr(1, theString.size() - 2);
 		return PvzpStringListFind(aName);
 	}
 	return std::string(theString);
@@ -189,7 +188,7 @@ std::string PvzpStringTranslate(const char* theString)
 		int aLen = strlen(theString);
 		if (aLen >= 3 && theString[0] == '[')
 		{
-			std::string aName(theString, 1, aLen - 2);  // 取“[”与“]”中间的部分
+			std::string aName(theString, 1, aLen - 2);
 			return PvzpStringListFind(aName);
 		}
 		else
@@ -203,13 +202,12 @@ bool PvzpStringListExists(std::string_view theString)
 {
 	if (theString.size() >= 3 && theString[0] == '[')
 	{
-		std::string_view aName = theString.substr(1, theString.size() - 2);  // 取"["与"]"中间的部分
+		std::string_view aName = theString.substr(1, theString.size() - 2);
 		return gSexyAppBase->mStringProperties.find(aName) != gSexyAppBase->mStringProperties.end();
 	}
 	return false;
 }
 
-// GOTY @Patoke: 0x523E20
 void PvzpWriteStringSetFormat(const char* theFormat, PvzpStringListFormat& theCurrentFormat)
 {
 	for (int i = 0; i < gPvzpStringFormatCount; i++)
@@ -260,7 +258,7 @@ int PvzpWriteString(Graphics* g, const std::string& theString, int theX, int the
 	if (theLength < 0 || theOffset + theLength > static_cast<int>(theString.size()))
 		theLength = theString.size();
 	else
-		theLength = theOffset + theLength;  // 将 theLength 更改为子串结束位置
+		theLength = theOffset + theLength;  // theLength becomes the end position of the substring
 
 	std::string aString;
 	int aXOffset = 0;
@@ -271,38 +269,38 @@ int PvzpWriteString(Graphics* g, const std::string& theString, int theX, int the
 		{
 			const char* aFormatStart = theString.c_str() + i;
 			const char* aFormatEnd = strchr(aFormatStart + 1, '}');
-			if (aFormatEnd != nullptr)  // 如果存在完整的“{FORMAT}”控制字符
+			if (aFormatEnd != nullptr)  // a complete "{FORMAT}" control code
 			{
-				i += aFormatEnd - aFormatStart;  // i 移动至 "}" 处
-				if (drawString)  // 如果需要实际绘制
-					aFont->DrawString(g, theX + aXOffset, theY, aString, theCurrentFormat.mNewColor, g->mClipRect);  // 将已经积攒的字符进行绘制
+				i += aFormatEnd - aFormatStart;  // move i to '}'
+				if (drawString)
+					aFont->DrawString(g, theX + aXOffset, theY, aString, theCurrentFormat.mNewColor, g->mClipRect);  // draw the accumulated text
 				
-				aXOffset += aFont->StringWidth(aString);  // 横向偏移值加上绘制的字符串的宽度
-				aString.assign("");  // 清空字符串
-				PvzpWriteStringSetFormat(aFormatStart + 1, theCurrentFormat);  // 根据当前控制字符调整格式
+				aXOffset += aFont->StringWidth(aString);
+				aString.assign("");
+				PvzpWriteStringSetFormat(aFormatStart + 1, theCurrentFormat);
 				// _Font* aFont = *theCurrentFormat.mNewFont; // unused
 			}
 		}
 		else
 		{
-			if (TestBit(theCurrentFormat.mFormatFlags, PvzpStringFormatFlag::PVZP_FORMAT_IGNORE_NEWLINES))  // 如果将换行符视作空格
+			if (TestBit(theCurrentFormat.mFormatFlags, PvzpStringFormatFlag::PVZP_FORMAT_IGNORE_NEWLINES))  // newlines are treated as spaces
 			{
-				if (CharIsSpaceInFormat(theString[i], theCurrentFormat))  // 如果当前字符是空格
+				if (CharIsSpaceInFormat(theString[i], theCurrentFormat))
 				{
-					if (!aPrevCharWasSpace)  // 如果前一个字符不是空格
-						aString.append(1, ' ');  // 积攒一个空格
+					if (!aPrevCharWasSpace)
+						aString.append(1, ' ');
 					continue;
 				}
 				else
-					aPrevCharWasSpace = false;  // 确保字符串中至多只能连续出现 1 个空格字符
+					aPrevCharWasSpace = false;  // collapse consecutive spaces into one
 			}
 
 			aString.append(1, theString[i]);
 		}
 	}
 
-	if (drawString)  // 如果需要实际绘制
-		aFont->DrawString(g, theX + aXOffset, theY, aString, theCurrentFormat.mNewColor, g->mClipRect);  // 将已经积攒的字符进行绘制
+	if (drawString)
+		aFont->DrawString(g, theX + aXOffset, theY, aString, theCurrentFormat.mNewColor, g->mClipRect);  // draw the accumulated text
 	return aXOffset + aFont->StringWidth(aString);
 }
 
@@ -317,7 +315,6 @@ int PvzpWriteWordWrappedHelper(Graphics* g, const std::string& theString, int th
 	return PvzpWriteString(g, theString, theX, theY, theCurrentFormat, theWidth, theJustification, drawString, theOffset, theLength);
 }
 
-// GOTY @Patoke: 0x5241C0
 int PvzpDrawStringWrappedHelper(Graphics* g, const std::string& theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification, bool drawString)
 {
 	int theMaxChars = theText.size();
@@ -483,10 +480,10 @@ int PvzpDrawStringWrappedHelper(Graphics* g, const std::string& theText, const R
 			theRect.mWidth,
 			theJustification,
 			drawString,
-			aLineFeedPos, // 上次换行的位置即为最后一行开始的位置
-			theText.size() - aLineFeedPos, // 绘制部分为从上次换行的位置开始的所有剩余文本
+			aLineFeedPos, // the last line starts at the last line break
+			theText.size() - aLineFeedPos,
 			theMaxChars
-		);  // 绘制最后一行的文本
+		);  // draw the last line
 		if (aLastLineLength >= 0)
 			aYOffset += aLineSpacing;
 	}
@@ -496,14 +493,13 @@ int PvzpDrawStringWrappedHelper(Graphics* g, const std::string& theText, const R
 	return (*aCurrentFormat.mNewFont)->GetDescent() + aYOffset - aLineSpacing;
 }
 
-// GOTY @Patoke: 0x5246A0
 void PvzpDrawStringWrapped(Graphics* g, std::string_view theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification)
 {
 	std::string aTextFinal = PvzpStringTranslate(theText);
 	Rect aRectPvzpUse = theRect;
 	if (theJustification == DrawStringJustification::DS_ALIGN_LEFT_VERTICAL_MIDDLE ||
 		theJustification == DrawStringJustification::DS_ALIGN_RIGHT_VERTICAL_MIDDLE ||
-		theJustification == DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE)  // 如果纵向需要居中
+		theJustification == DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE)  // vertical centering required
 	{
 		aRectPvzpUse.mY += (aRectPvzpUse.mHeight - PvzpDrawStringWrappedHelper(g, aTextFinal, aRectPvzpUse, theFont, theColor, theJustification, false)) / 2;
 	}

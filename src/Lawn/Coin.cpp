@@ -412,7 +412,6 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 
 bool Coin::IsMoney(CoinType theType)
 {
-    // 这个函数原本是完全没有的，但是由于在 Board 中涉及到，并且感觉能在需要添加新钱币种类的时候提供方便，所以就留下来了
     return theType == CoinType::COIN_SILVER || theType == CoinType::COIN_GOLD || theType == CoinType::COIN_DIAMOND;
 }
 
@@ -431,7 +430,6 @@ bool Coin::IsPresentWithAdvice()
     return mType == CoinType::COIN_PRESENT_MINIGAMES || mType == CoinType::COIN_PRESENT_PUZZLE_MODE || mType == CoinType::COIN_PRESENT_SURVIVAL_MODE;
 }
 
-// GOTY @Patoke: 0x4336C0
 void Coin::ScoreCoin()
 {
     Die();
@@ -449,7 +447,6 @@ void Coin::ScoreCoin()
         {
             mBoard->mCoinsCollected += aCoinValue;
 
-            // @Patoke: implemented
             if (mType == CoinType::COIN_SILVER || mType == CoinType::COIN_GOLD) {
                 mBoard->mLevelCoinsCollected++;
                 if (mBoard->mLevelCoinsCollected == 30 && mApp->mPlayerInfo->mCoins != 0)
@@ -605,7 +602,6 @@ void Coin::UpdateFall()
     }
 }
 
-// GOTY @Patoke: 0x433BD0
 void Coin::UpdateCollected()
 {
     int aDestX, aDestY;
@@ -697,14 +693,13 @@ void Coin::UpdateCollected()
             {
                 if (mType == CoinType::COIN_PRESENT_MINIGAMES)
                 {
-                    // 注：此处的 theMessageStyle 参数，原版中为 MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE，内测版中为 MESSAGE_STYLE_HINT_TALL_8SECONDS
                     mBoard->DisplayAdvice("[UNLOCKED_MINIGAMES]", MessageStyle::MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE, AdviceType::ADVICE_UNLOCKED_MODE);
                 }
                 else if (mType == CoinType::COIN_PRESENT_PUZZLE_MODE)
                 {
                     mBoard->DisplayAdvice("[UNLOCKED_PUZZLE_MODE]", MessageStyle::MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE, AdviceType::ADVICE_UNLOCKED_MODE);
                 }
-                else { // @Patoke: add case
+                else {
                     mBoard->DisplayAdvice("[UNLOCKED_SURVIVAL_MODE]", MessageStyle::MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE, AdviceType::ADVICE_UNLOCKED_MODE);
                 }
             }
@@ -769,7 +764,7 @@ void Coin::Update()
 
         if ((!mHitGround || mIsBeingCollected) && (mType == CoinType::COIN_SILVER || mType == CoinType::COIN_GOLD))
         {
-            AttachmentOverrideColor(mAttachmentID, Color(0, 0, 0, 0));  // 运动中的金币和银币使用贴图，故以此法隐藏附件的动画
+            AttachmentOverrideColor(mAttachmentID, Color(0, 0, 0, 0));  // moving silver/gold coins use a static image, so hide the attachment's animation
         }
     }
 }
@@ -1046,7 +1041,6 @@ void Coin::TryAutoCollectAfterLevelAward()
     }
 }
 
-// GOTY @Patoke: 0x434DC0
 void Coin::Collect()
 {
     if (mDead)
@@ -1332,7 +1326,6 @@ void Coin::PlayGroundSound()
     }
 }
 
-// GOTY @Patoke: 0x435850
 void Coin::PlayCollectSound()
 {
     if (mType == CoinType::COIN_USABLE_SEED_PACKET)
@@ -1407,7 +1400,6 @@ void Coin::MouseDown(int x, int y, int theClickCount)
     }
 }
 
-// GOTY @Patoke: 0x435B20
 void Coin::Die()
 {
     PVZP_ASSERT(!mBoard || mBoard->mCursorObject->mCoinID != static_cast<CoinID>(mBoard->mCoins.DataArrayGetID(this)));

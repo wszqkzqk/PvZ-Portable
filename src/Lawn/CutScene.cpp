@@ -336,7 +336,6 @@ bool CutScene::Is2x2Zombie(ZombieType theZombieType)
 	return theZombieType == ZombieType::ZOMBIE_GARGANTUAR || theZombieType == ZombieType::ZOMBIE_REDEYE_GARGANTUAR;
 }
 
-// GOTY @Patoke: 0x43C840
 void CutScene::PreloadResources()
 {
 	PvzpHesitationTrace("pre-CutScene::PreloadResources()");
@@ -467,7 +466,7 @@ void CutScene::PreloadResources()
 		Plant::PreloadPlantResources(SeedType::SEED_SUNFLOWER);
 		Plant::PreloadPlantResources(SeedType::SEED_PEASHOOTER);
 		Plant::PreloadPlantResources(SeedType::SEED_SUNSHROOM);
-		Plant::PreloadPlantResources(SeedType::SEED_SUNSHROOM);  // 这里不知为何原版把阳光菇预加载了两次
+		Plant::PreloadPlantResources(SeedType::SEED_SUNSHROOM);  // sun-shroom is deliberately preloaded twice
 		Plant::PreloadPlantResources(SeedType::SEED_FLOWERPOT);
 		Plant::PreloadPlantResources(SeedType::SEED_PLANTERN);
 		Plant::PreloadPlantResources(SeedType::SEED_FUMESHROOM);
@@ -515,7 +514,7 @@ void CutScene::PlaceStreetZombies()
 	if (mApp->IsFinalBossLevel())
 		return;
 
-	// 以下统计出怪列表中各种可预览的僵尸的数量
+	// Count previewable zombies of each type in the wave list
 	// int aZombieValueTotal = 0;
 	int aTotalZombieCount = 0;
 	int aZombieTypeCount[ZombieType::NUM_ZOMBIE_TYPES] = { 0 };
@@ -553,12 +552,12 @@ void CutScene::PlaceStreetZombies()
 			++aTotalZombieCount;
 			if (aZombieType == ZombieType::ZOMBIE_BUNGEE || aZombieType == ZombieType::ZOMBIE_BOBSLED)
 			{
-				aZombieTypeCount[aZombieType] = 1;  // 蹦极僵尸和雪橇僵尸至多仅允许有 1 只预览僵尸
+				aZombieTypeCount[aZombieType] = 1;  // bungee and bobsled zombies get at most 1 preview zombie
 			}
 		}
 	}
 
-	// 谁笑到最后关卡，除雪人僵尸外，所有允许出怪的僵尸类型至少计入 1 只僵尸
+	// In Last Stand, count at least 1 of every allowed zombie type except the yeti
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND)
 	{
 		for (int aZombieType = 0; aZombieType < static_cast<int>(ZombieType::NUM_ZOMBIE_TYPES); aZombieType++)
@@ -571,7 +570,7 @@ void CutScene::PlaceStreetZombies()
 	}
 	if (mBoard->StageHasPool())
 	{
-		aZombieTypeCount[ZombieType::ZOMBIE_DUCKY_TUBE] = 1;  // 泳池关卡，必定出现鸭子僵尸预览
+		aZombieTypeCount[ZombieType::ZOMBIE_DUCKY_TUBE] = 1;  // pool stages always preview a ducky tube zombie
 	}
 	
 	bool aZombieGrid[5][5] = {{ false }};
@@ -585,7 +584,7 @@ void CutScene::PlaceStreetZombies()
 		aPreviewCapacity = 18;
 	}
 
-	// 优先放置较大体型的僵尸，然后再放置较小体型的僵尸
+	// Place larger zombies first, then smaller ones
 	for (ZombieType aZombieType = ZombieType::ZOMBIE_NORMAL; aZombieType < ZombieType::NUM_ZOMBIE_TYPES; aZombieType = static_cast<ZombieType>(static_cast<int>(aZombieType) + 1))
 	{
 		if (aZombieTypeCount[aZombieType] && (Is2x2Zombie(aZombieType) || aZombieType == ZombieType::ZOMBIE_ZAMBONI))
@@ -652,7 +651,7 @@ bool CutScene::IsNonScrollingCutscene()
 bool CutScene::IsScrolledLeftAtStart()
 {
 	if (mBoard->mChallenge->mSurvivalStage > 0 && mApp->IsSurvivalMode())
-		return false;  // 非首轮的生存模式的过场，屏幕滚动从屏幕中央开始
+		return false;  // later survival rounds start scrolled to the screen center
 
 	return !IsNonScrollingCutscene();
 }
@@ -682,12 +681,11 @@ bool CutScene::CanGetPacketUpgrade(int theUpgradeIndex)
 	int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
 
 	return 
-		mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] == theUpgradeIndex &&  // theUpgradeIndex 从首次为 0 开始计算
+		mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] == theUpgradeIndex &&  // theUpgradeIndex is 0-based
 		mApp->mPlayerInfo->mCoins >= aCost && 
 		mApp->mPlayerInfo->mDidntPurchasePacketUpgrade < 2;
 }
 
-// GOTY @Patoke: 0x43DB50
 void CutScene::StartLevelIntro()
 {
 	mCutsceneTime = 0;
@@ -1009,7 +1007,7 @@ void CutScene::CancelIntro()
 
 	if (mCutsceneTime > mCrazyDaveTime + TimePanLeftStart || !mBoard->ChooseSeedsOnCurrentLevel())
 	{
-		// 将过场时间快进至关卡引入结束时
+		// Fast-forward the cutscene to the end of the level intro
 		mCutsceneTime = TimeIntroEnd + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime + mBossTime + mReadySetPlantTime - 20;
 
 		PlaceLawnItems();
@@ -1109,9 +1107,7 @@ void CutScene::AnimateBoard()
 	int aTimePanLeftStart = TimePanLeftStart + mCrazyDaveTime;
 	int aTimePanLeftEnd = TimePanLeftEnd + mCrazyDaveTime;
 
-	// ====================================================================================================
-	// ▲ 疯狂戴夫动态的更新
-	// ====================================================================================================
+	// Crazy Dave animation
 	if (mCrazyDaveTime > 0)
 	{
 		if (mCutsceneTime == TimeEarlyDaveEnterStart)
@@ -1138,9 +1134,7 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	// ====================================================================================================
-	// ▲ 关卡界面右移的更新
-	// ====================================================================================================
+	// Pan the board right
 	int aBoardOffset = IsScrolledLeftAtStart() ? BOARD_OFFSET : 0;
 	if (mCutsceneTime <= aTimePanRightStart)
 	{
@@ -1152,26 +1146,20 @@ void CutScene::AnimateBoard()
 		mBoard->Move(-aPanOffset, 0);
 	}
 	
-	// ====================================================================================================
-	// ▲ 选卡界面动态的更新
-	// ====================================================================================================
+	// Seed chooser animation
 	if (mBoard->ChooseSeedsOnCurrentLevel())
 	{
 		int aTimeSeedChoserSlideOnStart = TimeSeedChoserSlideOnStart + mCrazyDaveTime;
 		int aTimeSeedChoserSlideOnEnd = TimeSeedChoserSlideOnEnd + mCrazyDaveTime;
 		SeedChooserScreen* aSeedChoser = mApp->mSeedChooserScreen;
-		// ====================================================================================================
-		// △ 选卡界面滑出
-		// ====================================================================================================
+		// Seed chooser slides on
 		if (mCutsceneTime > aTimeSeedChoserSlideOnStart && mCutsceneTime <= aTimeSeedChoserSlideOnEnd)
 		{
 			aSeedChoser->Move(0, CalcPosition(aTimeSeedChoserSlideOnStart, aTimeSeedChoserSlideOnEnd, SEED_CHOOSER_OFFSET_Y, 0));
 			aSeedChoser->mMenuButton->mY = CalcPosition(aTimeSeedChoserSlideOnStart, aTimeSeedChoserSlideOnEnd, -50, -10);
 			aSeedChoser->mMenuButton->mBtnNoDraw = false;
 		}
-		// ====================================================================================================
-		// △ 选卡界面滑落
-		// ====================================================================================================
+		// Seed chooser slides off
 		int aTimeSeedChoserSlideOffStart = TimeSeedChoserSlideOffStart + mCrazyDaveTime;
 		int aTimeSeedChoserSlideOffEnd = TimeSeedChoserSlideOffEnd + mCrazyDaveTime;
 		if (mCutsceneTime > aTimeSeedChoserSlideOffStart && mCutsceneTime <= aTimeSeedChoserSlideOffEnd)
@@ -1181,18 +1169,14 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	// ====================================================================================================
-	// ▲ 关卡界面左移的更新
-	// ====================================================================================================
+	// Pan the board left
 	if (mCutsceneTime > aTimePanLeftStart)
 	{
 		int aPanOffset = CalcPosition(aTimePanLeftStart, aTimePanLeftEnd, BOARD_IMAGE_WIDTH_OFFSET - mApp->mWidth, 0);
 		mBoard->Move(-aPanOffset, 0);
 	}
 
-	// ====================================================================================================
-	// ▲ 卡槽动态的更新
-	// ====================================================================================================
+	// Seed bank animation
 	int aTimePrepareEnd = 0;
 	if (!mBoard->ChooseSeedsOnCurrentLevel())
 	{
@@ -1215,9 +1199,7 @@ void CutScene::AnimateBoard()
 		mBoard->mSeedBank->Move(aSeedBankX, mBoard->mSeedBank->mY);
 	}
 
-	// ====================================================================================================
-	// ▲ 冒险模式初期关卡铺草皮的更新
-	// ====================================================================================================
+	// Sod rolling on early adventure levels
 	if (mSodTime > 0)
 	{
 		int aTimeRollSodStart = TimeRollSodStart + mCrazyDaveTime;
@@ -1254,9 +1236,7 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	// ====================================================================================================
-	// ▲ 黑夜关卡出现墓碑的特效的更新
-	// ====================================================================================================
+	// Grave stones appearing on night levels
 	if (mGraveStoneTime > 0)
 	{
 		int aTimeGraveStoneStart = mSodTime + TimeGraveStoneStart + mCrazyDaveTime;
@@ -1267,17 +1247,13 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	// ====================================================================================================
-	// ▲ 画面开始向左滚动时，创建战场物品
-	// ====================================================================================================
+	// Place lawn items when the board starts panning left
 	if (mCutsceneTime == aTimePanLeftStart)
 	{
 		PlaceLawnItems();
 	}
 
-	// ====================================================================================================
-	// ▲ 每一行小推车的启动的更新
-	// ====================================================================================================
+	// Lawn mowers rolling in
 	if (!IsSurvivalRepick())
 	{
 		for (int aGridY = 0; aGridY < MAX_GRID_SIZE_Y; aGridY++)
@@ -1295,9 +1271,7 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	// ====================================================================================================
-	// ▲ 浓雾的更新
-	// ====================================================================================================
+	// Fog rolling in
 	if (mBoard->mFogBlownCountDown > 0)
 	{
 		int aTimeFogRollIn = TimeFogRollIn + mSodTime + mGraveStoneTime + mCrazyDaveTime;
@@ -1311,18 +1285,14 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	// ====================================================================================================
-	// ▲ 暴风雨的更新
-	// ====================================================================================================
+	// Storm flash
 	if (mApp->IsStormyNightLevel() && (mCutsceneTime == aTimePanRightEnd - 1000 || mCutsceneTime == aTimePanLeftEnd))
 	{
 		mBoard->mChallenge->mChallengeState = ChallengeState::STATECHALLENGE_STORM_FLASH_2;
 		mBoard->mChallenge->mChallengeStateCounter = 310;
 	}
 	
-	// ====================================================================================================
-	// ▲ 僵王博士的入场
-	// ====================================================================================================
+	// Dr. Zomboss enters
 	if (mBossTime > 0)
 	{
 		int aTimeBossEnter = TimeReadySetPlantStart + mLawnMowerTime + mCrazyDaveTime;
@@ -1332,17 +1302,13 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	// ====================================================================================================
-	// ▲ 僵王博士关卡背景音乐的播放
-	// ====================================================================================================
+	// Boss level music
 	if (mApp->IsFinalBossLevel() && mCutsceneTime == aTimeSeedBankOnStart)
 	{
 		mApp->mMusic->StartGameMusic();
 	}
 
-	// ====================================================================================================
-	// ▲ Ready Set Plant 动画的播放
-	// ====================================================================================================
+	// Ready Set Plant animation
 	int aTimeReadySetPlant = TimeReadySetPlantStart + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime + mBossTime;
 	if (mReadySetPlantTime > 0 && mCutsceneTime == aTimeReadySetPlant)
 	{
@@ -1361,9 +1327,6 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	// ====================================================================================================
-	// ▲ 将选卡界面移动至顶层显示
-	// ====================================================================================================
 	mApp->mSeedChooserScreen->mParent->BringToFront(mApp->mSeedChooserScreen);
 }
 
@@ -1413,13 +1376,11 @@ bool CutScene::IsShowingCrazyDave()
 	return mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && (mCrazyDaveTime > 0 && mCutsceneTime < TimePanRightEnd + mCrazyDaveTime);
 }
 
-// GOTY @Patoke: 0x43F440
 void CutScene::Update()
 {
 	if (mPreUpdatingBoard)
 		return;
 
-	// 更新疯狂戴夫
 	if (IsShowingCrazyDave() && (!mBoard->mPaused || mApp->mGameMode != GameMode::GAMEMODE_UPSELL))
 	{
 		mApp->UpdateCrazyDave();
@@ -1428,7 +1389,6 @@ void CutScene::Update()
 	if (mBoard->mPaused)
 		return;
 
-	// 僵尸进家过场的更新
 	if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON)
 	{
 		mCutsceneTime += 10;
@@ -1439,23 +1399,20 @@ void CutScene::Update()
 	if (mApp->mGameScene != GameScenes::SCENE_LEVEL_INTRO || mBoard->mBoardUpdateCounter <= 1) // the first frame is drawn after the first update tick, so defer one tick deterministically
 		return;
 
-	// 进行预加载
 	if (!mPreloaded)
 	{
 		PreloadResources();
 	}
-	// 放置预览僵尸
 	if (!mPlacedZombies)
 	{
 		PlaceStreetZombies();
 	}
-	// 放置战场物品
 	if (IsNonScrollingCutscene() || !mBoard->ChooseSeedsOnCurrentLevel())
 	{
 		PlaceLawnItems();
 	}
 
-	// 选卡之前的更新
+	// Updates before seed choosing
 	bool aCutsceneTimeStop = false;
 	if (mSeedChoosing || mApp->mCrazyDaveMessageIndex != -1 || IsInShovelTutorial())
 	{
@@ -1484,7 +1441,7 @@ void CutScene::Update()
 		}
 	}
 
-	// 过场结束的判定
+	// Check whether the cutscene is over
 	int aTimeStart = TimeIntroEnd + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime + mBossTime + mReadySetPlantTime;
 	if (mCutsceneTime >= aTimeStart)
 	{
@@ -1514,19 +1471,17 @@ void CutScene::StartZombiesWon()
 
 void CutScene::UpdateZombiesWon()
 {
-	// 画面滚动
 	if (mCutsceneTime > LostTimePanRightStart && mCutsceneTime <= LostTimePanRightEnd)
 	{
 		mBoard->Move(CalcPosition(LostTimePanRightStart, LostTimePanRightEnd, 0, BOARD_OFFSET), 0);
 	}
 	
-	// 啃食脑子的音效
 	if (mCutsceneTime == LostTimeBrainGraphicStart - 400 || mCutsceneTime == LostTimeBrainGraphicStart - 900)
 	{
 		mApp->PlayFoley(FoleyType::FOLEY_CHOMP);
 	}
 
-	// 食脑的动画及惨叫的音效
+	// Brain-eating animation and scream
 	if (mCutsceneTime == LostTimeBrainGraphicStart)
 	{
 		ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIES_WON, true);
@@ -1540,23 +1495,19 @@ void CutScene::UpdateZombiesWon()
 		mApp->PlayFoley(FoleyType::FOLEY_SCREAM);
 	}
 
-	// 食脑动画开始抖动
 	if (mCutsceneTime == LostTimeBrainGraphicShake)
 	{
 		mApp->ReanimationGet(mZombiesWonReanimID)->SetShakeOverride("ZombiesWon", 1.0f);
 	}
-	// 食脑动画结束抖动
 	if (mCutsceneTime == LostTimeBrainGraphicCancelShake)
 	{
 		mApp->ReanimationGet(mZombiesWonReanimID)->SetShakeOverride("ZombiesWon", 0.0f);
 	}
-	// 食脑动画结束
 	if (mCutsceneTime == LostTimeBrainGraphicEnd)
 	{
 		mApp->ReanimationGet(mZombiesWonReanimID)->SetFramesForLayer("anim_screen");
 	}
 
-	// 过场结束，游戏失败
 	if (mCutsceneTime == LostTimeEnd)
 	{
 		if (mApp->IsSurvivalMode())
@@ -1596,14 +1547,14 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping)
 	if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL || mApp->mCrazyDaveMessageIndex == -1)
 		return;
 
-	// “拿起铲子开始挖吧”
+	// "Pick up the shovel and start digging"
 	if (mApp->mCrazyDaveMessageIndex == 2406 && !theJustSkipping)
 	{
 		mBoard->SetTutorialState(TutorialState::TUTORIAL_SHOVEL_PICKUP);
 		mApp->CrazyDaveLeave();
 		return;
 	}
-	// “这是你的智慧树，我会给你一些肥料让你开始的”
+	// "This is your Tree of Wisdom; I'll give you some fertilizer to get started"
 	if (mApp->mCrazyDaveMessageIndex == 3200)
 	{
 		mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_FOOD] = PURCHASE_COUNT_OFFSET + 5;
@@ -1611,7 +1562,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping)
 		mBoard->mStoreButton->mBtnNoDraw = false;
 	}
 
-	// 推进戴夫对话，若不存在下一句则令戴夫退出
+	// Advance Dave's dialog; if there is no next line, Dave leaves
 	if (!mApp->AdvanceCrazyDaveText())
 	{
 		mApp->CrazyDaveLeave();
@@ -1644,31 +1595,29 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping)
 		return;
 	}
 
-	// 更新为最新的一句话的编号
 	int aMessageIndex = mApp->mCrazyDaveMessageIndex;
 	// Now_Unused
 	if (aMessageIndex == 107 || aMessageIndex == 2407)
 	{
 		mBoard->mChallenge->ShovelAddWallnuts();
 	}
-	// “并且不是铁锹，是短槌” || “我们去玩保龄球！”
+	// "And it's not a shovel, it's a mallet" || "Let's go bowling!"
 	if (aMessageIndex == 405 || aMessageIndex == 2411)
 	{
 		mBoard->mChallenge->mShowBowlingLine = true;
 	}
-	// （推销卡槽）“听起来怎么样”
+	// (seed slot pitch) "How does that sound?"
 	if ((aMessageIndex == 1503 || aMessageIndex == 1553) && !theJustSkipping)
 	{
 		int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
 		int aNumPackets = mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE];
 		std::string aBodyString = PvzpReplaceNumberString("[UPGRADE_DIALOG_BODY]", "{SLOTS}", aNumPackets + 7);
 		std::string aAmountString = mApp->GetMoneyString(aCost);
-		// 创建询问是否升级卡槽格数的对话
+		// Ask whether to buy a seed slot upgrade
 		Dialog* aDialog = mApp->DoDialog(Dialogs::DIALOG_PURCHASE_PACKET_SLOT, true, aAmountString, aBodyString, "", Dialog::BUTTONS_YES_NO);
 		aDialog->mX += 120;
 		aDialog->mY += 130;
 		mBoard->ShowCoinBank(100);
-		// 等待返回选择的选项
 		int aResult = aDialog->WaitForResult();
 		if (aResult == Dialog::ID_YES)
 		{
@@ -1699,7 +1648,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping)
 			}
 		}
 	}
-	// “当然不是我，是你！”
+	// "Of course it wasn't me, it was you!"
 	if (aMessageIndex == 406)
 	{
 		mBoard->mEnableGraveStones = true;
@@ -1733,7 +1682,7 @@ void CutScene::KeyDown(KeyCode theKey)
 	{
 		if (mApp->mCheatKeys && theKey == KeyCode::KEYCODE_ESCAPE)
 		{
-			mCrazyDaveLastTalkIndex = 3316; // “这足够把你的脑子吹到火星，再吹回来！”
+			mCrazyDaveLastTalkIndex = 3316; // "Enough to blow your mind to Mars and back!"
 			mCrazyDaveCountDown = 1;
 		}
 		else if (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN || theKey == KeyCode::KEYCODE_ESCAPE)
@@ -2150,7 +2099,7 @@ void CutScene::UpdateUpsell()
 		mCrazyDaveCountDown--;
 	}
 
-	// “呃，你还等什么呢？”
+	// "Uh, what are you waiting for?"
 	if (mCrazyDaveLastTalkIndex == 3317)
 	{
 		if (!mCrazyDaveCountDown)
@@ -2162,7 +2111,7 @@ void CutScene::UpdateUpsell()
 		}
 		return;
 	}
-	// “你想采取行动？”
+	// "You want to take action?"
 	if (mCrazyDaveLastTalkIndex == 3311 && mCrazyDaveCountDown == 90)
 	{
 		mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_MINIGAME_LOONBOON);
@@ -2185,7 +2134,7 @@ void CutScene::UpdateUpsell()
 	Reanimation* aCrazyDaveReanim = mApp->ReanimationTryToGet(mApp->mCrazyDaveReanimID);
 	switch (mCrazyDaveLastTalkIndex)
 	{
-	case 3305:  // “像这个！”
+	case 3305:  // "Like this!"
 	{
 		Reanimation* aReanimSquash = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_SQUASH);
 		aReanimSquash->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
@@ -2196,7 +2145,7 @@ void CutScene::UpdateUpsell()
 		break;
 	}
 
-	case 3306:  // “还有这个！”
+	case 3306:  // "And this!"
 	{
 		Reanimation* aReanimThreepeater = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_THREEPEATER);
 		aReanimThreepeater->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
@@ -2215,7 +2164,7 @@ void CutScene::UpdateUpsell()
 		break;
 	}
 
-	case 3307:  // “过会儿，我还会添加这个！”
+	case 3307:  // "Later, I'll add this too!"
 	{
 		Reanimation* aReanimMagnet = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_MAGNETSHROOM);
 		aReanimMagnet->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
@@ -2227,44 +2176,44 @@ void CutScene::UpdateUpsell()
 		break;
 	}
 
-	case 3309:  // “因为我很疯-狂-！！！！”
+	case 3309:  // "Because I'm cra-zy!!!!"
 		aCrazyDaveReanim->FindSubReanim(ReanimationType::REANIM_THREEPEATER)->ReanimationDie();
 		aCrazyDaveReanim->FindSubReanim(ReanimationType::REANIM_MAGNETSHROOM)->ReanimationDie();
 		break;
 
-	case 3312:  // “我要给你更多战斗！”
+	case 3312:  // "I'll give you more battles!"
 		mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_MINIGAME_LOONBOON);
 		LoadUpsellBoardPool();
 		mApp->PlaySample(SOUND_FINALWAVE);
 		mUpsellHideBoard = false;
 		break;
 
-	case 3313:  // “更多的25级的战斗！”
+	case 3313:  // "25 more levels of battles!"
 		LoadUpsellBoardFog();
 		mApp->PlaySample(SOUND_HUGE_WAVE);
 		mUpsellHideBoard = false;
 		break;
 
-	case 3314:  // “40个迷你游戏&谜题！”
+	case 3314:  // "40 mini-games & puzzles!"
 		LoadUpsellChallengeScreen();
 		mApp->PlaySample(SOUND_FINALWAVE);
 		mUpsellHideBoard = false;
 		break;
 
-	case 3315:  // “大地科塔！！！”
+	case 3315:  // "Terra cotta!!!"
 		ClearUpsellBoard();
 		mApp->PlaySample(SOUND_FINALWAVE);
 		mUpsellHideBoard = true;
 		mApp->AddPvzpParticle(592, 240, Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_SCREEN_FADE, 0, 0), ParticleEffect::PARTICLE_PERSENT_PICK_UP_ARROW);
 		break;
 
-	case 3316:  // “这足够把你的脑子吹到火星，再吹回来！”
+	case 3316:  // "Enough to blow your mind to Mars and back!"
 		LoadUpsellBoardRoof();
 		mApp->PlaySample(SOUND_HUGE_WAVE);
 		mUpsellHideBoard = false;
 		break;
 
-	case 3317:  // “呃，你还等什么呢？”
+	case 3317:  // "Uh, what are you waiting for?"
 		ClearUpsellBoard();
 		mBoard->mMenuButton->mBtnNoDraw = true;
 		mUpsellHideBoard = true;
@@ -2274,7 +2223,7 @@ void CutScene::UpdateUpsell()
 
 void CutScene::DrawUpsell(Graphics* g)
 {
-	if (mCrazyDaveLastTalkIndex == 3315)  // “大地科塔！”
+	if (mCrazyDaveLastTalkIndex == 3315)  // "Terra cotta!"
 	{
 		Reanimation aReanim;
 		aReanim.ReanimationInitializeType(565, 360, ReanimationType::REANIM_FLOWER_POT);
@@ -2333,7 +2282,7 @@ void CutScene::DrawIntro(Graphics* g)
 		g->FillRect(-mBoard->mX, -mBoard->mY, BOARD_WIDTH, BOARD_HEIGHT);
 	}
 
-	// 绘制“PopCap Games 出品”字样
+	// Draw the "PopCap Games presents" text
 	int aTimePanRightStart = TimeIntro_PanRightStart - TimeIntro_PresentsFadeIn;
 	if (mCutsceneTime > TimeIntro_PresentsFadeIn && mCutsceneTime <= aTimePanRightStart)
 	{
@@ -2352,7 +2301,7 @@ void CutScene::DrawIntro(Graphics* g)
 		);
 	}
 
-	// 绘制“Plants Vs Zombies”的 Logo
+	// Draw the "Plants Vs Zombies" logo
 	if (mCutsceneTime > TimeIntro_LogoStart && mCutsceneTime <= TimeIntro_PanRightEnd)
 	{
 		float aScale = PvzpAnimateCurveFloat(TimeIntro_LogoStart, TimeIntro_LogoEnd, mCutsceneTime, 5, 1, PvzpCurves::CURVE_EASE_OUT);

@@ -93,7 +93,7 @@ constinit const ReanimationParams gLawnReanimationArray[ReanimationType::NUM_REA
 	{ .mReanimationType = ReanimationType::REANIM_BLOVER, .mReanimFileName = "reanim/Blover.reanim", .mReanimParamFlags = 0 },
 	{ .mReanimationType = ReanimationType::REANIM_FLOWER_POT, .mReanimFileName = "reanim/Pot.reanim", .mReanimParamFlags = 0 },
 	{ .mReanimationType = ReanimationType::REANIM_CACTUS, .mReanimFileName = "reanim/Cactus.reanim", .mReanimParamFlags = 0 },
-	{ .mReanimationType = ReanimationType::REANIM_DANCER, .mReanimFileName = "reanim/Zombie_disco.reanim", .mReanimParamFlags = 0 }, // @Patoke: GOTY has different reanim name
+	{ .mReanimationType = ReanimationType::REANIM_DANCER, .mReanimFileName = "reanim/Zombie_disco.reanim", .mReanimParamFlags = 0 }, // GOTY uses a different reanim file name
 	{ .mReanimationType = ReanimationType::REANIM_TANGLEKELP, .mReanimFileName = "reanim/Tanglekelp.reanim", .mReanimParamFlags = 0 },
 	{ .mReanimationType = ReanimationType::REANIM_STARFRUIT, .mReanimFileName = "reanim/Starfruit.reanim", .mReanimParamFlags = 0 },
 	{ .mReanimationType = ReanimationType::REANIM_POLEVAULTER, .mReanimFileName = "reanim/Zombie_polevaulter.reanim", .mReanimParamFlags = 0 },
@@ -104,7 +104,7 @@ constinit const ReanimationParams gLawnReanimationArray[ReanimationType::NUM_REA
 	{ .mReanimationType = ReanimationType::REANIM_DIGGER_DIRT, .mReanimFileName = "reanim/Digger_rising_dirt.reanim", .mReanimParamFlags = 0 },
 	{ .mReanimationType = ReanimationType::REANIM_ZOMBIE_DOLPHINRIDER, .mReanimFileName = "reanim/Zombie_dolphinrider.reanim", .mReanimParamFlags = 0 },
 	{ .mReanimationType = ReanimationType::REANIM_POGO, .mReanimFileName = "reanim/Zombie_pogo.reanim", .mReanimParamFlags = 0 },
-	{ .mReanimationType = ReanimationType::REANIM_BACKUP_DANCER, .mReanimFileName = "reanim/Zombie_backup.reanim", .mReanimParamFlags = 0 }, // @Patoke: GOTY has different reanim name
+	{ .mReanimationType = ReanimationType::REANIM_BACKUP_DANCER, .mReanimFileName = "reanim/Zombie_backup.reanim", .mReanimParamFlags = 0 }, // GOTY uses a different reanim file name
 	{ .mReanimationType = ReanimationType::REANIM_BOBSLED, .mReanimFileName = "reanim/Zombie_bobsled.reanim", .mReanimParamFlags = 0 },
 	{ .mReanimationType = ReanimationType::REANIM_JACKINTHEBOX, .mReanimFileName = "reanim/Zombie_jackbox.reanim", .mReanimParamFlags = 0 },
 	{ .mReanimationType = ReanimationType::REANIM_SNORKEL, .mReanimFileName = "reanim/Zombie_snorkle.reanim", .mReanimParamFlags = 0 },
@@ -204,9 +204,9 @@ ReanimatorTransform::ReanimatorTransform() :
 inline void ReanimationFillInMissingData(float& thePrev, float& theValue)
 {
 	if (theValue == DEFAULT_FIELD_PLACEHOLDER)
-		theValue = thePrev;  // 若当前帧上的值未设定，则以前一帧的数值赋值当前帧
+		theValue = thePrev;  // unset: inherit the previous frame's value
 	else
-		thePrev = theValue;  // 否则，将当前帧的数据记录为“前一帧的数据”
+		thePrev = theValue;  // otherwise record the current value as the previous one
 }
 
 inline void ReanimationFillInMissingData(void*& thePrev, void*& theValue)
@@ -217,7 +217,6 @@ inline void ReanimationFillInMissingData(void*& thePrev, void*& theValue)
 		thePrev = theValue;
 }
 
-// (*def, eax = string& fileName)  //esp -= 0x4
 bool ReanimationLoadDefinition(const std::string& theFileName, ReanimatorDefinition* theDefinition)
 {
 	if (!DefinitionLoadXML(theFileName, &gReanimatorDefMap, theDefinition))
@@ -238,7 +237,7 @@ bool ReanimationLoadDefinition(const std::string& theFileName, ReanimatorDefinit
 		_Font* aPrevFont = nullptr;
 		const char* aPrevText = "";
 
-		// 遍历每一帧，依次用前一帧的数据填充后一帧的未定义数据，并重新记录前一帧的数据
+		// fill each frame's unset fields from the previous frame
 		for (int i = 0; i < aTrack->mTransforms.count; i++)
 		{
 			ReanimatorTransform& aTransform = aTrack->mTransforms.mTransforms[i];
@@ -263,14 +262,14 @@ bool ReanimationLoadDefinition(const std::string& theFileName, ReanimatorDefinit
 
 void ReanimationFreeDefinition(ReanimatorDefinition* theDefinition)
 {
-	// 释放 Atlas
+	// free the atlas
 	if (theDefinition->mReanimAtlas != nullptr)
 	{
 		delete theDefinition->mReanimAtlas;
 		theDefinition->mReanimAtlas = nullptr;
 	}
 
-	// 恢复定义数据
+	// restore the definition data
 	for (int aTrackIndex = 0; aTrackIndex < theDefinition->mTracks.count; aTrackIndex++)
 	{
 		ReanimatorTrack* aTrack = &theDefinition->mTracks.tracks[aTrackIndex];
@@ -285,7 +284,7 @@ void ReanimationFreeDefinition(ReanimatorDefinition* theDefinition)
 		}
 	}
 
-	// 释放定义
+	// free the definition
 	DefinitionFreeMap(&gReanimatorDefMap, theDefinition);
 }
 
@@ -344,7 +343,7 @@ void Reanimation::ReanimationDelete()
 	if (mTrackInstances != nullptr)
 	{
 		int aItemSize = mDefinition->mTracks.count * sizeof(ReanimatorTrackInstance);
-		FindGlobalAllocator(aItemSize)->Free(mTrackInstances, aItemSize);  // 由 PvzpAllocator 回收动画轨道的内存区域
+		FindGlobalAllocator(aItemSize)->Free(mTrackInstances, aItemSize);
 		mTrackInstances = nullptr;
 	}
 }
@@ -361,18 +360,18 @@ void ReanimationCreateAtlas(ReanimatorDefinition* theDefinition, ReanimationType
 {
 	const ReanimationParams& aParam = gReanimationParamArray[theReanimationType];
 	if (theDefinition->mReanimAtlas != nullptr || TestBit(aParam.mReanimParamFlags, ReanimFlags::REANIM_NO_ATLAS))
-		return;  // 当动画已存在 Atlas 或无需 Atlas 时，直接退出
+		return;
 
 	PerfTimer aTimer;
 	aTimer.Start();
 	PvzpHesitationTrace("preatlas");
 	ReanimAtlas* aAtlas = new ReanimAtlas();
-	theDefinition->mReanimAtlas = aAtlas;  // 赋值动画 Atlas 指针
+	theDefinition->mReanimAtlas = aAtlas;
 	aAtlas->ReanimAtlasCreate(theDefinition);
 
 	PvzpHesitationTrace("atlas '%s'", aParam.mReanimFileName);
 	int aDuration = std::max(aTimer.GetDuration(), 0.0);
-	if (aDuration > 20 && theReanimationType != ReanimationType::REANIM_NONE)  //（仅内测版）创建时间过长的报告
+	if (aDuration > 20 && theReanimationType != ReanimationType::REANIM_NONE)  // report slow atlas creation
 		PvzpTraceAndLogLn("LOADING:Long atlas '%s' %d ms on %s", aParam.mReanimFileName, aDuration, LawnGetCurrentLevelName().c_str());
 }
 
@@ -402,8 +401,8 @@ void Reanimation::ReanimationInitialize(float theX, float theY, ReanimatorDefini
 	{
 		mFrameCount = mDefinition->mTracks.tracks[0].mTransforms.count;
 		int aItemSize = theDefinition->mTracks.count * sizeof(ReanimatorTrackInstance);
-		mTrackInstances = (ReanimatorTrackInstance*)FindGlobalAllocator(aItemSize)->Calloc(aItemSize);  // 申请动画轨道实例数组所需的内存
-		for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)  // 遍历初始化数组中每个轨道实例
+		mTrackInstances = (ReanimatorTrackInstance*)FindGlobalAllocator(aItemSize)->Calloc(aItemSize);
+		for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
 		{
 			ReanimatorTrackInstance* aTrack = &mTrackInstances[aTrackIndex];
 			if (aTrack != nullptr)
@@ -414,15 +413,14 @@ void Reanimation::ReanimationInitialize(float theX, float theY, ReanimatorDefini
 		mFrameCount = 0;
 }
 
-// GOTY @Patoke: 0x4761C0
 void Reanimation::Update()
 {
 	if (mFrameCount == 0 || mDead)
 		return;
 
 	PVZP_ASSERT(std::isfinite(mAnimRate));
-	mLastFrameTime = mAnimTime;  // 更新上一帧的循环率
-	mAnimTime += SECONDS_PER_UPDATE * mAnimRate / mFrameCount;  // 更新当前循环率
+	mLastFrameTime = mAnimTime;  // save the previous loop position
+	mAnimTime += SECONDS_PER_UPDATE * mAnimRate / mFrameCount;  // advance the loop position
 
 	if (mAnimRate > 0)
 	{
@@ -497,9 +495,9 @@ void Reanimation::Update()
 	{
 		ReanimatorTrackInstance* aTrack = &mTrackInstances[aTrackIndex];
 		if (aTrack->mBlendCounter > 0)
-			aTrack->mBlendCounter--;  // 更新轨道的混合倒计时
+			aTrack->mBlendCounter--;
 
-		if (aTrack->mShakeOverride != 0.0f)  // 更新轨道震动
+		if (aTrack->mShakeOverride != 0.0f)
 		{
 			aTrack->mShakeX = RandRangeFloat(-aTrack->mShakeOverride, aTrack->mShakeOverride);
 			aTrack->mShakeY = RandRangeFloat(-aTrack->mShakeOverride, aTrack->mShakeOverride);
@@ -527,16 +525,15 @@ void BlendTransform(ReanimatorTransform* theResult, const ReanimatorTransform& t
 
 	float aSkewX2 = theTransform2.mSkewX;
 	float aSkewY2 = theTransform2.mSkewY;
-	// 推测这里原意是为了确保从两个变换之间的倾斜角度不超过 π（WP 版），
-	// 原版（以及内测版）实际为，倾斜超过 π 时 theTransform2 变换无效
+	// when the skew differs by more than 180 degrees, theTransform2's skew is ignored
 	while (aSkewX2 > theTransform1.mSkewX + 180.0f)
-		aSkewX2 = theTransform1.mSkewX;  // （aSkewX2 -= 360.0f）
+		aSkewX2 = theTransform1.mSkewX;  // (aSkewX2 -= 360.0f)
 	while (aSkewX2 < theTransform1.mSkewX - 180.0f)
-		aSkewX2 = theTransform1.mSkewX;  // （aSkewX2 += 360.0f）
+		aSkewX2 = theTransform1.mSkewX;  // (aSkewX2 += 360.0f)
 	while (aSkewY2 > theTransform1.mSkewY + 180.0f)
-		aSkewY2 = theTransform1.mSkewY;  // （aSkewY2 -= 360.0f）
+		aSkewY2 = theTransform1.mSkewY;  // (aSkewY2 -= 360.0f)
 	while (aSkewY2 < theTransform1.mSkewY - 180.0f)
-		aSkewY2 = theTransform1.mSkewY;  // （aSkewY2 += 360.0f）
+		aSkewY2 = theTransform1.mSkewY;  // (aSkewY2 += 360.0f)
 
 	theResult->mSkewX = FloatLerp(theTransform1.mSkewX, aSkewX2, theBlendFactor);
 	theResult->mSkewY = FloatLerp(theTransform1.mSkewY, aSkewY2, theBlendFactor);
@@ -546,18 +543,17 @@ void BlendTransform(ReanimatorTransform* theResult, const ReanimatorTransform& t
 	theResult->mImage = theTransform1.mImage;
 }
 
-// GOTY @Patoke: 0x476580
 void Reanimation::GetCurrentTransform(int theTrackIndex, ReanimatorTransform* theTransformCurrent)
 {
 	ReanimatorFrameTime aFrameTime;
 	GetFrameTime(&aFrameTime);
-	GetTransformAtTime(theTrackIndex, theTransformCurrent, &aFrameTime);  // 结合两帧之间的自然补间取得基础变换
+	GetTransformAtTime(theTrackIndex, theTransformCurrent, &aFrameTime);  // base transform interpolated between the two frames
 	
 	ReanimatorTrackInstance* aTrack = &mTrackInstances[theTrackIndex];
-	if (FloatRoundToInt(theTransformCurrent->mFrame) >= 0 && aTrack->mBlendCounter > 0)  // 若当前不为空白帧且轨道处于变换混合过程中
+	if (FloatRoundToInt(theTransformCurrent->mFrame) >= 0 && aTrack->mBlendCounter > 0)  // not a blank frame and a blend is in progress
 	{
 		float aBlendFactor = aTrack->mBlendCounter / static_cast<float>(aTrack->mBlendTime);
-		BlendTransform(theTransformCurrent, *theTransformCurrent, aTrack->mBlendTransform, aBlendFactor);  // 结合覆写变换计算混合后的实际变换
+		BlendTransform(theTransformCurrent, *theTransformCurrent, aTrack->mBlendTransform, aBlendFactor);  // blend with the recorded source transform
 	}
 }
 
@@ -566,8 +562,8 @@ void Reanimation::GetTransformAtTime(int theTrackIndex, ReanimatorTransform* the
 	PVZP_ASSERT(theTrackIndex >= 0 && theTrackIndex < mDefinition->mTracks.count);
 	ReanimatorTrack* aTrack = &mDefinition->mTracks.tracks[theTrackIndex];
 	PVZP_ASSERT(aTrack->mTransforms.count == mDefinition->mTracks.tracks[0].mTransforms.count);
-	ReanimatorTransform& aTransBefore = aTrack->mTransforms.mTransforms[theFrameTime->mAnimFrameBeforeInt];  // 前一帧的变换定义
-	ReanimatorTransform& aTransAfter = aTrack->mTransforms.mTransforms[theFrameTime->mAnimFrameAfterInt];  // 后一帧的变换定义
+	ReanimatorTransform& aTransBefore = aTrack->mTransforms.mTransforms[theFrameTime->mAnimFrameBeforeInt];  // previous frame's transform definition
+	ReanimatorTransform& aTransAfter = aTrack->mTransforms.mTransforms[theFrameTime->mAnimFrameAfterInt];  // next frame's transform definition
 
 	theTransform->mTransX = FloatLerp(aTransBefore.mTransX, aTransAfter.mTransX, theFrameTime->mFraction);
 	theTransform->mTransY = FloatLerp(aTransBefore.mTransY, aTransAfter.mTransY, theFrameTime->mFraction);
@@ -581,14 +577,13 @@ void Reanimation::GetTransformAtTime(int theTrackIndex, ReanimatorTransform* the
 	theTransform->mText = aTransBefore.mText;
 
 	if (aTransBefore.mFrame != -1.0f && aTransAfter.mFrame == -1.0f && theFrameTime->mFraction > 0.0f && mTrackInstances[theTrackIndex].mTruncateDisappearingFrames)
-		theTransform->mFrame = -1.0f;  // 当从一个非空白帧过渡至空白帧时，若轨道设置了截断消失帧，则删去过渡的过程
+		theTransform->mFrame = -1.0f;  // cut the transition to a blank frame when the track truncates disappearing frames
 	else
 		theTransform->mFrame = aTransBefore.mFrame;
 }
 
 void Reanimation::MatrixFromTransform(const ReanimatorTransform& theTransform, SexyMatrix3& theMatrix)
 {
-	// 将倾斜的角度转化为弧度
 	float aSkewX = -DEG_TO_RAD(theTransform.mSkewX);
 	float aSkewY = -DEG_TO_RAD(theTransform.mSkewY);
 
@@ -605,22 +600,22 @@ void Reanimation::MatrixFromTransform(const ReanimatorTransform& theTransform, S
 
 void Reanimation::ReanimBltMatrix(Graphics* g, Image* theImage, SexyMatrix3& theTransform, const Rect& theClipRect, const Color& theColor, int theDrawMode, const Rect& theSrcRect)
 {
-	if (!gSexyAppBase->Is3DAccelerated() &&  // 未开启 3D 硬件加速
-		TestBit(gReanimationParamArray[mReanimationType].mReanimParamFlags, static_cast<int>(ReanimFlags::REANIM_FAST_DRAW_IN_SW_MODE)) &&  // 动画允许使用软件渲染
-		FloatApproxEqual(theTransform.m01, 0.0f) && FloatApproxEqual(theTransform.m10, 0.0f) &&  // 横向和纵向的倾斜值均为 0
-		theTransform.m00 > 0.0f && theTransform.m11 > 0.0f &&  // 横向和纵向的拉伸值均大于 0
+	if (!gSexyAppBase->Is3DAccelerated() &&
+		TestBit(gReanimationParamArray[mReanimationType].mReanimParamFlags, static_cast<int>(ReanimFlags::REANIM_FAST_DRAW_IN_SW_MODE)) &&
+		FloatApproxEqual(theTransform.m01, 0.0f) && FloatApproxEqual(theTransform.m10, 0.0f) &&  // no horizontal or vertical skew
+		theTransform.m00 > 0.0f && theTransform.m11 > 0.0f &&  // positive horizontal and vertical scale
 		theColor == Color::White)
 	{
 		float aScaleX = theTransform.m00;
 		float aScaleY = theTransform.m11;
 		int aPosX = FloatRoundToInt(theTransform.m02 - aScaleX * theSrcRect.mWidth * 0.5f);
 		int aPosY = FloatRoundToInt(theTransform.m12 - aScaleY * theSrcRect.mHeight * 0.5f);
-		int aOldMode = g->GetDrawMode();  // 备份原绘制模式
+		int aOldMode = g->GetDrawMode();
 		g->SetDrawMode(theDrawMode);
-		Rect aOldClipRect = g->mClipRect;  // 备份原裁剪矩形
+		Rect aOldClipRect = g->mClipRect;
 		g->SetClipRect(theClipRect);
 
-		if (FloatApproxEqual(aScaleX, 1.0f) && FloatApproxEqual(aScaleY, 1.0f))  // 如果无拉伸
+		if (FloatApproxEqual(aScaleX, 1.0f) && FloatApproxEqual(aScaleY, 1.0f))  // no scaling
 			g->DrawImage(theImage, aPosX, aPosY, theSrcRect);
 		else
 		{
@@ -630,42 +625,41 @@ void Reanimation::ReanimBltMatrix(Graphics* g, Image* theImage, SexyMatrix3& the
 			g->DrawImage(theImage, aDestRect, theSrcRect);
 		}
 
-		g->SetDrawMode(aOldMode);  // 还原绘制模式
-		g->SetClipRect(aOldClipRect);  // 还原裁剪矩形
+		g->SetDrawMode(aOldMode);
+		g->SetClipRect(aOldClipRect);
 	}
 	else
 		PvzpBltMatrix(g, theImage, theTransform, theClipRect, theColor, theDrawMode, theSrcRect);
 }
 
-// GOTY @Patoke: 0x4769B0
 bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, PvzpTriangleGroup* theTriangleGroup)
 {
 	(void)theRenderGroup;
 	ReanimatorTransform aTransform;
-	ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[theTrackIndex];  // 目标轨道的指针
-	GetCurrentTransform(theTrackIndex, &aTransform);  // 取得当前动画变换
-	int aImageFrame = FloatRoundToInt(aTransform.mFrame);  // 图像在贴图中所处的份数
-	if (aImageFrame < 0)  // 不存在图像时，返回
+	ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[theTrackIndex];
+	GetCurrentTransform(theTrackIndex, &aTransform);
+	int aImageFrame = FloatRoundToInt(aTransform.mFrame);  // cel index within the image
+	if (aImageFrame < 0)  // no image to draw
 		return false;
 
 	Color aColor = aTrackInstance->mTrackColor;
-	if (!aTrackInstance->mIgnoreColorOverride)  // 除非轨道无视动画的覆写颜色
+	if (!aTrackInstance->mIgnoreColorOverride)
 	{
-		aColor = ColorsMultiply(aColor, mColorOverride);  // 将轨道颜色与动画的覆写颜色进行正片叠底混合
+		aColor = ColorsMultiply(aColor, mColorOverride);
 	}
-	if (g->GetColorizeImages())  // 若 Graphics 着色
+	if (g->GetColorizeImages())
 	{
-		aColor = ColorsMultiply(aColor, g->GetColor());  // 将颜色再与 Graphics 的颜色进行正片叠底混合
+		aColor = ColorsMultiply(aColor, g->GetColor());
 	}
 	int aImageAlpha = std::clamp(FloatRoundToInt(aTransform.mAlpha * aColor.mAlpha), 0, 255);
-	if (aImageAlpha <= 0)  // 当图像完全透明时，返回
+	if (aImageAlpha <= 0)
 	{
 		return false;
 	}
 	aColor.mAlpha = aImageAlpha;
 
 	Color aExtraAdditiveColor;
-	if (mEnableExtraAdditiveDraw)  // 如果动画启用额外叠加颜色（高亮）
+	if (mEnableExtraAdditiveDraw)
 	{
 		aExtraAdditiveColor = mExtraAdditiveColor;
 		aExtraAdditiveColor.mAlpha = ColorComponentMultiply(mExtraAdditiveColor.mAlpha, aImageAlpha);
@@ -678,9 +672,9 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 	}
 
 	Rect aClipRect = g->mClipRect;
-	if (aTrackInstance->mIgnoreClipRect)  // 如果轨道无视裁剪矩形
+	if (aTrackInstance->mIgnoreClipRect)
 	{
-		aClipRect = Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);  // 裁剪矩形重置为屏幕矩形
+		aClipRect = Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 	}
 
 	Image* aImage = aTransform.mImage;
@@ -734,7 +728,7 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 		aMatrix.LoadIdentity();
 		SexyMatrix3Translation(aMatrix, aCelWidth * 0.5f, aCelHeight * 0.5f);
 	}
-	else if (aTransform.mFont != nullptr && *aTransform.mText != '\0')  // 如果存在字体且文本不为空
+	else if (aTransform.mFont != nullptr && *aTransform.mText != '\0')
 	{
 		aMatrix.LoadIdentity();
 		int aWidth = aTransform.mFont->StringWidth(aTransform.mText);
@@ -742,30 +736,30 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 	}
 	else
 	{
-		if (strcasecmp(mDefinition->mTracks.tracks[theTrackIndex].mName, "fullscreen"))  // 如果既没有图像也没有文本，且不是全屏轨道
-			return false;  // 无需绘制
-		aFullScreen = true;  // 标记全屏轨道，后续会填充一个屏幕大小的矩形
+		if (strcasecmp(mDefinition->mTracks.tracks[theTrackIndex].mName, "fullscreen"))  // no image and no text, and not the fullscreen track
+			return false;  // nothing to draw
+		aFullScreen = true;  // a screen-sized rect is filled later
 	}
 
-	if (mDefinition->mReanimAtlas != nullptr && aAtlasImage == nullptr)  // 有 atlas 但不用的情况
-		theTriangleGroup->DrawGroup(g);  // 先把原有的三角组绘制了
+	if (mDefinition->mReanimAtlas != nullptr && aAtlasImage == nullptr)  // atlas exists but this track does not use it
+		theTriangleGroup->DrawGroup(g);  // flush the accumulated triangles first
 
 	SexyMatrix3 aTransformMatrix;
 	MatrixFromTransform(aTransform, aTransformMatrix);
-	SexyMatrix3Multiply(aMatrix, aTransformMatrix, aMatrix);  // 以动画变换矩阵作用 aMatrix
-	SexyMatrix3Multiply(aMatrix, mOverlayMatrix, aMatrix);  // 以动画覆写矩阵作用 aMatrix
-	SexyMatrix3Translation(aMatrix, aTrackInstance->mShakeX + g->mTransX, aTrackInstance->mShakeY + g->mTransY);  // 轨道震动及 g 的影响
+	SexyMatrix3Multiply(aMatrix, aTransformMatrix, aMatrix);  // apply the track transform
+	SexyMatrix3Multiply(aMatrix, mOverlayMatrix, aMatrix);  // apply the overlay matrix
+	SexyMatrix3Translation(aMatrix, aTrackInstance->mShakeX + g->mTransX, aTrackInstance->mShakeY + g->mTransY);  // apply track shake and g's translation
 
-	if (aAtlasImage != nullptr)  // 如果存在图集（动画定义存在 atlas，轨道变换存在图像，轨道不存在覆写贴图）
+	if (aAtlasImage != nullptr)  // atlas exists, the frame has an image, and no override is set
 	{
 		Rect aSrcRect(aAtlasImage->mX, aAtlasImage->mY, aAtlasImage->mWidth, aAtlasImage->mHeight);
 		aImage = mDefinition->mReanimAtlas->mMemoryImage;
-		if (mFilterEffect != FilterEffect::FILTER_EFFECT_NONE)  // 如果动画存在滤镜
+		if (mFilterEffect != FilterEffect::FILTER_EFFECT_NONE)
 		{
-			aImage = FilterEffectGetImage(aImage, mFilterEffect);  // 取得滤镜后的贴图
+			aImage = FilterEffectGetImage(aImage, mFilterEffect);
 		}
-		theTriangleGroup->AddTriangle(g, aImage, aMatrix, aClipRect, aColor, g->mDrawMode, aSrcRect);  // 向三角组中添加三角形
-		if (mEnableExtraAdditiveDraw && !aTrackInstance->mIgnoreExtraAdditiveColor)  // 如果动画存在额外叠加颜色且轨道不能无视之
+		theTriangleGroup->AddTriangle(g, aImage, aMatrix, aClipRect, aColor, g->mDrawMode, aSrcRect);
+		if (mEnableExtraAdditiveDraw && !aTrackInstance->mIgnoreExtraAdditiveColor)
 		{
 			theTriangleGroup->AddTriangle(g, aImage, aMatrix, aClipRect, aExtraAdditiveColor, Graphics::DRAWMODE_ADDITIVE, aSrcRect);
 		}
@@ -789,7 +783,7 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 
 		int aCelWidth = aImage->GetCelWidth();
 		Rect aSrcRect(aImageFrame * aCelWidth, 0, aCelWidth, aImage->GetCelHeight());
-		ReanimBltMatrix(g, aImage, aMatrix, aClipRect, aColor, g->mDrawMode, aSrcRect);  // 带矩阵绘制轨道图像
+		ReanimBltMatrix(g, aImage, aMatrix, aClipRect, aColor, g->mDrawMode, aSrcRect);
 		if (mEnableExtraAdditiveDraw)
 		{
 			ReanimBltMatrix(g, aImage, aMatrix, aClipRect, aExtraAdditiveColor, Graphics::DRAWMODE_ADDITIVE, aSrcRect);
@@ -800,23 +794,23 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 			ReanimBltMatrix(g, aOverlayImage, aMatrix, aClipRect, aExtraOverlayColor, Graphics::DRAWMODE_NORMAL, aSrcRect);
 		}
 	}
-	else if (aTransform.mFont != nullptr && *aTransform.mText != '\0')  // 如果不存在图像但存在文本
+	else if (aTransform.mFont != nullptr && *aTransform.mText != '\0')
 	{
 		PvzpDrawStringMatrix(g, aTransform.mFont, aMatrix, aTransform.mText, aColor);
 		if (mEnableExtraAdditiveDraw)
 		{
-			int aOldMode = g->GetDrawMode();  // 备份绘制模式
+			int aOldMode = g->GetDrawMode();
 			g->SetDrawMode(Graphics::DRAWMODE_ADDITIVE);
 			PvzpDrawStringMatrix(g, aTransform.mFont, aMatrix, aTransform.mText, aExtraAdditiveColor);
-			g->SetDrawMode(aOldMode);  // 还原绘制模式
+			g->SetDrawMode(aOldMode);
 		}
 	}
-	else if (aFullScreen)  // 不存在图像和文本，但是全屏
+	else if (aFullScreen)
 	{
-		Color aOldColor = g->GetColor();  // 备份颜色
+		Color aOldColor = g->GetColor();
 		g->SetColor(aColor);
 		g->FillRect(-g->mTransX, -g->mTransY, BOARD_WIDTH, BOARD_HEIGHT);
-		g->SetColor(aOldColor);  // 还原颜色
+		g->SetColor(aOldColor);
 	}
 	return true;
 }
@@ -892,9 +886,9 @@ void Reanimation::GetTrackMatrix(int theTrackIndex, SexyTransform2D& theMatrix)
 
 	SexyTransform2D aTransformMatrix;
 	MatrixFromTransform(aTransform, aTransformMatrix);
-	SexyMatrix3Multiply(theMatrix, aTransformMatrix, theMatrix);  // 以动画变换矩阵作用 theMatrix
-	SexyMatrix3Multiply(theMatrix, mOverlayMatrix, theMatrix);  // 以动画覆写矩阵作用 theMatrix
-	SexyMatrix3Translation(theMatrix, aTrackInstance->mShakeX - 0.5f, aTrackInstance->mShakeY - 0.5f);  // 轨道震动的影响
+	SexyMatrix3Multiply(theMatrix, aTransformMatrix, theMatrix);  // apply the track transform
+	SexyMatrix3Multiply(theMatrix, mOverlayMatrix, theMatrix);  // apply the overlay matrix
+	SexyMatrix3Translation(theMatrix, aTrackInstance->mShakeX - 0.5f, aTrackInstance->mShakeY - 0.5f);  // apply track shake
 }
 
 void Reanimation::GetFrameTime(ReanimatorFrameTime* theFrameTime)
@@ -910,13 +904,13 @@ void Reanimation::GetFrameTime(ReanimatorFrameTime* theFrameTime)
 	float aAnimFrameBefore = floor(aAnimPosition);
 	theFrameTime->mFraction = aAnimPosition - aAnimFrameBefore;
 	theFrameTime->mAnimFrameBeforeInt = FloatRoundToInt(aAnimFrameBefore);
-	if (theFrameTime->mAnimFrameBeforeInt >= mFrameStart + mFrameCount - 1)  // 如果当前处于结束的一帧
+	if (theFrameTime->mAnimFrameBeforeInt >= mFrameStart + mFrameCount - 1)  // on the last frame
 	{
 		theFrameTime->mAnimFrameBeforeInt = mFrameStart + mFrameCount - 1;
-		theFrameTime->mAnimFrameAfterInt = theFrameTime->mAnimFrameBeforeInt;  // 将前、后的整数帧均赋值为最后一帧
+		theFrameTime->mAnimFrameAfterInt = theFrameTime->mAnimFrameBeforeInt;
 	}
 	else
-		theFrameTime->mAnimFrameAfterInt = theFrameTime->mAnimFrameBeforeInt + 1;  // 后一整数帧等于前一整数帧的后一帧
+		theFrameTime->mAnimFrameAfterInt = theFrameTime->mAnimFrameBeforeInt + 1;
 	PVZP_ASSERT(theFrameTime->mAnimFrameBeforeInt >= 0 && theFrameTime->mAnimFrameAfterInt < mDefinition->mTracks.tracks[0].mTransforms.count);
 }
 
@@ -947,7 +941,6 @@ void Reanimation::Draw(Graphics* g)
 	DrawRenderGroup(g, RENDER_GROUP_NORMAL);
 }
 
-// GOTY @Patoke: 0x477640
 int Reanimation::FindTrackIndex(const char* theTrackName)
 {
 	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
@@ -958,7 +951,6 @@ int Reanimation::FindTrackIndex(const char* theTrackName)
 	return 0;
 }
 
-// GOTY @Patoke: 0x464B18
 ReanimatorTrackInstance* Reanimation::GetTrackInstanceByName(const char* theTrackName)
 {
 	return &mTrackInstances[FindTrackIndex(theTrackName)];
@@ -970,7 +962,7 @@ void Reanimation::AttachToAnotherReanimation(Reanimation* theAttachReanim, const
 		return;
 
 	if (theAttachReanim->mFrameBasePose == -1)
-		theAttachReanim->mFrameBasePose = theAttachReanim->mFrameStart;  // 将当前动作的起始帧作为变换基准帧
+		theAttachReanim->mFrameBasePose = theAttachReanim->mFrameStart;  // use the current animation's start frame as the base pose
 	AttachReanim(theAttachReanim->GetTrackInstanceByName(theTrackName)->mAttachmentID, this, 0.0f, 0.0f);
 }
 
@@ -978,7 +970,7 @@ void Reanimation::SetBasePoseFromAnim(const char* theTrackName)
 {
 	int aFrameStart, aFrameCount;
 	GetFramesForLayer(theTrackName, aFrameStart, aFrameCount);
-	mFrameBasePose = aFrameStart;  // 将当前轨道动画的起始帧作为变换基准帧
+	mFrameBasePose = aFrameStart;  // use the track animation's start frame as the base pose
 }
 
 void Reanimation::GetTrackBasePoseMatrix(int theTrackIndex, SexyTransform2D& theBasePosMatrix)
@@ -1001,30 +993,29 @@ AttachEffect* Reanimation::AttachParticleToTrack(const char* theTrackName, PvzpP
 	int aTrackIndex = FindTrackIndex(theTrackName);
 	ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[aTrackIndex];
 	SexyTransform2D aBasePoseMatrix;
-	GetTrackBasePoseMatrix(aTrackIndex, aBasePoseMatrix);  // 取得轨道基础形态的变换矩阵
-	SexyVector2 aPosition = aBasePoseMatrix * SexyVector2(thePosX, thePosY);  // 以基础形态的矩阵变换位置向量
+	GetTrackBasePoseMatrix(aTrackIndex, aBasePoseMatrix);
+	SexyVector2 aPosition = aBasePoseMatrix * SexyVector2(thePosX, thePosY);
 	return AttachParticle(aTrackInstance->mAttachmentID, theParticleSystem, aPosition.x, aPosition.y);
 }
 
-// GOTY @Patoke: 0x477810
 void Reanimation::GetAttachmentOverlayMatrix(int theTrackIndex, SexyTransform2D& theOverlayMatrix)
 {
 	ReanimatorTransform aTransform;
-	GetCurrentTransform(theTrackIndex, &aTransform);  // 取得含混合、不含覆写的自然变换
+	GetCurrentTransform(theTrackIndex, &aTransform);  // blended transform without overrides
 	SexyTransform2D aTransformMatrix;
 	MatrixFromTransform(aTransform, aTransformMatrix);
-	SexyMatrix3Multiply(aTransformMatrix, mOverlayMatrix, aTransformMatrix);  // 以动画覆写矩阵作用于动画变换矩阵
+	SexyMatrix3Multiply(aTransformMatrix, mOverlayMatrix, aTransformMatrix);  // apply the overlay matrix
 
 	SexyTransform2D aBasePoseMatrix;
-	GetTrackBasePoseMatrix(theTrackIndex, aBasePoseMatrix);  // 取得轨道基础形态的变换矩阵
+	GetTrackBasePoseMatrix(theTrackIndex, aBasePoseMatrix);
 	SexyTransform2D aBasePoseMatrixInv;
-	SexyMatrix3Inverse(aBasePoseMatrix, aBasePoseMatrixInv);  // 取得基础形态矩阵的逆
+	SexyMatrix3Inverse(aBasePoseMatrix, aBasePoseMatrixInv);
 	theOverlayMatrix = aTransformMatrix * aBasePoseMatrixInv;
 }
 
 void Reanimation::GetFramesForLayer(const char* theTrackName, int& theFrameStart, int& theFrameCount)
 {
-	if (mDefinition->mTracks.count == 0)  // 如果动画没有轨道
+	if (mDefinition->mTracks.count == 0)
 	{
 		theFrameStart = 0;
 		theFrameCount = 0;
@@ -1039,12 +1030,12 @@ void Reanimation::GetFramesForLayer(const char* theTrackName, int& theFrameStart
 	for (int i = 0; i < aTrack->mTransforms.count; i++)
 		if (aTrack->mTransforms.mTransforms[i].mFrame >= 0.0f)
 		{
-			theFrameStart = i;  // 取轨道上的首个非空白帧作为起始帧
+			theFrameStart = i;  // first non-blank frame
 			break;
 		}
 	for (int j = theFrameStart; j < aTrack->mTransforms.count; j++)
 		if (aTrack->mTransforms.mTransforms[j].mFrame >= 0.0f)
-			theFrameCount = j - theFrameStart + 1;  // 取从起始帧至轨道最后一个非空白帧之间为帧数量
+			theFrameCount = j - theFrameStart + 1;  // span from start to the last non-blank frame
 }
 
 void Reanimation::SetFramesForLayer(const char* theTrackName)
@@ -1071,10 +1062,10 @@ void Reanimation::StartBlend(int theBlendTime)
 	{
 		ReanimatorTransform aTransform;
 		GetCurrentTransform(aTrackIndex, &aTransform);
-		if (FloatRoundToInt(aTransform.mFrame) >= 0)  // 若当前轨道当前不处于空白帧
+		if (FloatRoundToInt(aTransform.mFrame) >= 0)  // not on a blank frame
 		{
 			ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[aTrackIndex];
-			aTrackInstance->mBlendTransform = aTransform;  // 记录当前变换为混合的初始（源）变换
+			aTrackInstance->mBlendTransform = aTransform;  // record the current transform as the blend source
 			aTrackInstance->mBlendTime = theBlendTime;
 			aTrackInstance->mBlendCounter = theBlendTime;
 			aTrackInstance->mBlendTransform.mFont = nullptr;
@@ -1121,7 +1112,6 @@ Image* Reanimation::GetImageOverride(const char* theTrackName)
 	return GetTrackInstanceByName(theTrackName)->mImageOverride;
 }
 
-// GOTY @Patoke: 0x477BB0
 void Reanimation::SetImageOverride(const char* theTrackName, Image* theImage)
 {
 	GetTrackInstanceByName(theTrackName)->mImageOverride = theImage;
@@ -1129,9 +1119,9 @@ void Reanimation::SetImageOverride(const char* theTrackName, Image* theImage)
 
 void Reanimation::SetTruncateDisappearingFrames(const char* theTrackName, bool theTruncateDisappearingFrames)
 {
-	if (theTrackName == nullptr)  // 若给出的轨道名称为空指针
+	if (theTrackName == nullptr)
 	{
-		for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)  // 依次设置每一轨道
+		for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
 			mTrackInstances[aTrackIndex].mTruncateDisappearingFrames = theTruncateDisappearingFrames;
 	}
 	else
@@ -1167,22 +1157,22 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 {
 	PVZP_ASSERT(theReanimType >= 0 && theReanimType < gReanimatorDefCount);
 	ReanimatorDefinition* aReanimDef = &gReanimatorDefArray[theReanimType];
-	if (aReanimDef->mTracks.tracks != nullptr)  // 如果轨道指针不为空指针，说明定义数据已经加载
+	if (aReanimDef->mTracks.tracks != nullptr)  // non-null tracks means the definition is already loaded
 		return;
 	const ReanimationParams* aReanimParams = &gReanimationParamArray[theReanimType];
 	PvzpTrace("'%s'\n", aReanimParams->mReanimFileName);
 	if (theIsPreloading)
 	{
-		if (gSexyAppBase->mShutdown || LawnGetCloseRequest())  // 预加载时若程序退出，则取消加载
+		if (gSexyAppBase->mShutdown || LawnGetCloseRequest())  // abort preloading when the app is shutting down
 			return;
 	}
-	else  // < 以下部分仅内测版执行 >
+	else
 	{
 		if (LawnHasUsedCheatKeys())
 			PvzpTraceAndLogLn("Cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, LawnGetCurrentLevelName().c_str());
 		else
 			PvzpTraceAndLogLn("Non-cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, LawnGetCurrentLevelName().c_str());
-	}  // < 以上部分仅内测版执行 >
+	}
 
 	PerfTimer aTimer;
 	aTimer.Start();
@@ -1194,7 +1184,7 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 		PvzpErrorMessageBox(aBuf, "Error");
 	}
 	int aDuration = aTimer.GetDuration();
-	if (aDuration > 100)  //（仅内测版）创建时间过长的报告
+	if (aDuration > 100)  // report slow reanim loading
 		PvzpTraceAndLogLn("LOADING:Long reanim '%s' %d ms on %s", aReanimParams->mReanimFileName, aDuration, LawnGetCurrentLevelName().c_str());
 }
 
@@ -1239,7 +1229,7 @@ float Reanimation::GetTrackVelocity(const char* theTrackName)
 
 	ReanimatorTrack* aTrack = &mDefinition->mTracks.tracks[aTrackIndex];
 	float aDis = aTrack->mTransforms.mTransforms[aFrameTime.mAnimFrameAfterInt].mTransX - aTrack->mTransforms.mTransforms[aFrameTime.mAnimFrameBeforeInt].mTransX;
-	return aDis * SECONDS_PER_UPDATE * mAnimRate;  // 瞬时速率 = 两帧间的横坐标之差 * 一帧的时长 * 动画速率
+	return aDis * SECONDS_PER_UPDATE * mAnimRate;  // velocity = x displacement between frames * frame duration * anim rate
 }
 
 bool Reanimation::IsTrackShowing(const char* theTrackName)
@@ -1249,37 +1239,34 @@ bool Reanimation::IsTrackShowing(const char* theTrackName)
 	int aTrackIndex = FindTrackIndex(theTrackName);
 	PVZP_ASSERT(aTrackIndex >= 0 && aTrackIndex < mDefinition->mTracks.count);
 
-	return mDefinition->mTracks.tracks[aTrackIndex].mTransforms.mTransforms[aFrameTime.mAnimFrameAfterInt].mFrame >= 0.0f;  // 返回下一整数帧是否存在图像
+	return mDefinition->mTracks.tracks[aTrackIndex].mTransforms.mTransforms[aFrameTime.mAnimFrameAfterInt].mFrame >= 0.0f;  // whether the next integer frame has an image
 }
 
 void Reanimation::ShowOnlyTrack(const char* theTrackName)
 {
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
 	{
-		// 轨道名与指定名称相同时，设置轨道渲染分组为正常显示，否则设置轨道渲染分组为隐藏
 		mTrackInstances[i].mRenderGroup = strcasecmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0 ? RENDER_GROUP_NORMAL : RENDER_GROUP_HIDDEN;
 	}
 }
 
-// GOTY @Patoke: 0x478120
 void Reanimation::AssignRenderGroupToTrack(const char* theTrackName, int theRenderGroup)
 {
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
 		if (strcasecmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0)
 		{
-			mTrackInstances[i].mRenderGroup = theRenderGroup;  // 仅设置首个名称恰好为 theTrackName 的轨道
+			mTrackInstances[i].mRenderGroup = theRenderGroup;  // only the first exact match
 			return;
 		}
 }
 
-// GOTY @Patoke: 0x478170
 void Reanimation::AssignRenderGroupToPrefix(const char* theTrackName, int theRenderGroup)
 {
 	size_t aPrifixLength = strlen(theTrackName);
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
 	{
 		const char* const aTrackName = mDefinition->mTracks.tracks[i].mName;
-		if (strlen(aTrackName) >= aPrifixLength && !strncasecmp(aTrackName, theTrackName, aPrifixLength))  // 轨道名称长度必须不小于指定前缀长度
+		if (strlen(aTrackName) >= aPrifixLength && !strncasecmp(aTrackName, theTrackName, aPrifixLength))  // the name must be at least as long as the prefix
 			mTrackInstances[i].mRenderGroup = theRenderGroup;
 	}
 }
@@ -1295,20 +1282,19 @@ void Reanimation::PropogateColorToAttachments()
 bool Reanimation::ShouldTriggerTimedEvent(float theEventTime)
 {
 	PVZP_ASSERT(theEventTime >= 0.0f && theEventTime <= 1.0f);
-	if (mFrameCount == 0 || mLastFrameTime <= 0.0f || mAnimRate <= 0.0f)  // 没有动画或倒放或未播放
+	if (mFrameCount == 0 || mLastFrameTime <= 0.0f || mAnimRate <= 0.0f)  // no animation, reverse playback, or not playing
 		return false;
 
-	if (mAnimTime >= mLastFrameTime)  // 一般情况下，可触发的范围为 [mLastFrameTime, mAnimTime]
+	if (mAnimTime >= mLastFrameTime)  // normal case: trigger range is [mLastFrameTime, mAnimTime]
 		return theEventTime >= mLastFrameTime && theEventTime < mAnimTime;
-	else  // 若动画正好完成一次循环而重新进入下一次循环，则可触发的范围为 [0, mAnimTime] ∪ [mLastFrameTime, 1]
+	else  // wrapped into the next loop: trigger range is [0, mAnimTime] ∪ [mLastFrameTime, 1]
 		return theEventTime >= mLastFrameTime || theEventTime < mAnimTime;
 }
-// GOTY @Patoke: 0x478310
 void Reanimation::PlayReanim(const char* theTrackName, ReanimLoopType theLoopType, int theBlendTime, float theAnimRate)
 {
-	if (theBlendTime > 0)  // 当需要补间过渡时，开始混合
+	if (theBlendTime > 0)
 		StartBlend(theBlendTime);
-	if (theAnimRate != 0.0f)  // 当指定的速率为 0 时，表示不改变原有动画速率
+	if (theAnimRate != 0.0f)  // a rate of 0 keeps the current anim rate
 		mAnimRate = theAnimRate;
 
 	mLoopType = theLoopType;
@@ -1322,40 +1308,40 @@ void Reanimation::ParseAttacherTrack(const ReanimatorTransform& theTransform, At
 	theAttacherInfo.mTrackName = "";
 	theAttacherInfo.mAnimRate = 12.0f;
 	theAttacherInfo.mLoopType = ReanimLoopType::REANIM_LOOP;
-	if (theTransform.mFrame == -1.0f)  // 如果是空白帧
+	if (theTransform.mFrame == -1.0f)  // blank frame
 		return;
 
-	/* 附属轨道名称格式：attacher__REANIMNAME__TRACKNAME[TAG1][TAG2]…… */
+	// attacher track name format: attacher__REANIMNAME__TRACKNAME[TAG1][TAG2]...
 
-	const char* aReanimName = strstr(theTransform.mText, "__");  // 指向动画名称前的双下划线
-	if (aReanimName == nullptr)  // 如果字符串中不含双下划线
+	const char* aReanimName = strstr(theTransform.mText, "__");  // the "__" before the reanim name
+	if (aReanimName == nullptr)
 		return;
-	const char* aTags = strstr(aReanimName + 2, "[");  // 动画名称之后，指向 TAG 前的中括号
-	const char* aTrackName = strstr(aReanimName + 2, "__");  // 动画名称之后，指向轨道名称前的双下划线
-	if (aTags && aTrackName && ((uintptr_t)aTags < (uintptr_t)aTrackName))  // 如果“[”之后还有双下划线，则字符串非法
+	const char* aTags = strstr(aReanimName + 2, "[");  // the "[" starting the tags, after the reanim name
+	const char* aTrackName = strstr(aReanimName + 2, "__");  // the "__" before the track name, after the reanim name
+	if (aTags && aTrackName && ((uintptr_t)aTags < (uintptr_t)aTrackName))  // a "__" after "[" makes the string invalid
 		return;
 
-	if (aTrackName)  // 如果有定义轨道名称
+	if (aTrackName)  // track name defined
 	{
-		theAttacherInfo.mReanimName.assign(aReanimName + 2, aTrackName - aReanimName - 2);  // 取两处双下划线之间的部分（REANIMNAME）
-		if (aTags)  // 如果有定义标签
-			theAttacherInfo.mTrackName.assign(aTrackName + 2, aTags - aTrackName - 2);  // 取到 TAG 的中括号之前
+		theAttacherInfo.mReanimName.assign(aReanimName + 2, aTrackName - aReanimName - 2);  // between the two "__" (REANIMNAME)
+		if (aTags)  // tags defined
+			theAttacherInfo.mTrackName.assign(aTrackName + 2, aTags - aTrackName - 2);  // up to the "["
 		else
-			theAttacherInfo.mTrackName.assign(aTrackName + 2);  // 取到字符串结尾
+			theAttacherInfo.mTrackName.assign(aTrackName + 2);  // to the end of the string
 	}
-	else if (aTags)  // 如果未定义轨道名称但定义了标签
-		theAttacherInfo.mReanimName.assign(aReanimName + 2, aTags - aReanimName - 2);  // 取双下划线至中括号之间的部分
-	else  // 如果只定义了轨道名称
-		theAttacherInfo.mReanimName.assign(aReanimName + 2);  // 从双下划线之后取到字符串结尾
+	else if (aTags)  // no track name, but tags defined
+		theAttacherInfo.mReanimName.assign(aReanimName + 2, aTags - aReanimName - 2);  // between "__" and "["
+	else  // only the reanim name is defined
+		theAttacherInfo.mReanimName.assign(aReanimName + 2);  // from after "__" to the end of the string
 
-	while (aTags)  // 读取每个 TAG
+	while (aTags)  // read each tag
 	{
 		const char* aTagEnds = strstr(aTags + 1, "]");
-		if (aTagEnds == nullptr)  // 如果没有右中括号
+		if (aTagEnds == nullptr)  // no closing "]"
 			break;
 		
-		std::string aCode(aTags + 1, aTagEnds - aTags - 1);  // 取中括号内的文本
-		if (sscanf(aCode.c_str(), "%f", &theAttacherInfo.mAnimRate) != 1)  // 尝试将文本作为浮点数扫描，如果扫描成功则将结果作为动画速率
+		std::string aCode(aTags + 1, aTagEnds - aTags - 1);  // text inside the brackets
+		if (sscanf(aCode.c_str(), "%f", &theAttacherInfo.mAnimRate) != 1)  // if the text parses as a float, it is the anim rate
 		{
 			if (aCode.compare("hold") == 0)
 				theAttacherInfo.mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
@@ -1363,7 +1349,7 @@ void Reanimation::ParseAttacherTrack(const ReanimatorTransform& theTransform, At
 				theAttacherInfo.mLoopType = ReanimLoopType::REANIM_PLAY_ONCE;
 		}
 
-		aTags = strstr(aTagEnds + 1, "[");  // 继续寻找下一个 TAG 的左中括号
+		aTags = strstr(aTagEnds + 1, "[");  // find the next tag's "["
 	}
 }
 
@@ -1376,23 +1362,23 @@ void Reanimation::AttacherSynchWalkSpeed(int theTrackIndex, Reanimation* theAtta
 
 	int aPlaceHolderFrameStart = aFrameTime.mAnimFrameBeforeInt;
 	while (aPlaceHolderFrameStart > mFrameStart && aTrack->mTransforms.mTransforms[aPlaceHolderFrameStart - 1].mText == aTrack->mTransforms.mTransforms[aPlaceHolderFrameStart].mText)
-		aPlaceHolderFrameStart--;  // 取当前所在区间的第一帧
+		aPlaceHolderFrameStart--;  // first frame of the current segment
 	int aPlaceHolderFrameEnd = aFrameTime.mAnimFrameBeforeInt;
 	while (aPlaceHolderFrameEnd < mFrameStart + mFrameCount - 1 && aTrack->mTransforms.mTransforms[aPlaceHolderFrameEnd + 1].mText == aTrack->mTransforms.mTransforms[aPlaceHolderFrameEnd].mText)
-		aPlaceHolderFrameEnd++;  // 取当前所在区间的最后一帧
+		aPlaceHolderFrameEnd++;  // last frame of the current segment
 	int aPlaceHolderFrameCount = aPlaceHolderFrameEnd - aPlaceHolderFrameStart;
 	ReanimatorTransform& aPlaceHolderStartTrans = aTrack->mTransforms.mTransforms[aPlaceHolderFrameStart];
 	ReanimatorTransform& aPlaceHolderEndTrans = aTrack->mTransforms.mTransforms[aPlaceHolderFrameEnd];
-	if (FloatApproxEqual(mAnimRate, 0.0f))  // 如果动画自身的速率为 0
+	if (FloatApproxEqual(mAnimRate, 0.0f))
 	{
-		theAttachReanim->mAnimRate = 0.0f;  // 附属动画的速率也为 0
+		theAttachReanim->mAnimRate = 0.0f;
 		return;
 	}
-	float aPlaceHolderDistance = -(aPlaceHolderEndTrans.mTransX - aPlaceHolderStartTrans.mTransX);  // 占位轨道在当前区间内的位移
-	float aPlaceHolderSeconds = aPlaceHolderFrameCount / mAnimRate;  // 占位轨道在当前区间内的时长
-	if (FloatApproxEqual(aPlaceHolderSeconds, 0.0f))  // 如果当前所在区间不存在任何帧
+	float aPlaceHolderDistance = -(aPlaceHolderEndTrans.mTransX - aPlaceHolderStartTrans.mTransX);  // placeholder track's displacement in this segment
+	float aPlaceHolderSeconds = aPlaceHolderFrameCount / mAnimRate;  // placeholder track's duration in this segment
+	if (FloatApproxEqual(aPlaceHolderSeconds, 0.0f))  // the segment has no frames
 	{
-		theAttachReanim->mAnimRate = 0.0f;  // 附属动画的速率为 0
+		theAttachReanim->mAnimRate = 0.0f;
 		return;
 	}
 
@@ -1400,24 +1386,24 @@ void Reanimation::AttacherSynchWalkSpeed(int theTrackIndex, Reanimation* theAtta
 	ReanimatorTrack* aGroundTrack = &theAttachReanim->mDefinition->mTracks.tracks[aGroundTrackIndex];
 	ReanimatorTransform& aTransformGuyStart = aGroundTrack->mTransforms.mTransforms[theAttachReanim->mFrameStart];
 	ReanimatorTransform& aTransformGuyEnd = aGroundTrack->mTransforms.mTransforms[theAttachReanim->mFrameStart + theAttachReanim->mFrameCount - 1];
-	float aGuyDistance = aTransformGuyEnd.mTransX - aTransformGuyStart.mTransX;  // 实际动画在完整动作周期内的位移
-	if (aGuyDistance < FLT_EPSILON || aPlaceHolderDistance < FLT_EPSILON)  // 如果占位位移为 0 或实际动画周期位移为 0，则附属动画无法移动
+	float aGuyDistance = aTransformGuyEnd.mTransX - aTransformGuyStart.mTransX;  // attached anim's displacement over one full cycle
+	if (aGuyDistance < FLT_EPSILON || aPlaceHolderDistance < FLT_EPSILON)  // zero displacement: the attached anim cannot move
 	{
-		theAttachReanim->mAnimRate = 0.0f;  // 附属动画的速率为 0
+		theAttachReanim->mAnimRate = 0.0f;
 		return;
 	}
 
-	float aLoops = aPlaceHolderDistance / aGuyDistance;  // 以附属动画目标位移（占位位移）除以其周期位移，得到附属动画需要循环的周期数
+	float aLoops = aPlaceHolderDistance / aGuyDistance;  // cycles needed = placeholder displacement / cycle displacement
 	ReanimatorTransform aTransformGuyCurrent;
 	theAttachReanim->GetCurrentTransform(aGroundTrackIndex, &aTransformGuyCurrent);
 	AttachEffect* aAttachEffect = FindFirstAttachment(mTrackInstances[theTrackIndex].mAttachmentID);
 	if (aAttachEffect != nullptr)
 	{
-		float aGuyCurrentDistance = aTransformGuyCurrent.mTransX - aTransformGuyStart.mTransX;  // 附属动画在其周期内当前已经过的位移
-		float aGuyExpectedDistance = aGuyDistance * theAttachReanim->mAnimTime;  // 以匀速运动的占位轨道计算的、附属动画当前的理论位移
-		aAttachEffect->mOffset.m02 = aGuyExpectedDistance - aGuyCurrentDistance;  // 调整附属效果的横向变换以使附属动画的位移保持与占位动画一致
+		float aGuyCurrentDistance = aTransformGuyCurrent.mTransX - aTransformGuyStart.mTransX;  // attached anim's current displacement within its cycle
+		float aGuyExpectedDistance = aGuyDistance * theAttachReanim->mAnimTime;  // expected displacement from the uniformly moving placeholder
+		aAttachEffect->mOffset.m02 = aGuyExpectedDistance - aGuyCurrentDistance;  // correct the x offset to keep the attached anim in sync with the placeholder
 	}
-	theAttachReanim->mAnimRate = aLoops * theAttachReanim->mFrameCount / aPlaceHolderSeconds;  // 速率 = 需要播放的帧数 ÷ 可以播放的时长
+	theAttachReanim->mAnimRate = aLoops * theAttachReanim->mFrameCount / aPlaceHolderSeconds;  // rate = frames to play / available time
 }
 
 void Reanimation::UpdateAttacherTrack(int theTrackIndex)
@@ -1429,10 +1415,10 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex)
 	ParseAttacherTrack(aTransform, aAttacherInfo);
 
 	ReanimationType aReanimationType = ReanimationType::REANIM_NONE;
-	if (aAttacherInfo.mReanimName.size() != 0)  // 如果附属轨道设定了当前的附属动画名称
+	if (aAttacherInfo.mReanimName.size() != 0)
 	{
 		std::string aReanimFileName = StrFormat("reanim/%s.reanim", aAttacherInfo.mReanimName.c_str());
-		for (unsigned int i = 0; i < gReanimationParamArraySize; i++)  // 在动画参数数组中寻找动画文件名对应的动画类型
+		for (unsigned int i = 0; i < gReanimationParamArraySize; i++)  // find the reanim type for this file name
 		{
 			const ReanimationParams* aParams = &gReanimationParamArray[i];
 			if (strcasecmp(aReanimFileName.c_str(), aParams->mReanimFileName) == 0)
@@ -1442,31 +1428,31 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex)
 			}
 		}
 	}
-	if (aReanimationType == ReanimationType::REANIM_NONE)  // 如果没有设定当前附属动画名称，或未找到相应的动画
+	if (aReanimationType == ReanimationType::REANIM_NONE)  // no name set or no matching reanim found
 	{
-		AttachmentDie(aTrackInstance->mAttachmentID);  // 清除附件
+		AttachmentDie(aTrackInstance->mAttachmentID);
 		return;
 	}
 
 	Reanimation* aAttachReanim = FindReanimAttachment(aTrackInstance->mAttachmentID);
-	if (aAttachReanim == nullptr || aAttachReanim->mReanimationType != aReanimationType)  // 如果原先没有附属动画，或原附属动画不是上述设定的动画
+	if (aAttachReanim == nullptr || aAttachReanim->mReanimationType != aReanimationType)
 	{
-		AttachmentDie(aTrackInstance->mAttachmentID);  // 清除原有附件
-		aAttachReanim = gEffectSystem->mReanimationHolder->AllocReanimation(0.0f, 0.0f, 0, aReanimationType);  // 重新创建一个指定的动画
+		AttachmentDie(aTrackInstance->mAttachmentID);
+		aAttachReanim = gEffectSystem->mReanimationHolder->AllocReanimation(0.0f, 0.0f, 0, aReanimationType);
 		aAttachReanim->mLoopType = aAttacherInfo.mLoopType;
 		aAttachReanim->mAnimRate = aAttacherInfo.mAnimRate;
 		AttachReanim(aTrackInstance->mAttachmentID, aAttachReanim, 0.0f, 0.0f);
-		mFrameBasePose = NO_BASE_POSE;  // 设定附属动画后，自身不再存在基准帧
+		mFrameBasePose = NO_BASE_POSE;  // with an attachment set, this reanim has no base pose frame
 	}
 
-	if (aAttacherInfo.mTrackName.size() != 0)  // 如果定义了附属动画的动作轨道
+	if (aAttacherInfo.mTrackName.size() != 0)
 	{
 		int aAnimFrameStart, aAnimFrameCount;
 		aAttachReanim->GetFramesForLayer(aAttacherInfo.mTrackName.c_str(), aAnimFrameStart, aAnimFrameCount);
 		if (aAttachReanim->mFrameStart != aAnimFrameStart || aAttachReanim->mFrameCount != aAnimFrameCount)  // if (!aAttachReanim->IsAnimPlaying(……))
 		{
 			aAttachReanim->StartBlend(20);
-			aAttachReanim->SetFramesForLayer(aAttacherInfo.mTrackName.c_str());  // 播放指定轨道上的动作
+			aAttachReanim->SetFramesForLayer(aAttacherInfo.mTrackName.c_str());
 		}
 
 		if (aAttachReanim->mAnimRate == 12.0f && aAttacherInfo.mTrackName.compare("anim_walk") == 0 && aAttachReanim->TrackExists("_ground"))

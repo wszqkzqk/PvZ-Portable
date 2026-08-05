@@ -42,13 +42,12 @@
 #include "widget/WidgetManager.h"
 #include <algorithm>
 
-// GOTY @Patoke: 0x48E020
 SeedChooserScreen::SeedChooserScreen()
 {
 	mApp = (LawnApp*)gSexyAppBase;
 	mBoard = mApp->mBoard;
 	mClip = false;
-	// mSeedChooserAge = 0;  原版并没有初始化 mSeedChooserAge
+	// mSeedChooserAge is deliberately not initialized here
 	mSeedsInFlight = 0;
 	mSeedsInBank = 0;
 	mLastMouseX = -1;
@@ -60,7 +59,7 @@ SeedChooserScreen::SeedChooserScreen()
 	mToolTipSeed = -1;
 
 	mStartButton = new GameButton(SeedChooserScreen::SeedChooserScreen_Start);
-	mStartButton->SetLabel("[LETS_ROCK_BUTTON]"); // @Patoke: wrong local name
+	mStartButton->SetLabel("[LETS_ROCK_BUTTON]"); // the localization key name is wrong
 	mStartButton->mButtonImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON;
 	mStartButton->mOverImage = nullptr;
 	mStartButton->mDownImage = nullptr;
@@ -357,7 +356,7 @@ void SeedChooserScreen::Draw(Graphics* g)
 	{
 		g->DrawImage(Sexy::IMAGE_SEEDCHOOSER_IMITATERADDON, 459, 503);
 	}
-	// @Patoke: wrong local name
+	// the localization key name is wrong
 	PvzpDrawString(g, "[CHOOSE_YOUR_PLANTS]", 229, 110, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DS_ALIGN_CENTER);
 
 	int aNumSeeds = Has7Rows() ? 48 : 40;
@@ -910,7 +909,6 @@ void SeedChooserScreen::ShowToolTip()
 					}
 					else
 					{
-						// @Patoke: fix local name
 						mToolTip->SetWarningText("[NOT_RECOMMENDED_FOR_LEVEL]");
 					}
 				}

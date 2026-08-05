@@ -85,7 +85,7 @@ constinit const ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
 	{ .mChallengeMode = GameMode::GAMEMODE_CHALLENGE_STORMY_NIGHT, .mChallengeIconIndex = 13, .mPage = ChallengePage::CHALLENGE_PAGE_LIMBO, .mRow = 2, .mCol = 1, .mChallengeName = "[DARK_STORMY_NIGHT]" },
 	{ .mChallengeMode = GameMode::GAMEMODE_CHALLENGE_BUNGEE_BLITZ, .mChallengeIconIndex = 9, .mPage = ChallengePage::CHALLENGE_PAGE_LIMBO, .mRow = 2, .mCol = 2, .mChallengeName = "[BUNGEE_BLITZ]" },
 	{ .mChallengeMode = GameMode::GAMEMODE_CHALLENGE_SQUIRREL, .mChallengeIconIndex = 10, .mPage = ChallengePage::CHALLENGE_PAGE_LIMBO, .mRow = 2, .mCol = 3, .mChallengeName = "Squirrel" },
-	{ .mChallengeMode = GameMode::GAMEMODE_TREE_OF_WISDOM, .mChallengeIconIndex = 10, .mPage = ChallengePage::CHALLENGE_PAGE_LIMBO, .mRow = 2, .mCol = 4, .mChallengeName = "Tree of Wisdom" }, // @Patoke: replaced for english
+	{ .mChallengeMode = GameMode::GAMEMODE_TREE_OF_WISDOM, .mChallengeIconIndex = 10, .mPage = ChallengePage::CHALLENGE_PAGE_LIMBO, .mRow = 2, .mCol = 4, .mChallengeName = "Tree of Wisdom" },
 	{ .mChallengeMode = GameMode::GAMEMODE_SCARY_POTTER_1, .mChallengeIconIndex = 10, .mPage = ChallengePage::CHALLENGE_PAGE_PUZZLE, .mRow = 0, .mCol = 0, .mChallengeName = "[SCARY_POTTER_1]" },
 	{ .mChallengeMode = GameMode::GAMEMODE_SCARY_POTTER_2, .mChallengeIconIndex = 10, .mPage = ChallengePage::CHALLENGE_PAGE_PUZZLE, .mRow = 0, .mCol = 1, .mChallengeName = "[SCARY_POTTER_2]" },
 	{ .mChallengeMode = GameMode::GAMEMODE_SCARY_POTTER_3, .mChallengeIconIndex = 10, .mPage = ChallengePage::CHALLENGE_PAGE_PUZZLE, .mRow = 0, .mCol = 2, .mChallengeName = "[SCARY_POTTER_3]" },
@@ -110,7 +110,6 @@ constinit const ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
 	{ .mChallengeMode = GameMode::GAMEMODE_INTRO, .mChallengeIconIndex = 10, .mPage = ChallengePage::CHALLENGE_PAGE_LIMBO, .mRow = 2, .mCol = 3, .mChallengeName = "Intro" }
 };
 
-// GOTY @Patoke: 0x430810
 ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 {
 	mLockShakeX = 0;
@@ -415,9 +414,7 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 
 		if (AccomplishmentsNeeded(theChallengeIndex) <= 1)
 		{
-			// ============================================================================================
-			// ▲ 绘制按钮上的小游戏图标
-			// ============================================================================================
+			// draw the minigame icon on the button
 			if (aChallengeButton->mDisabled)
 			{
 				g->SetColor(Color(92, 92, 92));
@@ -446,16 +443,12 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 				g->DrawImageCel(Sexy::IMAGE_CHALLENGE_THUMBNAILS, aPosX + 13, aPosY + 4, aDef.mChallengeIconIndex);
 			}
 
-			// ============================================================================================
-			// ▲ 绘制小游戏按钮边框
-			// ============================================================================================
+			// draw the button frame
 			bool aHighLight = aChallengeButton->mIsOver && theChallengeIndex != mUnlockChallengeIndex;
 			g->SetColorizeImages(false);
 			g->DrawImage(aHighLight ? Sexy::IMAGE_CHALLENGE_WINDOW : Sexy::IMAGE_CHALLENGE_WINDOW_HIGHLIGHT, aPosX - 6, aPosY - 2);
 
-			// ============================================================================================
-			// ▲ 绘制小游戏的名称
-			// ============================================================================================
+			// draw the challenge name
 			Color aTextColor = aHighLight ? Color(250, 40, 40) : Color(42, 42, 90);
 			std::string aName = PvzpStringTranslate(aDef.mChallengeName);
 			if (aChallengeButton->mDisabled || (theChallengeIndex == mUnlockChallengeIndex && mUnlockState == UNLOCK_SHAKING))
@@ -532,9 +525,7 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 				}
 			}
 
-			// ============================================================================================
-			// ▲ 绘制关卡锁定或关卡完成的贴图以及关卡最高记录的文本等
-			// ============================================================================================
+			// draw the lock or completion images and the best record text
 			uint32_t aRecord = mApp->mPlayerInfo->mChallengeRecords[theChallengeIndex];
 			if (theChallengeIndex == mUnlockChallengeIndex)
 			{
@@ -758,7 +749,7 @@ void ChallengeScreen::UpdateToolTip()
 				mToolTip->mVisible = true;
 				return;
 			} // end if (MoreTrophiesNeeded(aChallengeMode) > 0)
-		} // end 需要显示标签的条件判断
+		} // end if (label needs to be shown)
 	}
 
 	mToolTip->mVisible = false;

@@ -450,10 +450,7 @@ bool DescParser::LoadDescriptor(const std::string& theFileName)
 	int aLineCount = 0;
 	bool hasErrors = false;
 
-	//Apparently VC6 doesn't have a clear() function for basic_strings
 	mError.clear();
-	//mError.erase();
-	//mError.erase(mError.begin());
 
 	std::string aFileContent;
 
@@ -565,15 +562,11 @@ bool DescParser::LoadDescriptor(const std::string& theFileName)
 				break;
 			}
 
-			//Apparently VC6 doesn't have a clear() function for basic_strings
-			//mCurrentLine.clear();
 			mCurrentLine.clear();
 		}
 	}
 
-	//Apparently VC6 doesn't have a clear() function for basic_strings
 	mCurrentLine.clear();
-	//mCurrentLine.erase();
 	mCurrentLineNum = 0;
 
 	return !hasErrors;

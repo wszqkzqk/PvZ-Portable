@@ -140,7 +140,6 @@ void MemoryImage::NormalDrawLine(double theStartX, double theStartY, double theE
 
 			double dv = theEndY - theStartY;
 			double dh = theEndX - theStartX;
-			// int minG, maxG; // unused
 			int G, DeltaG1, DeltaG2;
 			double swap;
 			int inc = 1;
@@ -232,7 +231,6 @@ void MemoryImage::NormalDrawLine(double theStartX, double theStartY, double theE
 				aCurY = theStartY + 1;
 
 				G = 2 * dh - dv;
-				// minG = maxG = G; // unused
 				DeltaG1 = 2 * ( dh - dv );
 				DeltaG2 = 2 * dh;
 
@@ -269,7 +267,6 @@ void MemoryImage::NormalDrawLine(double theStartX, double theStartY, double theE
 
 			double dv = theEndY - theStartY;
 			double dh = theEndX - theStartX;
-			// int minG, maxG; // unused
 			int G, DeltaG1, DeltaG2;
 			double swap;
 			int inc = 1;
@@ -371,7 +368,6 @@ void MemoryImage::NormalDrawLine(double theStartX, double theStartY, double theE
 				aCurY = theStartY + 1;
 
 				G = 2 * dh - dv;
-				// minG = maxG = G; // unused
 				DeltaG1 = 2 * ( dh - dv );
 				DeltaG2 = 2 * dh;
 
@@ -419,11 +415,6 @@ void MemoryImage::AdditiveDrawLine(double theStartX, double theStartY, double th
 	int aGreenShift = 8;
 	int aBlueShift = 0;
 
-	// unused
-	//uint32_t aRRoundAdd = aRMask >> 1;
-	//uint32_t aGRoundAdd = aGMask >> 1;
-	//uint32_t aBRoundAdd = aBMask >> 1;
-
 	uchar* aMaxTable = mApp->mAdd8BitMaxTable;
 	uint32_t *aSurface = GetBits();
 	
@@ -435,7 +426,6 @@ void MemoryImage::AdditiveDrawLine(double theStartX, double theStartY, double th
 
 		double dv = theEndY - theStartY;
 		double dh = theEndX - theStartX;
-		// int minG, maxG; // unused
 		int G, DeltaG1, DeltaG2;
 		double swap;
 		int inc = 1;
@@ -556,7 +546,6 @@ void MemoryImage::AdditiveDrawLine(double theStartX, double theStartY, double th
 			aCurY = theStartY + 1;
 
 			G = 2 * dh - dv;
-			// minG = maxG = G; // unused
 			DeltaG1 = 2 * ( dh - dv );
 			DeltaG2 = 2 * dh;
 			while (aCurY <= theEndY)
@@ -1393,8 +1382,6 @@ void MemoryImage::Blt(Image* theImage, int theX, int theY, const Rect& theSrcRec
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 void MemoryImage::BltF(Image* theImage, float theX, float theY, const Rect& theSrcRect, const Rect &theClipRect, const Color& theColor, int theDrawMode)
 {
 	theImage->mDrawn = true;
@@ -1402,8 +1389,6 @@ void MemoryImage::BltF(Image* theImage, float theX, float theY, const Rect& theS
 	BltRotated(theImage,theX,theY,theSrcRect,theClipRect,theColor,theDrawMode,0,0,0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 bool MemoryImage::BltRotatedClipHelper(float &theX, float &theY, const Rect &theSrcRect, const Rect &theClipRect, double theRot, FRect &theDestRect, float theRotCenterX, float theRotCenterY)
 {
 	// Clipping Code (this used to be in Graphics::DrawImageRotated)
@@ -1448,8 +1433,6 @@ bool MemoryImage::BltRotatedClipHelper(float &theX, float &theY, const Rect &the
 	return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 bool MemoryImage::StretchBltClipHelper(const Rect &theSrcRect, const Rect &theClipRect, const Rect &theDestRect, FRect &theSrcRectOut, Rect &theDestRectOut)
 {
 	theDestRectOut = Rect(theDestRect.mX , theDestRect.mY, theDestRect.mWidth, theDestRect.mHeight).Intersection(theClipRect);	
@@ -1465,8 +1448,6 @@ bool MemoryImage::StretchBltClipHelper(const Rect &theSrcRect, const Rect &theCl
 	return theSrcRectOut.mWidth>0 && theSrcRectOut.mHeight>0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 bool MemoryImage::StretchBltMirrorClipHelper(const Rect &theSrcRect, const Rect &theClipRect, const Rect &theDestRect, FRect &theSrcRectOut, Rect &theDestRectOut)
 {
 	theDestRectOut = Rect(theDestRect.mX, theDestRect.mY, theDestRect.mWidth, theDestRect.mHeight).Intersection(theClipRect);	
@@ -1486,8 +1467,6 @@ bool MemoryImage::StretchBltMirrorClipHelper(const Rect &theSrcRect, const Rect 
 	return theSrcRectOut.mWidth>0 && theSrcRectOut.mHeight>0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 void MemoryImage::BltRotated(Image* theImage, float theX, float theY, const Rect &theSrcRect, const Rect& theClipRect, const Color& theColor, int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY)
 {
 	theImage->mDrawn = true;
@@ -1727,7 +1706,6 @@ void MemoryImage::BltTrianglesTexHelper(Image *theTexture, const TriVertex theVe
 //	if (anImage==nullptr)
 //		return;
 
-	// int aColor = theColor.ToInt(); // unused
 	for (int i=0; i<theNumTriangles; i++)
 	{
 		bool vertexColor = false;

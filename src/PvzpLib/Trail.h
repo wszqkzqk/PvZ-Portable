@@ -84,8 +84,6 @@ void						TrailFreeDefinitions();
 extern int gTrailDefCount;
 extern TrailDefinition* gTrailDefArray;
 
-// #################################################################################################### //
-
 class TrailPoint
 {
 public:

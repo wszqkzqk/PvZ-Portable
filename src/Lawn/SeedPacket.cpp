@@ -722,7 +722,6 @@ bool SeedPacket::CanPickUp()
 	return true;
 }
 
-// GOTY @Patoke: 0x4931C0
 void SeedPacket::MouseDown(int x, int y, int theClickCount)
 {
 	(void)x;(void)y;(void)theClickCount;

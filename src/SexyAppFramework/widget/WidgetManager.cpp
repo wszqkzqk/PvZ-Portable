@@ -33,7 +33,6 @@
 #include "misc/Debug.h"
 
 using namespace Sexy;
-//using namespace std;
 
 WidgetManager::WidgetManager(SexyAppBase* theApp)
 {
@@ -420,7 +419,6 @@ void WidgetManager::DrawWidgetsTo(Graphics* g)
 bool WidgetManager::DrawScreen()
 {
 	SEXY_AUTO_PERF("WidgetManager::DrawScreen");
-	//uint32_t start = timeGetTime();
 
 	ModalFlags aModalFlags;
 	InitModalFlags(&aModalFlags);
@@ -428,9 +426,6 @@ bool WidgetManager::DrawScreen()
 	bool drewStuff = false;	
 	
 	int aDirtyCount = 0;
-	// unused
-	//bool hasTransients = false;
-	//bool hasDirtyTransients = false;
 
 	// Survey
 	WidgetList::iterator anItr = mWidgets.begin();

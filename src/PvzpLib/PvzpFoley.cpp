@@ -150,17 +150,11 @@ FoleyTypeData::FoleyTypeData()
 
 int PvzpDSoundInstance::GetSoundPosition()
 {
-	/*
-	unsigned long dwCurrentPlayerCursor;
-	mSoundBuffer->GetCurrentPosition(&dwCurrentPlayerCursor, nullptr);
-	return dwCurrentPlayerCursor;
-	*/
 	return 0;
 }
 
 void PvzpDSoundInstance::SetSoundPosition(int thePosition)
 {
-	//mSoundBuffer->SetCurrentPosition(thePosition);
 }
 
 void PvzpFoleyInitialize(const FoleyParams* theFoleyParamArray, int theFoleyParamArraySize)
@@ -205,7 +199,7 @@ bool SoundSystemHasFoleyPlayedTooRecently(PvzpFoley* theSoundSystem, FoleyType t
 	for (int i = 0; i < MAX_FOLEY_INSTANCES; i++)
 	{
 		FoleyInstance* aFoleyInstance = &aFoleyData->mFoleyInstances[i];
-		if (aFoleyInstance->mRefCount != 0 && gSexyAppBase->mUpdateCount - aFoleyInstance->mStartTime < 10U)  // 若同种音效存在近 10 cs 内播放的实例
+		if (aFoleyInstance->mRefCount != 0 && gSexyAppBase->mUpdateCount - aFoleyInstance->mStartTime < 10U)  // an instance of this sound was played within the last 10 cs
 			return true;
 	}
 	return false;
@@ -253,22 +247,22 @@ FoleyInstance* SoundSystemGetFreeInstanceIndex(PvzpFoley* theSoundSystem, FoleyT
 void PvzpFoley::PlayFoleyPitch(FoleyType theFoleyType, float thePitch)
 {
 	const FoleyParams* aFoleyParams = LookupFoley(theFoleyType);
-	SoundSystemReleaseFinishedInstances(this);  // 释放已播放完成的音效实例
+	SoundSystemReleaseFinishedInstances(this);
 	if (SoundSystemHasFoleyPlayedTooRecently(this, theFoleyType) && !TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_LOOP))
-		return;  // 非循环音效不可重叠播放
+		return;  // non-looping sounds may not overlap
 
-	if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_ONE_AT_A_TIME))  // 如果定义了不可叠加播放
+	if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_ONE_AT_A_TIME))
 	{
 		FoleyInstance* aFoleyInstance = SoundSystemFindInstance(this, theFoleyType);
 		if (aFoleyInstance != nullptr)
 		{
-			aFoleyInstance->mRefCount++;  // 增加 1 次引用计数
-			aFoleyInstance->mStartTime = gSexyAppBase->mUpdateCount;  // 刷新开始的时间
+			aFoleyInstance->mRefCount++;
+			aFoleyInstance->mStartTime = gSexyAppBase->mUpdateCount;
 			return;
 		}
 	}
 	FoleyInstance* aFoleyInstance = SoundSystemGetFreeInstanceIndex(this, theFoleyType);
-	if (aFoleyInstance == nullptr)  // 如果已经存在 8 个音效实例
+	if (aFoleyInstance == nullptr)  // all instances are in use
 		return;
 
 	int aVariations = 0;
@@ -276,7 +270,7 @@ void PvzpFoley::PlayFoleyPitch(FoleyType theFoleyType, float thePitch)
 	FoleyTypeData* aFoleyData = &mFoleyTypeData[theFoleyType];
 	for (int i = 0; i < 10; i++)
 	{
-		if (!TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_DONT_REPEAT) || aFoleyData->mLastVariationPlayed != i)  // 如果未重复或不禁止重复
+		if (!TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_DONT_REPEAT) || aFoleyData->mLastVariationPlayed != i)  // exclude the last-played variation when repeats are forbidden
 		{
 			if (aFoleyParams->mSfxID[i] == nullptr)
 				break;
@@ -295,21 +289,20 @@ void PvzpFoley::PlayFoleyPitch(FoleyType theFoleyType, float thePitch)
 	aFoleyInstance->mRefCount = 1;
 	aFoleyInstance->mStartTime = gSexyAppBase->mUpdateCount;
 	aFoleyData->mLastVariationPlayed = aVariation;
-	if (thePitch != 0.0f)  // 如果参数指定了音高
-		aSoundInstance->AdjustPitch(thePitch);  // 调整音高
-	if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_USES_MUSIC_VOLUME))  // 如果定义了使用音乐音量
-		ApplyMusicVolume(aFoleyInstance);  // 将音效的音量调整为与音乐一致
+	if (thePitch != 0.0f)
+		aSoundInstance->AdjustPitch(thePitch);
+	if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_USES_MUSIC_VOLUME))
+		ApplyMusicVolume(aFoleyInstance);
 	bool aIsLooping = TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_LOOP);
-	aSoundInstance->Play(aIsLooping, false);  // 正式开始播放音效
+	aSoundInstance->Play(aIsLooping, false);
 }
 
-// GOTY @Patoke: 0x51F6F0
 void PvzpFoley::PlayFoley(FoleyType theFoleyType)
 {
 	const FoleyParams* aFoleyParams = LookupFoley(theFoleyType);
 	float aPitch = 0.0f;
-	if (aFoleyParams->mPitchRange != 0.0f)  // 如果定义了音高范围
-		aPitch = Sexy::Rand(aFoleyParams->mPitchRange);  // 在范围内随机选取一个音高
+	if (aFoleyParams->mPitchRange != 0.0f)
+		aPitch = Sexy::Rand(aFoleyParams->mPitchRange);
 	PlayFoleyPitch(theFoleyType, aPitch);
 }
 
@@ -322,8 +315,8 @@ void PvzpFoley::StopFoley(FoleyType theFoleyType)
 
 	PVZP_ASSERT(aFoleyInstance->mRefCount > 0);
 	PVZP_ASSERT(aFoleyInstance->mInstance);
-	aFoleyInstance->mRefCount--;  // 减少 1 次引用计数
-	if (aFoleyInstance->mRefCount == 0)  // 如果减少之后无引用，则直接释放
+	aFoleyInstance->mRefCount--;
+	if (aFoleyInstance->mRefCount == 0)
 	{
 		aFoleyInstance->mInstance->Release();
 		aFoleyInstance->mInstance = nullptr;
@@ -336,40 +329,28 @@ void PvzpFoley::GamePause(bool theEnteringPause)
 	for (int aFoleyType = 0; aFoleyType < gFoleyParamArraySize; aFoleyType++)
 	{
 		const FoleyParams* aFoleyParams = LookupFoley((FoleyType)aFoleyType);
-		if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_MUTE_ON_PAUSE))  // 如果指定了暂停时静默
+		if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_MUTE_ON_PAUSE))
 		{
 			FoleyTypeData* aFoleyData = &mFoleyTypeData[aFoleyType];
-			for (int i = 0; i < MAX_FOLEY_INSTANCES; i++)  // 设定每一个音效实例的暂停与否
+			for (int i = 0; i < MAX_FOLEY_INSTANCES; i++)
 			{
 				FoleyInstance* aFoleyInstance = &aFoleyData->mFoleyInstances[i];
-				if (aFoleyInstance->mRefCount != 0)  // 如果音效实例存在引用
+				if (aFoleyInstance->mRefCount != 0)
 				{
 					PvzpDSoundInstance* aSoundInstance = (PvzpDSoundInstance*)aFoleyInstance->mInstance;
 					if (theEnteringPause)
 					{
 						aFoleyInstance->mPaused = true;
-						//if (aSoundInstance->mSoundBuffer == nullptr)
 						{
 							aFoleyInstance->mPauseOffset = 0;
 							aSoundInstance->Stop();
 						}
-						/*
-						else
-						{
-							aFoleyInstance->mPauseOffset = aSoundInstance->GetSoundPosition();  // 备份暂停时的播放进度
-							aSoundInstance->Stop();
-						}
-						*/
 					}
 					else if (aFoleyInstance->mPaused)
 					{
 						aFoleyInstance->mPaused = false;
 						bool aIsLooping = TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_LOOP);
 						aSoundInstance->Play(aIsLooping, false);
-						/*
-						if (aSoundInstance->mSoundBuffer != nullptr)
-							aSoundInstance->SetSoundPosition(aFoleyInstance->mPauseOffset);  // 还原暂停前的播放进度
-						*/
 					}
 				}
 			}
@@ -383,10 +364,10 @@ void PvzpFoley::CancelPausedFoley()
 	for (int aFoleyType = 0; aFoleyType < gFoleyParamArraySize; aFoleyType++)
 	{
 		FoleyTypeData* aFoleyData = &mFoleyTypeData[aFoleyType];
-		for (int i = 0; i < MAX_FOLEY_INSTANCES; i++)  // 判断每一个音效实例的暂停与否
+		for (int i = 0; i < MAX_FOLEY_INSTANCES; i++)
 		{
 			FoleyInstance* aFoleyInstance = &aFoleyData->mFoleyInstances[i];
-			if (aFoleyInstance->mRefCount != 0 && aFoleyInstance->mPaused)  // 如果音效实例存在引用且处于暂停状态
+			if (aFoleyInstance->mRefCount != 0 && aFoleyInstance->mPaused)
 			{
 				aFoleyInstance->mRefCount = 0;
 				aFoleyInstance->mInstance->Release();
@@ -401,7 +382,7 @@ void PvzpFoley::ApplyMusicVolume(FoleyInstance* theFoleyInstance)
 	if (gSexyAppBase->mSfxVolume < 1e-6)
 		theFoleyInstance->mInstance->SetVolume(0.0);
 	else
-		theFoleyInstance->mInstance->SetVolume(gSexyAppBase->mMusicVolume / gSexyAppBase->mSfxVolume);  // 这样得到的音量在乘以音效音量后就与音乐音量相等
+		theFoleyInstance->mInstance->SetVolume(gSexyAppBase->mMusicVolume / gSexyAppBase->mSfxVolume);  // so the volume equals the music volume once the sfx volume is applied
 }
 
 void PvzpFoley::RehookupSoundWithMusicVolume()
@@ -410,13 +391,13 @@ void PvzpFoley::RehookupSoundWithMusicVolume()
 	for (int aFoleyType = 0; aFoleyType < gFoleyParamArraySize; aFoleyType++)
 	{
 		const FoleyParams* aFoleyParams = LookupFoley((FoleyType)aFoleyType);
-		if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_USES_MUSIC_VOLUME))  // 如果规定了使用音乐音量
+		if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_USES_MUSIC_VOLUME))
 		{
 			FoleyTypeData* aFoleyData = &mFoleyTypeData[aFoleyType];
-			for (int i = 0; i < MAX_FOLEY_INSTANCES; i++)  // 设定每一个音效实例的音量
+			for (int i = 0; i < MAX_FOLEY_INSTANCES; i++)
 			{
 				FoleyInstance* aFoleyInstance = &aFoleyData->mFoleyInstances[i];
-				if (aFoleyInstance->mRefCount != 0)  // 如果音效实例存在引用
+				if (aFoleyInstance->mRefCount != 0)
 					ApplyMusicVolume(aFoleyInstance);
 			}
 		}

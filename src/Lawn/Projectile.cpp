@@ -172,7 +172,7 @@ Plant* Projectile::FindCollisionTargetPlant()
 				aPlant->mSeedType == SeedType::SEED_POTATOMINE ||
 				aPlant->mSeedType == SeedType::SEED_SPIKEWEED ||
 				aPlant->mSeedType == SeedType::SEED_SPIKEROCK ||
-				aPlant->mSeedType == SeedType::SEED_LILYPAD)  // 僵尸豌豆不能击中低矮植物
+				aPlant->mSeedType == SeedType::SEED_LILYPAD)  // zombie peas cannot hit low plants
 				continue;
 		}
 
@@ -223,7 +223,7 @@ bool Projectile::PeaAboutToHitTorchwood()
 
 Zombie* Projectile::FindCollisionTarget()
 {
-	if (PeaAboutToHitTorchwood())  // “卡火炬”的原理，这段代码在两版内测版中均不存在
+	if (PeaAboutToHitTorchwood())  // a pea about to hit a torchwood skips zombie collision ("torchwood clip" trick)
 		return nullptr;
 
 	Rect aProjectileRect = GetProjectileRect();
@@ -506,7 +506,6 @@ void Projectile::DoSplashDamage(Zombie* theZombie)
 	}
 }
 
-// GOTY @Patoke: 0x471B41
 void Projectile::UpdateLobMotion()
 {
 	if (mProjectileType == ProjectileType::PROJECTILE_COBBIG && mPosZ < -700.0f)
@@ -623,7 +622,6 @@ void Projectile::UpdateLobMotion()
 	}
 	else if (mProjectileType == ProjectileType::PROJECTILE_COBBIG)
 	{
-		// @Patoke: implemented
 		int aBeforeGargantuarCount = mBoard->GetLiveGargantuarCount();
 		mBoard->KillAllZombiesInRadius(mRow, mPosX + 80, mPosY + 40, 115, 1, true, mDamageRangeFlags);
 		int aAfterGargantuarCount = mBoard->GetLiveGargantuarCount();

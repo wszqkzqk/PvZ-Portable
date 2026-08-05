@@ -42,57 +42,40 @@ enum class DefFieldType : int
     DT_FONT
 };
 
-/*
-    [为通俗理解以下内容，在此规定]
-        “用于存储其他类的定义数据”的类，称为定义数据类，记作 _DefClass。相应地，将被 _DefClass 定义的类记作 _Class。
-        例如，ReanimatorDefinition 作为 Reanimation 类（动画类）的定义数据类，PvzpParticleDefinition 作为 PvzpParticleSystem 类（粒子系统类）的定义数据类等。
-*/
+// Terminology: a "definition class" (_DefClass) stores definition data for another class (_Class),
+// e.g. ReanimatorDefinition for Reanimation, PvzpParticleDefinition for PvzpParticleSystem.
 
-// ====================================================================================================
-// ★ 【定义标志】
-// ----------------------------------------------------------------------------------------------------
-// 对于按标志位判断的（/枚举类型的）数据，一个 DefSymbol 记录其一个标志位上的（/一个枚举项的）值。
-// ====================================================================================================
+// A DefSymbol records the value of one flag bit (or one enum entry) of a flags/enum field.
 class DefSymbol
 {
 public:
-    int                 mSymbolValue;                   //+0x0：标志位上的值或枚举项对应的数值，若为 -1 则表示不存在该项
-    const char*         mSymbolName;                    //+0x4：标志位或枚举项的名称，为空指针时表示不存在该项，故被作为读取结束的标志
+    int                 mSymbolValue;                   //+0x0: value of the flag bit or enum entry; -1 means no such entry
+    const char*         mSymbolName;                    //+0x4: name of the flag bit or enum entry; nullptr marks the end of the list
 };
 //extern DefSymbol gParticleFlagSymbols[];
 //extern DefSymbol gEmitterTypeSymbols[];
 //extern DefSymbol gParticleTypeSymbols[];
 
-// ====================================================================================================
-// ★ 【结构字段】
-// ----------------------------------------------------------------------------------------------------
-// 结构字段记录了一个类中的一个的成员变量（_MemVar）的数据和其在所处类中的结构。
-// ====================================================================================================
+// A DefField describes one member variable (_MemVar) of a class and its layout within the class.
 class DefField
 {
 public:
-    const char*         mFieldName;                     //+0x0：指向 _MemVar 的名称。指向空字符数组时表示无此变量，故被作为读取结束的标志
-    int                 mFieldOffset;                   //+0x4：_MemVar 在所处类中的偏移量（结合汇编理解）
-    DefFieldType        mFieldType;                     //+0x8：*_MemVar 的数据存储类型，不同类型的数据的读取方式也有所不同
-    const void*         mExtraData;                     //+0xC：额外数据。用于对 *_MemVar 中包含的指针变量进行深拷贝。
-    // 若 _MemVar 为指向其他定义数据的指针型变量，则 mExtraData 为指向 _MemVar 所定义的类的定义结构图的指针；
-    // 若 _MemVar 为标志或枚举类型的数据，则 mExtraData 为指向其各标志数据的 DefSymbol 数组的指针；否则，mExtraData 为空指针。
-    // 虽然借助一个 _DefClass 类的定义结构图就已经可以通过相关函数读取该 _DefClass 的全部数据（即进行浅拷贝），
-    // 但是 _DefClass 中的部分指针变量指向的数据仍然需要进一步依靠相应类型的定义结构图进行递归读取（即进行深拷贝）。
-    // 即：通过层层嵌套的定义结构图，将原本含有层级关系的各类型变量指针“展开”，直到当前变量的数据中已经不存在可以“展开”的指针为止，递归读取结束。
+    const char*         mFieldName;                     //+0x0: name of _MemVar; an empty string marks the end of the field list
+    int                 mFieldOffset;                   //+0x4: offset of _MemVar within its class
+    DefFieldType        mFieldType;                     //+0x8: storage type of _MemVar; each type is read differently
+    const void*         mExtraData;                     //+0xC: extra data used to deep-copy pointers in _MemVar
+    // For a pointer member, mExtraData points to the DefMap of the pointee's definition class;
+    // for a flags/enum member, it points to a DefSymbol array; otherwise it is nullptr.
+    // Nested DefMaps are read recursively until no expandable pointers remain (deep copy).
 };
 
-// ====================================================================================================
-// ★ 【定义结构图】
-// ----------------------------------------------------------------------------------------------------
-// 定义结构图描述了一种定义数据类（_DefClass）中定义数据的存储格式和读取方式，类似于“_DefDefClass”。
-// ====================================================================================================
+// A DefMap describes the storage format of a definition class (_DefClass) and how to read it.
 class DefMap
 {
 public:
-    const DefField*     mMapFields;                     //+0x0：结构字段的数组，记录 _DefClass 类中的各成员变量在 _DefClass 中的结构（每项记录一种结构）
-    int                 mDefSize;                       //+0x4：一个 _DefClass 实例所占用的内存大小，也即后续初次读取时的读取长度，一般为 sizeof(_DefClass)
-    void*               (*mConstructorFunc)(void*);     //+0x8：_DefClass 类型实例的构造函数的指针
+    const DefField*     mMapFields;                     //+0x0: array of DefField entries, one per member of _DefClass
+    int                 mDefSize;                       //+0x4: size of a _DefClass instance, i.e. the initial read length; usually sizeof(_DefClass)
+    void*               (*mConstructorFunc)(void*);     //+0x8: pointer to the _DefClass constructor
 };
 
 void*            PvzpParticleDefinitionConstructor(void* thePointer);
@@ -105,61 +88,42 @@ void*            ReanimatorDefinitionConstructor(void* thePointer);
 
 //extern DefField gParticleFieldDefFields[];
 extern const DefMap gParticleFieldDefMap;
-//
 //extern DefField gEmitterDefFields[];
 extern const DefMap gEmitterDefMap;
-//
 //extern DefField gParticleDefFields[];
 extern const DefMap gParticleDefMap;
-//
 extern const DefMap gTrailDefMap;
-//
 //extern DefField gReanimatorTransformDefFields[];
 extern const DefMap gReanimatorTransformDefMap;
-//
 //extern DefField gReanimatorTrackDefFields[];
 extern const DefMap gReanimatorTrackDefMap;
-//
 //extern DefField gReanimatorDefFields[];
 extern const DefMap gReanimatorDefMap;
 
-// ====================================================================================================
-// ★ 【定义数组】
-// ----------------------------------------------------------------------------------------------------
-// 一个定义数组对应一种指针类型变量指向的类型。
-// ====================================================================================================
+// A DefinitionArrayDef corresponds to the pointee type of a pointer member.
 class DefinitionArrayDef
 {
 public:
-    void*               mArrayData;                     //+0x0：由若干个特定定义数据类型的实例构成的数组，例如动画定义中的“轨道”定义
-    int                 mArrayCount;                    //+0x4：数组的大小，例如动画定义中的“轨道”数量或粒子系统定义中的“发射器”数量
-    // 定义数据类中的一个“数组（指针） + 数量”的组合，在读取时将被 DefField 视作一个 DefinitionArrayDef 结构
-    // 例如 PvzpParticleDefinition 下的 *mEmitterDefs 和 mEmitterDefCount、以及 PvzpEmitterDefinition 下的 *mParticleFields 和 mParticleFieldCount 等。
-    // 在读取时，作为 mArrayCount 的一项数据总是能在初次读取时就被正确读取（因为是整数类型），故其也会在后续 mArrayData 的修复过程中成为校验参考
+    void*               mArrayData;                     //+0x0: array of instances of a definition type, e.g. the track defs of a reanimation definition
+    int                 mArrayCount;                    //+0x4: number of array elements, e.g. the track count or emitter count
+    // An "array pointer + count" pair in a definition class is read as one DefinitionArrayDef,
+    // e.g. mEmitterDefs/mEmitterDefCount in PvzpParticleDefinition, mParticleFields/mParticleFieldCount in PvzpEmitterDefinition.
 };
 
-// ====================================================================================================
-// ★ 【压缩定义数据头】
-// ----------------------------------------------------------------------------------------------------
-// 在压缩数据前添加一个压缩定义数据头，记录校验缓存值及原始数据长度，用于在解压时检测数据完整性。
-// ====================================================================================================
+// Prepended to compressed data; used to verify data integrity when decompressing.
 class CompressedDefinitionHeader
 {
 public:
-    unsigned int        mCookie;                        //+0x0：用于压缩校验的缓存值
-    unsigned int        mUncompressedSize;              //+0x4：未压缩数据的长度
+    unsigned int        mCookie;                        //+0x0: cookie for compression validation
+    unsigned int        mUncompressedSize;              //+0x4: length of the uncompressed data
 };
 
-// ====================================================================================================
-// ★ 【定义路径】
-// ----------------------------------------------------------------------------------------------------
-// 定义路径在一种贴图前缀与该前缀的贴图存放的文件夹路径之间建立关联。
-// ====================================================================================================
+// A DefLoadResPath maps an image prefix to the directory holding its images.
 class DefLoadResPath
 {
 public:
-    const char*         mPrefix;                        //+0x0：贴图的前缀，如“IMAGE_"
-    const char*         mDirectory;                     //+0x4：前缀对应的贴图所在文件夹，如“images\”
+    const char*         mPrefix;                        //+0x0: image prefix, e.g. "IMAGE_"
+    const char*         mDirectory;                     //+0x4: directory for images with this prefix, e.g. "images\"
 };
 
 std::string             DefinitionGetCompiledFilePathFromXMLFilePath(const std::string& theXMLFilePath);

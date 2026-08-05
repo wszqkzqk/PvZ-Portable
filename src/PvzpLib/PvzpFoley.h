@@ -30,17 +30,15 @@ using namespace Sexy;
 #define MAX_FOLEY_TYPES 110
 #define MAX_FOLEY_INSTANCES 8
 
-// ######################################################################################################################################################
-// ############################################################# 以下为拟音音效定义相关内容 #############################################################
-// ######################################################################################################################################################
+// Foley sound definitions
 
 enum FoleyFlags : int32_t
 {
-    FOLEYFLAGS_LOOP,                // 循环播放
-    FOLEYFLAGS_ONE_AT_A_TIME,       // 禁止叠加播放：指定该种类的音效同时至多存在 1 个实例，重复播放时仅增加引用计数并刷新开始时间
-    FOLEYFLAGS_MUTE_ON_PAUSE,       // 暂停时静默
-    FOLEYFLAGS_USES_MUSIC_VOLUME,   // 使用音乐音量，指定该种类的音效使用与背景音乐相同的音量
-    FOLEYFLAGS_DONT_REPEAT          // 禁止变式重复，指定该种类的音效每次实际播放的变式不得与上一次相同
+    FOLEYFLAGS_LOOP,
+    FOLEYFLAGS_ONE_AT_A_TIME,       // at most 1 instance of this sound; replaying only bumps the refcount and refreshes the start time
+    FOLEYFLAGS_MUTE_ON_PAUSE,
+    FOLEYFLAGS_USES_MUSIC_VOLUME,
+    FOLEYFLAGS_DONT_REPEAT          // the variation played must differ from the previous one
 };
 
 enum FoleyType : int32_t
@@ -170,9 +168,7 @@ extern const FoleyParams* gFoleyParamArray;
 
 extern const FoleyParams gLawnFoleyParamArray[static_cast<int>(FoleyType::NUM_FOLEY)];
 
-// ######################################################################################################################################################
-// ############################################################ 以下正式开始拟音音效相关声明 ############################################################
-// ######################################################################################################################################################
+// Foley sound declarations
 
 class PvzpDSoundInstance : public SDLSoundInstance
 {

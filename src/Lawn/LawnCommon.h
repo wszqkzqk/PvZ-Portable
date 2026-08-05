@@ -56,28 +56,20 @@ public:
 	void					KeyText(std::string_view theText) override;
 };
 
-// ====================================================================================================
-// ★ 常用逻辑判断
-// ====================================================================================================
+// Logic checks
 /*inline*/ bool				ModInRange(int theNumber, int theMod, int theRange = 0);
 /*inline*/ bool				GridInRange(int x1, int y1, int x2, int y2, int theRangeX = 1, int theRangeY = 1);
 
-// ====================================================================================================
-// ★ 动画、特效与绘制相关
-// ====================================================================================================
+// Animation, effects and drawing
 /*inline*/ void				TileImageHorizontally(Graphics* g, Image* theImage, int theX, int theY, int theWidth);
 /*inline*/ void				TileImageVertically(Graphics* g, Image* theImage, int theX, int theY, int theHeight);
 
-// ====================================================================================================
-// ★ 控件
-// ====================================================================================================
+// Widgets
 Checkbox*					MakeNewCheckbox(int theId, CheckboxListener* theListener, bool theDefault);
 LawnEditWidget*				CreateEditWidget(int theId, EditListener* theListener, Dialog* theDialog);
 void						DrawEditBox(Graphics* g, EditWidget* theWidget);
 
-// ====================================================================================================
-// ★ 其他
-// ====================================================================================================
+// Miscellaneous
 std::string					GetSavedGameName(GameMode theGameMode, int theProfileId);
 std::string					GetLegacySavedGameName(GameMode theGameMode, int theProfileId);
 int							GetCurrentDaysSince2000(time_t theTime);

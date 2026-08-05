@@ -52,7 +52,7 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::stri
     SetLinesFont(Sexy::FONT_DWARVENTODCRAFT15);
     mContentInsets = Insets(36, 35, 46, 36);
 
-    // @Patoke: these dialogs had the wrong local name
+    // the localization key names for these dialogs are wrong
     if (theButtonMode == 1)
     {
         mLawnYesButton = MakeButton(1000, this, mApp->GetString("BUTTON_YES", "Yes"));
@@ -102,14 +102,14 @@ int LawnDialog::GetTop()
 
 void LawnDialog::CalcSize(int theExtraX, int theExtraY)
 {
-    // 根据边距计算一个最小宽度
+    // minimum width from the insets
     int aWidth = mBackgroundInsets.mLeft + mBackgroundInsets.mRight + mContentInsets.mLeft + mContentInsets.mRight + theExtraX;
-    // 最小宽度需要额外考虑到标题字符串的宽度
+    // plus the header string width
     if (mDialogHeader.size() > 0) aWidth += mHeaderFont->StringWidth(mDialogHeader);
-    // 对话框贴图的最小宽度
+    // minimum width of the dialog images
     int aTopMidWidth = Sexy::IMAGE_DIALOG_TOPMIDDLE->mWidth;
     int aImageWidth = Sexy::IMAGE_DIALOG_TOPLEFT->mWidth + Sexy::IMAGE_DIALOG_TOPRIGHT->mWidth + aTopMidWidth;
-    // 计算最终的宽度
+    // clamp to the image width, rounding up to whole middle tiles
     if (aWidth <= aImageWidth)
     {
         aWidth = aImageWidth;
@@ -123,14 +123,14 @@ void LawnDialog::CalcSize(int theExtraX, int theExtraY)
         }
     }
 
-    // 根据边距计算一个最小高度
+    // minimum height from the insets
     int aHeight = mBackgroundInsets.mTop + mBackgroundInsets.mBottom + mContentInsets.mTop + mContentInsets.mBottom + theExtraY + DIALOG_HEADER_OFFSET;
-    // 额外考虑到标题字符串的高度
+    // plus the header string height
     if (mDialogHeader.size() > 0)
     {
         aHeight += -mHeaderFont->GetAscentPadding() + mHeaderFont->GetHeight() + mSpaceAfterHeader;
     }
-    // 对话框宽度和高度额外考虑正文文本
+    // also account for the body text
     if (mDialogLines.size() > 0)
     {
         aWidth += aTopMidWidth;
@@ -140,10 +140,10 @@ void LawnDialog::CalcSize(int theExtraX, int theExtraY)
         aHeight += GetWordWrappedHeight(&g, aBasicWidth, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset) + 30;
     }
     aHeight += mButtonHeight;
-    // 对话框贴图的最小高度
+    // minimum height of the dialog images
     int aBottomHeight = (mTallBottom ? Sexy::IMAGE_DIALOG_BIGBOTTOMLEFT : Sexy::IMAGE_DIALOG_BOTTOMLEFT)->mHeight;
     int aImageHeight = Sexy::IMAGE_DIALOG_TOPLEFT->mHeight + aBottomHeight + DIALOG_HEADER_OFFSET;
-    // 计算最终的高度
+    // clamp to the image height, rounding up to whole center tiles
     if (aHeight < aImageHeight)
     {
         aHeight = aImageHeight;
@@ -251,12 +251,12 @@ void LawnDialog::Resize(int theX, int theY, int theWidth, int theHeight)
     int aButtonAreaX = mContentInsets.mLeft + mBackgroundInsets.mLeft - 5;
     int aButtonAreaY = mHeight - mContentInsets.mBottom - mBackgroundInsets.mBottom - IMAGE_BUTTON_LEFT->mHeight + 2;
     int aButtonAreaWidth = mWidth - mContentInsets.mRight - mBackgroundInsets.mRight - mBackgroundInsets.mLeft - mContentInsets.mLeft + 8;
-    // 按钮贴图限制下，按钮的最小宽度
+    // minimum width imposed by the button images
     int aButtonMinWidth = IMAGE_BUTTON_LEFT->mWidth + IMAGE_BUTTON_RIGHT->mWidth;
-    // 按钮区域额外空余的宽度
+    // extra width available in the button area
     int aBtnMidWidth = IMAGE_BUTTON_MIDDLE->mWidth;
     int aButtonExtraWidth = (aButtonAreaWidth - 10) / 2 - aBtnMidWidth - aButtonMinWidth + 1;
-    // 计算按钮可以拓展的额外宽度
+    // clamp to zero, otherwise round up to whole middle tiles
     if (aButtonExtraWidth <= 0)
     {
         aButtonExtraWidth = 0;
@@ -266,11 +266,9 @@ void LawnDialog::Resize(int theX, int theY, int theWidth, int theHeight)
         int anExtraWidth = aButtonExtraWidth % aBtnMidWidth;
         if (anExtraWidth)
         {
-            // 不足中部贴图宽度的部分补充至中部贴图宽度
             aButtonExtraWidth += aBtnMidWidth - anExtraWidth;
         }
     }
-    // 最终宽度
     int aButtonWidth = aButtonMinWidth + aButtonExtraWidth;
 
     if (mTallBottom)

@@ -98,12 +98,12 @@ public:
         PvzpListNode<T>* aNode = (PvzpListNode<T>*)mpAllocator->Calloc(sizeof(PvzpListNode<T>));
         if (aNode)
             aNode->mValue = theHead;
-        aNode->mNext = mHead;  // 新节点的下一个节点指向原节点
-        aNode->mPrev = nullptr;  // 新节点作为头部，不存在上一个节点
+        aNode->mNext = mHead;
+        aNode->mPrev = nullptr;
         if (mHead)
-            mHead->mPrev = aNode;  // 已存在头部节点时，令原头部节点的上一个节点指向该新节点
+            mHead->mPrev = aNode;
         else
-            mTail = aNode;  // 不存在头部节点时，尾部节点也为该新节点
+            mTail = aNode;
         mSize++;
         mHead = aNode;
     }

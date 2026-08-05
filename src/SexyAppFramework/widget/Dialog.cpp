@@ -259,7 +259,6 @@ void Dialog::Draw(Graphics* g)
 		aCurY += mSpaceAfterHeader;
 	}
 
-	//g->SetFont(mLinesFont);	
 	g->SetFont(mLinesFont);
 	g->SetColor(mColors[COLOR_LINES]);
 
@@ -397,8 +396,6 @@ bool Dialog::IsModal()
 
 int Dialog::WaitForResult(bool autoKill)
 {	
-	//gSexyAppBase->DoMainLoop(mId);	
-
 #ifdef __EMSCRIPTEN__
 	const auto isWaitingForResult = [this]() {
 		return mWidgetManager != nullptr && mResult == 0x7FFFFFFF;

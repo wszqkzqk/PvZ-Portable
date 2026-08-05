@@ -98,7 +98,6 @@ public:
 
 	virtual void			Update();
 	virtual void			UpdateAll(ModalFlags* theFlags);
-//	virtual void			UpdateF(float theFrac);
 	virtual void			UpdateFAll(ModalFlags* theFlags, float theFrac);
 	virtual void			Draw(Graphics* g);
 	virtual void			DrawAll(ModalFlags* theFlags, Graphics* g);	

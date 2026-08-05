@@ -153,7 +153,6 @@ void GridItem::DrawIZombieBrain(Graphics* g)
     g->SetColorizeImages(false);
 }
 
-// GOTY @Patoke: 0x450673
 void GridItem::DrawGraveStone(Graphics* g)
 {
     if (mGridItemCounter <= 0)
@@ -237,7 +236,6 @@ void GridItem::DrawStinky(Graphics* g)
     aStinkyReanim->mEnableExtraAdditiveDraw = false;
 }
 
-// GOTY @Patoke: 0x450B39
 void GridItem::DrawCrater(Graphics* g)
 {
     float aXPos = mBoard->GridToPixelX(mGridX, mGridY) - 8.0f;
@@ -269,7 +267,7 @@ void GridItem::DrawCrater(Graphics* g)
             aCelCol = 1;
         }
 
-        // 弹坑水波摆动每 200 帧循环一次，局部取模可避免超长运行后的浮点抖动。
+        // sway loops every 200 frames; the local modulo avoids float drift after long runs
         constexpr uint32_t CRATER_ANIM_PERIOD = 200;
         float aPos = mGridY * PI + mGridX * PI * 0.25f;
         float aTime = static_cast<float>(mBoard->mMainCounter % CRATER_ANIM_PERIOD) * (PI * 2.0f / static_cast<float>(CRATER_ANIM_PERIOD));
@@ -433,7 +431,7 @@ void GridItem::DrawSquirrel(Graphics* g)
         break;
     }
 
-    // @Patoke: assets, removed, perhaps add back?
+    // squirrel assets were removed, perhaps add back?
     //g->DrawImage(IMAGE_SQUIRREL, aXPos, aYPos);
 }
 */

@@ -243,7 +243,6 @@ int PakInterface::FSeek(PFILE* theFile, long theOffset, int theOrigin)
 		else if (theOrigin == SEEK_CUR)
 			theFile->mPos += theOffset;
 
-		// 当前指针位置不能超过整个文件的大小，且不能小于 0
 		theFile->mPos = std::clamp(theFile->mPos, 0, theFile->mRecord->mSize);
 		return 0;
 	}
@@ -263,15 +262,13 @@ size_t PakInterface::FRead(void* thePtr, int theElemSize, int theCount, PFILE* t
 {
 	if (theFile->mRecord != nullptr)
 	{
-		// 实际读取的字节数不能超过当前资源文件剩余可读取的字节数
 		int aSizeBytes = std::min(theElemSize*theCount, theFile->mRecord->mSize - theFile->mPos);
 
-		// 取得在整个 pak 中开始读取的位置的指针
 		uchar* src = (uchar*) theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos;
 		uchar* dest = (uchar*) thePtr;
 		memcpy(dest, src, aSizeBytes);
-		theFile->mPos += aSizeBytes;  // 读取完成后，移动当前读取位置的指针
-		return aSizeBytes / theElemSize;  // 返回实际读取的项数
+		theFile->mPos += aSizeBytes;
+		return aSizeBytes / theElemSize;
 	}
 	
 	return fread(thePtr, theElemSize, theCount, theFile->mFP);	

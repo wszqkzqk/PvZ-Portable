@@ -171,10 +171,6 @@ unsigned long MTRand::NextNoAssert()
 
 	y &= 0x7FFFFFFF;		
 
-	/*char aStr[256];
-	sprintf(aStr, "Rand=%d\r\n", y);
-	OutputDebugString(aStr);*/
-
     return y; 
 }
 

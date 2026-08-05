@@ -110,10 +110,6 @@ void EffectSystem::Update()
 			aReanim->Update();
 }
 
-// #################################################################################################### //
-// #################################################################################################### //
-// #################################################################################################### //
-
 static TriVertex		gPvzpVertexReservoir[64];
 static unsigned int		gPvzpVertexReservoirUsed = 0;
 
@@ -374,7 +370,7 @@ void PvzpTriangleGroup::DrawGroup(Graphics* g)
 {
 	if (mImage && mTriangleCount)
 	{
-		// @Patoke: do we want this? if 3D acceleration is off then blending is messed up
+		// without 3D acceleration, additive blending is messed up
 		if (!gSexyAppBase->Is3DAccelerated() && mDrawMode == Graphics::DRAWMODE_ADDITIVE)
 			gPvzpTriangleDrawAdditive = true;
 		PvzpSandImageIfNeeded(mImage);

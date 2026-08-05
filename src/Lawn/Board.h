@@ -141,7 +141,6 @@ public:
 	GameButton*						mStoreButton;
 	bool							mIgnoreMouseUp;
 	ToolTipWidget*					mToolTip;
-	//_Font*							mDebugFont;
 	CutScene*						mCutScene;
 	Challenge*						mChallenge;
 	bool							mPaused;
@@ -259,7 +258,7 @@ public:
 	void							ClearCursor();
 	/*inline*/ bool					AreEnemyZombiesOnScreen();
 	LawnMower*						FindLawnMowerInRow(int theRow);
-//  inline bool						SyncState(DataSync& theDataSync) { /* 未发现 */return true; }
+//  inline bool						SyncState(DataSync& theDataSync) { /* not found */return true; }
 	/*inline*/ void					SaveGame(const std::string& theFileName);
 	bool							LoadGame(const std::string& theFileName);
 	void							InitLevel();
@@ -299,7 +298,7 @@ public:
 	bool							TakeSunMoney(int theAmount);
 	/*inline*/ bool					CanTakeSunMoney(int theAmount);
 	/*inline*/ void					Pause(bool thePause);
-	inline bool						MakeEasyZombieType() { /* 未发现 */return false; }
+	inline bool						MakeEasyZombieType() { /* not found */return false; }
 	void							TryToSaveGame();
 	/*inline*/ bool					NeedSaveGame();
 	/*inline*/ bool					RowCanHaveZombies(int theRow);
@@ -323,7 +322,7 @@ public:
 	bool							MouseHitTest(int x, int y, HitResult* theHitResult);
 	void							MouseDownWithPlant(int x, int y, int theClickCount);
 	void							MouseDownWithTool(int x, int y, int theClickCount, CursorType theCursorType);
-//	inline void						MouseDownNormal(int x, int y, int theClickCount) { /* 未发现 */; }
+//	inline void						MouseDownNormal(int x, int y, int theClickCount) { /* not found */; }
 	bool							CanInteractWithBoardButtons();
 	void							DrawProgressMeter(Graphics* g);
 	void							UpdateToolTip();
@@ -417,7 +416,7 @@ public:
 	bool							IsValidCobCannonSpot(int theGridX, int theGridY);
 	bool							IsValidCobCannonSpotHelper(int theGridX, int theGridY);
 	void							MouseDownCobcannonFire(int x, int y, int theClickCount);
-	int								KillAllZombiesInRadius(int theRow, int theX, int theY, int theRadius, int theRowRange, bool theBurn, int theDamageRangeFlags); // @Patoke: modified function prototype
+	int								KillAllZombiesInRadius(int theRow, int theX, int theY, int theRadius, int theRowRange, bool theBurn, int theDamageRangeFlags);
 	/*inline*/ int					GetSeedBankExtraWidth();
 	bool							IsFlagWave(int theWaveNumber);
 	void							DrawHouseDoorTop(Graphics* g);
@@ -442,7 +441,7 @@ public:
 	bool							IsFinalSurvivalStage();
 	void							SurvivalSaveScore();
 	int								CountZombiesOnScreen();
-	int								GetLiveGargantuarCount(); // @Patoke: implemented
+	int								GetLiveGargantuarCount();
 	/*inline*/ int					GetNumWavesPerSurvivalStage();
 	int								GetLevelRandSeed();
 	void							AddBossRenderItem(RenderItem* theRenderList, int& theCurRenderItem, Zombie* theBossZombie);

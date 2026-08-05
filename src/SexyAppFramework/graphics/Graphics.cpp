@@ -39,8 +39,6 @@ const int MAX_TEMP_SPANS = 8192;
 Image GraphicsState::mStaticImage;
 const Point* Graphics::mPFPoints;
 
-//////////////////////////////////////////////////////////////////////////
-
 void GraphicsState::CopyStateFrom(const GraphicsState* theState)
 {
 	mDestImage = theState->mDestImage;
@@ -60,8 +58,6 @@ void GraphicsState::CopyStateFrom(const GraphicsState* theState)
 	mScaleOrigY = theState->mScaleOrigY;
 	mIs3D = theState->mIs3D;
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 Graphics::Graphics(const Graphics& theGraphics)
 {
@@ -226,15 +222,6 @@ void Graphics::DrawRect(int theX, int theY, int theWidth, int theHeight)
 		FillRect(theX, theY + theHeight, theWidth + 1, 1);
 		FillRect(theX, theY + 1, 1, theHeight - 1);
 		FillRect(theX + theWidth, theY + 1, 1, theHeight - 1);
-
-		/*if (aClippedRect.mX == aDestRect.mX)
-			mDestImage->FillRect(Rect(aClippedRect.mX, aClippedRect.mY, 1, aClippedRect.mHeight), mColor, mDrawMode);
-		if (aClippedRect.mY == aDestRect.mY)
-			mDestImage->FillRect(Rect(aClippedRect.mX, aClippedRect.mY, aClippedRect.mWidth, 1), mColor, mDrawMode);
-		if (aClippedRect.mX + aClippedRect.mWidth == aDestRect.mX + aDestRect.mWidth)
-			mDestImage->FillRect(Rect(aClippedRect.mX + aClippedRect.mWidth, aClippedRect.mY, 1, aClippedRect.mHeight), mColor, mDrawMode);
-		if (aClippedRect.mY + aClippedRect.mHeight == aDestRect.mY + aDestRect.mHeight)
-			mDestImage->FillRect(Rect(aClippedRect.mX, aClippedRect.mY + aClippedRect.mHeight, aClippedRect.mWidth, 1), mColor, mDrawMode);*/
 	}
 }
 
@@ -1099,7 +1086,6 @@ void Graphics::DrawImageCel(Image* theImageStrip, const Rect& theDestRect, int t
 
 int Graphics::WriteString(std::string_view theString, int theX, int theY, int theWidth, int theJustification, bool drawString, int theOffset, int theLength, int theOldColor)
 {
-	// _Font* aFont = GetFont(); // unused
 	if (theOldColor==-1)
 		theOldColor = mColor.ToInt();
 	
@@ -1378,7 +1364,7 @@ int	Graphics::WriteWordWrapped(const Rect& theRect, std::string_view theLine, in
 	if (theMaxWidth!=nullptr)
 		*theMaxWidth = aMaxWidth;
 
-	//返回时，aYOffset 增量为 (行数 + 1) * 行距。以 aYOffset 减去末行多算的一次行距，再加上字体下沉部分的高度，得到文本底部的纵向偏移值，即文本区域高度。
+	// text block height = aYOffset - the extra trailing line spacing + the font descent
 	return aYOffset + aFont->GetDescent() - theLineSpacing;
 }
 int	Graphics::DrawStringColor(std::string_view theLine, int theX, int theY, int theOldColor)
@@ -1388,7 +1374,6 @@ int	Graphics::DrawStringColor(std::string_view theLine, int theX, int theY, int 
 
 int	Graphics::DrawStringWordWrapped(std::string_view theLine, int theX, int theY, int theWrapWidth, int theLineSpacing, int theJustification, int *theMaxWidth)
 {
-	/*这个函数在正式版中被删得只剩前三个参数了……*/
 	int aYOffset = mFont->GetAscent() - mFont->GetAscentPadding();
 
 	Rect aRect(theX,theY-aYOffset,theWrapWidth,0);

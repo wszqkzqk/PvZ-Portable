@@ -36,7 +36,7 @@ static int gUserListWidgetColors[][3] = {
     {  20, 180,  15 }
 };
 
-// @Patoke: these dialogs don't have localizations
+// these dialogs don't have localizations
 UserDialog::UserDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_USERDIALOG, true, theApp->GetString("WHO_ARE_YOU", "WHO ARE YOU?"), "", "", Dialog::BUTTONS_OK_CANCEL)
 {
 	mVerticalCenterText = false;
@@ -164,14 +164,13 @@ void UserDialog::ListClicked(int theId, int theIdx, int theClickCount)
     else
     {
         mUserList->SetSelect(theIdx);
-        if (theClickCount == 2)  // 左键双击
+        if (theClickCount == 2)
         {
             mApp->FinishUserDialog(true);
         }
     }
 }
 
-// GOTY @Patoke: 0x5278C0
 void UserDialog::ButtonDepress(int theId)
 {
     LawnDialog::ButtonDepress(theId);

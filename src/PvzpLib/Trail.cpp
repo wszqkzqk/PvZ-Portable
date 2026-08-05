@@ -109,11 +109,11 @@ void Trail::AddPoint(float x, float y)
 		float aDistance = Distance2D(x, y, aPoint.aPos.x, aPoint.aPos.y);
 		if (aDistance < mDefinition->mMinPointDistance)
 		{
-			return;  // 距离上次记录的轨迹点的距离不能小于规定的最小值
+			return;
 		}
 	}
 	
-	// 当已有轨迹点数量达到上限时，舍弃最早的一个轨迹点
+	// drop the oldest point when the trail is full
 	if (mNumTrailPoints == aMaxPoints)
 	{
 		memmove(mTrailPoints, mTrailPoints + 1, (mNumTrailPoints - 1) * sizeof(TrailPoint));

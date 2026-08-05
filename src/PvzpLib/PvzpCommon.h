@@ -46,8 +46,6 @@ using namespace Sexy;
 #define DEG_TO_RAD(deg) ((deg) * 0.017453292f)
 #define RAD_TO_DEG(rad) ((rad) * 57.29578f)
 
-// #################################################################################################### //
-
 struct PvzpWeightedArray
 {
     intptr_t mItem;
@@ -84,8 +82,6 @@ float					PvzpCalcSmoothWeight(float aWeight, float aLastPicked, float aSecondLa
 void					PvzpUpdateSmoothArrayPick(PvzpSmoothArray* theArray, int theCount, int thePickIndex);
 int						PvzpPickFromSmoothArray(PvzpSmoothArray* theArray, int theCount);
 
-// #################################################################################################### //
-
 class PvzpResourceManager : public ResourceManager
 {
 public:
@@ -103,8 +99,6 @@ public:
 void					PvzpAddImageToMap(SharedImageRef* theImage, const std::string& thePath);
 bool					PvzpFindImagePath(Image* theImage, std::string* thePath);
 bool					PvzpFindFontPath(_Font* theFont, std::string* thePath);
-
-// #################################################################################################### //
 
 /*inline*/ float		PvzpCurveQuad(float theTime);
 /*inline*/ float		PvzpCurveInvQuad(float theTime);
@@ -158,7 +152,6 @@ int						PvzpVsnprintf(char* theBuffer, int theSize, const char* theFormat, va_l
 PvzpAllocator*			FindGlobalAllocator(int theSize);
 void                    FreeGlobalAllocators();
 
-//====================================================================================================//
 /*inline*/ int			RandRangeInt(int theMin, int theMax);
 /*inline*/ float		RandRangeFloat(float theMin, float theMax);
 inline float			Distance2D(float x1, float y1, float x2, float y2)			{ return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)); }

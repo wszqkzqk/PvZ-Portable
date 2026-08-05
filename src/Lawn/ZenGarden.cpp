@@ -356,7 +356,7 @@ void ZenGarden::FindOpenZenGardenSpot(int& theSpotX, int& theSpotY)
         {
             if (mApp->mCrazyDaveMessageIndex != -1 && (x < 2 || y < 1))
             {
-                goto _m_skip_plant_pick;  // 忽略被戴夫遮挡住的部分
+                goto _m_skip_plant_pick;  // skip spots covered by Crazy Dave
             }
 
             for (int i = 0; i < mApp->mPlayerInfo->mNumPottedPlants; i++)
@@ -364,7 +364,7 @@ void ZenGarden::FindOpenZenGardenSpot(int& theSpotX, int& theSpotY)
                 PottedPlant* aPottedPlant = PottedPlantFromIndex(i);
                 if (aPottedPlant->mWhichZenGarden == GardenType::GARDEN_MAIN && aPottedPlant->mX == x && aPottedPlant->mY == y)
                 {
-                    goto _m_skip_plant_pick;  // 格子内已有盆栽植物则不可选择
+                    goto _m_skip_plant_pick;
                 }
             }
 
@@ -782,7 +782,6 @@ bool ZenGarden::PlantShouldRefreshNeed(PottedPlant* thePottedPlant)
     return mNowTM.tm_year > aLastWateredTM.tm_year || mNowTM.tm_yday > aLastWateredTM.tm_yday;
 }
 
-// GOTY @Patoke: 0x5292A0
 void ZenGarden::RefreshPlantNeeds(PottedPlant* thePottedPlant)
 {
     if (thePottedPlant->mPlantAge != PottedPlantAge::PLANTAGE_FULL || !PlantShouldRefreshNeed(thePottedPlant))
@@ -2400,7 +2399,6 @@ void ZenGarden::OpenStore()
     }
 }
 
-// GOTY @Patoke: 0x52CC50
 void ZenGarden::SetupForZenTutorial()
 {
     mBoard->mMenuButton->SetLabel("[CONTINUE_BUTTON]");

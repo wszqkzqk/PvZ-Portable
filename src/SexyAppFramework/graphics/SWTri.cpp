@@ -30,9 +30,6 @@ using namespace Sexy;
 static SWHelper::XYZStruct	vertexReservoir[64];
 static unsigned int			vertexReservoirUsed = 0;
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static int FixedFloor(int x)
 {
 	if (x>0)
@@ -41,21 +38,7 @@ static int FixedFloor(int x)
 		return (x&0xFFFF0000)-0x10000;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ********************* BEGIN CLIPPING STUFF *********************************************************************
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Begin clipping stuff
 static inline void lClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & on, const SWHelper::XYZStruct & off, const float edge)
 {
    float	delta = (edge - off.mX) / (on.mX - off.mX);
@@ -68,8 +51,6 @@ static inline void lClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & 
 			((int) ((((off.mDiffuse >>  8)&0xff) + (((on.mDiffuse >>  8)&0xff) - ((off.mDiffuse >>  8)&0xff)) * delta))<<8 ) |
 			((int) ((((off.mDiffuse >>  0)&0xff) + (((on.mDiffuse >>  0)&0xff) - ((off.mDiffuse >>  0)&0xff)) * delta))    );
 }
-
-// --------------------------------------------------------------------------------------------------------------------------------
 
 static inline void rClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & on, const SWHelper::XYZStruct & off, const float edge)
 {
@@ -84,8 +65,6 @@ static inline void rClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & 
 			((int) ((((off.mDiffuse >>  0)&0xff) + (((on.mDiffuse >>  0)&0xff) - ((off.mDiffuse >>  0)&0xff)) * delta))    );
 }
 
-// --------------------------------------------------------------------------------------------------------------------------------
-
 static inline void tClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & on, const SWHelper::XYZStruct & off, const float edge)
 {
    float	delta = (edge - off.mY) / (on.mY - off.mY);
@@ -99,8 +78,6 @@ static inline void tClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & 
 			((int) ((((off.mDiffuse >>  0)&0xff) + (((on.mDiffuse >>  0)&0xff) - ((off.mDiffuse >>  0)&0xff)) * delta))    );
 }
 
-// --------------------------------------------------------------------------------------------------------------------------------
-
 static inline void bClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & on, const SWHelper::XYZStruct & off, const float edge)
 {
    float	delta = (edge - off.mY) / (on.mY - off.mY);
@@ -113,8 +90,6 @@ static inline void bClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & 
 			((int) ((((off.mDiffuse >>  8)&0xff) + (((on.mDiffuse >>  8)&0xff) - ((off.mDiffuse >>  8)&0xff)) * delta))<<8 ) |
 			((int) ((((off.mDiffuse >>  0)&0xff) + (((on.mDiffuse >>  0)&0xff) - ((off.mDiffuse >>  0)&0xff)) * delta))    );
 }
-
-// --------------------------------------------------------------------------------------------------------------------------------
 
 static inline unsigned int leClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
 {
@@ -155,8 +130,6 @@ static inline unsigned int leClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruc
    return static_cast<int>(dst - _dst);
 }
 
-// --------------------------------------------------------------------------------------------------------------------------------
-
 static inline unsigned int reClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
 {
    SWHelper::XYZStruct ** _dst = dst;
@@ -195,8 +168,6 @@ static inline unsigned int reClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruc
    *dst = 0;
    return static_cast<int>(dst - _dst);
 }
-
-// --------------------------------------------------------------------------------------------------------------------------------
 
 static inline unsigned int teClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
 {
@@ -237,8 +208,6 @@ static inline unsigned int teClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruc
    return static_cast<int>(dst - _dst);
 }
 
-// --------------------------------------------------------------------------------------------------------------------------------
-
 static inline unsigned int beClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
 {
    SWHelper::XYZStruct ** _dst = dst;
@@ -278,8 +247,6 @@ static inline unsigned int beClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruc
    return static_cast<int>(dst - _dst);
 }
 
-// --------------------------------------------------------------------------------------------------------------------------------
-
 static inline int	clipShape(SWHelper::XYZStruct ** dst, SWHelper::XYZStruct ** src, const float left, const float right, const float top, const float bottom)
 {
    vertexReservoirUsed = 0;
@@ -296,20 +263,7 @@ static inline int	clipShape(SWHelper::XYZStruct ** dst, SWHelper::XYZStruct ** s
    return beClip(buf, dst, bottom);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ********************* END CLIPPING STUFF ***********************************************************************
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// End clipping stuff
 
 
 void SWHelper::SWDrawShape(XYZStruct *theVerts, int theNumVerts, MemoryImage *theImage, const Color &theColor, int theDrawMode, const Rect &theClipRect, void *theSurface, int thePitch, int thePixelFormat, bool blend, bool vertexColor)
@@ -467,7 +421,6 @@ void SWHelper::SWDrawShape(XYZStruct *theVerts, int theNumVerts, MemoryImage *th
 				textureInfo.pitch = theImage->mWidth;
 				textureInfo.height = theImage->mHeight;
 				textureInfo.endpos = theImage->mWidth*theImage->mHeight;
-//				unsigned int	temp = static_cast<unsigned int>(mSWTexture->mTextureInfo.lPitch) / (mSWTexture->mTextureInfo.ddpfPixelFormat.dwRGBBitCount / 8);
 				unsigned int	temp = theImage->mWidth;
 				temp >>= 1;
 				textureInfo.vShift = 0;

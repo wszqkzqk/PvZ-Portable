@@ -267,59 +267,59 @@ enum DamageRangeFlags : int32_t
 };
 enum Dialogs : int32_t
 {
-    DIALOG_NEW_GAME,                            // 0：
-    DIALOG_OPTIONS,                             // 1：
-    DIALOG_NEWOPTIONS,                          // 2：菜单
-    DIALOG_ALMANAC,                             // 3：图鉴
-    DIALOG_STORE,                               // 4：商店
-    DIALOG_PREGAME_NAG,                         // 5：
-    DIALOG_LOAD_GAME,                           // 6：
-    DIALOG_CONFIRM_UPDATE_CHECK,                // 7：
-    DIALOG_CHECKING_UPDATES,                    // 8：
-    DIALOG_REGISTER_ERROR,                      // 9：
-    DIALOG_COLORDEPTH_EXP,                      // 10：不支持窗口模式
-    DIALOG_OPENURL_WAIT,                        // 11：
-    DIALOG_OPENURL_FAIL,                        // 12：
-    DIALOG_QUIT,                                // 13：退出游戏（主菜单点击退出时）
-    DIALOG_HIGH_SCORES,                         // 14：
-    DIALOG_NAG,                                 // 15：
-    DIALOG_INFO,                                // 16：信息（3D 加速不支持/不推荐）
-    DIALOG_GAME_OVER,                           // 17：游戏结束（关卡失败）
-    DIALOG_LEVEL_COMPLETE,                      // 18：关卡完成
-    DIALOG_PAUSED,                              // 19：暂停游戏
-    DIALOG_NO_MORE_MONEY,                       // 20：
-    DIALOG_BONUS,                               // 21：
-    DIALOG_CONFIRM_BACK_TO_MAIN,                // 22：返回主菜单
-    DIALOG_CONFIRM_RESTART,                     // 23：重新开始关卡
-    DIALOG_THANKS_FOR_REGISTERING,              // 24：
-    DIALOG_NOT_ENOUGH_MONEY,                    // 25：资金不足（购买商品但钱数不够时触发）
-    DIALOG_UPGRADED,                            // 26：卡槽升级
-    DIALOG_NO_UPGRADE,                          // 27：
-    DIALOG_CHOOSER_WARNING,                     // 28：选卡提醒（未携带生产阳光的植物、未携带紫卡原植物等情况下触发）
-    DIALOG_USERDIALOG,                          // 29：用户对话
-    DIALOG_CREATEUSER,                          // 30：创建新用户
-    DIALOG_CONFIRMDELETEUSER,                   // 31：删除用户
-    DIALOG_RENAMEUSER,                          // 32：重命名用户
-    DIALOG_CREATEUSERERROR,                     // 33：请输入名字（创建新用户对话中不输入用户名时触发）
-    DIALOG_RENAMEUSERERROR,                     // 34：请输入名字（重命名用户对话中不输入用户名时触发）
-    DIALOG_CHEAT,                               // 35：跳关对话（仅内测版可触发）
-    DIALOG_CHEATERROR,                          // 36：跳关指令输入有误
-    DIALOG_CONTINUE,                            // 37：继续游戏（读档进入关卡时）
-    DIALOG_GETREADY,                            // 38：
-    DIALOG_RESTARTCONFIRM,                      // 39：重新开始游戏（继续游戏对话中选择开始新游戏时触发）
-    DIALOG_CONFIRMPURCHASE,                     // 40：
-    DIALOG_CONFIRMSELL,                         // 41：
-    DIALOG_TIMESUP,                             // 42：
-    DIALOG_VIRTUALHELP,                         // 43：
-    DIALOG_JUMPAHEAD,                           // 44：
-    DIALOG_CRAZY_DAVE,                          // 45：
-    DIALOG_STORE_PURCHASE,                      // 46：购买商品（戴夫商店）
-    DIALOG_ZEN_SELL,                            // 47：出售盆栽植物（禅境花园）
-    DIALOG_MESSAGE,                             // 48：通用消息对话，包括：①加载中（切换用户时触发）；②小游戏等模式未解锁；……
-    DIALOG_IMITATER,                            // 49：模仿者对话
-    DIALOG_PURCHASE_PACKET_SLOT,                // 50：升级卡槽的格子数量
-    DIALOG_ZOMBATAR_TOS,                        // 51：Zombatar 服务条款
-    DIALOG_ZOMBATAR_DELETE,                     // 52：Zombatar 删除确认
+    DIALOG_NEW_GAME,                            // 0
+    DIALOG_OPTIONS,                             // 1
+    DIALOG_NEWOPTIONS,                          // 2
+    DIALOG_ALMANAC,                             // 3
+    DIALOG_STORE,                               // 4
+    DIALOG_PREGAME_NAG,                         // 5
+    DIALOG_LOAD_GAME,                           // 6
+    DIALOG_CONFIRM_UPDATE_CHECK,                // 7
+    DIALOG_CHECKING_UPDATES,                    // 8
+    DIALOG_REGISTER_ERROR,                      // 9
+    DIALOG_COLORDEPTH_EXP,                      // 10: windowed mode unsupported
+    DIALOG_OPENURL_WAIT,                        // 11
+    DIALOG_OPENURL_FAIL,                        // 12
+    DIALOG_QUIT,                                // 13: quit from the main menu
+    DIALOG_HIGH_SCORES,                         // 14
+    DIALOG_NAG,                                 // 15
+    DIALOG_INFO,                                // 16: 3D acceleration unsupported/not recommended
+    DIALOG_GAME_OVER,                           // 17: level failed
+    DIALOG_LEVEL_COMPLETE,                      // 18
+    DIALOG_PAUSED,                              // 19
+    DIALOG_NO_MORE_MONEY,                       // 20
+    DIALOG_BONUS,                               // 21
+    DIALOG_CONFIRM_BACK_TO_MAIN,                // 22
+    DIALOG_CONFIRM_RESTART,                     // 23
+    DIALOG_THANKS_FOR_REGISTERING,              // 24
+    DIALOG_NOT_ENOUGH_MONEY,                    // 25: shop purchase with insufficient funds
+    DIALOG_UPGRADED,                            // 26: seed slot upgrade
+    DIALOG_NO_UPGRADE,                          // 27
+    DIALOG_CHOOSER_WARNING,                     // 28: no sun-producing plant or missing upgrade base plant
+    DIALOG_USERDIALOG,                          // 29
+    DIALOG_CREATEUSER,                          // 30
+    DIALOG_CONFIRMDELETEUSER,                   // 31
+    DIALOG_RENAMEUSER,                          // 32
+    DIALOG_CREATEUSERERROR,                     // 33: empty name in the create-user dialog
+    DIALOG_RENAMEUSERERROR,                     // 34: empty name in the rename-user dialog
+    DIALOG_CHEAT,                               // 35
+    DIALOG_CHEATERROR,                          // 36
+    DIALOG_CONTINUE,                            // 37: entering a level from a save
+    DIALOG_GETREADY,                            // 38
+    DIALOG_RESTARTCONFIRM,                      // 39: new game chosen in the continue dialog
+    DIALOG_CONFIRMPURCHASE,                     // 40
+    DIALOG_CONFIRMSELL,                         // 41
+    DIALOG_TIMESUP,                             // 42
+    DIALOG_VIRTUALHELP,                         // 43
+    DIALOG_JUMPAHEAD,                           // 44
+    DIALOG_CRAZY_DAVE,                          // 45
+    DIALOG_STORE_PURCHASE,                      // 46
+    DIALOG_ZEN_SELL,                            // 47
+    DIALOG_MESSAGE,                             // 48: generic message (loading, mode not unlocked, ...)
+    DIALOG_IMITATER,                            // 49
+    DIALOG_PURCHASE_PACKET_SLOT,                // 50
+    DIALOG_ZOMBATAR_TOS,                        // 51: terms of service
+    DIALOG_ZOMBATAR_DELETE,                     // 52
     NUM_DIALOGS
 };
 enum DebugTextMode : int32_t
@@ -594,7 +594,6 @@ enum MessageStyle : int32_t
     MESSAGE_STYLE_HINT_STAY,
     MESSAGE_STYLE_HINT_TALL_FAST,
     MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE,
-    //MESSAGE_STYLE_HINT_TALL_8SECONDS,// 仅内测版
     MESSAGE_STYLE_HINT_TALL_LONG,
     MESSAGE_STYLE_BIG_MIDDLE,
     MESSAGE_STYLE_BIG_MIDDLE_FAST,
@@ -602,7 +601,7 @@ enum MessageStyle : int32_t
     MESSAGE_STYLE_HUGE_WAVE,
     MESSAGE_STYLE_SLOT_MACHINE,
     MESSAGE_STYLE_ZEN_GARDEN_LONG,
-    MESSAGE_STYLE_ACHIEVEMENT // @Patoke: implemented
+    MESSAGE_STYLE_ACHIEVEMENT
 };
 enum MowerHeight : int32_t
 {
@@ -787,33 +786,33 @@ enum PottedPlantNeed : int32_t
 };
 enum ProjectileMotion : int32_t
 {
-    MOTION_STRAIGHT = 0,  // 水平向右
-    MOTION_LOBBED = 1,  // 抛物线
-    MOTION_THREEPEATER = 2,  // 偏转向右
-    MOTION_BEE = 3,  // 
-    MOTION_BEE_BACKWARDS = 4,  // 
-    MOTION_PUFF = 5,  // 水平向右（一段时间后消失）
-    MOTION_BACKWARDS = 6,  // 水平向左
-    MOTION_STAR = 7,  // 斜向运动
-    MOTION_FLOAT_OVER = 8,  // 缓慢漂浮向右（无碰撞）
-    MOTION_HOMING = 9   // 追踪
+    MOTION_STRAIGHT = 0,  // straight rightward
+    MOTION_LOBBED = 1,  // parabolic
+    MOTION_THREEPEATER = 2,  // angled rightward
+    MOTION_BEE = 3,
+    MOTION_BEE_BACKWARDS = 4,
+    MOTION_PUFF = 5,  // straight rightward, fades after a while
+    MOTION_BACKWARDS = 6,  // straight leftward
+    MOTION_STAR = 7,  // diagonal
+    MOTION_FLOAT_OVER = 8,  // slow floating rightward (no collision)
+    MOTION_HOMING = 9
 };
 enum ProjectileType : int32_t
 {
-    PROJECTILE_PEA = 0,   // 豌豆
-    PROJECTILE_SNOWPEA = 1,   // 冰豌豆
-    PROJECTILE_CABBAGE = 2,   // 卷心菜
-    PROJECTILE_MELON = 3,   // 西瓜
-    PROJECTILE_PUFF = 4,   // 孢子
-    PROJECTILE_WINTERMELON = 5,   // 冰瓜
-    PROJECTILE_FIREBALL = 6,   // 火豌豆
-    PROJECTILE_STAR = 7,   // 星星
-    PROJECTILE_SPIKE = 8,   // 尖刺
-    PROJECTILE_BASKETBALL = 9,   // 篮球
-    PROJECTILE_KERNEL = 10,  // 玉米粒
-    PROJECTILE_COBBIG = 11,  // 玉米加农炮
-    PROJECTILE_BUTTER = 12,  // 黄油
-    PROJECTILE_ZOMBIE_PEA = 13,  // 僵尸豌豆
+    PROJECTILE_PEA = 0,
+    PROJECTILE_SNOWPEA = 1,
+    PROJECTILE_CABBAGE = 2,
+    PROJECTILE_MELON = 3,
+    PROJECTILE_PUFF = 4,
+    PROJECTILE_WINTERMELON = 5,
+    PROJECTILE_FIREBALL = 6,
+    PROJECTILE_STAR = 7,
+    PROJECTILE_SPIKE = 8,
+    PROJECTILE_BASKETBALL = 9,
+    PROJECTILE_KERNEL = 10,
+    PROJECTILE_COBBIG = 11,
+    PROJECTILE_BUTTER = 12,
+    PROJECTILE_ZOMBIE_PEA = 13,
     NUM_PROJECTILES = 14
 };
 enum ReanimationType : uint32_t {
@@ -1035,29 +1034,29 @@ enum SeedChooserState : int32_t
 };
 enum SeedType : int32_t
 {
-    SEED_PEASHOOTER = 0,                    // 豌豆射手
-    SEED_SUNFLOWER = 1,                     // 向日葵
-    SEED_CHERRYBOMB = 2,                    // 樱桃炸弹
-    SEED_WALLNUT = 3,                       // 坚果
-    SEED_POTATOMINE = 4,                    // 土豆地雷
-    SEED_SNOWPEA = 5,                       // 寒冰射手
-    SEED_CHOMPER = 6,                       // 大嘴花
-    SEED_REPEATER = 7,                      // 双发射手
-    SEED_PUFFSHROOM = 8,                    // 小喷菇
-    SEED_SUNSHROOM = 9,                     // 阳光菇
-    SEED_FUMESHROOM = 10,                   // 大喷菇
-    SEED_GRAVEBUSTER = 11,                  // 墓碑吞噬者
-    SEED_HYPNOSHROOM = 12,                  // 魅惑菇
-    SEED_SCAREDYSHROOM = 13,                // 胆小菇
-    SEED_ICESHROOM = 14,                    // 寒冰菇
-    SEED_DOOMSHROOM = 15,                   // 毁灭菇
-    SEED_LILYPAD = 16,                      // 睡莲
-    SEED_SQUASH = 17,                       // 窝瓜
-    SEED_THREEPEATER = 18,                  // 三线射手
-    SEED_TANGLEKELP = 19,                   // 缠绕海草
-    SEED_JALAPENO = 20,                     // 火爆辣椒
-    SEED_SPIKEWEED = 21,                    // 地刺
-    SEED_TORCHWOOD = 22,                    // 火炬树桩
+    SEED_PEASHOOTER = 0,
+    SEED_SUNFLOWER = 1,
+    SEED_CHERRYBOMB = 2,
+    SEED_WALLNUT = 3,
+    SEED_POTATOMINE = 4,
+    SEED_SNOWPEA = 5,
+    SEED_CHOMPER = 6,
+    SEED_REPEATER = 7,
+    SEED_PUFFSHROOM = 8,
+    SEED_SUNSHROOM = 9,
+    SEED_FUMESHROOM = 10,
+    SEED_GRAVEBUSTER = 11,
+    SEED_HYPNOSHROOM = 12,
+    SEED_SCAREDYSHROOM = 13,
+    SEED_ICESHROOM = 14,
+    SEED_DOOMSHROOM = 15,
+    SEED_LILYPAD = 16,
+    SEED_SQUASH = 17,
+    SEED_THREEPEATER = 18,
+    SEED_TANGLEKELP = 19,
+    SEED_JALAPENO = 20,
+    SEED_SPIKEWEED = 21,
+    SEED_TORCHWOOD = 22,
     SEED_TALLNUT = 23,
     SEED_SEASHROOM = 24,
     SEED_PLANTERN = 25,
@@ -1165,20 +1164,20 @@ enum StorePages : int32_t
 };
 enum PvzpCurves : int32_t
 {
-    CURVE_CONSTANT,             // 常函数曲线
-    CURVE_LINEAR,               // 线性曲线
-    CURVE_EASE_IN,              // 二次曲线（缓入）
-    CURVE_EASE_OUT,             // 二次曲线（缓出）
-    CURVE_EASE_IN_OUT,          // 缓入缓出曲线
-    CURVE_EASE_IN_OUT_WEAK,     // 缓入缓出曲线（效果减弱）
-    CURVE_FAST_IN_OUT,          // 快入快出曲线
-    CURVE_FAST_IN_OUT_WEAK,     // 快入快出曲线（效果减弱）
-    CURVE_WEAK_FAST_IN_OUT,     // 【废弃】弱快入快出曲线
-    CURVE_BOUNCE,               // 弹跳效果曲线
-    CURVE_BOUNCE_FAST_MIDDLE,   // 弹跳效果曲线（尖形）
-    CURVE_BOUNCE_SLOW_MIDDLE,   // 弹跳效果曲线（罩形）
-    CURVE_SIN_WAVE,             // 正弦曲线
-    CURVE_EASE_SIN_WAVE         // 缓入缓出的正弦曲线
+    CURVE_CONSTANT,
+    CURVE_LINEAR,
+    CURVE_EASE_IN,
+    CURVE_EASE_OUT,
+    CURVE_EASE_IN_OUT,
+    CURVE_EASE_IN_OUT_WEAK,
+    CURVE_FAST_IN_OUT,
+    CURVE_FAST_IN_OUT_WEAK,
+    CURVE_WEAK_FAST_IN_OUT,     // deprecated
+    CURVE_BOUNCE,
+    CURVE_BOUNCE_FAST_MIDDLE,
+    CURVE_BOUNCE_SLOW_MIDDLE,
+    CURVE_SIN_WAVE,
+    CURVE_EASE_SIN_WAVE
 };
 enum TrialType : int32_t
 {
@@ -1379,32 +1378,7 @@ enum ZombieType : int32_t
     NUM_CACHED_ZOMBIE_TYPES
 };
 
-//////////////////////////////
 // Enums are not supposed to have invalid values, a typedef is much more appropriate
-//typedef unsigned int AttachmentID;
-//const AttachmentID ATTACHMENTID_NULL = 0;
-//
-//typedef unsigned int CoinID;
-//const CoinID COINID_NULL = 0;
-//
-//typedef unsigned int ParticleID;
-//const ParticleID PARTICLEID_NULL = 0;
-//
-//typedef unsigned int ParticleEmitterID;
-//const ParticleEmitterID PARTICLEEMITTERID_NULL = 0;
-//
-//typedef unsigned int ParticleSystemID;
-//const ParticleSystemID PARTICLESYSTEMID_NULL = 0;
-//
-//typedef unsigned int PlantID;
-//const PlantID PLANTID_NULL = 0;
-//
-//typedef unsigned int ReanimationID;
-//const ReanimationID REANIMATIONID_NULL = 0;
-//
-//typedef unsigned int ZombieID;
-//const ZombieID ZOMBIEID_NULL = 0;
-
 enum AttachmentID      : int32_t { ATTACHMENTID_NULL };
 enum CoinID            : uint32_t { COINID_NULL };
 enum ParticleID        : uint32_t { PARTICLEID_NULL };

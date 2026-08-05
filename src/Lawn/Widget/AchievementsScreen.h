@@ -21,7 +21,6 @@
 
 #ifndef __ACHIEVEMENTSSCREEN_H__
 #define __ACHIEVEMENTSSCREEN_H__
-// @Patoke: implement file
 
 #include "../../ConstEnums.h"
 #include "widget/Widget.h"
@@ -55,7 +54,6 @@ enum AchievementId {
     MAX_ACHIEVEMENTS
 };
 
-// todo @Patoke: add these
 class AchievementItem {
 public:
     std::string_view name;

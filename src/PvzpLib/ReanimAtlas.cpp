@@ -66,13 +66,6 @@ MemoryImage* ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight)
 
 bool sSortByNonIncreasingHeight(const ReanimAtlasImage& image1, const ReanimAtlasImage& image2)
 {
-	//if (image1->mHeight != image2->mHeight)
-	//	return image1->mHeight > image2->mHeight;
-	//else if (image1->mWidth != image2->mWidth)
-	//	return image1->mWidth > image2->mWidth;
-	//else
-	//	return (unsigned int)image1 > (unsigned int)image2;
-
 	if (image1.mHeight != image2.mHeight)
 		return image1.mHeight > image2.mHeight;
 	else if (image1.mWidth != image2.mWidth)
@@ -101,8 +94,8 @@ int ReanimAtlas::PickAtlasWidth()
 		aMaxWidth = std::max(aMaxWidth, aImage->mWidth + 2);
 	}
 
-	int aWidth = FloatRoundToInt(sqrt(totalArea));  // 假定为正方向区域时，正方向的边长
-	return GetClosestPowerOf2Above(std::min(std::max(aWidth, aMaxWidth), 2048));  // 取“边长”和“最宽贴图的宽度”的较大值（且不超过 2048），并向上取至 2 的整数次幂
+	int aWidth = FloatRoundToInt(sqrt(totalArea));  // side length assuming a square region
+	return GetClosestPowerOf2Above(std::min(std::max(aWidth, aMaxWidth), 2048));  // max of side length and widest image, capped at 2048, rounded up to a power of 2
 }
 
 bool ReanimAtlas::ImageFits(int theImageCount, const Rect& rectTest, int theMaxWidth)
@@ -110,10 +103,10 @@ bool ReanimAtlas::ImageFits(int theImageCount, const Rect& rectTest, int theMaxW
 	if (rectTest.mX + rectTest.mWidth > theMaxWidth)
 		return false;
 
-	for (int i = 0; i < theImageCount; i++)  // 遍历贴图数组的前 theImageCount 个贴图，判断给定矩形是否与某贴图占用的区域有冲突
+	for (int i = 0; i < theImageCount; i++)  // check the rect against the first theImageCount placed images
 	{
 		ReanimAtlasImage* aImage = &mImageArray[i];
-		if (Rect(aImage->mX, aImage->mY, aImage->mWidth, aImage->mHeight).Inflate(1, 1).Intersects(rectTest))  // 贴图占用区域为自身区域及向外延伸 1 像素
+		if (Rect(aImage->mX, aImage->mY, aImage->mWidth, aImage->mHeight).Inflate(1, 1).Intersects(rectTest))  // an image occupies its rect inflated by 1 pixel
 			return false;
 	}
 	return true;
@@ -128,18 +121,18 @@ bool ReanimAtlas::ImageFindPlaceOnSide(ReanimAtlasImage* theAtlasImageToPlace, i
 	for (int i = 0; i < theImageCount; i++)
 	{
 		ReanimAtlasImage* aImage = &mImageArray[i];
-		if (theToRight)  // 如果规定了居右
+		if (theToRight)  // to the right of the placed image
 		{
 			rectTest.mX = aImage->mX + aImage->mWidth + 1;
 			rectTest.mY = aImage->mY;
 		}
-		else  // 否则居于下方
+		else  // below the placed image
 		{
 			rectTest.mX = aImage->mX;
 			rectTest.mY = aImage->mY + aImage->mHeight + 1;
 		}
 
-		if (ImageFits(theImageCount, rectTest, theMaxWidth))  // 如果图片能够放得下
+		if (ImageFits(theImageCount, rectTest, theMaxWidth))
 		{
 			theAtlasImageToPlace->mX = rectTest.mX;
 			theAtlasImageToPlace->mY = rectTest.mY;
@@ -159,7 +152,7 @@ bool ReanimAtlas::ImageFindPlace(ReanimAtlasImage* theAtlasImageToPlace, int the
 {
 	return 
 		ImageFindPlaceOnSide(theAtlasImageToPlace, theImageCount, theMaxWidth, true) || 
-		ImageFindPlaceOnSide(theAtlasImageToPlace, theImageCount, theMaxWidth, false);  // 分别尝试在居右和居下的位置放置图片
+		ImageFindPlaceOnSide(theAtlasImageToPlace, theImageCount, theMaxWidth, false);  // try placing to the right, then below
 }
 
 bool ReanimAtlas::PlaceAtlasImage(ReanimAtlasImage* theAtlasImageToPlace, int theImageCount, int theMaxWidth)
@@ -180,7 +173,7 @@ bool ReanimAtlas::PlaceAtlasImage(ReanimAtlasImage* theAtlasImageToPlace, int th
 
 void ReanimAtlas::ArrangeImages(int& theAtlasWidth, int& theAtlasHeight)
 {
-	std::sort(mImageArray.begin(), mImageArray.end(), sSortByNonIncreasingHeight);  // 将所有图集图片按高度降序排序
+	std::sort(mImageArray.begin(), mImageArray.end(), sSortByNonIncreasingHeight);
 	theAtlasWidth = PickAtlasWidth();
 	theAtlasHeight = 0;
 
@@ -189,11 +182,7 @@ void ReanimAtlas::ArrangeImages(int& theAtlasWidth, int& theAtlasHeight)
 		ReanimAtlasImage* aImage = &mImageArray[i];
 		PlaceAtlasImage(aImage, i, theAtlasWidth);
 
-		/* 
-			此处原为“theAtlasHeight = max(GetClosestPowerOf2Above(aImage->mY + aImage->mHeight), theAtlasHeight);”
-			这样在 max 宏展开时，会导致 GetClosestPowerOf2Above(aImage->mY + aImage->mHeight) 被重复计算，故稍作修改
-		*/ 
-
+		// computed once here so the max expression does not evaluate it twice
 		int aImageHeight = GetClosestPowerOf2Above(aImage->mY + aImage->mHeight);
 		theAtlasHeight = std::max(aImageHeight, theAtlasHeight);
 	}
@@ -227,12 +216,11 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition* theReanimDef)
 	for (int aTrackIndex = 0; aTrackIndex < theReanimDef->mTracks.count; aTrackIndex++)
 	{
 		ReanimatorTrack* aTrack = &theReanimDef->mTracks.tracks[aTrackIndex];
-		for (int aKeyIndex = 0; aKeyIndex < aTrack->mTransforms.count; aKeyIndex++)  // 遍历每一帧上的贴图
+		for (int aKeyIndex = 0; aKeyIndex < aTrack->mTransforms.count; aKeyIndex++)
 		{
 			Image* aImage = aTrack->mTransforms.mTransforms[aKeyIndex].mImage;
-			// 如果存在贴图，且贴图的宽、高均不大于 254 像素，且相同的贴图未加入至图集图片数组中
 			if (aImage != nullptr && aImage->mWidth <= 254 && aImage->mHeight <= 254 && FindImage(aImage) < 0)
-				AddImage(aImage);  // 先将其加入数组中，后续再确定其位于图集中的位置
+				AddImage(aImage);  // add it now; its atlas position is decided later
 		}
 	}
 
@@ -242,7 +230,7 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition* theReanimDef)
 	for (int aTrackIndex = 0; aTrackIndex < theReanimDef->mTracks.count; aTrackIndex++)
 	{
 		ReanimatorTrack* aTrack = &theReanimDef->mTracks.tracks[aTrackIndex];
-		for (int aKeyIndex = 0; aKeyIndex < aTrack->mTransforms.count; aKeyIndex++)  // 遍历每一帧上的贴图
+		for (int aKeyIndex = 0; aKeyIndex < aTrack->mTransforms.count; aKeyIndex++)
 		{
 			Image*& aImage = aTrack->mTransforms.mTransforms[aKeyIndex].mImage;
 			if (aImage != nullptr && aImage->mWidth <= 254 && aImage->mHeight <= 254)
@@ -260,7 +248,7 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition* theReanimDef)
 	for (int aImageIndex = 0; aImageIndex < static_cast<int>(mImageArray.size()); aImageIndex++)
 	{
 		ReanimAtlasImage* aImage = &mImageArray[aImageIndex];
-		aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY);  // 将原贴图绘制在图集上
+		aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY);
 	}
-	FixPixelsOnAlphaEdgeForBlending(mMemoryImage);  // 将所有透明像素的颜色修正为其周围像素颜色的平均值
+	FixPixelsOnAlphaEdgeForBlending(mMemoryImage);  // set transparent pixels to the average color of their neighbors
 }

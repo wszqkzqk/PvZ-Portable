@@ -164,8 +164,6 @@ void TextWidget::Resize(int theX, int theY, int theWidth, int theHeight)
 	int aLogValue = 0;		
 	if (mLineMap.size() > 0)
 	{
-		//IntIntMap::iterator anItr = mLineMap.find(mScrollbar->mValue);
-
 		aLogValue = mLineMap[(int) mScrollbar->mValue];
 	}
 
@@ -283,7 +281,6 @@ void TextWidget::AddLine(const std::string& theLine)
 		{
 			mLineMap[i] -= aNumLinesToRemove;
 		}
-			//mLineMap.setElementAt(new Integer(((Integer) mLineMap.elementAt(i)).intValue() - aNumLinesToRemove), i);
 		
 		// Move the hilited area
 		for (i = 0; i < 2; i++)

@@ -110,8 +110,6 @@
 #define TRI5 1
 #include "PvzpDrawTriangle.inc"
 
-// #################################################################################################### //
-
 #undef TRI5
 #undef TRI4
 #undef TRI3
@@ -262,8 +260,6 @@
 #include "PvzpDrawTriangle.inc"
 #undef NAME_ADDITIVE
 
-// #################################################################################################### //
-
 #undef TRI5
 #undef TRI4
 #undef TRI3
@@ -413,8 +409,6 @@
 #define NAME_ADDITIVE
 #include "PvzpDrawTriangle.inc"
 #undef NAME_ADDITIVE
-
-// #################################################################################################### //
 
 #undef TRI5
 #undef TRI4

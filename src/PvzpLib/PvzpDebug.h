@@ -52,7 +52,6 @@ void				PvzpAssertInitForApp();
 #ifdef PVZ_DEBUG
 #define PVZP_ASSERT(condition, ...) { \
 if (!bool(condition)) { PvzpAssertFailed(""#condition, __FILE__, __LINE__, ##__VA_ARGS__); \
-/*if (IsDebuggerPresent()) { __debugbreak(); }*/\
 PvzpTraceMemory(); }\
 }
 #else

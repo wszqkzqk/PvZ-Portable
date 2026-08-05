@@ -72,7 +72,6 @@ uint32_t* Image::GetBits()
 	return mBits;
 }
 
-//////////////////////////////////////////////////////////////////////////
 // PNG Pak Support
 
 static void png_pak_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
@@ -95,9 +94,7 @@ Image* GetPNGImage(const std::string& theFileName)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
-	//unsigned int sig_read = 0;
 	png_uint_32 width, height;
-	//int bit_depth, color_type, interlace_type;
 	PFILE *fp;
 
 	if ((fp = p_fopen(theFileName.c_str(), "rb")) == nullptr)
@@ -135,10 +132,6 @@ Image* GetPNGImage(const std::string& theFileName)
 		return nullptr;
 	}
 
-	//png_init_io(png_ptr, fp);
-
-	//png_ptr->io_ptr = (png_voidp)fp;
-
 	png_read_info(png_ptr, info_ptr);
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, nullptr, nullptr,
        nullptr, nullptr, nullptr);
@@ -156,7 +149,6 @@ Image* GetPNGImage(const std::string& theFileName)
 	png_set_palette_to_rgb(png_ptr);
 	png_set_gray_to_rgb(png_ptr);
 
-//	int aNumBytes = png_get_rowbytes(png_ptr, info_ptr) * height / 4;
 	png_bytep* row_pointers = new png_bytep[height];
 	uint32_t* aBits = new uint32_t[width*height];
 	for (uint i = 0; i < height; i++)
@@ -281,17 +273,17 @@ Image* GetGIFImage(const std::string& theFileName)
 	unsigned char *p;
 
 	unsigned char
-		background,			// 背景色在全局颜色列表中的索引（背景色：图像中没有被指定颜色的像素会被背景色填充）
+		background,			// background color index in the global colormap
 		c,
-		flag,				// 图像标志的压缩字节
-		*global_colormap,	// 全局颜色列表
+		flag,				// packed flag byte
+		*global_colormap,
 		header[1664],
 		magick[12];
 
 	unsigned int
 		delay,
 		dispose,
-		global_colors,		// 全局颜色列表大小
+		global_colors,
 		image_count,
 		iterations;
 
@@ -306,39 +298,39 @@ Image* GetGIFImage(const std::string& theFileName)
 	/*
 	Determine if this is a GIF file.
 	*/
-	status = p_fread(magick, sizeof(char), 6, fp);  // 读取文件头（包含文件签名与版本号，共 6 字节）
+	status = p_fread(magick, sizeof(char), 6, fp);
 	(void)status; // unused
 
-	// 文件头的 ASCII 值为“GIF87a”或”GIF89a”，其中前三位为 GIF 签名，后三位为不同年份的版本号
+	// a valid GIF file starts with a "GIF87" or "GIF89" signature
 	if (((strncmp((char*)magick, "GIF87", 5) != 0) && (strncmp((char*)magick, "GIF89", 5) != 0)))
 		return nullptr;
 
 	global_colors = 0;
 	global_colormap = (unsigned char*)nullptr;
 
-	uint16_t pw;  // 图像宽度
-	uint16_t ph;  // 图像高度
+	uint16_t pw;  // image width
+	uint16_t ph;  // image height
 
-	// 读取逻辑屏幕描述符，共 7 字节
-	p_fread(&pw, sizeof(short), 1, fp);  // 读取图像渲染区域的宽度
-	p_fread(&ph, sizeof(short), 1, fp);  // 读取图像渲染区域的高度
+	// read the 7-byte logical screen descriptor
+	p_fread(&pw, sizeof(short), 1, fp);
+	p_fread(&ph, sizeof(short), 1, fp);
 	pw = Sexy::FromLE16(pw);
 	ph = Sexy::FromLE16(ph);
-	p_fread(&flag, sizeof(char), 1, fp);  // 读取图像标志
-	p_fread(&background, sizeof(char), 1, fp);  // 读取背景色在全局颜色列表中的索引，若无全局颜色列表则此字节无效
-	p_fread(&c, sizeof(char), 1, fp);  // 读取像素宽高比
+	p_fread(&flag, sizeof(char), 1, fp);
+	p_fread(&background, sizeof(char), 1, fp);  // only meaningful when a global colormap exists
+	p_fread(&c, sizeof(char), 1, fp);  // pixel aspect ratio
 
-	if (BitSet(flag, 0x80))  // 如果存在全局颜色列表
+	if (BitSet(flag, 0x80))  // global colormap present
 	{
 		/*
 		opacity global colormap.
 		*/
-		global_colors = 1 << ((flag & 0x07) + 1);  // 压缩字节的最低 3 位表示全局颜色列表的大小，设其二进制数值为 N，则列表大小 = 2 ^ (N + 1)
-		global_colormap = new unsigned char[3 * global_colors];  // 每个颜色占 3 个字节，按 RGB 排列
+		global_colors = 1 << ((flag & 0x07) + 1);  // lowest 3 bits give N; table size = 2^(N+1)
+		global_colormap = new unsigned char[3 * global_colors];  // 3 bytes per color, RGB
 		if (global_colormap == (unsigned char*)nullptr)
 			return nullptr;
 
-		p_fread(global_colormap, sizeof(char), 3 * global_colors, fp);  // 读取全局颜色列表
+		p_fread(global_colormap, sizeof(char), 3 * global_colors, fp);
 	}
 
 	delay = 0;
@@ -350,16 +342,16 @@ Image* GetGIFImage(const std::string& theFileName)
 	for (; ; )
 	{
 		if (p_fread(&c, sizeof(char), 1, fp) == 0)
-			break;  // 如果读取错误或读取到文件尾则退出，返回空指针
+			break;  // on read error or EOF, bail out and return nullptr
 
-		if (c == ';')  // 当读取到 gif 结束块标记符（End Of File）
+		if (c == ';')
 			break;  /* terminator */
-		if (c == '!')  // 当读取到 gif 拓展块标记符
+		if (c == '!')
 		{
 			/*
 			GIF Extension block.
 			*/
-			p_fread(&c, sizeof(char), 1, fp);  // 读取拓展块的功能编码号
+			p_fread(&c, sizeof(char), 1, fp);  // read the extension label
 
 			switch (c)
 			{
@@ -409,23 +401,11 @@ Image* GetGIFImage(const std::string& theFileName)
 			}
 		}
 
-		if (c != ',')  // 如果读取的不为图像描述符
+		if (c != ',')  // not an image descriptor
 			continue;
 
 		if (image_count != 0)
 		{
-			/*
-			Allocate next image structure.
-			*/
-
-			/*AllocateNextImage(image_info,image);
-			if (image->next == (Image *) nullptr)
-			{
-			DestroyImages(image);
-			return((Image *) nullptr);
-			}
-			image=image->next;
-			MagickMonitor(LoadImagesText,TellBlob(image),image->filesize);*/
 		}
 		image_count++;
 
@@ -436,43 +416,29 @@ Image* GetGIFImage(const std::string& theFileName)
 		int colors;
 		bool interlaced;
 
-		p_fread(&pagex, sizeof(short), 1, fp);  // 读取帧的横坐标（Left）
-		p_fread(&pagey, sizeof(short), 1, fp);  // 读取帧的纵坐标（Top）
-		p_fread(&width, sizeof(short), 1, fp);  // 读取帧的横向宽度（Width）
-		p_fread(&height, sizeof(short), 1, fp);  // 取得帧的纵向高度（Height）
+		p_fread(&pagex, sizeof(short), 1, fp);
+		p_fread(&pagey, sizeof(short), 1, fp);
+		p_fread(&width, sizeof(short), 1, fp);
+		p_fread(&height, sizeof(short), 1, fp);
 		pagex = Sexy::FromLE16(pagex);
 		pagey = Sexy::FromLE16(pagey);
 		width = Sexy::FromLE16(width);
 		height = Sexy::FromLE16(height);
-		p_fread(&flag, sizeof(char), 1, fp);  // 读取帧标志的压缩字节
+		p_fread(&flag, sizeof(char), 1, fp);
 
-		colors = !BitSet(flag, 0x80) ? global_colors : 1 << ((flag & 0x07) + 1);  // 判断使用全局颜色列表或使用局部颜色列表，并取得列表大小
-		uint32_t* colortable = new uint32_t[colors];  // 申请颜色列表
+		colors = !BitSet(flag, 0x80) ? global_colors : 1 << ((flag & 0x07) + 1);  // use the local colormap if present, else the global one
+		uint32_t* colortable = new uint32_t[colors];
 
-		interlaced = BitSet(flag, 0x40);  // 当前帧图像数据存储方式，为 1 表示交织顺序存储，0 表示顺序存储
+		interlaced = BitSet(flag, 0x40);
 
 		delay = 0;
 		dispose = 0;
 		(void)dispose; // unused
 		iterations = 1;
 		(void)iterations; //unused
-		/*if (image_info->ping)
-		{
-		f (opacity >= 0)
-		/image->matte=true;
-
-		CloseBlob(image);
-		return(image);
-		}*/
 		if ((width == 0) || (height == 0))
 			return nullptr;
-		/*
-		Inititialize colormap.
-		*/
-		/*if (!AllocateImageColormap(image,image->colors))
-		ThrowReaderException(ResourceLimitWarning,"Memory allocation failed",
-		image);*/
-		if (!BitSet(flag, 0x80))  // 如果使用全局颜色列表
+		if (!BitSet(flag, 0x80))
 		{
 			/*
 			Use global colormap.
@@ -486,9 +452,6 @@ Image* GetGIFImage(const std::string& theFileName)
 
 				colortable[i] = 0xFF000000 | (r << 16) | (g << 8) | (b);
 			}
-
-			//image->background_color=
-			//image->colormap[Min(background,image->colors-1)];
 		}
 		else
 		{
@@ -517,31 +480,11 @@ Image* GetGIFImage(const std::string& theFileName)
 			delete[] colormap;
 		}
 
-		/*if (opacity >= (int) colors)
-		{
-		for (i=colors; i < (opacity+1); i++)
-		{
-		image->colormap[i].red=0;
-		image->colormap[i].green=0;
-		image->colormap[i].blue=0;
-		}
-		image->colors=opacity+1;
-		}*/
-		/*
-		Decode image.
-		*/
-		//status=DecodeImage(image,opacity,exception);
-
-		//if (global_colormap != (unsigned char *) nullptr)
-		// LiberateMemory((void **) &global_colormap);
 		if (global_colormap != nullptr)
 		{
 			delete[] global_colormap;
 			global_colormap = nullptr;
 		}
-
-		//while (image->previous != (Image *) nullptr)
-		//    image=image->previous;
 
 #define MaxStackSize  4096
 #define NullCode  (-1)
@@ -630,11 +573,6 @@ Image* GetGIFImage(const std::string& theFileName)
 
 		for (y = 0; y < (int)height; y++)
 		{
-			//q=SetImagePixels(image,0,offset,width,1);
-			//if (q == (PixelPacket *) nullptr)
-			//break;
-			//indexes=GetIndexes(image);
-
 			uint32_t* q = aBits + offset * width;
 
 
@@ -787,10 +725,6 @@ Image* GetGIFImage(const std::string& theFileName)
 
 			if (x < width)
 				break;
-
-			/*if (image->previous == (Image *) nullptr)
-			if (QuantumTick(y,image->rows))
-			MagickMonitor(LoadImageText,y,image->rows);*/
 		}
 		delete[] pixel_stack;
 		delete[] suffix;
@@ -798,9 +732,6 @@ Image* GetGIFImage(const std::string& theFileName)
 		delete[] packet;
 
 		delete[] colortable;
-
-		//if (y < image->rows)
-		//failed = true;
 
 		Image* anImage = new Image();
 
@@ -966,13 +897,6 @@ bool ImageLib::WritePNGImage(const std::string& theFileName, Image* theImage)
 	png_set_IHDR(png_ptr, info_ptr, theImage->mWidth, theImage->mHeight, 8, PNG_COLOR_TYPE_RGB_ALPHA,
        PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
-	// Add filler (or alpha) byte (before/after each RGB triplet)
-	//png_set_expand(png_ptr);
-	//png_set_filler(png_ptr, 0xff, PNG_FILLER_AFTER);
-	//png_set_gray_1_2_4_to_8(png_ptr);
-	//png_set_palette_to_rgb(png_ptr);
-	//png_set_gray_to_rgb(png_ptr);
-
 	png_write_info(png_ptr, info_ptr);
 
 	for (int i = 0; i < theImage->mHeight; i++)
@@ -1058,7 +982,6 @@ bool ImageLib::WriteTGAImage(const std::string& theFileName, Image* theImage)
 	return true;
 }
 
-////////////////////////////////////////////////////////////////////////// 
 // JPEG Pak Reader
 
 typedef struct {
@@ -1085,7 +1008,6 @@ METHODDEF(boolean) fill_input_buffer (j_decompress_ptr cinfo)
 	size_t nbytes;
 
 	nbytes = p_fread(src->buffer, 1, INPUT_BUF_SIZE, src->infile);
-	//((size_t) fread((void *) (buf), (size_t) 1, (size_t) (sizeofbuf), (file)))
 
 	if (nbytes <= 0) {
 		if (src->start_of_file)	/* Treat empty input file as fatal error */

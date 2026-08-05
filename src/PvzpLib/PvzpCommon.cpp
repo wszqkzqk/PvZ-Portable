@@ -179,10 +179,10 @@ float PvzpCalcSmoothWeight(float aWeight, float aLastPicked, float aSecondLastPi
 		return 0.0f;
 	}
 
-	float aExpectedLength1 = 1.0f / aWeight;								// theLastPicked 的期望值
-	float aExpectedLength2 = aExpectedLength1 * 2.0f;						// theSecondLastPicked 的期望值
-	float aAdvancedLength1 = aLastPicked + 1.0f - aExpectedLength1;			// 相较于 theLastPicked 的期望值，提前的轮数
-	float aAdvancedLength2 = aSecondLastPicked + 1.0f - aExpectedLength2;	// 相较于 theSecondLastPicked 的期望值，提前的轮数
+	float aExpectedLength1 = 1.0f / aWeight;								// expected value of theLastPicked
+	float aExpectedLength2 = aExpectedLength1 * 2.0f;						// expected value of theSecondLastPicked
+	float aAdvancedLength1 = aLastPicked + 1.0f - aExpectedLength1;			// rounds ahead of the expected value of theLastPicked
+	float aAdvancedLength2 = aSecondLastPicked + 1.0f - aExpectedLength2;	// rounds ahead of the expected value of theSecondLastPicked
 	float aFactor1 = 1.0f + aAdvancedLength1 / aExpectedLength1 * 2.0f;		// = aWeight * aLastPicked * 2 + aWeight * 2 - 1
 	float aFactor2 = 1.0f + aAdvancedLength2 / aExpectedLength2 * 2.0f;		// = aSecondLastPicked * aWeight + aWeight - 1
 	float aFactorFinal = std::clamp(aFactor1 * 0.75f + aFactor2 * 0.25f, 0.01f, 100.0f);
@@ -396,7 +396,6 @@ float PvzpAnimateCurveFloat(int theTimeStart, int theTimeEnd, int theTimeAge, fl
 	return PvzpCurveEvaluateClamped(aWarpedAge, thePositionStart, thePositionEnd, theCurve);
 }
 
-// GOTY @Patoke: 0x51BEA0
 int PvzpAnimateCurve(int theTimeStart, int theTimeEnd, int theTimeAge, int thePositionStart, int thePositionEnd, PvzpCurves theCurve)
 {
 	return FloatRoundToInt(PvzpAnimateCurveFloat(theTimeStart, theTimeEnd, theTimeAge, thePositionStart, thePositionEnd, theCurve));
@@ -608,7 +607,6 @@ void PvzpDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& 
 	}
 }
 
-// GOTY @Patoke: 0x51C863
 void PvzpDrawImageCelF(Graphics* g, Image* theImageStrip, float thePosX, float thePosY, int theCelCol, int theCelRow)
 {
 	PVZP_ASSERT(theCelCol >= 0 && theCelCol < theImageStrip->mNumCols);
@@ -688,7 +686,7 @@ void PvzpSandImageIfNeeded(Image* theImage)
 	{
 		FixPixelsOnAlphaEdgeForBlending(theImage);
 		((MemoryImage*)theImage)->mRenderFlags &= ~RENDERIMAGEFLAG_SANDING; // Unset the sanding flag
-		//SetBit((unsigned int&)aImage->mRenderFlags, RENDERIMAGEFLAG_SANDING, false);  // 清除标记 Also UB!?!
+		//SetBit((unsigned int&)aImage->mRenderFlags, RENDERIMAGEFLAG_SANDING, false);  // Also UB!?!
 	}
 }
 
@@ -790,7 +788,6 @@ void PvzpDrawImageCelScaledF(Graphics* g, Image* theImageStrip, float thePosX, f
 	PvzpBltMatrix(g, theImageStrip, aTransform, g->mClipRect, aColor, g->mDrawMode, aSrcRect);
 }
 
-// GOTY @Patoke: 0x51CC90
 void PvzpDrawImageScaledF(Graphics* g, Image* theImage, float thePosX, float thePosY, float theScaleX, float theScaleY)
 {
 	if (theScaleX == 1.0f && theScaleY == 1.0f)
@@ -852,19 +849,19 @@ uint32_t AverageNearByPixels(MemoryImage* theImage, uint32_t* thePixel, int x, i
 	int aBlue = 0;
 	int aBitsCount = 0;
 
-	for (int i = -1; i <= 1; i++)  // 依次循环上方、当前、下方的一行
+	for (int i = -1; i <= 1; i++)
 	{
-		if (i == 0)  // 排除当前行
+		if (i == 0)
 		{
 			continue;
 		}
 
-		for (int j = -1; j <= 1; j++)  // 依次循环左方、当前、右方的一列
+		for (int j = -1; j <= 1; j++)
 		{
 			if ((x != 0 || j != -1) && (x != theImage->mWidth - 1 || j != 1) && (y != 0 || i != -1) && (y != theImage->mHeight - 1 || i != 1))
 			{
 				uint32_t aPixel = *(thePixel + i * theImage->mWidth + j);
-				if (aPixel & 0xFF000000UL)  // 如果不是透明像素
+				if (aPixel & 0xFF000000UL)  // pixel is not transparent
 				{
 					aRed += (aPixel >> 16) & 0x000000FFUL;
 					aGreen += (aPixel >> 8) & 0x000000FFUL;
@@ -893,7 +890,7 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	if (aImage->mBits == nullptr)
 		return;
 
-	aImage->CommitBits();  // 分析 mHasTrans 和 mHasAlpha
+	aImage->CommitBits();  // populate mHasTrans and mHasAlpha
 	if (!aImage->mHasTrans)
 		return;
 
@@ -905,9 +902,9 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	{
 		for (int x = 0; x < theImage->mWidth; x++)
 		{
-			if ((*aBitsPtr & 0xFF000000UL) == 0)  // 如果像素的不透明度为 0
+			if ((*aBitsPtr & 0xFF000000UL) == 0)  // pixel is fully transparent
 			{
-				*aBitsPtr = AverageNearByPixels(aImage, aBitsPtr, x, y);  // 计算该点周围非透明像素的平均颜色
+				*aBitsPtr = AverageNearByPixels(aImage, aBitsPtr, x, y);
 			}
 
 			aBitsPtr++;
@@ -992,13 +989,11 @@ void SexyMatrix3Multiply(SexyMatrix3& m, const SexyMatrix3& l, const SexyMatrix3
 	}
 }
 
-// GOTY @Patoke: 0x51D2C0
 Color GetFlashingColor(uint32_t theCounter, int theFlashTime)
 {
 	int aTimeAge = static_cast<int>(theCounter % static_cast<uint32_t>(theFlashTime));
 	int aTimeInf = theFlashTime / 2;
 	//int aTimeDel = abs(aTimeInf - aTimeAge) / aTimeInf;
-	// @Patoke: order wasn't like in binaries
 	int aGrayness = std::clamp(200 * abs(aTimeInf - aTimeAge) / aTimeInf + 55, 0, 255);
 	//int aGrayness = std::clamp(55 + 200 * abs(aTimeInf - aTimeAge)/ aTimeInf, 0, 255);
 	return Color(aGrayness, aGrayness, aGrayness, 255);
@@ -1011,13 +1006,12 @@ Color ColorAdd(const Color& theColor1, const Color& theColor2)
 	int b = theColor1.mBlue + theColor2.mBlue;
 	int a = theColor1.mAlpha + theColor2.mAlpha;
 
-	return Color(std::clamp(r, 0, 255), std::clamp(g, 0, 255), std::clamp(b, 0, 255), std::clamp(a, 0, 255));  // 线性减淡
+	return Color(std::clamp(r, 0, 255), std::clamp(g, 0, 255), std::clamp(b, 0, 255), std::clamp(a, 0, 255));  // linear dodge
 }
 
-// GOTY @Patoke: 0x51D3C0
 int ColorComponentMultiply(int theColor1, int theColor2)
 {
-	return std::clamp(theColor1 * theColor2 / 255, 0, 255);  // 正片叠底
+	return std::clamp(theColor1 * theColor2 / 255, 0, 255);  // multiply
 }
 
 Color ColorsMultiply(const Color& theColor1, const Color& theColor2)
@@ -1027,16 +1021,14 @@ Color ColorsMultiply(const Color& theColor1, const Color& theColor2)
 		ColorComponentMultiply(theColor1.mGreen, theColor2.mGreen),
 		ColorComponentMultiply(theColor1.mBlue, theColor2.mBlue),
 		ColorComponentMultiply(theColor1.mAlpha, theColor2.mAlpha)
-	);  // 正片叠底
+	);  // multiply
 }
 
-// GOTY @Patoke: inlined 0x51D4C0
 bool PvzpLoadResources(const std::string& theGroup)
 {
 	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->PvzpLoadResources(theGroup);
 }
 
-// GOTY @Patoke: 0x51D4C0
 bool PvzpResourceManager::PvzpLoadResources(const std::string& theGroup)
 {
 	if (IsGroupLoaded(theGroup))
@@ -1095,7 +1087,6 @@ bool PvzpLoadNextResource()
 
 bool PvzpResourceManager::PvzpLoadNextResource()
 {
-	//GetTickCount();
 	PvzpHesitationTrace("preres");
 
 	while (mCurResGroupListItr != mCurResGroupList->end())
@@ -1159,7 +1150,6 @@ bool PvzpResourceManager::PvzpLoadNextResource()
 			}
 		}
 
-		//GetTickCount();
 		PvzpHesitationTrace("Loading: '%s'", aRes->mPath.c_str());
 		PvzpHesitationTrace("resource '%s'", aRes->mPath.c_str());
 		return true;
@@ -1173,7 +1163,6 @@ bool PvzpFindImagePath(Image* theImage, std::string* thePath)
 	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->FindImagePath(theImage, thePath);
 }
 
-// @Patoke implemented
 bool PvzpFindFontPath(_Font* theFont, std::string* thePath) {
 	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->FindFontPath(theFont, thePath);
 }
@@ -1264,7 +1253,6 @@ std::string PvzpReplaceNumberString(std::string_view theText, const char* theStr
 	return aFinalString;
 }
 
-// GOTY @Patoke: 0x51DB00
 bool PvzpIsPointInPolygon(const SexyVector2* thePolygonPoint, int theNumberPolygonPoints, const SexyVector2& theCheckPoint)
 {
 	PVZP_ASSERT(theNumberPolygonPoints >= 3);

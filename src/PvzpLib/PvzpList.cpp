@@ -62,13 +62,13 @@ void PvzpAllocator::Grow()
 
 bool PvzpAllocator::IsPointerFromAllocator(void* theItem)
 {
-	size_t aBlockSize = mGrowCount * mItemSize;  // 每次“Grow”的内存大小，即每个区块的内存大小
+	size_t aBlockSize = mGrowCount * mItemSize;
 	for (void* aPtr = mBlockList; aPtr != nullptr; aPtr = *(void**)aPtr)
 	{
 		uintptr_t aItemPtr = (uintptr_t)theItem;
-		// 区块的首个四字节为额外申请的、用于存储指向下一区块的指针的区域
+		// the first bytes of each block hold the pointer to the next block
 		uintptr_t aBlockPtr = (uintptr_t)aPtr + sizeof(void*);
-		// 判断 theItem 是否位于当前区块内且指向某一项的区域的起始地址
+		// theItem must point to the start of an item within this block
 		if (aItemPtr >= aBlockPtr && aItemPtr < aBlockPtr + aBlockSize && (aItemPtr - aBlockPtr) % mItemSize == 0)
 			return true;
 	}
@@ -108,8 +108,8 @@ void PvzpAllocator::Free(void* theItem, int theItemSize)
 	mTotalItems--;
 	PVZP_ASSERT(IsPointerFromAllocator(theItem));
 	PVZP_ASSERT(!IsPointerOnFreeList(theItem));
-	*(void**)theItem = mFreeList;  // 将原可用区域头存入 [*theItem] 中
-	mFreeList = theItem;  // 将 theItem 设为新的可用区域头
+	*(void**)theItem = mFreeList;
+	mFreeList = theItem;
 }
 
 void PvzpAllocator::FreeAll()

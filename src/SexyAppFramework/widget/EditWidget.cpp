@@ -186,8 +186,6 @@ void EditWidget::UpdateCaretPos()
 	else if (aPoint.mX>anApp->mWidth-10) aPoint.mX = anApp->mWidth-10;
 	if (aPoint.mY<10) aPoint.mY = 10;
 	else if (aPoint.mY>anApp->mHeight-10) aPoint.mY = anApp->mHeight-10;
-
-	//SetCaretPos(aPoint.mX,aPoint.mY);
 }
 
 int EditWidget::GetCaretXOffset()
@@ -629,7 +627,6 @@ void EditWidget::KeyDown(KeyCode theKey)
 
 void EditWidget::KeyChar(char theChar)
 {
-//	if (mEditListener->AllowChar(mId, theChar))
 		ProcessKey(KEYCODE_UNKNOWN, theChar);
 
 	Widget::KeyChar(theChar);

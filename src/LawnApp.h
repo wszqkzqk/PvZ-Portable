@@ -115,7 +115,6 @@ public:
 	int								mCrazyDaveMessageIndex;
 	std::string						mCrazyDaveMessageText;
 	int								mAppRandSeed;
-	//HICON							mBigArrowCursor;
 	intptr_t						mSessionID;
 	int								mPlayTimeActiveSession;
 	int								mPlayTimeInactiveSession;
@@ -185,7 +184,7 @@ public:
 	void							PreNewGame(GameMode theGameMode, bool theLookForSavedGame);
 	void							ShowGameSelector();
 	void							KillGameSelector();
-	void							ShowAwardScreen(AwardType theAwardType, bool theShowAchievements); // @Patoke: add argument
+	void							ShowAwardScreen(AwardType theAwardType, bool theShowAchievements);
 	void							KillAwardScreen();
 	void							ShowSeedChooserScreen();
 	void							KillSeedChooserScreen();
@@ -321,7 +320,6 @@ public:
 	/*inline*/ int					TrophiesNeedForGoldSunflower();
 	/*inline*/ int					GetCurrentChallengeIndex();
 	void							LoadGroup(const char* theGroupName, int theGroupAveMsToLoad);
-//	void							TraceLoadGroup(const char* theGroupName, int theGroupTime, int theTotalGroupWeigth, int theTaskWeight);
 	void							CrazyDaveStopSound();
 	/*inline*/ bool					IsTrialStageLocked();
 	/*inline*/ void					FinishZenGardenToturial();

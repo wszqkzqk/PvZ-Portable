@@ -916,9 +916,6 @@ namespace Sexy
         RESOURCE_ID_MAX
     };
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-	// @Patoke: updated resources from https://github.com/LolHacksRule/PopCapResourceFilesGeneratedCPP/blob/main/PlantsVsZombies/PC_MAC/FINAL
 	// DelayLoad_Almanac Resources
 	extern Image* IMAGE_ALMANAC_CLOSEBUTTON;
 	extern Image* IMAGE_ALMANAC_CLOSEBUTTONHIGHLIGHT;
@@ -1874,7 +1871,6 @@ namespace Sexy
     bool                ExtractDelayLoad_GreenHouseOverlayResources(ResourceManager* theResourceManager);
     bool                ExtractDelayLoad_MushroomGardenResources(ResourceManager* theResourceManager);
     bool                ExtractDelayLoad_StoreResources(ResourceManager* theResourceManager);
-//  bool                ExtractDelayLoad_TreeOfWisdomResources(ResourceManager* theResourceManager);
 	bool                ExtractDelayLoad_ZombatarResources(ResourceManager* theResourceManager);
 	bool                ExtractDelayLoad_ZombieFinalNoteResources(ResourceManager* theResourceManager);
     bool                ExtractDelayLoad_ZombieNoteResources(ResourceManager* theResourceManager);
@@ -1889,8 +1885,6 @@ namespace Sexy
     bool                ExtractLoadingFontsResources(ResourceManager* theResourceManager);
     bool                ExtractLoadingImagesResources(ResourceManager* theResourceManager);
     bool                ExtractLoadingSoundsResources(ResourceManager* theResourceManager);
-
-    /* #################################################################################################### */
 
     Image*              GetImageById(ResourceId theId);
     _Font*              GetFontById(ResourceId theId);

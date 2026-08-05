@@ -30,7 +30,6 @@
 #include "../PvzpLib/PvzpStringFile.h"
 #include <algorithm>
 
-//(0x4081F1)
 MessageWidget::MessageWidget(LawnApp* theApp)
 {
 	mApp = theApp;
@@ -101,7 +100,6 @@ static void TruncateLabel(std::string& theLabel)
 	}
 }
 
-// GOTY @Patoke: inlined 0x459715
 void MessageWidget::SetLabel(std::string_view theNewLabel, MessageStyle theMessageStyle)
 {
 	std::string aLabel = PvzpStringTranslate(theNewLabel);
@@ -161,7 +159,7 @@ void MessageWidget::SetLabel(std::string_view theNewLabel, MessageStyle theMessa
 			mDuration = 750;
 			break;
 
-		case MessageStyle::MESSAGE_STYLE_ACHIEVEMENT: // @Patoke: implemented
+		case MessageStyle::MESSAGE_STYLE_ACHIEVEMENT:
 			mDuration = 250;
 			break;
 
@@ -241,7 +239,7 @@ void MessageWidget::Update()
 	if (!mApp->mBoard || mApp->mBoard->mPaused)
 		return;
 
-	// 更新字幕的剩余时间倒计时和下一轮字幕的切换
+	// count down the remaining time and switch to the next message
 	if (mDuration < 10000 && mDuration > 0)
 	{
 		mDuration--;
@@ -262,10 +260,9 @@ void MessageWidget::Update()
 		Reanimation* aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aCharIdx]);
 		if (aTextReanim == nullptr)
 		{
-			break;  // 当不存在文本动画时，跳出循环，直接返回
+			break;
 		}
 
-		// 设置动画速率
 		int aTextSpeed = mReanimType == ReanimationType::REANIM_TEXT_FADE_ON ? 100 : 1;
 		if (mDuration > mSlideOffTime)
 		{
@@ -287,7 +284,7 @@ void MessageWidget::Update()
 			aTextReanim->mAnimRate = PvzpAnimateCurveFloat(0, 50, (mSlideOffTime - mDuration) * aTextSpeed - aCharIdx, 0.0f, 40.0f, PvzpCurves::CURVE_LINEAR);
 		}
 
-		aTextReanim->Update();  //更新动画
+		aTextReanim->Update();
 	}
 }
 
@@ -298,7 +295,7 @@ void MessageWidget::DrawReanimatedText(Graphics* g, _Font* theFont, const Color&
 		Reanimation* aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aCharIdx]);
 		if (aTextReanim == nullptr)
 		{
-			break;  // 当不存在文本动画时，跳出循环，直接返回
+			break;
 		}
 
 		ReanimatorTransform aTransform;
@@ -307,7 +304,7 @@ void MessageWidget::DrawReanimatedText(Graphics* g, _Font* theFont, const Color&
 		int anAlpha = std::clamp(FloatRoundToInt(theColor.mAlpha * aTransform.mAlpha), 0, 255);
 		if (anAlpha <= 0)
 		{
-			break;  // 文本动画完全透明时，直接返回
+			break;
 		}
 		Color aFinalColor(theColor);
 		aFinalColor.mAlpha = anAlpha;
@@ -329,7 +326,6 @@ void MessageWidget::DrawReanimatedText(Graphics* g, _Font* theFont, const Color&
 	}
 }
 
-// GOTY @Patoke: inlined 0x45CAEF
 _Font* MessageWidget::GetFont()
 {
 	switch (mMessageStyle)
@@ -350,7 +346,7 @@ _Font* MessageWidget::GetFont()
 	case MessageStyle::MESSAGE_STYLE_HOUSE_NAME:
 	case MessageStyle::MESSAGE_STYLE_HUGE_WAVE:
 	case MessageStyle::MESSAGE_STYLE_ZEN_GARDEN_LONG:
-	case MessageStyle::MESSAGE_STYLE_ACHIEVEMENT: // @Patoke: implemented
+	case MessageStyle::MESSAGE_STYLE_ACHIEVEMENT:
 		return Sexy::FONT_HOUSEOFTERROR28;
 
 	case MessageStyle::MESSAGE_STYLE_SLOT_MACHINE:
@@ -363,7 +359,6 @@ _Font* MessageWidget::GetFont()
 	unreachable();
 }
 
-// GOTY @Patoke: 0x45D2B0
 void MessageWidget::Draw(Graphics* g)
 {
 	if (mDuration <= 0)
@@ -401,7 +396,7 @@ void MessageWidget::Draw(Graphics* g)
 	case MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST:
 	case MessageStyle::MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE:
 	case MessageStyle::MESSAGE_STYLE_HINT_TALL_LONG:
-	case MessageStyle::MESSAGE_STYLE_ACHIEVEMENT: // @Patoke: implemented
+	case MessageStyle::MESSAGE_STYLE_ACHIEVEMENT:
 		aPosY = 476;
 		aRectHeight = 100;
 		aTextOffsetY = -4;

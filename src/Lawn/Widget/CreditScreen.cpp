@@ -321,7 +321,6 @@ void CreditsOverlay::Draw(Graphics* g)
 	mParent->DrawOverlay(g);
 }
 
-// GOTY @Patoke: 0x4367F0
 CreditScreen::CreditScreen(LawnApp* theApp)
 {
 	mApp = theApp;
@@ -689,20 +688,17 @@ void CreditScreen::DrawFogEffect(Graphics* g, float theTime)
     {
         for (int y = 0; y < 7; y++)
         {
-            // 取得格子内的雾的形状
+            // fog shape for this cell
             int aCelLook = x + (x + 17) * y;
             int aCelCol = aCelLook % 8;
-            // 本格浓雾横坐标 = 列 * 80 + 浓雾偏移 - 15
             float aPosX = x * 80 - 15.0f;
-            // 本格浓雾纵坐标 = 行 * 85 + 200
             float aPosY = y * 85 + 200.0f;
-            // 开始计算周期变化的颜色，aAnimTime 为 MV 动画播放至当前时刻需要的时间（秒数）
+            // aAnimTime is the MV playback time in seconds, driving the cycling fog color
             float aAnimTime = aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count * aCreditsReanim->mAnimTime / (aCreditsReanim->mAnimRate * SECONDS_PER_UPDATE);
             float aTime = aAnimTime * PI * 2;
-            // 与行、列有关的初始相位
+            // initial phase tied to the column and row
             float aPhaseX = 6 * PI * x / 14;
             float aPhaseY = 6 * PI * y / 7;
-            // 根据初相和时间计算当前相位
             float aMotion = 13 + 4 * sin(aTime / 900 + aPhaseY) + 8 * sin(aTime / 500 + aPhaseX);
 
             int aColorVariant = 255 - (aCelLook % 20) * 1.5f - aMotion * 1.5f;
@@ -806,8 +802,6 @@ static int DrawCreditsContent(Graphics* g, int theYPos, bool theDraw)
     return aYPos - aStartY;
 }
 
-// Original 0x435550 version is replaced by this new version.
-// Based on wszqkzqk's observations and speculations about GOTY's behavior.
 void CreditScreen::DrawFinalCredits(Graphics* g)
 {
     // Measure total content height (no draw)
@@ -925,7 +919,7 @@ void CreditScreen::Draw(Graphics* g)
         {
             Graphics aBackground1G(*g);
             aBackground1G.ClipRect(aTransformBackground1.mTransX, aTransformBackground1.mTransY, aTransformBackground1.mImage->mWidth - 1, aTransformBackground1.mImage->mHeight - 1);
-            // Digger zombie says "I like your tricycle" at this position (determined by adjusting and comparing it with the original version)
+            // Digger zombie says "I like your tricycle" at this position
             aBackground1G.DrawImageF(IMAGE_BACKGROUND1, aTransformBackground1.mTransX - BOARD_WIDTH / 10, aTransformBackground1.mTransY - BOARD_HEIGHT * 0.6f);
         }
         if (aTransformBackground3.mFrame != -1.0f)

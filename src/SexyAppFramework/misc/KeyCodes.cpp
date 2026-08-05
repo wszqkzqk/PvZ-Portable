@@ -136,7 +136,6 @@ KeyCode	Sexy::GetKeyCodeFromName(const std::string& theKeyName)
 		return KEYCODE_UNKNOWN;
 
 	strcpy(aKeyName, theKeyName.c_str());
-	//strupr(aKeyName);
 	char *s = aKeyName;
 	while (*s)
 	{

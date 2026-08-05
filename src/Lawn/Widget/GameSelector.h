@@ -137,10 +137,9 @@ public:
     void                        UpdateTooltip();
     /*inline*/ bool             ShouldDoZenTuturialBeforeAdventure();
     void                        AddPreviewProfiles();
-    // @Patoke: implement functions
     /*inline*/ void             SlideTo(int theX, int theY);
     void                        ShowZombatarScreen();
-    void                        ShowAchievementsScreen(); // @Patoke: unofficial name
+    void                        ShowAchievementsScreen();
 };
 
 class GameSelectorOverlay : public Widget

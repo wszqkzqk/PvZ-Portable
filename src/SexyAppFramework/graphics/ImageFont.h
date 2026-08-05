@@ -63,7 +63,6 @@ public:
 	std::string				mLayerName;
 	std::vector<std::string>	mRequiredTags;
 	std::vector<std::string>	mExcludedTags;
-	//CharData				mCharData[256];	
 	CharDataMap				mCharDataMap;
 	Color					mColorMult;
 	Color					mColorAdd;

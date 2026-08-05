@@ -75,8 +75,6 @@ typedef std::list<WidgetSafeDeleteInfo> WidgetSafeDeleteList;
 typedef std::set<MemoryImage*> MemoryImageSet;
 typedef std::map<int, Dialog*> DialogMap;
 typedef std::list<Dialog*> DialogList;
-//typedef std::list<MSG> WindowsMessageList;
-//typedef std::basic_string<TCHAR> tstring; // string of TCHARs
 
 typedef std::map<std::string, bool, std::less<>> StringBoolMap;
 typedef std::map<std::string, int, std::less<>> StringIntMap;
@@ -535,7 +533,6 @@ public:
 	virtual void			GotFocus();
 	virtual void			LostFocus();
 	virtual bool			DebugKeyDown(int theKey);
-//	virtual bool			DebugKeyDownAsync(int theKey, bool ctrlDown, bool altDown);
 	virtual void			CloseRequestAsync();
 	void					InitInput();
 	bool					StartTextInput(std::string& theInput); // set theInput and return true if using soft keyboard capability and user pressed OK (e.g. Switch libnx swkbd)
@@ -549,7 +546,6 @@ public:
 	virtual void			Done3dTesting();
 	virtual std::string		NotifyCrashHook(); // return file name that you want to upload
 	
-//	virtual bool			CheckSignature(const Buffer& theBuffer, const std::string& theFileName);
 	virtual bool			DrawDirtyStuff();
 	virtual void			Redraw(Rect* theClipRect);
 
@@ -594,7 +590,6 @@ public:
 	
 
 	// Registry access methods
-	//bool					RegistryGetSubKeys(const std::string& theKeyName, std::vector<std::string>* theSubKeys);
 	bool					RegistryReadString(const std::string& theValueName, std::string* theString);
 	bool					RegistryReadInteger(const std::string& theValueName, int* theValue);
 	bool					RegistryReadBoolean(const std::string& theValueName, bool* theValue);

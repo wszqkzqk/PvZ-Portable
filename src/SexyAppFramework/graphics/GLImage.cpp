@@ -62,22 +62,22 @@ void GLImage::FillScanLinesWithCoverage(Span* theSpans, int theSpanCount, const 
 
 	int l = theSpans[0].mX, t = theSpans[0].mY;
 	int r = l + theSpans[0].mWidth, b = t;
-	for (int i = 1; i < theSpanCount; ++i)  //此循环结束后，Rect(l, t, r - l + 1, b - t + 1) 即为包含所有 Span 的最小矩形区域
+	for (int i = 1; i < theSpanCount; ++i)  // after the loop, Rect(l, t, r - l + 1, b - t + 1) is the bounding rect of all spans
 	{
 		l = std::min(theSpans[i].mX, l);
 		r = std::max(theSpans[i].mX + theSpans[i].mWidth - 1, r);
 		t = std::min(theSpans[i].mY, t);
 		b = std::max(theSpans[i].mY, b);
 	}
-	for (int i = 0; i < theSpanCount; ++i)  //此循环将所有 Span 的绝对坐标更改为在上述矩形区域内的相对坐标
+	for (int i = 0; i < theSpanCount; ++i)  // make all span coordinates relative to that rect
 	{
 		theSpans[i].mX -= l;
 		theSpans[i].mY -= t;
 	}
 
 	MemoryImage aTempImage;
-	aTempImage.Create(r-l+1, b-t+1);  //创建一个与最小矩形区域相同大小的 MemoryImage
-	//theCoverX - l 和 theCoverY - t 分别将绝对坐标转化为 MemoryImage 上的相对坐标
+	aTempImage.Create(r-l+1, b-t+1);
+	// theCoverX - l / theCoverY - t convert the coverage origin to temp-image coordinates
 	aTempImage.FillScanLinesWithCoverage(theSpans, theSpanCount, theColor, theDrawMode, theCoverage, theCoverX - l, theCoverY - t, theCoverWidth, theCoverHeight);
 	Blt(&aTempImage, l, t, Rect(0, 0, r-l+1, b-t+1), Color::White, theDrawMode);
 	return;
@@ -162,9 +162,6 @@ void GLImage::BltF(Image* theImage, float theX, float theY, const Rect& theSrcRe
 void GLImage::BltRotated(Image* theImage, float theX, float theY, const Rect &theSrcRect, const Rect& theClipRect, const Color& theColor, int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY)
 {
 	theImage->mDrawn = true;
-
-	//if (mNoLock)
-		//return;	
 
 	CommitBits();
 

@@ -45,9 +45,7 @@ namespace Sexy
     class MemoryImage;
 };
 
-// ######################################################################################################################################################
-// ############################################################### 以下为动画定义相关内容 ###############################################################
-// ######################################################################################################################################################
+// Reanimation definitions
 
 constexpr const float DEFAULT_FIELD_PLACEHOLDER = -10000.0f;
 constexpr const double SECONDS_PER_UPDATE = 0.01f;
@@ -66,8 +64,8 @@ struct ReanimatorTransformArray {
 class ReanimatorTrack
 {
 public:
-    const char*                     mName;                          //+0x0：轨道名称
-    ReanimatorTransformArray        mTransforms;                    //+0x4：每一帧的动画变换的数组
+    const char*                     mName;                          //+0x0: track name
+    ReanimatorTransformArray        mTransforms;                    //+0x4: anim transforms for each frame
     
 public:
     ReanimatorTrack() : mName(""), mTransforms({nullptr,0}) { }
@@ -78,11 +76,6 @@ struct ReanimatorTrackArray {
     int32_t count;
 };
 
-// ====================================================================================================
-// ★ 【动画器定义】
-// ----------------------------------------------------------------------------------------------------
-// 用于描述一种动画类型与该动画的数据文件的文件名及标志之间的对应关系。
-// ====================================================================================================
 class ReanimatorDefinition
 {
 public:
@@ -96,11 +89,7 @@ public:
 extern unsigned int gReanimatorDefCount;
 extern ReanimatorDefinition* gReanimatorDefArray;
 
-// ====================================================================================================
-// ★ 【动画参数】
-// ----------------------------------------------------------------------------------------------------
-// 用于描述一种动画类型与该动画的数据文件的文件名及标志之间的对应关系。
-// ====================================================================================================
+// maps a reanimation type to its data file name and flags
 class ReanimationParams
 {
 public:
@@ -121,9 +110,7 @@ void                                ReanimatorFreeDefinitions();
 
 extern const ReanimationParams gLawnReanimationArray[static_cast<int>(ReanimationType::NUM_REANIMS)];
 
-// ######################################################################################################################################################
-// ############################################################## 以下正式开始动画相关声明 ##############################################################
-// ######################################################################################################################################################
+// Reanimation declarations
 
 enum
 {
@@ -145,17 +132,13 @@ public:
     Reanimation*                    AllocReanimation(float theX, float theY, int theRenderOrder, ReanimationType theReanimationType);
 };
 
-// ====================================================================================================
-// ★ 【动画器时间】
-// ----------------------------------------------------------------------------------------------------
-// 用于描述动画当前正在播放的时间位置。
-// ====================================================================================================
+// the current playback time position of an animation
 class ReanimatorFrameTime
 {
 public:
-    float                           mFraction;                      //+0x0：两帧之间已经过的比例
-    int32_t                         mAnimFrameBeforeInt;            //+0x4：前一个整数帧
-    int32_t                         mAnimFrameAfterInt;             //+0x8：后一个整数帧
+    float                           mFraction;                      //+0x0: fraction elapsed between the two frames
+    int32_t                         mAnimFrameBeforeInt;            //+0x4: previous integer frame
+    int32_t                         mAnimFrameAfterInt;             //+0x8: next integer frame
 };
 
 class ReanimatorTransform

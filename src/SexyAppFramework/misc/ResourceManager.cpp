@@ -742,7 +742,6 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 				
 		if (!aGLImage->mHasAlpha)
 		{
-			//aGLImage->mWantDDSurface = true;
 			aGLImage->mPurgeBits = true;			
 		}
 
