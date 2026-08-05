@@ -404,9 +404,6 @@ Image* GetGIFImage(const std::string& theFileName)
 		if (c != ',')  // not an image descriptor
 			continue;
 
-		if (image_count != 0)
-		{
-		}
 		image_count++;
 
 		uint16_t pagex;
