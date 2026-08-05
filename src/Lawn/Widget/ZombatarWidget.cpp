@@ -1336,14 +1336,12 @@ void ZombatarWidget::UpdateButtonState()
 	mViewButton->SetVisible(aCreate && aCount > 0);
 	mFinishedButton->SetVisible(aCreate || aConfirm || aTransition);
 	mNewButton->SetVisible(aList);
-	mPrevPortraitButton->SetVisible(aList && aCount > 1);
-	mNextPortraitButton->SetVisible(aList && aCount > 1);
+	mPrevPortraitButton->SetVisible(aList && aCount > 1 && mCurrentIndex > 0);
+	mNextPortraitButton->SetVisible(aList && aCount > 1 && mCurrentIndex + 1 < aCount);
 	mPrevPageButton->SetVisible(aPaged);
 	mNextPageButton->SetVisible(aPaged);
 
 	mNewButton->mDisabled = !CanSaveNewHead();
-	mPrevPortraitButton->mDisabled = mCurrentIndex <= 0;
-	mNextPortraitButton->mDisabled = mCurrentIndex + 1 >= aCount;
 	mPrevPageButton->mDisabled = mSubPage <= 0;
 	mNextPageButton->mDisabled = mSubPage >= mMaxSubPages;
 	mFinishedButton->mDisabled = aCreate && !CanSaveNewHead();
