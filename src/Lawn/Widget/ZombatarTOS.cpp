@@ -174,8 +174,7 @@ void ZombatarTOS::Update()
 
 void ZombatarTOS::ButtonPress(int theId)
 {
-	if (theId == ZombatarTOS::ZombatarTOS_Accept || theId == ZombatarTOS::ZombatarTOS_Back)
-		mApp->PlaySample(SOUND_BUTTONCLICK);
+	(void)theId;
 }
 
 void ZombatarTOS::ButtonDepress(int theId)
@@ -226,6 +225,7 @@ void ZombatarTOS::MouseWheel(int theDelta)
 
 void ZombatarTOS::CheckboxChecked(int theId, bool checked)
 {
+	mApp->PlaySample(SOUND_BUTTONCLICK);
 	if (theId == ZombatarTOS::ZombatarTOS_Checkbox && checked)
 	{
 		mFlashArrow = false;

@@ -1439,7 +1439,6 @@ void ZombatarWidget::MouseUp(int x, int y)
 void ZombatarWidget::ButtonPress(int theId)
 {
 	(void)theId;
-	mApp->PlaySample(SOUND_GRAVEBUTTON);
 }
 
 void ZombatarWidget::ButtonDepress(int theId)
