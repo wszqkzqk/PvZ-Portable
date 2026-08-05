@@ -1919,7 +1919,10 @@ void LawnApp::ButtonDepress(int theId)
 		case Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN:
 			KillDialog(Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN);
 			mBoardResult = BoardResult::BOARDRESULT_QUIT;
-			mBoard->TryToSaveGame();
+			if (mBoard)
+			{
+				mBoard->TryToSaveGame();
+			}
 			DoBackToMain();
 			return;
 
@@ -2549,14 +2552,15 @@ void LawnApp::CrazyDaveDie()
 	if (aCrazyDaveReanim)
 	{
 		aCrazyDaveReanim->ReanimationDie();
-
-		mCrazyDaveState = CrazyDaveState::CRAZY_DAVE_OFF;
-		mCrazyDaveReanimID = ReanimationID::REANIMATIONID_NULL;
-		mCrazyDaveMessageIndex = -1;
-		mCrazyDaveMessageText.clear();
-
-		CrazyDaveStopSound();
 	}
+
+	mCrazyDaveState = CrazyDaveState::CRAZY_DAVE_OFF;
+	mCrazyDaveReanimID = ReanimationID::REANIMATIONID_NULL;
+	mCrazyDaveBlinkReanimID = ReanimationID::REANIMATIONID_NULL;
+	mCrazyDaveMessageIndex = -1;
+	mCrazyDaveMessageText.clear();
+
+	CrazyDaveStopSound();
 }
 
 void LawnApp::CrazyDaveLeave()

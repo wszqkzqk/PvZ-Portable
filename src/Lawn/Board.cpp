@@ -3861,7 +3861,11 @@ void Board::MouseDownWithPlant(int x, int y, int theClickCount)
 
 	if (mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE)
 	{
-		mApp->mZenGarden->MovePlant(mPlants.DataArrayTryToGet(mCursorObject->mGlovePlantID), aGridX, aGridY);
+		Plant* aGlovePlant = mPlants.DataArrayTryToGet(mCursorObject->mGlovePlantID);
+		if (aGlovePlant)
+		{
+			mApp->mZenGarden->MovePlant(aGlovePlant, aGridX, aGridY);
+		}
 	}
 	else if (mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_WHEEL_BARROW)
 	{

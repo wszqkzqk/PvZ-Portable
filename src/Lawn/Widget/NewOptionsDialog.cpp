@@ -382,7 +382,8 @@ void NewOptionsDialog::ButtonDepress(int theId)
 			aDialog->mLawnYesButton->mLabel = mApp->GetString("RESTART_LABEL", "RESTART");
 			aDialog->mLawnNoButton->mLabel = PvzpStringTranslate("[DIALOG_BUTTON_CANCEL]");
 
-			if (aDialog->WaitForResult(true) == Dialog::ID_YES)
+			// mBoard may have been killed by the game-over flow during the modal wait
+			if (aDialog->WaitForResult(true) == Dialog::ID_YES && mApp->mBoard)
 			{
 				mApp->mMusic->StopAllMusic();
 				mApp->mSoundSystem->CancelPausedFoley();

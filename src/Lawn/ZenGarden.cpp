@@ -483,6 +483,7 @@ void ZenGarden::MouseDownWithMoneySign(Plant* thePlant)
 	Reanimation* aCrazyDaveReanim = mApp->ReanimationGet(mApp->mCrazyDaveReanimID);
 	aCrazyDaveReanim->PlayReanim("anim_blahblah", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 12.0f);
 
+	PlantID aPlantID = (PlantID)mBoard->mPlants.DataArrayGetID(thePlant);
 	Dialog* aDialog = mApp->DoDialog(Dialogs::DIALOG_ZEN_SELL, true, aHeader, aLines, "", Dialog::BUTTONS_YES_NO);
 	aDialog->mX += 120;
 	aDialog->mY += 60;
@@ -492,10 +493,19 @@ void ZenGarden::MouseDownWithMoneySign(Plant* thePlant)
 
 	if (aResult == Dialog::ID_YES)
 	{
+		// the plant may have been replaced or removed during the modal dialog
+		Plant* aSellPlant = mBoard->mPlants.DataArrayTryToGet(static_cast<unsigned int>(aPlantID));
+		if (aSellPlant == nullptr || aSellPlant->mDead ||
+			aSellPlant->mPottedPlantIndex < 0 || aSellPlant->mPottedPlantIndex >= mApp->mPlayerInfo->mNumPottedPlants)
+		{
+			return;
+		}
+
+		aPottedPlant = PottedPlantFromIndex(aSellPlant->mPottedPlantIndex);
 		mApp->mPlayerInfo->AddCoins(aPrice);
 		mBoard->mCoinsCollected += aPrice;
 
-		int aNumPlantsAfterThis = mApp->mPlayerInfo->mNumPottedPlants - thePlant->mPottedPlantIndex - 1;
+		int aNumPlantsAfterThis = mApp->mPlayerInfo->mNumPottedPlants - aSellPlant->mPottedPlantIndex - 1;
 		if (aNumPlantsAfterThis > 0)
 		{
 			memmove(aPottedPlant, aPottedPlant + 1, aNumPlantsAfterThis * sizeof(PottedPlant));
@@ -504,7 +514,7 @@ void ZenGarden::MouseDownWithMoneySign(Plant* thePlant)
 			{
 				if (aUpdatePlant->mDead)
 					continue;
-				if (aUpdatePlant->mPottedPlantIndex > thePlant->mPottedPlantIndex)
+				if (aUpdatePlant->mPottedPlantIndex > aSellPlant->mPottedPlantIndex)
 				{
 					aUpdatePlant->mPottedPlantIndex--;
 				}
@@ -514,7 +524,7 @@ void ZenGarden::MouseDownWithMoneySign(Plant* thePlant)
 		mApp->mPlayerInfo->mNumPottedPlants--;
 		mApp->PlayFoley(FoleyType::FOLEY_USE_SHOVEL);
 		//mApp->PlaySample(SOUND_PLANT2);
-		RemovePottedPlant(thePlant);
+		RemovePottedPlant(aSellPlant);
 	}
 }
 
@@ -1030,26 +1040,8 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType)
 	int aGridX = PixelToGridX(x, y);
 	int aGridY = PixelToGridY(x, y);
 	Plant* aPlant = mBoard->GetTopPlantAt(aGridX, aGridY, PlantPriority::TOPPLANT_ZEN_TOOL_ORDER);
-	if (aPlant)
+	if (aPlant && aPlant->mPottedPlantIndex != -1)
 	{
-		PottedPlant* aPottedPlant = PottedPlantFromIndex(aPlant->mPottedPlantIndex);
-		PottedPlantNeed aNeed = GetPlantsNeed(aPottedPlant);
-		if (aNeed == PottedPlantNeed::PLANTNEED_WATER && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_WATERING_CAN)
-		{
-			PlantWatered(aPlant);
-		}
-		else if (aNeed == PottedPlantNeed::PLANTNEED_FERTILIZER && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_FERTILIZER)
-		{
-			PlantFertilized(aPlant);
-		}
-		else if (aNeed == PottedPlantNeed::PLANTNEED_BUGSPRAY && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_BUG_SPRAY)
-		{
-			PlantFulfillNeed(aPlant);
-		}
-		else if (aNeed == PottedPlantNeed::PLANTNEED_PHONOGRAPH && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_PHONOGRAPH)
-		{
-			PlantFulfillNeed(aPlant);
-		}
 
 		if (mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_FERTILIZE_PLANTS && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_FERTILIZER)
 		{
@@ -1812,6 +1804,7 @@ void ZenGarden::GotoNextGarden()
 {
 	LeaveGarden();
 	mBoard->ClearAdvice(AdviceType::ADVICE_NONE);
+	mApp->CrazyDaveDie();
 	mBoard->mPlants.DataArrayFreeAll();
 	mBoard->mCoins.DataArrayFreeAll();
 	mApp->mEffectSystem->EffectSystemFreeAll();
