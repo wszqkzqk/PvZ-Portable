@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -37,7 +37,7 @@ public:
 	_T						mY;
 
 public:
-	TPoint(_T theX, _T theY) : 
+	TPoint(_T theX, _T theY) :
 		mX(theX),
 		mY(theY)
 	{
@@ -67,8 +67,8 @@ public:
 	TPoint& operator-=(const TPoint& p)  {mX-=p.mX; mY-=p.mY; return *this;}
 	TPoint& operator*=(const TPoint& p)  {mX*=p.mX; mY*=p.mY; return *this;}
 	TPoint& operator/=(const TPoint& p)  {mX/=p.mX; mY/=p.mY; return *this;}
-	TPoint operator*(_T s) const {return TPoint(mX*s, mY*s);} 
-	TPoint operator/(_T s) const {return TPoint(mX/s, mY/s);} 
+	TPoint operator*(_T s) const {return TPoint(mX*s, mY*s);}
+	TPoint operator/(_T s) const {return TPoint(mX/s, mY/s);}
 };
 
 typedef TPoint<int> Point;

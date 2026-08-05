@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -28,7 +28,7 @@
 
 using namespace Sexy;
 
-Checkbox::Checkbox(Image* theUncheckedImage, Image* theCheckedImage, int theId, CheckboxListener* theCheckboxListener) :	
+Checkbox::Checkbox(Image* theUncheckedImage, Image* theCheckedImage, int theId, CheckboxListener* theCheckboxListener) :
 	mListener(theCheckboxListener),
 	mId(theId),
 	mChecked(false),
@@ -57,7 +57,7 @@ bool Checkbox::IsChecked()
 void Checkbox::Draw(Graphics* g)
 {
 	Widget::Draw(g);
-	
+
 	if ((mCheckedRect.mWidth == 0) && (mCheckedImage != nullptr) && (mUncheckedImage != nullptr))
 	{
 		if (mChecked)

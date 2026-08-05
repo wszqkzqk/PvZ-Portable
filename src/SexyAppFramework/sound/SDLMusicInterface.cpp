@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -49,7 +49,7 @@ SDLMusicInterface::~SDLMusicInterface()
 bool SDLMusicInterface::LoadMusic(int theSongId, const std::string& theFileName)
 {
 	Mix_Music* aHMusic = 0;
-	
+
 	std::string anExt;
 	size_t aDotPos = theFileName.find_last_of('.');
 	if (aDotPos!=std::string::npos)
@@ -59,8 +59,8 @@ bool SDLMusicInterface::LoadMusic(int theSongId, const std::string& theFileName)
 
 	if (aHMusic==0)
 		return false;
-	
-	SDLMusicInfo aMusicInfo;	
+
+	SDLMusicInfo aMusicInfo;
 	aMusicInfo.mHMusic = aHMusic;
 	mMusicMap.insert(SDLMusicMap::value_type(theSongId, aMusicInfo));
 
@@ -132,7 +132,7 @@ void SDLMusicInterface::StopAllMusic()
 void SDLMusicInterface::UnloadMusic(int theSongId)
 {
 	StopMusic(theSongId);
-	
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -180,7 +180,7 @@ void SDLMusicInterface::FadeIn(int theSongId, int theOffset, double theSpeed, bo
 	if (anItr != mMusicMap.end())
 	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
-				
+
 		aMusicInfo->mVolumeAdd = theSpeed;
 		aMusicInfo->mStopOnFade = noLoop;
 
@@ -196,12 +196,12 @@ void SDLMusicInterface::FadeOut(int theSongId, bool stopSong, double theSpeed)
 {
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
-	{		
+	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
-		
+
 		if (aMusicInfo->mVolume != 0.0)
 		{
-			aMusicInfo->mVolumeAdd = -theSpeed;			
+			aMusicInfo->mVolumeAdd = -theSpeed;
 		}
 
 		aMusicInfo->mStopOnFade = stopSong;
@@ -214,7 +214,7 @@ void SDLMusicInterface::FadeOutAll(bool stopSong, double theSpeed)
 	while (anItr != mMusicMap.end())
 	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
-				
+
 		aMusicInfo->mVolumeAdd = -theSpeed;
 		aMusicInfo->mStopOnFade = stopSong;
 
@@ -226,7 +226,7 @@ void SDLMusicInterface::SetSongVolume(int theSongId, double theVolume)
 {
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
-	{		
+	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
 
 		aMusicInfo->mVolume = theVolume;
@@ -238,7 +238,7 @@ void SDLMusicInterface::SetSongMaxVolume(int theSongId, double theMaxVolume)
 {
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
-	{		
+	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
 
 		aMusicInfo->mVolumeCap = theMaxVolume;
@@ -251,7 +251,7 @@ bool SDLMusicInterface::IsPlaying(int theSongId)
 {
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
-	{		
+	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
 		return Mix_PlayingMusicStream(aMusicInfo->mHMusic);
 	}
@@ -266,7 +266,7 @@ void SDLMusicInterface::SetVolume(double theVolume)
 
 void SDLMusicInterface::SetMusicAmplify(int theSongId, double theAmp)
 {
-	
+
 }
 
 void SDLMusicInterface::Update()
@@ -282,7 +282,7 @@ void SDLMusicInterface::Update()
 		if (aMusicInfo->mVolumeAdd != 0.0)
 		{
 			aMusicInfo->mVolume += aMusicInfo->mVolumeAdd;
-			
+
 			if (aMusicInfo->mVolume > aMusicInfo->mVolumeCap)
 			{
 				aMusicInfo->mVolume = aMusicInfo->mVolumeCap;

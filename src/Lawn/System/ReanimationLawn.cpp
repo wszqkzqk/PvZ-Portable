@@ -103,7 +103,7 @@ void ReanimatorCache::DrawReanimatorFrame(Graphics* g, float thePosX, float theP
 		aReanim.mColorOverride = g->GetColor();
 	}
 	aReanim.OverrideScale(g->mScaleX, g->mScaleY);
-	
+
 	if (theDrawVariation != DrawVariation::VARIATION_NORMAL)
 	{
 		UpdateReanimationForVariation(&aReanim, theDrawVariation);
@@ -422,7 +422,7 @@ void ReanimatorCache::DrawCachedPlant(Graphics* g, float thePosX, float thePosY,
 void ReanimatorCache::DrawCachedMower(Graphics* g, float thePosX, float thePosY, LawnMowerType theMowerType)
 {
 	PVZP_ASSERT(theMowerType >= 0 && theMowerType < LawnMowerType::NUM_MOWER_TYPES);
-	
+
 	if (mLawnMowers[theMowerType] == nullptr)
 		mLawnMowers[theMowerType] = MakeCachedMowerFrame(theMowerType);
 	PvzpDrawImageScaledF(g, mLawnMowers[theMowerType], thePosX - 20.0f, thePosY, g->mScaleX, g->mScaleY);
@@ -431,7 +431,7 @@ void ReanimatorCache::DrawCachedMower(Graphics* g, float thePosX, float thePosY,
 void ReanimatorCache::DrawCachedZombie(Graphics* g, float thePosX, float thePosY, ZombieType theZombieType)
 {
 	PVZP_ASSERT(theZombieType >= 0 && theZombieType < ZombieType::NUM_CACHED_ZOMBIE_TYPES);
-	
+
 	if (mZombieImages[theZombieType] == nullptr)
 		mZombieImages[theZombieType] = MakeCachedZombieFrame(theZombieType);
 	PvzpDrawImageScaledF(g, mZombieImages[theZombieType], thePosX, thePosY, g->mScaleX, g->mScaleY);

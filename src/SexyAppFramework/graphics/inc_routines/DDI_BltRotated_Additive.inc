@@ -3,7 +3,7 @@
 	double aSin = sin(theRot);
 
 	int aCosLong = (int) (aCos * 0x10000);
-	int aSinLong = (int) (aSin * 0x10000);	
+	int aSinLong = (int) (aSin * 0x10000);
 
 /* unused
 #ifdef OPTIMIZE_SOFTWARE_DRAWING
@@ -35,10 +35,10 @@
 	// uint32_t aRRoundAdd = aRMask >> 1;
 	// uint32_t aGRoundAdd = aGMask >> 1;
 	// uint32_t aBRoundAdd = aBMask >> 1;
-	
+
 	if (mLockedSurfaceDesc.ddpfPixelFormat.dwRGBBitCount == 16)
 	{
-		ushort* aDestPixelsRow = ((ushort*) mLockedSurfaceDesc.lpSurface) + ((int)aDestRect.mY * mLockedSurfaceDesc.lPitch/2) + (int)aDestRect.mX;		
+		ushort* aDestPixelsRow = ((ushort*) mLockedSurfaceDesc.lpSurface) + ((int)aDestRect.mY * mLockedSurfaceDesc.lPitch/2) + (int)aDestRect.mX;
 		int aDestPixelsPitch = mLockedSurfaceDesc.lPitch/2;
 
 		//TODO: if (theColor == Color::White)
@@ -47,7 +47,7 @@
 			int cr = (theColor.mRed * ca) / 255;
 			int cg = (theColor.mGreen * ca) / 255;
 			int cb = (theColor.mBlue * ca) / 255;
-			
+
 			#define DEST_PIXEL_TYPE ushort
 			#define WRITE_PIXEL\
 			{\
@@ -73,30 +73,30 @@
 					(r << aRedShift) | \
 					(g << aGreenShift) | \
 					(b << aBlueShift); \
-			}		
-			#include "BltRotatedHelper.inc"		
-			
+			}
+			#include "BltRotatedHelper.inc"
+
 			#undef WRITE_PIXEL
-			#undef DEST_PIXEL_TYPE				
+			#undef DEST_PIXEL_TYPE
 		}
 		/*else
 		{
-			
+
 		}*/
 	}
 	else if (mLockedSurfaceDesc.ddpfPixelFormat.dwRGBBitCount == 32)
-	{			
-		uint32_t* aDestPixelsRow = ((uint32_t*) mLockedSurfaceDesc.lpSurface) + ((int)aDestRect.mY * mLockedSurfaceDesc.lPitch/4) + (int)aDestRect.mX;		
+	{
+		uint32_t* aDestPixelsRow = ((uint32_t*) mLockedSurfaceDesc.lpSurface) + ((int)aDestRect.mY * mLockedSurfaceDesc.lPitch/4) + (int)aDestRect.mX;
 		int aDestPixelsPitch = mLockedSurfaceDesc.lPitch/4;
 
-		//if (theColor == Color::White)				
+		//if (theColor == Color::White)
 		{
 			int ca = theColor.mAlpha;
 			int cr = (theColor.mRed * ca) / 255;
 			int cg = (theColor.mGreen * ca) / 255;
 			int cb = (theColor.mBlue * ca) / 255;
-		
-				
+
+
 			#define DEST_PIXEL_TYPE uint32_t
 			#define WRITE_PIXEL\
 			{\
@@ -124,16 +124,16 @@
 					(b << aBlueShift);\
 			}
 
-			#include "BltRotatedHelper.inc"		
-			
+			#include "BltRotatedHelper.inc"
+
 			#undef WRITE_PIXEL
 			#undef DEST_PIXEL_TYPE
-															
-			
+
+
 		}
 		/*else
 		{
-			
+
 		}*/
 	}
 

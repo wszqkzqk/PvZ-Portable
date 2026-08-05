@@ -89,16 +89,16 @@ public:
 	GameButton(int theId);
 	~GameButton();
 
-	static /*inline*/ bool	HaveButtonImage(Image* theImage, Rect& theRect);
+	static bool	HaveButtonImage(Image* theImage, Rect& theRect);
 	void					DrawButtonImage(Graphics* g, Image* theImage, Rect& theRect, int theX, int theY);
-	/*inline*/ void			SetFont(_Font* theFont);
-	/*inline*/ bool			IsButtonDown();
+	void			SetFont(_Font* theFont);
+	bool			IsButtonDown();
 	void					Draw(Graphics* g);
-	/*inline*/ void			SetDisabled(bool theDisabled);
-	/*inline*/ bool			IsMouseOver();
+	void			SetDisabled(bool theDisabled);
+	bool			IsMouseOver();
 	void					Update();
-	/*inline*/ void			Resize(int theX, int theY, int theWidth, int theHeight);
-	/*inline*/ void			SetLabel(std::string_view theLabel);
+	void			Resize(int theX, int theY, int theWidth, int theHeight);
+	void			SetLabel(std::string_view theLabel);
 };
 
 class LawnStoneButton : public DialogButton
@@ -107,27 +107,27 @@ public:
 	LawnStoneButton(Image* theComponentImage, int theId, ButtonListener* theListener) : DialogButton(theComponentImage, theId, theListener) { }
 
 	void					Draw(Graphics* g) override;
-	/*inline*/ void			SetLabel(std::string_view theLabel);
+	void			SetLabel(std::string_view theLabel);
 };
 
 class NewLawnButton : public DialogButton
 {
 public:
-    _Font*					mHiliteFont;
-    int						mTextDownOffsetX;
-    int						mTextDownOffsetY;
+	_Font*					mHiliteFont;
+	int						mTextDownOffsetX;
+	int						mTextDownOffsetY;
 	int						mButtonOffsetX;		// static layout offset, set once at creation
 	int						mButtonOffsetY;
 	bool					mUsePolygonShape;
 	SexyVector2				mPolygonShape[4];
 
 public:
-    NewLawnButton(Image* theComponentImage, int theId, ButtonListener* theListener);
+	NewLawnButton(Image* theComponentImage, int theId, ButtonListener* theListener);
 	~NewLawnButton() override;
-	
-    void					Draw(Graphics* g) override;
+
+	void					Draw(Graphics* g) override;
 	bool					IsPointVisible(int x, int y) override;
-    void					SetLabel(std::string_view theLabel);
+	void					SetLabel(std::string_view theLabel);
 };
 
 LawnStoneButton*			MakeButton(int theId, ButtonListener* theListener, std::string_view theText);

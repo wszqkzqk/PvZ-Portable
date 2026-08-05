@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -81,7 +81,7 @@ public:
 	int						mHeight;
 
 	// for image strips
-	int						mNumRows; 
+	int						mNumRows;
 	int						mNumCols;
 
 	// for animations
@@ -99,14 +99,14 @@ public:
 	int						GetCelHeight();	// like above but for vertical strips
 	int						GetAnimCel(int theTime); // use animinfo to return appropriate cel to draw at the time
 	Rect					GetAnimCelRect(int theTime);
-	Rect					GetCelRect(int theCel);				// Gets the rectangle for the given cel at the specified row/col 
+	Rect					GetCelRect(int theCel);				// Gets the rectangle for the given cel at the specified row/col
 	Rect					GetCelRect(int theCol, int theRow);	// Same as above, but for an image with both multiple rows and cols
 	void					CopyAttributes(Image *from);
 	Graphics*				GetGraphics();
 
 	virtual bool			PolyFill3D(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode, int tx, int ty);
 
-	virtual void			FillRect(const Rect& theRect, const Color& theColor, int theDrawMode);	
+	virtual void			FillRect(const Rect& theRect, const Color& theColor, int theDrawMode);
 	virtual void			DrawRect(const Rect& theRect, const Color& theColor, int theDrawMode);
 	virtual void			ClearRect(const Rect& theRect);
 	virtual void			DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor, int theDrawMode);

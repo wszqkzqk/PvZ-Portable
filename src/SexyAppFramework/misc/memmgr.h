@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -51,7 +51,7 @@ void SexyMemAddTrack(void* addr,  int asize,  const char *fname, int lnum);
 void SexyMemRemoveTrack(void *addr);
 
 
-//Replacement for the standard "new" operator, records size of allocation and 
+//Replacement for the standard "new" operator, records size of allocation and
 //the file/line number it was on
 inline void* __cdecl operator new(unsigned int size, const char* file, int line)
 {

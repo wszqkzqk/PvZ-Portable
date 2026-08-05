@@ -152,7 +152,7 @@ void Music::SetupVolumeForTune(MusicTune theMusicTune, float theDrumsVolume, flo
 		{
 			bool isDrums = (aTrack >= aDrumsStart && aTrack <= aDrumsEnd);
 			bool isHihats = (aTrack >= aHihatsStart1 && aTrack <= aHihatsEnd1) ||
-			                (aTrack >= aHihatsStart2 && aTrack <= aHihatsEnd2);
+							(aTrack >= aHihatsStart2 && aTrack <= aHihatsEnd2);
 			if (isDrums && isHihats)
 				aVolume = std::max(theDrumsVolume, theHihatsVolume);
 			else if (isDrums)
@@ -419,16 +419,16 @@ void Music::MusicResync()
 }
 
 void Music::StartBurst()
-{ 
+{
 	if (mMusicBurstState == MusicBurstState::MUSIC_BURST_OFF)
-	{ 
+	{
 		mMusicBurstState = MusicBurstState::MUSIC_BURST_STARTING;
 		mBurstStateCounter = 400;
 	}
 }
 
 void Music::FadeOut(int theFadeOutDuration)
-{ 
+{
 	if (mCurMusicTune != MusicTune::MUSIC_TUNE_NONE)
 	{
 		mFadeOutCounter = theFadeOutDuration;

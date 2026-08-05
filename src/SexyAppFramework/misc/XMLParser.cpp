@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -263,7 +263,7 @@ bool XMLParser::GetUTF16BEChar(char* theChar, bool* error)
 }
 
 bool XMLParser::OpenFile(const std::string& theFileName)
-{		
+{
 	mFile = p_fopen(theFileName.c_str(), "r");
 
 	if (mFile == nullptr)
@@ -288,7 +288,7 @@ bool XMLParser::OpenFile(const std::string& theFileName)
 				mGetCharFunc = &XMLParser::GetUTF16Char;
 
 			p_ungetc(aChar2, mFile);
-			p_ungetc(aChar1, mFile);			
+			p_ungetc(aChar1, mFile);
 		}
 		if (mGetCharFunc == &XMLParser::GetAsciiChar)
 		{
@@ -303,7 +303,7 @@ bool XMLParser::OpenFile(const std::string& theFileName)
 
 				p_ungetc(aChar3, mFile);
 				p_ungetc(aChar2, mFile);
-				p_ungetc(aChar1, mFile);			
+				p_ungetc(aChar1, mFile);
 			}
 		}
 	}
@@ -335,14 +335,14 @@ void XMLParser::SetStringSource(std::string_view theString)
 bool XMLParser::NextElement(XMLElement* theElement)
 {
 	for (;;)
-	{		
+	{
 		theElement->mType = XMLElement::TYPE_NONE;
 		theElement->mSection = mSection;
 		theElement->mValue = "";
-		theElement->mAttributes.clear();			
+		theElement->mAttributes.clear();
 		theElement->mInstruction.erase();
 
-		bool hasSpace = false;	
+		bool hasSpace = false;
 		bool inQuote = false;
 		bool gotEndQuote = false;
 
@@ -352,18 +352,18 @@ bool XMLParser::NextElement(XMLElement* theElement)
 		std::string aAttributeValue;
 
 		std::string aLastAttributeKey;
-		
+
 		for (;;)
 		{
 			// Process character by character
 
 			char c;
 			int aVal;
-			
+
 			if (mBufferedText.size() > 0)
-			{								
+			{
 				c = mBufferedText[mBufferedText.size()-1];
-				mBufferedText.pop_back();				
+				mBufferedText.pop_back();
 
 				aVal = 1;
 			}
@@ -387,7 +387,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 					aVal = 0;
 				}
 			}
-			
+
 			if (aVal == 1)
 			{
 				bool processChar = false;
@@ -402,7 +402,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 					// Just add text to theElement->mInstruction until we find -->
 
 					std::string* aStrPtr = &theElement->mInstruction;
-					
+
 					*aStrPtr += c;
 
 					int aLen = aStrPtr->length();
@@ -421,7 +421,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 
 					if ((theElement->mInstruction.length() != 0) || (::isspace((unsigned char)c)))
 						aStrPtr = &theElement->mInstruction;
-					
+
 					*aStrPtr += c;
 
 					int aLen = aStrPtr->length();
@@ -453,7 +453,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 
 								//OLD: mBufferedText = c + mBufferedText;
 
-								mBufferedText.push_back(c);								
+								mBufferedText.push_back(c);
 								break;
 							}
 
@@ -470,7 +470,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 						else if (c == '>')
 						{
 							if (theElement->mType == XMLElement::TYPE_START)
-							{	
+							{
 								bool insertEnd = false;
 
 								if (aAttributeKey == "/")
@@ -483,7 +483,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 								{
 									// Probably isn't committed yet
 									if (aAttributeKey.length() > 0)
-									{										
+									{
 //										theElement->mAttributes[aLastAttributeKey] = aAttributeValue;
 
 										aAttributeKey = XMLDecodeString(aAttributeKey);
@@ -506,7 +506,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 										{
 											// Its an empty element, fake start and end segments
 //											theElement->mAttributes[aLastAttributeKey] = aVal.substr(0, aLen - 1);
-											
+
 											AddAttribute(theElement, aLastAttributeKey, XMLDecodeString(aVal.substr(0, aLen - 1)));
 
 											insertEnd = true;
@@ -527,7 +527,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 
 								// Do we want to fake an ending section?
 								if (insertEnd)
-								{									
+								{
 									std::string anAddString = "</" + theElement->mValue + ">";
 
 									int anOldSize = mBufferedText.size();
@@ -548,7 +548,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 								if (mSection.length() != 0)
 									mSection += "/";
 
-								mSection += theElement->mValue;								
+								mSection += theElement->mValue;
 
 								break;
 							}
@@ -562,7 +562,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 								}
 
 								std::string aLastSectionName = mSection.substr(aLastSlash + 1);
-								
+
 								if (aLastSectionName != theElement->mValue)
 								{
 									Fail("End '" + theElement->mValue + "' Doesn't Match Start '" + aLastSectionName + "'");
@@ -583,9 +583,9 @@ bool XMLParser::NextElement(XMLElement* theElement)
 							}
 						}
 						else if ((c == '/') && (theElement->mType == XMLElement::TYPE_START) && (theElement->mValue == ""))
-						{					
-							theElement->mType = XMLElement::TYPE_END;					
-						}				
+						{
+							theElement->mType = XMLElement::TYPE_END;
+						}
 						else if ((c == '?') && (theElement->mType == XMLElement::TYPE_START) && (theElement->mValue == ""))
 						{
 							theElement->mType = XMLElement::TYPE_INSTRUCTION;
@@ -608,7 +608,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 							Fail("Illegal Character");
 							return false;
 						}
-					} 
+					}
 					else
 					{
 						processChar = true;
@@ -644,7 +644,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 									{
 										doingAttribute = true;
 									}
-																
+
 									AttributeVal = false;
 								}
 
@@ -674,8 +674,8 @@ bool XMLParser::NextElement(XMLElement* theElement)
 							}
 
 							if (aStrPtr != nullptr)
-							{								
-								*aStrPtr += c;						
+							{
+								*aStrPtr += c;
 							}
 						}
 						else
@@ -685,7 +685,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 								theElement->mValue += " ";
 								hasSpace = false;
 							}
-							
+
 							theElement->mValue += c;
 						}
 					}
@@ -695,10 +695,10 @@ bool XMLParser::NextElement(XMLElement* theElement)
 			{
 				if (theElement->mType != XMLElement::TYPE_NONE)
 					Fail("Unexpected End of File");
-					
+
 				return false;
-			}			
-		}		
+			}
+		}
 
 		if (aAttributeKey.length() > 0)
 		{
@@ -709,7 +709,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 			AddAttribute(theElement, aAttributeKey, aAttributeValue);
 		}
 
-		theElement->mValue = XMLDecodeString(theElement->mValue);				
+		theElement->mValue = XMLDecodeString(theElement->mValue);
 
 		// Ignore comments
 		if ((theElement->mType != XMLElement::TYPE_COMMENT) || mAllowComments)

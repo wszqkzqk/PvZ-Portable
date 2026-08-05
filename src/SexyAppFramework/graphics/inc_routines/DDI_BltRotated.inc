@@ -3,7 +3,7 @@
 	double aSin = sin(theRot);
 
 	int aCosLong = (int) (aCos * 0x10000);
-	int aSinLong = (int) (aSin * 0x10000);	
+	int aSinLong = (int) (aSin * 0x10000);
 
 	if (!LockSurface())
 		return;
@@ -26,10 +26,10 @@
 	// uint32_t aRRoundAdd = aRMask >> 1;
 	// uint32_t aGRoundAdd = aGMask >> 1;
 	// uint32_t aBRoundAdd = aBMask >> 1;
-	
+
 	if (mLockedSurfaceDesc.ddpfPixelFormat.dwRGBBitCount == 16)
 	{
-		ushort* aDestPixelsRow = ((ushort*) mLockedSurfaceDesc.lpSurface) + ((int)aDestRect.mY * mLockedSurfaceDesc.lPitch/2) + (int)aDestRect.mX;		
+		ushort* aDestPixelsRow = ((ushort*) mLockedSurfaceDesc.lpSurface) + ((int)aDestRect.mY * mLockedSurfaceDesc.lPitch/2) + (int)aDestRect.mX;
 		int aDestPixelsPitch = mLockedSurfaceDesc.lPitch/2;
 
 		if (theColor == Color::White)
@@ -72,14 +72,14 @@
 				int oma = (256 - (a1 + a2 + a3 + a4)) >> 3;\
 				uint32_t src_b = ((src1 & 0xFF00FF) * a1 + (src2 & 0xFF00FF) * a2 + (src3 & 0xFF00FF) * a3 + (src4 & 0xFF00FF) * a4) & 0xFF00FF00;\
 				src_b = ((((src1 & 0xFF00) * a1 + (src2 & 0xFF00) * a2 + (src3 & 0xFF00) * a3 + (src4 & 0xFF00) * a4) & 0xFF0000) | src_b) >> 8;\
-			    uint32_t s = ((src_b & 0xf800) << 10) + (src_b >> 9 & 0x7c00) + (src_b >> 3 & 0x1f);\
+				uint32_t s = ((src_b & 0xf800) << 10) + (src_b >> 9 & 0x7c00) + (src_b >> 3 & 0x1f);\
 				dest = ((dest * oma >> 5) & 0x3E07C1F) + s;\
 				*(aDestPixels++) = dest | (dest >> 16);\
 			}
 			#define WRITE_PIXEL_OPTIMIZED
-		
-			#include "BltRotatedHelper.inc"		
-			
+
+			#include "BltRotatedHelper.inc"
+
 			#undef WRITE_PIXEL
 			#undef DEST_PIXEL_TYPE
 			#undef WRITE_PIXEL_OPTIMIZED
@@ -89,12 +89,12 @@
 		else
 		{
 			// Colorized version
-			
+
 			int ca = theColor.mAlpha;
 			int cr = theColor.mRed + 1;
 			int cg = theColor.mGreen + 1;
 			int cb = theColor.mBlue + 1;
-						
+
 			#define DEST_PIXEL_TYPE ushort
 			#define WRITE_PIXEL\
 			{\
@@ -109,7 +109,7 @@
 								((src4 & 0x0000FF) * a4)) >> 8) * cb) >> aBlueRightShift) << aBlueShift) ) | \
 					( ((((dest & aGMask) * oma) >> 8) & aGMask) + \
 						(((( (((src1 & 0x00FF00) * a1)  + \
-							    ((src2 & 0x00FF00) * a2)  + \
+								((src2 & 0x00FF00) * a2)  + \
 								((src3 & 0x00FF00) * a3)  + \
 								((src4 & 0x00FF00) * a4)) >> 8) * cg) >> aGreenRightShift) << aGreenShift) ) | \
 					( ((((dest & aRMask) * oma) >> 8) & aRMask) + \
@@ -118,16 +118,16 @@
 								((src3 & 0xFF0000) * a3)  + \
 								((src4 & 0xFF0000) * a4)) >> 8) * cr) >> aRedRightShift) << aRedShift) ); \
 			}
-					
-			#include "BltRotatedHelper.inc"		
-						
-			#undef WRITE_PIXEL	
-			#undef DEST_PIXEL_TYPE 			
+
+			#include "BltRotatedHelper.inc"
+
+			#undef WRITE_PIXEL
+			#undef DEST_PIXEL_TYPE
 		}
 	}
 	else if (mLockedSurfaceDesc.ddpfPixelFormat.dwRGBBitCount == 32)
 	{
-		uint32_t* aDestPixelsRow = ((uint32_t*) mLockedSurfaceDesc.lpSurface) + ((int)aDestRect.mY * mLockedSurfaceDesc.lPitch/4) + (int)aDestRect.mX;		
+		uint32_t* aDestPixelsRow = ((uint32_t*) mLockedSurfaceDesc.lpSurface) + ((int)aDestRect.mY * mLockedSurfaceDesc.lPitch/4) + (int)aDestRect.mX;
 		int aDestPixelsPitch = mLockedSurfaceDesc.lPitch/4;
 
 		if (theColor == Color::White)
@@ -167,21 +167,21 @@
 
 
 
-			#include "BltRotatedHelper.inc"		
-						
-			#undef WRITE_PIXEL	
+			#include "BltRotatedHelper.inc"
+
+			#undef WRITE_PIXEL
 			#undef WRITE_PIXEL_OPTIMIZED
-			#undef DEST_PIXEL_TYPE 											
+			#undef DEST_PIXEL_TYPE
 		}
-		else		
+		else
 		{
 			// Colorized version
-			
+
 			int ca = theColor.mAlpha;
 			int cr = theColor.mRed + 1;
 			int cg = theColor.mGreen + 1;
 			int cb = theColor.mBlue + 1;
-		
+
 			#define DEST_PIXEL_TYPE uint32_t
 			#define WRITE_PIXEL\
 			{\
@@ -196,7 +196,7 @@
 								((src4 & 0x0000FF) * a4)) >> 8) * cb) >> aBlueRightShift) << aBlueShift) ) | \
 					( ((((dest & aGMask) * oma) >> 8) & aGMask) + \
 						(((( (((src1 & 0x00FF00) * a1)  + \
-							    ((src2 & 0x00FF00) * a2)  + \
+								((src2 & 0x00FF00) * a2)  + \
 								((src3 & 0x00FF00) * a3)  + \
 								((src4 & 0x00FF00) * a4)) >> 8) * cg) >> aGreenRightShift) << aGreenShift) ) | \
 					( ((((dest & aRMask) * oma) >> 8) & aRMask) + \
@@ -204,13 +204,13 @@
 								((src2 & 0xFF0000) * a2)  + \
 								((src3 & 0xFF0000) * a3)  + \
 								((src4 & 0xFF0000) * a4)) >> 8) * cr) >> aRedRightShift) << aRedShift) );\
-			}					
-								
-			#include "BltRotatedHelper.inc"		
-						
-			#undef WRITE_PIXEL	
-			#undef DEST_PIXEL_TYPE 			
-								
+			}
+
+			#include "BltRotatedHelper.inc"
+
+			#undef WRITE_PIXEL
+			#undef DEST_PIXEL_TYPE
+
 		}
 	}
 

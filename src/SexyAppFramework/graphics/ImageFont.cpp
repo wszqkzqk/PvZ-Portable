@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -913,7 +913,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 						}
 						else {
 							invalidParamFormat = true;
-				 		}
+						}
 					}
 				}
 				else
@@ -1085,7 +1085,7 @@ bool FontData::LoadLegacy(Image* theFontImage, const std::string& theFontDescFil
 	aFontLayer->mAscent = aFontLayer->mImage->GetHeight();
 
 	int aCharPos = 0;
-	
+
 	// Use GetResourcePath to handle resource folder prefix
 	std::string aFilePath = GetResourcePath(theFontDescFileName);
 	FILE* aStream = fcaseopen(aFilePath.c_str(), "r");

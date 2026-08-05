@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -152,11 +152,11 @@ KeyCode	Sexy::GetKeyCodeFromName(const std::string& theKeyName)
 
 		if ((aKeyNameChar >= ((unsigned char) KEYCODE_ASCIIBEGIN2) - 0x80) && (aKeyNameChar <= ((unsigned char) KEYCODE_ASCIIEND2) - 0x80))
 			return (KeyCode) (aKeyNameChar + 0x80);
-	}	
+	}
 
-	for (size_t i = 0; i < sizeof(aKeyCodeArray)/sizeof(aKeyCodeArray[0]); i++)	
+	for (size_t i = 0; i < sizeof(aKeyCodeArray)/sizeof(aKeyCodeArray[0]); i++)
 		if (strcmp(aKeyName, aKeyCodeArray[i].mKeyName) == 0)
-			return aKeyCodeArray[i].mKeyCode;	
+			return aKeyCodeArray[i].mKeyCode;
 
 	return KEYCODE_UNKNOWN;
 }
@@ -175,9 +175,9 @@ const std::string Sexy::GetKeyNameFromCode(const KeyCode& theKeyCode)
 		return aStr;
 	}
 
-	for (size_t i = 0; i < sizeof(aKeyCodeArray)/sizeof(aKeyCodeArray[0]); i++)	
+	for (size_t i = 0; i < sizeof(aKeyCodeArray)/sizeof(aKeyCodeArray[0]); i++)
 		if (theKeyCode == aKeyCodeArray[i].mKeyCode)
-			return aKeyCodeArray[i].mKeyName;	
+			return aKeyCodeArray[i].mKeyName;
 
 	return "UNKNOWN";
 }

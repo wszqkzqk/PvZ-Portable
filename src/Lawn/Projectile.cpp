@@ -944,15 +944,15 @@ void Projectile::Update()
 		return;
 
 	int aTime = 20;
-	if (mProjectileType == ProjectileType::PROJECTILE_PEA || 
-		mProjectileType == ProjectileType::PROJECTILE_SNOWPEA || 
-		mProjectileType == ProjectileType::PROJECTILE_CABBAGE || 
-		mProjectileType == ProjectileType::PROJECTILE_MELON || 
-		mProjectileType == ProjectileType::PROJECTILE_WINTERMELON || 
-		mProjectileType == ProjectileType::PROJECTILE_KERNEL || 
-		mProjectileType == ProjectileType::PROJECTILE_BUTTER || 
-		mProjectileType == ProjectileType::PROJECTILE_COBBIG || 
-		mProjectileType == ProjectileType::PROJECTILE_ZOMBIE_PEA || 
+	if (mProjectileType == ProjectileType::PROJECTILE_PEA ||
+		mProjectileType == ProjectileType::PROJECTILE_SNOWPEA ||
+		mProjectileType == ProjectileType::PROJECTILE_CABBAGE ||
+		mProjectileType == ProjectileType::PROJECTILE_MELON ||
+		mProjectileType == ProjectileType::PROJECTILE_WINTERMELON ||
+		mProjectileType == ProjectileType::PROJECTILE_KERNEL ||
+		mProjectileType == ProjectileType::PROJECTILE_BUTTER ||
+		mProjectileType == ProjectileType::PROJECTILE_COBBIG ||
+		mProjectileType == ProjectileType::PROJECTILE_ZOMBIE_PEA ||
 		mProjectileType == ProjectileType::PROJECTILE_SPIKE)
 	{
 		aTime = 0;
@@ -1126,7 +1126,7 @@ void Projectile::DrawShadow(Graphics* g)
 
 	case ProjectileType::PROJECTILE_PUFF:
 		return;
-		
+
 	case ProjectileType::PROJECTILE_COBBIG:
 		aScale = 1.0f;
 		aStretch = 3.0f;
@@ -1166,7 +1166,7 @@ void Projectile::Die()
 
 Rect Projectile::GetProjectileRect()
 {
-	if (mProjectileType == ProjectileType::PROJECTILE_PEA || 
+	if (mProjectileType == ProjectileType::PROJECTILE_PEA ||
 		mProjectileType == ProjectileType::PROJECTILE_SNOWPEA ||
 		mProjectileType == ProjectileType::PROJECTILE_ZOMBIE_PEA)
 	{

@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -39,7 +39,7 @@ SharedImageRef::SharedImageRef(const SharedImageRef& theSharedImageRef)
 	mSharedImage = theSharedImageRef.mSharedImage;
 	if (mSharedImage != nullptr)
 		mSharedImage->mRefCount++;
-	mUnsharedImage = theSharedImageRef.mUnsharedImage;	
+	mUnsharedImage = theSharedImageRef.mUnsharedImage;
 	mOwnsUnshared = false;
 }
 
@@ -66,7 +66,7 @@ SharedImageRef::~SharedImageRef()
 }
 
 void SharedImageRef::Release()
-{	
+{
 	if (mOwnsUnshared)
 		delete mUnsharedImage;
 	mUnsharedImage = nullptr;
@@ -98,7 +98,7 @@ SharedImageRef&	SharedImageRef::operator=(SharedImage* theSharedImage)
 SharedImageRef& SharedImageRef::operator=(MemoryImage* theUnsharedImage)
 {
 	Release();
-	mUnsharedImage = theUnsharedImage;	
+	mUnsharedImage = theUnsharedImage;
 	return *this;
 }
 
@@ -109,7 +109,7 @@ MemoryImage* SharedImageRef::operator->()
 
 
 SharedImageRef::operator Image*()
-{	
+{
 	return (MemoryImage*) *this;
 }
 

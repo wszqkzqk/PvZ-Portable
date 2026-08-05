@@ -249,9 +249,9 @@ bool CutScene::CanZombieGoInGridSpot(ZombieType theZombieType, int theGridX, int
 		return false;
 	}
 
-	if (Is2x2Zombie(theZombieType) || 
-		theZombieType == ZombieType::ZOMBIE_ZAMBONI || 
-		theZombieType == ZombieType::ZOMBIE_BOBSLED || 
+	if (Is2x2Zombie(theZombieType) ||
+		theZombieType == ZombieType::ZOMBIE_ZAMBONI ||
+		theZombieType == ZombieType::ZOMBIE_BOBSLED ||
 		theZombieType == ZombieType::ZOMBIE_POLEVAULTER)
 	{
 		if (theGridX == 0)
@@ -572,7 +572,7 @@ void CutScene::PlaceStreetZombies()
 	{
 		aZombieTypeCount[ZombieType::ZOMBIE_DUCKY_TUBE] = 1;  // pool stages always preview a ducky tube zombie
 	}
-	
+
 	bool aZombieGrid[5][5] = {{ false }};
 	int aPreviewCapacity = 10;
 	if (mApp->IsLittleTroubleLevel())
@@ -629,22 +629,22 @@ void CutScene::PlaceLawnItems()
 
 bool CutScene::IsSurvivalRepick()
 {
-	return (mApp->IsSurvivalMode() && mBoard->mChallenge->mSurvivalStage > 0 && mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO); 
+	return (mApp->IsSurvivalMode() && mBoard->mChallenge->mSurvivalStage > 0 && mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO);
 }
 
 bool CutScene::IsNonScrollingCutscene()
 {
 	return
-		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ICE || 
-		mApp->mGameMode == GameMode::GAMEMODE_UPSELL || 
+		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ICE ||
+		mApp->mGameMode == GameMode::GAMEMODE_UPSELL ||
 		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN ||
-		mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM || 
-		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM || 
-		mApp->IsScaryPotterLevel() || 
-		mApp->IsIZombieLevel() || 
+		mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM ||
+		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM ||
+		mApp->IsScaryPotterLevel() ||
+		mApp->IsIZombieLevel() ||
 		mApp->IsWhackAZombieLevel() ||
-		mApp->IsShovelLevel() || 
-		mApp->IsSquirrelLevel() || 
+		mApp->IsShovelLevel() ||
+		mApp->IsSquirrelLevel() ||
 		mApp->IsWallnutBowlingLevel();
 }
 
@@ -680,9 +680,9 @@ bool CutScene::CanGetPacketUpgrade(int theUpgradeIndex)
 {
 	int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
 
-	return 
+	return
 		mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] == theUpgradeIndex &&  // theUpgradeIndex is 0-based
-		mApp->mPlayerInfo->mCoins >= aCost && 
+		mApp->mPlayerInfo->mCoins >= aCost &&
 		mApp->mPlayerInfo->mDidntPurchasePacketUpgrade < 2;
 }
 
@@ -1145,7 +1145,7 @@ void CutScene::AnimateBoard()
 		int aPanOffset = CalcPosition(aTimePanRightStart, aTimePanRightEnd, -aBoardOffset, BOARD_IMAGE_WIDTH_OFFSET - mApp->mWidth);
 		mBoard->Move(-aPanOffset, 0);
 	}
-	
+
 	// Seed chooser animation
 	if (mBoard->ChooseSeedsOnCurrentLevel())
 	{
@@ -1291,7 +1291,7 @@ void CutScene::AnimateBoard()
 		mBoard->mChallenge->mChallengeState = ChallengeState::STATECHALLENGE_STORM_FLASH_2;
 		mBoard->mChallenge->mChallengeStateCounter = 310;
 	}
-	
+
 	// Dr. Zomboss enters
 	if (mBossTime > 0)
 	{
@@ -1332,12 +1332,12 @@ void CutScene::AnimateBoard()
 
 void CutScene::ShowShovel()
 {
-	if (mApp->IsWhackAZombieLevel() || 
-		mApp->IsWallnutBowlingLevel() || 
-		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED || 
+	if (mApp->IsWhackAZombieLevel() ||
+		mApp->IsWallnutBowlingLevel() ||
+		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED ||
 		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST ||
-		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN || 
-		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM || 
+		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN ||
+		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM ||
 		mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM ||
 		mApp->IsIZombieLevel())
 		return;
@@ -1351,8 +1351,8 @@ void CutScene::ShowShovel()
 bool CutScene::IsInShovelTutorial()
 {
 	return
-		mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_PICKUP || 
-		mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_DIG || 
+		mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_PICKUP ||
+		mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_DIG ||
 		mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_KEEP_DIGGING;
 }
 
@@ -1475,7 +1475,7 @@ void CutScene::UpdateZombiesWon()
 	{
 		mBoard->Move(CalcPosition(LostTimePanRightStart, LostTimePanRightEnd, 0, BOARD_OFFSET), 0);
 	}
-	
+
 	if (mCutsceneTime == LostTimeBrainGraphicStart - 400 || mCutsceneTime == LostTimeBrainGraphicStart - 900)
 	{
 		mApp->PlayFoley(FoleyType::FOLEY_CHOMP);
@@ -1692,11 +1692,11 @@ void CutScene::KeyDown(KeyCode theKey)
 			mApp->mMusic->GameMusicPause(true);
 
 			int aResult = mApp->LawnMessageBox(
-				Dialogs::DIALOG_MESSAGE, 
-				"[UPSELL_PAUSE_HEADER]", 
-				"[UPSELL_PAUSE_BODY]", 
-				"[UPSELL_RESUME_BUTTON]", 
-				"[MAIN_MENU_BUTTON]", 
+				Dialogs::DIALOG_MESSAGE,
+				"[UPSELL_PAUSE_HEADER]",
+				"[UPSELL_PAUSE_BODY]",
+				"[UPSELL_RESUME_BUTTON]",
+				"[MAIN_MENU_BUTTON]",
 				Dialog::BUTTONS_YES_NO
 			);
 			if (aResult == Dialog::ID_NO)
@@ -1754,7 +1754,7 @@ void CutScene::ClearUpsellBoard()
 		mBoard->mIceTimer[i] = 0;
 		mBoard->mIceMinX[i] = BOARD_WIDTH;
 	}
-	
+
 	mBoard->mZombies.DataArrayFreeAll();
 	mBoard->mPlants.DataArrayFreeAll();
 	mBoard->mCoins.DataArrayFreeAll();
@@ -2291,12 +2291,12 @@ void CutScene::DrawIntro(Graphics* g)
 					  PvzpAnimateCurve(aTimePanRightStart - 600, aTimePanRightStart - 300, mCutsceneTime, 255, 0, PvzpCurves::CURVE_LINEAR);
 
 		PvzpDrawString(
-			g, 
-			"[INTRO_PRESENTS]", 
-			BOARD_WIDTH / 2 - mBoard->mX, 
-			310 - mBoard->mY, 
+			g,
+			"[INTRO_PRESENTS]",
+			BOARD_WIDTH / 2 - mBoard->mX,
+			310 - mBoard->mY,
 			FONT_BRIANNETOD32,
-			Color(255, 255, 255, anAlpha), 
+			Color(255, 255, 255, anAlpha),
 			DrawStringJustification::DS_ALIGN_CENTER
 		);
 	}

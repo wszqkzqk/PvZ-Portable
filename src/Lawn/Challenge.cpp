@@ -82,7 +82,7 @@ ZombieAllowedLevels gZombieAllowedLevels[NUM_ZOMBIE_TYPES] = {
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		}
 	},
-	{ ZOMBIE_FLAG, 
+	{ ZOMBIE_FLAG,
 		{
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -495,7 +495,7 @@ void Challenge::StartLevel()
 	{
 		std::string aMessage =
 			mApp->IsSurvivalNormal(aGameMode) ? PvzpReplaceNumberString("[ADVICE_SURVIVE_FLAGS]", "{FLAGS}", SURVIVAL_NORMAL_FLAGS) :
-			mApp->IsSurvivalHard(aGameMode) ? PvzpReplaceNumberString("[ADVICE_SURVIVE_FLAGS]", "{FLAGS}", SURVIVAL_HARD_FLAGS) : 
+			mApp->IsSurvivalHard(aGameMode) ? PvzpReplaceNumberString("[ADVICE_SURVIVE_FLAGS]", "{FLAGS}", SURVIVAL_HARD_FLAGS) :
 			"[ADVICE_SURVIVE_ENDLESS]";
 		mBoard->DisplayAdvice(aMessage, MESSAGE_STYLE_HINT_FAST, ADVICE_SURVIVE_FLAGS);
 	}
@@ -581,10 +581,10 @@ int Challenge::BeghouledTwistValidMove(int theGridX, int theGridY, BeghouledBoar
 	if (theGridY == -1 || theGridX > 6 || theGridY > 3)
 		return false;
 
-	return 
-		theBoardState->mSeedType[theGridX][theGridY] != SEED_NONE && 
+	return
+		theBoardState->mSeedType[theGridX][theGridY] != SEED_NONE &&
 		theBoardState->mSeedType[theGridX + 1][theGridY] != SEED_NONE &&
-		theBoardState->mSeedType[theGridX][theGridY + 1] != SEED_NONE && 
+		theBoardState->mSeedType[theGridX][theGridY + 1] != SEED_NONE &&
 		theBoardState->mSeedType[theGridX + 1][theGridY + 1] != SEED_NONE;
 }
 
@@ -609,7 +609,7 @@ int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, Beghoul
 	theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed2;
 	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed3;
 	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed4;
-	
+
 	return aHasMatch;
 }
 
@@ -772,7 +772,7 @@ void Challenge::BeghouledRemoveHorizontalMatch(int theGridX, int theGridY, Begho
 		if (aPlant)
 		{
 			aPlant->Die();
-		
+
 		}
 		theGridX++;
 	} while (BeghouledGetPlantAt(theGridX, theGridY, theBoardState) == aSeedType);
@@ -980,8 +980,8 @@ int Challenge::BeghouledBoardHasMatch(BeghouledBoardState* theBoardState)
 	{
 		for (int aRow = 0; aRow < 5; aRow++)
 		{
-			if (BeghouledHorizontalMatchLength(aCol, aRow, theBoardState) >= 3 || 
-				BeghouledVerticalMatchLength(aCol, aRow, theBoardState) >= 3) 
+			if (BeghouledHorizontalMatchLength(aCol, aRow, theBoardState) >= 3 ||
+				BeghouledVerticalMatchLength(aCol, aRow, theBoardState) >= 3)
 				return true;
 		}
 	}
@@ -994,7 +994,7 @@ SeedType Challenge::BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoard
 	// SeedType* aSeedState = &theBoardState->mSeedType[theGridX][theGridY];
 	int aCount = 0;
 	SeedType aPickArray[6];
-	
+
 	for (int i = 0; i < 6; i++)
 	{
 		SeedType aSeedType;
@@ -1030,7 +1030,7 @@ SeedType Challenge::BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoard
 			aCount++;
 		}
 	}
-	
+
 	theBoardState->mSeedType[theGridX][theGridY] = SEED_NONE;
 	return PvzpPickFromArray(aPickArray, aCount);
 }
@@ -1172,14 +1172,14 @@ int Challenge::UpdateToolTip(int theX, int theY)
 {
 	if (!mApp->IsSlotMachineLevel())
 		return false;
-	
+
 	HitResult aHitResult;
 	mBoard->MouseHitTest(theX, theY, &aHitResult);
 	if (aHitResult.mObjectType != GameObjectType::OBJECT_TYPE_SLOT_MACHINE_HANDLE ||
 		mBoard->mCursorObject->mCursorType != CursorType::CURSOR_TYPE_NORMAL ||
 		mChallengeState != ChallengeState::STATECHALLENGE_NORMAL)
 		return false;
-	
+
 	if (!mBoard->CanTakeSunMoney(25))
 	{
 		mBoard->mToolTip->SetWarningText("[NOT_ENOUGH_SUN]");
@@ -1438,7 +1438,7 @@ void Challenge::BeghouledFlashPlant(int theFlashX, int theFlashY, int theFromX, 
 	}
 
 	Plant* aFlashPlant = mBoard->GetTopPlantAt(theFlashX, theFlashY, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
-	if (aFlashPlant && aFlashPlant->mBeghouledFlashCountdown == 0) 
+	if (aFlashPlant && aFlashPlant->mBeghouledFlashCountdown == 0)
 		aFlashPlant->mBeghouledFlashCountdown = 300;
 }
 
@@ -1518,7 +1518,7 @@ void Challenge::BeghouledFlashAMatch()
 {
 	BeghouledBoardState aBoardState;
 	LoadBeghouledBoardState(&aBoardState);
-	
+
 	GameMode aGameMode = mApp->mGameMode;
 	if (aGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED)
 	{
@@ -1943,14 +1943,14 @@ void Challenge::UpdateRainingSeeds()
 	do
 		aSeedType = (SeedType)Rand(mApp->GetSeedsAvailable());
 	while (
-		mBoard->SeedNotRecommendedForLevel(aSeedType) || 
-		!mApp->HasSeedType(aSeedType) || 
-		Plant::IsUpgrade(aSeedType) || 
-		aSeedType == SEED_SUNFLOWER || 
-		aSeedType == SEED_TWINSUNFLOWER || 
-		aSeedType == SEED_INSTANT_COFFEE || 
-		aSeedType == SEED_UMBRELLA || 
-		aSeedType == SEED_SUNSHROOM || 
+		mBoard->SeedNotRecommendedForLevel(aSeedType) ||
+		!mApp->HasSeedType(aSeedType) ||
+		Plant::IsUpgrade(aSeedType) ||
+		aSeedType == SEED_SUNFLOWER ||
+		aSeedType == SEED_TWINSUNFLOWER ||
+		aSeedType == SEED_INSTANT_COFFEE ||
+		aSeedType == SEED_UMBRELLA ||
+		aSeedType == SEED_SUNSHROOM ||
 		aSeedType == SEED_IMITATER
 		);
 	if (Rand(100) < PvzpAnimateCurve(0, 18, mBoard->CountPlantByType(SEED_LILYPAD), 30, 1, CURVE_LINEAR))
@@ -2120,7 +2120,7 @@ void Challenge::BeghouledCheckStuckState()
 
 void Challenge::ZombieAtePlant(/*Zombie* theZombie,*/ Plant* thePlant)
 {
-	// theZombie was dropped from the signature; callers may still pass nullptr
+	// theZombie was dropped from the signature; if re-enabled, note callers may pass nullptr
 	if (mApp->mGameMode != GAMEMODE_CHALLENGE_BEGHOULED && mApp->mGameMode != GAMEMODE_CHALLENGE_BEGHOULED_TWIST)
 		return;
 
@@ -2230,7 +2230,7 @@ void Challenge::Update()
 	{
 		LastStandUpdate();
 	}
-	
+
 	Reanimation* aReanim = mApp->ReanimationTryToGet(mReanimChallenge);
 	if (aReanim && aReanim->mIsAttachment)
 	{
@@ -2259,10 +2259,10 @@ void Challenge::SpawnLevelAward(int theGridX, int theGridY)
 
 	float aPosX = mBoard->GridToPixelX(theGridX, theGridY) + 40;
 	float aPosY = mBoard->GridToPixelY(theGridX, theGridY) + 40;
-	CoinType aCoinType = 
-		mApp->IsFirstTimeAdventureMode() ? COIN_FINAL_SEED_PACKET : 
+	CoinType aCoinType =
+		mApp->IsFirstTimeAdventureMode() ? COIN_FINAL_SEED_PACKET :
 		mApp->IsAdventureMode() || mApp->HasBeatenChallenge(mApp->mGameMode) ? COIN_AWARD_MONEY_BAG : COIN_TROPHY;
-	
+
 	mBoard->mLevelAwardSpawned = true;
 	mApp->mBoardResult = BOARDRESULT_WON;
 	mApp->PlayFoley(FOLEY_SPAWN_SUN);
@@ -2326,7 +2326,7 @@ void Challenge::DrawArtChallenge(Graphics* g)
 			}
 		}
 	}
-	
+
 	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ART_CHALLENGE_WALLNUT)
 	{
 		// assets removed, perhaps add back?
@@ -2347,7 +2347,7 @@ void Challenge::DrawBeghouled(Graphics* g)
 			}
 		}
 	}
-			
+
 	if (mApp->mGameMode == GAMEMODE_CHALLENGE_BEGHOULED_TWIST)
 	{
 		HitResult aHitResult;
@@ -2736,7 +2736,7 @@ void Challenge::InitZombieWaves()
 		aList[ZOMBIE_TRAFFIC_CONE] = true;
 		aList[ZOMBIE_PAIL] = true;
 	}
-	
+
 	if (mApp->CanSpawnYetis() && !mApp->IsWhackAZombieLevel() && !mApp->IsLittleTroubleLevel())
 		aList[ZOMBIE_YETI] = true;
 }
@@ -3124,7 +3124,7 @@ void Challenge::PortalStart()
 {
 	mChallengeStateCounter = 9000;
 	GridItem* aPortal;
-	
+
 	aPortal = mBoard->mGridItems.DataArrayAlloc();
 	aPortal->mGridItemType = GRIDITEM_PORTAL_SQUARE;
 	aPortal->mGridX = 2;
@@ -3361,7 +3361,7 @@ float Challenge::PortalCombatRowSpawnWeight(int theGridY)
 GridItem* Challenge::GetPortalToLeft(int theGridX, int theGridY)
 {
 	GridItem* aGridItemRecord = nullptr;
-	
+
 	for (GridItem* aGridItem : mBoard->mGridItems)
 	{
 		if (aGridItem->mDead)
@@ -3511,7 +3511,7 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 		mBeghouledPurcasedUpgrade[aUpgrade] = true;
 		const SeedType gUpgradableSeedTypes[3] = { SEED_PEASHOOTER, SEED_PUFFSHROOM, SEED_WALLNUT };
 		SeedType aSeedPrimary = gUpgradableSeedTypes[aUpgrade];
-	
+
 		for (Plant* aPlant : mBoard->mPlants)
 		{
 			if (aPlant->mDead)
@@ -3614,7 +3614,7 @@ void Challenge::ZombiquariumMouseDown(int x, int y)
 {
 	if (x < 80 || x > 720 || y < 90 || y > 430)
 		return;
-	
+
 	int aBrainsCount = 0;
 	for (GridItem* aGridItem : mBoard->mGridItems)
 	{
@@ -4671,7 +4671,7 @@ void Challenge::IZombieUpdate()
 			aZombie->PickRandomSpeed();
 		}
 	}
-	
+
 	int anActive = false;
 	for (Plant* aPlant : mBoard->mPlants)
 	{
@@ -4723,7 +4723,7 @@ void Challenge::IZombieUpdate()
 
 int Challenge::IsZombieSeedType(SeedType theSeedType)
 {
-	return 
+	return
 		theSeedType == SEED_ZOMBIQUARIUM_SNORKLE ||
 		theSeedType == SEED_ZOMBIQUARIUM_TROPHY ||
 		theSeedType == SEED_ZOMBIE_NORMAL ||
@@ -4907,7 +4907,7 @@ void Challenge::SquirrelStart()
 			aPicksCount++;
 		}
 	}
-	
+
 	for (int aCount = MAX_SQUIRRELS; aCount > 0; aCount--)
 	{
 		PvzpWeightedGridArray* aGrid = PvzpPickFromWeightedGridArray(aPicks, 45);
@@ -4994,7 +4994,7 @@ void Challenge::SquirrelFound(GridItem* theSquirrel)
 				aPickCount++;
 			}
 		}
-		
+
 		if (aPickCount > 0)
 		{
 			PvzpWeightedGridArray* aGrid = PvzpPickFromWeightedGridArray(aPicks, aPickCount);
@@ -5108,8 +5108,8 @@ void Challenge::UpdateRain()
 		aSplashReanim->mColorOverride = Color(255, 255, 255, RandRangeInt(100, 200));
 		aScale = RandRangeFloat(0.7f, 1.2f);
 		aSplashReanim->OverrideScale(aScale, aScale);
-		
-        mRainCounter = RandRangeInt(10, 20);
+
+		mRainCounter = RandRangeInt(10, 20);
 	}
 }
 
@@ -5142,12 +5142,12 @@ void Challenge::LastStandCompletedStage()
 	mApp->PlaySample(Sexy::SOUND_HUGE_WAVE);
 	mChallengeState = STATECHALLENGE_NORMAL;
 	mBoard->mSeedBank->RefreshAllPackets();
-	
+
 	for (Plant* aPlant : mBoard->mPlants)
 	{
 		if (aPlant->mDead)
 			continue;
-		if (aPlant->mState == STATE_CHOMPER_DIGESTING || aPlant->mState == STATE_COBCANNON_ARMING || 
+		if (aPlant->mState == STATE_CHOMPER_DIGESTING || aPlant->mState == STATE_COBCANNON_ARMING ||
 			aPlant->mState == STATE_MAGNETSHROOM_SUCKING || aPlant->mState == STATE_MAGNETSHROOM_CHARGING)
 		{
 			aPlant->mStateCountdown = std::min(aPlant->mStateCountdown, 200);
@@ -5582,7 +5582,7 @@ int Challenge::TreeOfWisdomCanFeed()
 {
 	if (mChallengeState == STATECHALLENGE_TREE_JUST_GREW)
 		return false;
-	
+
 	for (GridItem* aGridItem : mBoard->mGridItems)
 	{
 		if (aGridItem->mDead)

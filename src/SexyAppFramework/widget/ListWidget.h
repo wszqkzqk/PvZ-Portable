@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -28,24 +28,24 @@
 #include "ScrollListener.h"
 #include "Widget.h"
 
-namespace Sexy 
+namespace Sexy
 {
 
 class ScrollbarWidget;
 class ListListener;
 class _Font;
 
-class ListWidget : public Widget, public ScrollListener 
+class ListWidget : public Widget, public ScrollListener
 {
 public:
-	enum 
+	enum
 	{
 		JUSTIFY_LEFT			=0,
 		JUSTIFY_CENTER,
 		JUSTIFY_RIGHT
 	};
 
-	enum 
+	enum
 	{
 		COLOR_BKG				=0,
 		COLOR_OUTLINE,
@@ -56,21 +56,21 @@ public:
 	};
 
 public:
-	int							mId;	
+	int							mId;
 	_Font*						mFont;
 	ScrollbarWidget*			mScrollbar;
 	int							mJustify;
 
 	std::vector<std::string>	mLines;
 	std::vector<Color>			mLineColors;
-	double						mPosition;	
+	double						mPosition;
 	double						mPageSize;
 	int							mHiliteIdx;
 	int							mSelectIdx;
-	ListListener*				mListListener;		
+	ListListener*				mListListener;
 	ListWidget*					mParent;
 	ListWidget*					mChild;
-	bool						mSortFromChild;		
+	bool						mSortFromChild;
 	bool						mDrawOutline;
 	int							mMaxNumericPlaces;
 	int							mItemHeight;
@@ -96,7 +96,7 @@ public:
 	virtual int					GetLineIdx(const std::string& theLine);
 	virtual void				SetColor(const std::string& theLine, const Color& theColor);
 	void						SetColor(int theIdx, const Color& theColor) override;
-	virtual void				SetLineColor(int theIdx, const Color& theColor);	
+	virtual void				SetLineColor(int theIdx, const Color& theColor);
 	virtual void				RemoveLine(int theIdx);
 	virtual void				RemoveAll();
 	virtual int					GetOptimalWidth();

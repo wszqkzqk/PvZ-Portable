@@ -47,13 +47,13 @@ public:
 	bool				DeleteProfile(const std::string& theName);
 
 protected:
-	/*inline*/ void		DeleteProfile(ProfileMap::iterator theProfile);
+	void		DeleteProfile(ProfileMap::iterator theProfile);
 
 public:
 	ProfileMgr() { Clear(); }
 	virtual ~ProfileMgr() { ; }
 
-	/*inline*/ void		Clear();
+	void		Clear();
 	void				Load();
 	void				Save();
 	inline int			GetNumProfiles() const { return mProfileMap.size(); }

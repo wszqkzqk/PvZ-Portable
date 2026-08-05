@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -40,9 +40,9 @@ class Transform;
 
 struct Edge
 {
-    double mX;
-    double mDX;
-    int i;
+	double mX;
+	double mDX;
+	int i;
 	double b;
 };
 
@@ -77,13 +77,13 @@ typedef std::list<GraphicsState> GraphicsStateList;
 
 class Graphics : public GraphicsState
 {
-public:	
+public:
 	enum
 	{
 		DRAWMODE_NORMAL,
 		DRAWMODE_ADDITIVE
 	};
-	
+
 	Edge*					mPFActiveEdgeList;
 	int						mPFNumActiveEdges;
 	static const Point*		mPFPoints;
@@ -91,10 +91,10 @@ public:
 
 	GraphicsStateList		mStateStack;
 
-protected:	
+protected:
 	static int				PFCompareInd(const void* u, const void* v);
 	static int				PFCompareActive(const void* u, const void* v);
-	void					PFDelete(int i); 
+	void					PFDelete(int i);
 	void					PFInsert(int i, int y);
 
 	void					DrawImageTransformHelper(Image* theImage, const Transform &theTransform, const Rect &theSrcRect, float x, float y, bool useFloat);
@@ -102,22 +102,22 @@ protected:
 public:
 	Graphics(const Graphics& theGraphics);
 	Graphics(Image* theDestImage = nullptr);
-	virtual ~Graphics();	
+	virtual ~Graphics();
 
 	void					PushState();
 	void					PopState();
 
 	Graphics*				Create();
-	
+
 	void					SetFont(_Font* theFont);
 	_Font*					GetFont();
 
 	void					SetColor(const Color& theColor);
 	const Color&			GetColor();
-	
+
 	void					SetDrawMode(int theDrawMode);
 	int						GetDrawMode();
-	
+
 	void					SetColorizeImages(bool colorizeImages);
 	bool					GetColorizeImages();
 
@@ -129,12 +129,12 @@ public:
 
 	void					FillRect(int theX, int theY, int theWidth, int theHeight);
 	void					FillRect(const Rect& theRect);
-	void					DrawRect(int theX, int theY, int theWidth, int theHeight);	
+	void					DrawRect(int theX, int theY, int theWidth, int theHeight);
 	void					DrawRect(const Rect& theRect);
-	void					ClearRect(int theX, int theY, int theWidth, int theHeight);	
+	void					ClearRect(int theX, int theY, int theWidth, int theHeight);
 	void					ClearRect(const Rect& theRect);
 	void					DrawString(std::string_view theString, int theX, int theY);
-	
+
 private:
 	bool					DrawLineClipHelper(double* theStartX, double* theStartY, double *theEndX, double* theEndY);
 public:
@@ -205,7 +205,7 @@ public:
 	Graphics*				mG;
 
 public:
-	
+
 	GraphicsAutoState(Graphics* theG) : mG(theG)
 	{
 		mG->PushState();

@@ -93,7 +93,7 @@ GameButton::~GameButton()
 }
 
 bool GameButton::HaveButtonImage(Image* theImage, Rect& theRect)
-{ 
+{
 	return theImage != nullptr || theRect.mWidth != 0;
 }
 
@@ -108,7 +108,7 @@ void GameButton::DrawButtonImage(Graphics* g, Image* theImage, Rect& theRect, in
 }
 
 void GameButton::SetDisabled(bool theDisabled)
-{ 
+{
 	mDisabled = theDisabled;
 }
 
@@ -116,12 +116,12 @@ void GameButton::SetFont(_Font* theFont)
 {
 	if (mFont)
 		delete mFont;
-	
+
 	mFont = theFont->Duplicate();
 }
 
 bool GameButton::IsButtonDown()
-{ 
+{
 	return mIsDown && mIsOver && !mDisabled && !mBtnNoDraw;
 }
 
@@ -142,7 +142,7 @@ void GameButton::Draw(Graphics* g)
 	g->mTransY += mY;
 	if (!mFont && mLabel.size() > 0)
 		mFont = FONT_PICO129->Duplicate();
-	
+
 	int aFontX = mTextOffsetX;
 	int aFontY = mTextOffsetY;
 	if (mFont)
@@ -193,7 +193,7 @@ void GameButton::Draw(Graphics* g)
 			DrawButtonImage(g, mOverImage, mOverRect, 1, 1);
 		else
 			DrawButtonImage(g, mButtonImage, mNormalRect, 1, 1);
-		
+
 		g->SetColor(mColors[GameButton::COLOR_LABEL_HILITE]);
 		g->DrawString(mLabel, aFontX + 1, aFontY + 1);
 
@@ -209,7 +209,7 @@ void GameButton::Draw(Graphics* g)
 }
 
 void GameButton::Resize(int theX, int theY, int theWidth, int theHeight)
-{ 
+{
 	mX = theX;
 	mY = theY;
 	mWidth = theWidth;
@@ -250,7 +250,7 @@ void GameButton::Update()
 	if (!mIsDown && !mIsOver && mOverAlpha > 0)
 	{
 		if (mOverAlphaSpeed < 0)
-		{ 
+		{
 			mOverAlpha = 0;
 			return;
 		}

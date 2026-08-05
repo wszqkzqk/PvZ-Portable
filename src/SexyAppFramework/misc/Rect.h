@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -46,7 +46,7 @@ public:
 	  mX(theX), mY(theY), mWidth(theWidth), mHeight(theHeight)
 	{
 	}
-	
+
 	/*
 	TRect(const TRect<_T>& theTRect) :
 	  mX(theTRect.mX), mY(theTRect.mY), mWidth(theTRect.mWidth), mHeight(theTRect.mHeight)
@@ -79,7 +79,7 @@ public:
 			return TRect<_T>(x1, y1, x2 - x1, y2 - y1);
 	}
 
-	TRect<_T>				Union(const TRect<_T>& theTRect)	
+	TRect<_T>				Union(const TRect<_T>& theTRect)
 	{
 		_T x1 = std::min(mX, theTRect.mX);
 		_T x2 = std::max(mX + mWidth, theTRect.mX + theTRect.mWidth);

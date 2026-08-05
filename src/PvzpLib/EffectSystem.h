@@ -35,24 +35,24 @@ using namespace Sexy;
 class PvzpTriVertex
 {
 public:
-    float                       x;
-    float                       y;
-    float                       u;
-    float                       v;
-    unsigned long               color;
+	float                       x;
+	float                       y;
+	float                       u;
+	float                       v;
+	unsigned long               color;
 };
 
 class PvzpTriangleGroup
 {
 public:
-    Image*                      mImage;
-    TriVertex                   mVertArray[MAX_TRIANGLES][3];
-    int                         mTriangleCount;
-    int                         mDrawMode;
+	Image*                      mImage;
+	TriVertex                   mVertArray[MAX_TRIANGLES][3];
+	int                         mTriangleCount;
+	int                         mDrawMode;
 
-    PvzpTriangleGroup();
-    void                        DrawGroup(Graphics* g);
-    void                        AddTriangle(Graphics* g, Image* theImage, const SexyMatrix3& theMatrix, const Rect& theClipRect, const Color& theColor, int theDrawMode, const Rect& theSrcRect);
+	PvzpTriangleGroup();
+	void                        DrawGroup(Graphics* g);
+	void                        AddTriangle(Graphics* g, Image* theImage, const SexyMatrix3& theMatrix, const Rect& theClipRect, const Color& theColor, int theDrawMode, const Rect& theSrcRect);
 };
 
 extern bool gPvzpTriangleDrawAdditive;
@@ -158,20 +158,20 @@ class AttachmentHolder;
 class EffectSystem
 {
 public:
-    std::unique_ptr<PvzpParticleHolder>      mParticleHolder;
-    std::unique_ptr<TrailHolder>            mTrailHolder;
-    std::unique_ptr<ReanimationHolder>      mReanimationHolder;
-    std::unique_ptr<AttachmentHolder>       mAttachmentHolder;
+	std::unique_ptr<PvzpParticleHolder>      mParticleHolder;
+	std::unique_ptr<TrailHolder>            mTrailHolder;
+	std::unique_ptr<ReanimationHolder>      mReanimationHolder;
+	std::unique_ptr<AttachmentHolder>       mAttachmentHolder;
 
 public:
-    EffectSystem() = default;
-    ~EffectSystem();
+	EffectSystem() = default;
+	~EffectSystem();
 
-    void                        EffectSystemInitialize();
-    void                        EffectSystemDispose();
-    void                        EffectSystemFreeAll();
-    void                        ProcessDeleteQueue();
-    void                        Update();
+	void                        EffectSystemInitialize();
+	void                        EffectSystemDispose();
+	void                        EffectSystemFreeAll();
+	void                        ProcessDeleteQueue();
+	void                        Update();
 };
 extern EffectSystem* gEffectSystem;
 

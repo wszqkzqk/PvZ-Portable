@@ -15,8 +15,8 @@
 				{
 					uint32_t src = NEXT_SRC_COLOR;
 					uint32_t dest = *aDestPixels;
-				
-					int a = (src&0xFF000000)>>24;												
+
+					int a = (src&0xFF000000)>>24;
 					int r = aMaxTable[((dest & 0xFF0000) + (((src & 0xFF0000)*a)>>8)) >> 16];
 					int g = aMaxTable[((dest & 0x00FF00) + (((src & 0x00FF00)*a)>>8)) >> 8 ];
 					int b = aMaxTable[((dest & 0x0000FF) + (((src & 0x0000FF)*a)>>8))      ];
@@ -26,7 +26,7 @@
 
 				aDestPixelsRow += mWidth;
 				aSrcPixelsRow += theImage->mWidth;
-			}		
+			}
 		}
 		else
 		{
@@ -39,7 +39,7 @@
 				{
 					uint32_t src = NEXT_SRC_COLOR;
 					uint32_t dest = *aDestPixels;
-																
+
 					int r = aMaxTable[((dest & 0xFF0000) + (src & 0xFF0000)) >> 16];
 					int g = aMaxTable[((dest & 0x00FF00) + (src & 0x00FF00)) >> 8 ];
 					int b = aMaxTable[((dest & 0x0000FF) + (src & 0x0000FF))      ];
@@ -70,18 +70,18 @@
 				{
 					uint32_t src = NEXT_SRC_COLOR;
 					uint32_t dest = *aDestPixels;
-																
-					int a = (src&0xFF000000)>>24;												
+
+					int a = (src&0xFF000000)>>24;
 					int r = aMaxTable[((dest & 0xFF0000) + (((((src & 0xFF0000) * cr) >> 8)*a)>>8)) >> 16];
 					int g = aMaxTable[((dest & 0x00FF00) + (((((src & 0x00FF00) * cg) >> 8)*a)>>8)) >>  8];
 					int b = aMaxTable[((dest & 0x0000FF) + (((((src & 0x0000FF) * cb) >> 8)*a)>>8))      ];
 
-					*(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);					
+					*(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
 				}
 
 				aDestPixelsRow += mWidth;
 				aSrcPixelsRow += theImage->mWidth;
-			}		
+			}
 		}
 		else
 		{
@@ -94,12 +94,12 @@
 				{
 					uint32_t src = NEXT_SRC_COLOR;
 					uint32_t dest = *aDestPixels;
-																
+
 					int r = aMaxTable[((dest & 0xFF0000) + (((src & 0xFF0000) * cr) >> 8)) >> 16];
 					int g = aMaxTable[((dest & 0x00FF00) + (((src & 0x00FF00) * cg) >> 8)) >>  8];
 					int b = aMaxTable[((dest & 0x0000FF) + (((src & 0x0000FF) * cb) >> 8))      ];
 
-					*(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);					
+					*(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
 				}
 
 				aDestPixelsRow += mWidth;

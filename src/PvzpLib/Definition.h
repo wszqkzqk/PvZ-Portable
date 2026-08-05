@@ -29,17 +29,17 @@
 
 enum class DefFieldType : int
 {
-    DT_INVALID,
-    DT_INT,
-    DT_FLOAT,
-    DT_STRING,
-    DT_ENUM,
-    DT_VECTOR2,
-    DT_ARRAY,
-    DT_TRACK_FLOAT,
-    DT_FLAGS,
-    DT_IMAGE,
-    DT_FONT
+	DT_INVALID,
+	DT_INT,
+	DT_FLOAT,
+	DT_STRING,
+	DT_ENUM,
+	DT_VECTOR2,
+	DT_ARRAY,
+	DT_TRACK_FLOAT,
+	DT_FLAGS,
+	DT_IMAGE,
+	DT_FONT
 };
 
 // Terminology: a "definition class" (_DefClass) stores definition data for another class (_Class),
@@ -49,8 +49,8 @@ enum class DefFieldType : int
 class DefSymbol
 {
 public:
-    int                 mSymbolValue;                   //+0x0: value of the flag bit or enum entry; -1 means no such entry
-    const char*         mSymbolName;                    //+0x4: name of the flag bit or enum entry; nullptr marks the end of the list
+	int                 mSymbolValue;                   //+0x0: value of the flag bit or enum entry; -1 means no such entry
+	const char*         mSymbolName;                    //+0x4: name of the flag bit or enum entry; nullptr marks the end of the list
 };
 //extern DefSymbol gParticleFlagSymbols[];
 //extern DefSymbol gEmitterTypeSymbols[];
@@ -60,22 +60,22 @@ public:
 class DefField
 {
 public:
-    const char*         mFieldName;                     //+0x0: name of _MemVar; an empty string marks the end of the field list
-    int                 mFieldOffset;                   //+0x4: offset of _MemVar within its class
-    DefFieldType        mFieldType;                     //+0x8: storage type of _MemVar; each type is read differently
-    const void*         mExtraData;                     //+0xC: extra data used to deep-copy pointers in _MemVar
-    // For a pointer member, mExtraData points to the DefMap of the pointee's definition class;
-    // for a flags/enum member, it points to a DefSymbol array; otherwise it is nullptr.
-    // Nested DefMaps are read recursively until no expandable pointers remain (deep copy).
+	const char*         mFieldName;                     //+0x0: name of _MemVar; an empty string marks the end of the field list
+	int                 mFieldOffset;                   //+0x4: offset of _MemVar within its class
+	DefFieldType        mFieldType;                     //+0x8: storage type of _MemVar; each type is read differently
+	const void*         mExtraData;                     //+0xC: extra data used to deep-copy pointers in _MemVar
+	// For a pointer member, mExtraData points to the DefMap of the pointee's definition class;
+	// for a flags/enum member, it points to a DefSymbol array; otherwise it is nullptr.
+	// Nested DefMaps are read recursively until no expandable pointers remain (deep copy).
 };
 
 // A DefMap describes the storage format of a definition class (_DefClass) and how to read it.
 class DefMap
 {
 public:
-    const DefField*     mMapFields;                     //+0x0: array of DefField entries, one per member of _DefClass
-    int                 mDefSize;                       //+0x4: size of a _DefClass instance, i.e. the initial read length; usually sizeof(_DefClass)
-    void*               (*mConstructorFunc)(void*);     //+0x8: pointer to the _DefClass constructor
+	const DefField*     mMapFields;                     //+0x0: array of DefField entries, one per member of _DefClass
+	int                 mDefSize;                       //+0x4: size of a _DefClass instance, i.e. the initial read length; usually sizeof(_DefClass)
+	void*               (*mConstructorFunc)(void*);     //+0x8: pointer to the _DefClass constructor
 };
 
 void*            PvzpParticleDefinitionConstructor(void* thePointer);
@@ -104,26 +104,26 @@ extern const DefMap gReanimatorDefMap;
 class DefinitionArrayDef
 {
 public:
-    void*               mArrayData;                     //+0x0: array of instances of a definition type, e.g. the track defs of a reanimation definition
-    int                 mArrayCount;                    //+0x4: number of array elements, e.g. the track count or emitter count
-    // An "array pointer + count" pair in a definition class is read as one DefinitionArrayDef,
-    // e.g. mEmitterDefs/mEmitterDefCount in PvzpParticleDefinition, mParticleFields/mParticleFieldCount in PvzpEmitterDefinition.
+	void*               mArrayData;                     //+0x0: array of instances of a definition type, e.g. the track defs of a reanimation definition
+	int                 mArrayCount;                    //+0x4: number of array elements, e.g. the track count or emitter count
+	// An "array pointer + count" pair in a definition class is read as one DefinitionArrayDef,
+	// e.g. mEmitterDefs/mEmitterDefCount in PvzpParticleDefinition, mParticleFields/mParticleFieldCount in PvzpEmitterDefinition.
 };
 
 // Prepended to compressed data; used to verify data integrity when decompressing.
 class CompressedDefinitionHeader
 {
 public:
-    unsigned int        mCookie;                        //+0x0: cookie for compression validation
-    unsigned int        mUncompressedSize;              //+0x4: length of the uncompressed data
+	unsigned int        mCookie;                        //+0x0: cookie for compression validation
+	unsigned int        mUncompressedSize;              //+0x4: length of the uncompressed data
 };
 
 // A DefLoadResPath maps an image prefix to the directory holding its images.
 class DefLoadResPath
 {
 public:
-    const char*         mPrefix;                        //+0x0: image prefix, e.g. "IMAGE_"
-    const char*         mDirectory;                     //+0x4: directory for images with this prefix, e.g. "images\"
+	const char*         mPrefix;                        //+0x0: image prefix, e.g. "IMAGE_"
+	const char*         mDirectory;                     //+0x4: directory for images with this prefix, e.g. "images\"
 };
 
 std::string             DefinitionGetCompiledFilePathFromXMLFilePath(const std::string& theXMLFilePath);
@@ -157,15 +157,15 @@ void                    DefWriteToCacheFont(void*& theWritePtr, _Font** theValue
 
 void*                   DefinitionCompressCompiledBuffer(void* theBuffer, unsigned int theBufferSize, unsigned int* theResultSize);
 
-/*inline*/ unsigned int DefGetSizeString(const char** theValue);
-/*inline*/ unsigned int DefinitionGetArraySize(DefinitionArrayDef* theValue, const DefMap* theDefMap);
-/*inline*/ unsigned int DefGetSizeFloatTrack(FloatParameterTrack* theValue);
-/*inline*/ unsigned int DefGetSizeImage(Image** theValue);
-/*inline*/ unsigned int DefGetSizeFont(_Font** theValue);
+unsigned int DefGetSizeString(const char** theValue);
+unsigned int DefinitionGetArraySize(DefinitionArrayDef* theValue, const DefMap* theDefMap);
+unsigned int DefGetSizeFloatTrack(FloatParameterTrack* theValue);
+unsigned int DefGetSizeImage(Image** theValue);
+unsigned int DefGetSizeFont(_Font** theValue);
 
-/*inline*/ unsigned int DefinitionGetDeepSize(const DefMap* theDefMap, void* theDefinition);
-/*inline*/ unsigned int DefinitionGetSize(const DefMap* theDefMap, void* theDefinition);
-/*inline*/ void*        DefinitionAlloc(int theSize);
+unsigned int DefinitionGetDeepSize(const DefMap* theDefMap, void* theDefinition);
+unsigned int DefinitionGetSize(const DefMap* theDefMap, void* theDefinition);
+void*        DefinitionAlloc(int theSize);
 void*                   DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCompressedBufferSize, size_t& theUncompressedSize, const std::string& theCompiledFilePath);
 uint                    DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap);
 uint                    DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList<const DefMap*>& theProgressMaps);
@@ -184,10 +184,10 @@ bool                    DefinitionLoadXML(const std::string& theFilename, const 
 void                    DefinitionFreeArrayField(DefinitionArrayDef* theArray, const DefMap* theDefMap);
 void                    DefinitionFreeMap(const DefMap* theDefMap, void* theDefinition);
 
-/*inline*/ bool         FloatTrackIsSet(const FloatParameterTrack& theTrack);
-/*inline*/ void         FloatTrackSetDefault(FloatParameterTrack& theTrack, float theValue);
+bool         FloatTrackIsSet(const FloatParameterTrack& theTrack);
+void         FloatTrackSetDefault(FloatParameterTrack& theTrack, float theValue);
 float                   FloatTrackEvaluate(FloatParameterTrack& theTrack, float theTimeValue, float theInterp);
 float                   FloatTrackEvaluateFromLastTime(FloatParameterTrack& theTrack, float theTimeValue, float theInterp);
-/*inline*/ bool         FloatTrackIsConstantZero(FloatParameterTrack& theTrack);
+bool         FloatTrackIsConstantZero(FloatParameterTrack& theTrack);
 
 #endif

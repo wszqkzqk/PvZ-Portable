@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -25,10 +25,10 @@
 #ifndef __LISTLISTENER_H__
 #define __LISTLISTENER_H__
 
-namespace Sexy 
+namespace Sexy
 {
 
-class ListListener 
+class ListListener
 {
 public:
 	virtual void ListClicked(int theId, int theIdx, int theClickCount) = 0;

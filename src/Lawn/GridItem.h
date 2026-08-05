@@ -92,7 +92,7 @@ public:
 	void					DrawIZombieBrain(Sexy::Graphics* g);
 	void					UpdateBrain();
 	void					DrawStinky(Sexy::Graphics* g);
-	/*inline*/ bool			IsOpenPortal();
+	bool			IsOpenPortal();
 };
 
 #endif

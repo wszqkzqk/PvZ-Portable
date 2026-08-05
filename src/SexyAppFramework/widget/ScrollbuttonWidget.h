@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -27,19 +27,19 @@
 
 #include "widget/ButtonWidget.h"
 
-namespace Sexy 
+namespace Sexy
 {
-	
+
 class ButtonListener;
 
-class ScrollbuttonWidget : public ButtonWidget 
+class ScrollbuttonWidget : public ButtonWidget
 {
 public:
 	bool				mHorizontal;
 
-	// mType is a new way of doing things (1 = up, 2 = down, 3 = left, 4 = right).  
+	// mType is a new way of doing things (1 = up, 2 = down, 3 = left, 4 = right).
 	// This overrides mHorizontal and mId.
-	int					mType; 
+	int					mType;
 
 public:
 	ScrollbuttonWidget(int theId, ButtonListener *theButtonListener, int theType = 0);

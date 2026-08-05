@@ -28,7 +28,7 @@
 #include "PvzpDebug.h"
 #include "PvzpCommon.h"
 
-enum 
+enum
 {
 	DATA_ARRAY_INDEX_MASK = 65535,
 	DATA_ARRAY_KEY_MASK = -65536,

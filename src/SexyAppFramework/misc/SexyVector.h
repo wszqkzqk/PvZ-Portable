@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -55,8 +55,8 @@ public:
 	float Magnitude() const { return sqrtf(x*x + y*y); }
 	float MagnitudeSquared() const { return x*x+y*y; }
 
-	SexyVector2 Normalize() const 
-	{ 
+	SexyVector2 Normalize() const
+	{
 		float aMag = Magnitude();
 		return aMag!=0 ? (*this)/aMag : *this;
 	}
@@ -85,8 +85,8 @@ public:
 	bool operator==(const SexyVector3 &v) const = default;
 	float Magnitude() const { return sqrtf(x*x + y*y + z*z); }
 
-	SexyVector3 Normalize() const 
-	{ 
+	SexyVector3 Normalize() const
+	{
 		float aMag = Magnitude();
 		return aMag!=0 ? (*this)/aMag : *this;
 	}

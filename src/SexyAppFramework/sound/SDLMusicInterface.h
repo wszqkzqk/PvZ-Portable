@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -74,14 +74,14 @@ public:
 	void					UnloadAllMusic() override;
 	void					PauseAllMusic() override;
 	void					ResumeAllMusic() override;
-	
+
 	void					FadeIn(int theSongId, int theOffset = -1, double theSpeed = 0.002, bool noLoop = false) override;
 	void					FadeOut(int theSongId, bool stopSong = true, double theSpeed = 0.004) override;
 	void					FadeOutAll(bool stopSong = true, double theSpeed = 0.004) override;
 	void					SetSongVolume(int theSongId, double theVolume) override;
 	void					SetSongMaxVolume(int theSongId, double theMaxVolume) override;
 	bool					IsPlaying(int theSongId) override;
-	
+
 	void					SetVolume(double theVolume) override;
 	void					SetMusicAmplify(int theSongId, double theAmp) override;
 	void					Update() override;

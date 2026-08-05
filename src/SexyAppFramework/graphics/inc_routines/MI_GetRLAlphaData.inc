@@ -1,14 +1,14 @@
-{		
-	
+{
+
 	uchar* aWPtr = mRLAlphaData;
-	
+
 	if (mWidth==1)
 	{
 		memset(aWPtr,1,mHeight);
 	}
 	else
 	{
-		for (int aRow = 0; aRow < mHeight; aRow++)			
+		for (int aRow = 0; aRow < mHeight; aRow++)
 		{
 			int aRCount = 1;
 			int aRLCount = 1;
@@ -18,7 +18,7 @@
 
 			while (aRCount < mWidth)
 			{
-				aRCount++;				
+				aRCount++;
 
 				anAVal = NEXT_SRC_COLOR >> 24;
 				int aThisAClass = (anAVal == 0) ? 0 : (anAVal == 255) ? 1 : 2;
@@ -34,7 +34,7 @@
 							*aWPtr++ = 255;
 						else
 							*aWPtr++ = i;
-					}					
+					}
 
 					if ((aRCount == mWidth) && (aThisAClass != aLastAClass))
 						*aWPtr++ = 1;

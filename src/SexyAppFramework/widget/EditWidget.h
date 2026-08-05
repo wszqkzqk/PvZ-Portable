@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -57,8 +57,8 @@ public:
 	};
 	typedef std::list<WidthCheck> WidthCheckList;
 	WidthCheckList				mWidthCheckList;
-	
-	EditListener*			mEditListener;		
+
+	EditListener*			mEditListener;
 	bool					mShowingCursor;
 	bool					mDrawSelOverride; // set this to true to draw selected text even when not in focus
 	bool					mHadDoubleClick;	// Used to fix a bug with double clicking to hilite a word after the widget manager started calling mouse drag before mouse down/up events
@@ -67,10 +67,10 @@ public:
 	int						mHilitePos;
 	int						mBlinkAcc;
 	int						mBlinkDelay;
-	int						mLeftPos;		
+	int						mLeftPos;
 	int						mMaxChars;
 	int						mMaxPixels;
-	
+
 	std::string				mUndoString;
 	int						mUndoCursor;
 	int						mUndoHilitePos;

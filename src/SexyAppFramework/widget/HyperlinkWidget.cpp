@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -34,7 +34,7 @@ HyperlinkWidget::HyperlinkWidget(int theId, ButtonListener* theButtonListener) :
 	ButtonWidget(theId, theButtonListener),
 	mColor(255, 255, 255),
 	mOverColor(255, 255, 255)
-{	
+{
 	mDoFinger = true;
 	mUnderlineOffset = 3;
 	mUnderlineSize = 1;
@@ -55,7 +55,7 @@ void HyperlinkWidget::Draw(Graphics* g)
 	else
 		g->SetColor(mColor);
 
-	g->SetFont(mFont);	
+	g->SetFont(mFont);
 	g->DrawString(mLabel, aFontX, aFontY);
 
 	for (int i = 0; i < mUnderlineSize; i++)

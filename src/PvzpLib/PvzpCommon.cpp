@@ -601,7 +601,7 @@ void PvzpDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& 
 				SexyMatrix3Multiply(aTransform, theMatrix, aTransform);
 				PvzpBltMatrix(g, aRenderCommand->mImage, aTransform, g->mClipRect, aRenderCommand->mColor, aDrawMode, aSrcRect);
 			}
-			
+
 			aRenderCommand = aRenderCommand->mNext;
 		}
 	}
@@ -931,7 +931,7 @@ void SexyMatrix3Transpose(const SexyMatrix3& m, SexyMatrix3 &r)
 	temp.m20 = m.m02;
 	temp.m21 = m.m12;
 	temp.m22 = m.m22;
-	
+
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -1017,7 +1017,7 @@ int ColorComponentMultiply(int theColor1, int theColor2)
 Color ColorsMultiply(const Color& theColor1, const Color& theColor2)
 {
 	return Color(
-		ColorComponentMultiply(theColor1.mRed, theColor2.mRed), 
+		ColorComponentMultiply(theColor1.mRed, theColor2.mRed),
 		ColorComponentMultiply(theColor1.mGreen, theColor2.mGreen),
 		ColorComponentMultiply(theColor1.mBlue, theColor2.mBlue),
 		ColorComponentMultiply(theColor1.mAlpha, theColor2.mAlpha)
@@ -1066,7 +1066,7 @@ bool PvzpResourceManager::PvzpLoadResources(const std::string& theGroup)
 }
 
 void PvzpAddImageToMap(SharedImageRef* theImage, const std::string& thePath)
-{ 
+{
 	static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
 }
 

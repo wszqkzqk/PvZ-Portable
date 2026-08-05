@@ -150,8 +150,8 @@ bool ReanimAtlas::ImageFindPlaceOnSide(ReanimAtlasImage* theAtlasImageToPlace, i
 
 bool ReanimAtlas::ImageFindPlace(ReanimAtlasImage* theAtlasImageToPlace, int theImageCount, int theMaxWidth)
 {
-	return 
-		ImageFindPlaceOnSide(theAtlasImageToPlace, theImageCount, theMaxWidth, true) || 
+	return
+		ImageFindPlaceOnSide(theAtlasImageToPlace, theImageCount, theMaxWidth, true) ||
 		ImageFindPlaceOnSide(theAtlasImageToPlace, theImageCount, theMaxWidth, false);  // try placing to the right, then below
 }
 

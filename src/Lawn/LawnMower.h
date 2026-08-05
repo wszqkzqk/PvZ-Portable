@@ -31,43 +31,43 @@ class Board;
 class Zombie;
 namespace Sexy
 {
-    class Graphics;
+	class Graphics;
 };
 using namespace Sexy;
 
 class LawnMower
 {
 public:
-    LawnApp*            mApp;
-    Board*              mBoard;
-    float               mPosX;
-    float               mPosY;
-    int32_t             mRenderOrder;
-    int32_t             mRow;
-    int32_t             mAnimTicksPerFrame;
-    ReanimationID       mReanimID;
-    int32_t             mChompCounter;
-    int32_t             mRollingInCounter;
-    int32_t             mSquishedCounter;
-    LawnMowerState      mMowerState;
-    bool                mDead;
-    bool                mVisible;
-    LawnMowerType       mMowerType;
-    float               mAltitude;
-    MowerHeight         mMowerHeight;
-    int32_t             mLastPortalX;
+	LawnApp*            mApp;
+	Board*              mBoard;
+	float               mPosX;
+	float               mPosY;
+	int32_t             mRenderOrder;
+	int32_t             mRow;
+	int32_t             mAnimTicksPerFrame;
+	ReanimationID       mReanimID;
+	int32_t             mChompCounter;
+	int32_t             mRollingInCounter;
+	int32_t             mSquishedCounter;
+	LawnMowerState      mMowerState;
+	bool                mDead;
+	bool                mVisible;
+	LawnMowerType       mMowerType;
+	float               mAltitude;
+	MowerHeight         mMowerHeight;
+	int32_t             mLastPortalX;
 
 public:
-    void                LawnMowerInitialize(int theRow);
-    void                StartMower();
-    void                Update();
-    void                Draw(Graphics* g);
-    void                Die();
-    Rect                GetLawnMowerAttackRect();
-    void                UpdatePool();
-    void                MowZombie(Zombie* theZombie);
-    void                SquishMower();
-    /*inline*/ void     EnableSuperMower(bool theEnable);
+	void                LawnMowerInitialize(int theRow);
+	void                StartMower();
+	void                Update();
+	void                Draw(Graphics* g);
+	void                Die();
+	Rect                GetLawnMowerAttackRect();
+	void                UpdatePool();
+	void                MowZombie(Zombie* theZombie);
+	void                SquishMower();
+	void     EnableSuperMower(bool theEnable);
 };
 
 #endif

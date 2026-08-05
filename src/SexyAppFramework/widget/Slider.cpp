@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -31,7 +31,7 @@
 
 using namespace Sexy;
 
-Slider::Slider(Image* theTrackImage, Image* theThumbImage, int theId, SliderListener* theListener) : 		
+Slider::Slider(Image* theTrackImage, Image* theThumbImage, int theId, SliderListener* theListener) :
 	mListener(theListener),
 	mVal(0.0),
 	mId(theId),
@@ -44,7 +44,7 @@ Slider::Slider(Image* theTrackImage, Image* theThumbImage, int theId, SliderList
 }
 
 void Slider::SetValue(double theValue)
-{	
+{
 	mVal = theValue;
 	if (mVal < 0.0)
 		mVal = 0.0;
@@ -60,7 +60,7 @@ bool Slider::HasTransparencies()
 }
 
 void Slider::Draw(Graphics* g)
-{	
+{
 	if (mTrackImage != nullptr)
 	{
 		int cw = mHorizontal ? mTrackImage->GetWidth()/3 : mTrackImage->GetWidth();
@@ -97,7 +97,7 @@ void Slider::Draw(Graphics* g)
 		g->DrawImage(mThumbImage, (mWidth - mThumbImage->GetWidth()) / 2, (int) (mVal * (mHeight - mThumbImage->GetHeight())));
 
 	//g->SetColor(Color(255, 255, 0));
-	//g->FillRect(0, 0, mWidth, mHeight);	
+	//g->FillRect(0, 0, mWidth, mHeight);
 }
 
 void Slider::MouseDown(int x, int y, int theClickCount)
@@ -164,7 +164,7 @@ void Slider::MouseMove(int x, int y)
 void Slider::MouseDrag(int x, int y)
 {
 	if (mDragging)
-	{	
+	{
 		double anOldVal = mVal;
 
 		if (mHorizontal)

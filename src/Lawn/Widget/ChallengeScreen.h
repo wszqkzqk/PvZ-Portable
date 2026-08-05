@@ -34,67 +34,67 @@ class NewLawnButton;
 class ChallengeScreen : public Widget, public ButtonListener
 {
 private:
-    enum
-    {
-        ChallengeScreen_Back = 100,
-        ChallengeScreen_Mode = 200,
-        ChallengeScreen_Page = 300
-    };
+	enum
+	{
+		ChallengeScreen_Back = 100,
+		ChallengeScreen_Mode = 200,
+		ChallengeScreen_Page = 300
+	};
 
 public:
-    NewLawnButton*              mBackButton;
-    ButtonWidget*               mPageButton[MAX_CHALLANGE_PAGES];
-    ButtonWidget*               mChallengeButtons[NUM_CHALLENGE_MODES];
-    LawnApp*                    mApp;
-    ToolTipWidget*              mToolTip;
-    ChallengePage               mPageIndex;
-    bool                        mCheatEnableChallenges;
-    UnlockingState              mUnlockState;
-    int                         mUnlockStateCounter;
-    int                         mUnlockChallengeIndex;
-    float                       mLockShakeX;
-    float                       mLockShakeY;
-    bool                        mLimboPageUnlocked;
-    int                         mClickCount;
-    uint                        mLastClickUpdateCnt;
+	NewLawnButton*              mBackButton;
+	ButtonWidget*               mPageButton[MAX_CHALLANGE_PAGES];
+	ButtonWidget*               mChallengeButtons[NUM_CHALLENGE_MODES];
+	LawnApp*                    mApp;
+	ToolTipWidget*              mToolTip;
+	ChallengePage               mPageIndex;
+	bool                        mCheatEnableChallenges;
+	UnlockingState              mUnlockState;
+	int                         mUnlockStateCounter;
+	int                         mUnlockChallengeIndex;
+	float                       mLockShakeX;
+	float                       mLockShakeY;
+	bool                        mLimboPageUnlocked;
+	int                         mClickCount;
+	uint                        mLastClickUpdateCnt;
 
 public:
-    ChallengeScreen(LawnApp* theApp, ChallengePage thePage);
-    ~ChallengeScreen() override;
-    void                        SetUnlockChallengeIndex(ChallengePage thePage, bool theIsIZombie = false);
-    int                         MoreTrophiesNeeded(int theChallengeIndex);
-    /*inline*/ bool             ShowPageButtons();
-    void                        UpdateButtons();
-    int                         AccomplishmentsNeeded(int theChallengeIndex);
-    void                        DrawButton(Graphics* g, int theChallengeIndex);
-    void                        Draw(Graphics* g) override;
-    void                        Update() override;
-    void                        AddedToManager(WidgetManager* theWidgetManager) override;
-    void                        RemovedFromManager(WidgetManager* theWidgetManager) override;
-    void                        ButtonPress(int theId) override;
-    void                        ButtonDownTick(int) override {}
-    void                        ButtonMouseEnter(int) override {}
-    void                        ButtonMouseLeave(int) override {}
-    void                        ButtonMouseMove(int, int, int) override {}
-    void                        ButtonDepress(int theId) override;
-    void                        KeyDown(KeyCode theKey) override;
-    void                        UpdateToolTip();
-    void                        MouseDown(int x, int y, int theClickCount) override;
+	ChallengeScreen(LawnApp* theApp, ChallengePage thePage);
+	~ChallengeScreen() override;
+	void                        SetUnlockChallengeIndex(ChallengePage thePage, bool theIsIZombie = false);
+	int                         MoreTrophiesNeeded(int theChallengeIndex);
+	bool             ShowPageButtons();
+	void                        UpdateButtons();
+	int                         AccomplishmentsNeeded(int theChallengeIndex);
+	void                        DrawButton(Graphics* g, int theChallengeIndex);
+	void                        Draw(Graphics* g) override;
+	void                        Update() override;
+	void                        AddedToManager(WidgetManager* theWidgetManager) override;
+	void                        RemovedFromManager(WidgetManager* theWidgetManager) override;
+	void                        ButtonPress(int theId) override;
+	void                        ButtonDownTick(int) override {}
+	void                        ButtonMouseEnter(int) override {}
+	void                        ButtonMouseLeave(int) override {}
+	void                        ButtonMouseMove(int, int, int) override {}
+	void                        ButtonDepress(int theId) override;
+	void                        KeyDown(KeyCode theKey) override;
+	void                        UpdateToolTip();
+	void                        MouseDown(int x, int y, int theClickCount) override;
 //  virtual void                KeyChar(char theChar);
 
-    /*inline*/ bool             IsScaryPotterLevel(GameMode theGameMode);
-    /*inline*/ bool             IsIZombieLevel(GameMode theGameMode);
+	bool             IsScaryPotterLevel(GameMode theGameMode);
+	bool             IsIZombieLevel(GameMode theGameMode);
 };
 
 class ChallengeDefinition
 {
 public:
-    GameMode                    mChallengeMode;
-    int                         mChallengeIconIndex;
-    ChallengePage               mPage;
-    int                         mRow;
-    int                         mCol;
-    const char*             mChallengeName;
+	GameMode                    mChallengeMode;
+	int                         mChallengeIconIndex;
+	ChallengePage               mPage;
+	int                         mRow;
+	int                         mCol;
+	const char*             mChallengeName;
 };
 extern const ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES];
 

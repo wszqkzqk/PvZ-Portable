@@ -120,7 +120,7 @@ void AchievementsWidget::Draw(Graphics* g) {
 	g->DrawImage(IMAGE_ACHEESEMENTS_ZUMA, 0, 11250);
 
 	g->DrawImage(IMAGE_ACHEESEMENTS_CHINA, 0, mHeight - IMAGE_ACHEESEMENTS_CHINA->mHeight - /*50*/ 650);
-	
+
 	if (aBackButtonRect.Contains(mWidgetManager->mLastMouseX - mX, mWidgetManager->mLastMouseY - mY))
 		g->DrawImage(IMAGE_ACHEESEMENTS_BACK_HIGHLIGHT, 128, 55);
 
@@ -138,13 +138,13 @@ void AchievementsWidget::Draw(Graphics* g) {
 		// Achievement images
 		Rect aSrcRect(70 * (i % 7), 70 * (i / 7), 70, 70);
 		Rect aDestRect(aImageXPos, aImageYPos, 56, 56);
-		
+
 		g->SetColorizeImages(true);
 		g->SetColor(aHasAchievement ? Color(255, 255, 255) : Color(255, 255, 255, 32));
 
 		g->DrawImage(IMAGE_ACHEESEMENTS_ICONS, aDestRect, aSrcRect);
 		g->SetColorizeImages(false);
-		
+
 		// Achievement titles
 		g->SetFont(FONT_DWARVENTODCRAFT15);
 		g->SetColor(Color(21, 175, 0));
@@ -152,9 +152,9 @@ void AchievementsWidget::Draw(Graphics* g) {
 		std::string aName = mApp->GetString(gAchievementList[i].name, gAchievementList[i].name);
 		g->DrawString(aName, aTextXPos, aTextYPos);
 
-		// Achievement descriptions	
+		// Achievement descriptions
 		Rect aPos = Rect(aTextXPos, aTextYPos + 3, 212, 60);
-		
+
 		g->SetFont(FONT_DWARVENTODCRAFT12);
 		g->SetColor(Color(255, 255, 255));
 

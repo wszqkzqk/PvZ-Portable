@@ -52,9 +52,9 @@ PvzpStringListFormat::PvzpStringListFormat()
 	mFormatFlags = 0U;
 }
 
-PvzpStringListFormat::PvzpStringListFormat(const char* theFormatName, _Font** theFont, const Color& theColor, int theLineSpacingOffset, unsigned int theFormatFlags) : 
+PvzpStringListFormat::PvzpStringListFormat(const char* theFormatName, _Font** theFont, const Color& theColor, int theLineSpacingOffset, unsigned int theFormatFlags) :
 	mFormatName(theFormatName), mNewFont(theFont), mNewColor(theColor), mLineSpacingOffset(theLineSpacingOffset), mFormatFlags(theFormatFlags)
-{ 
+{
 }
 
 void PvzpStringListSetColors(PvzpStringListFormat* theFormats, int theCount)
@@ -274,7 +274,7 @@ int PvzpWriteString(Graphics* g, const std::string& theString, int theX, int the
 				i += aFormatEnd - aFormatStart;  // move i to '}'
 				if (drawString)
 					aFont->DrawString(g, theX + aXOffset, theY, aString, theCurrentFormat.mNewColor, g->mClipRect);  // draw the accumulated text
-				
+
 				aXOffset += aFont->StringWidth(aString);
 				aString.assign("");
 				PvzpWriteStringSetFormat(aFormatStart + 1, theCurrentFormat);

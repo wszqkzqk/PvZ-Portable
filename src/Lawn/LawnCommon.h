@@ -57,12 +57,12 @@ public:
 };
 
 // Logic checks
-/*inline*/ bool				ModInRange(int theNumber, int theMod, int theRange = 0);
-/*inline*/ bool				GridInRange(int x1, int y1, int x2, int y2, int theRangeX = 1, int theRangeY = 1);
+bool				ModInRange(int theNumber, int theMod, int theRange = 0);
+bool				GridInRange(int x1, int y1, int x2, int y2, int theRangeX = 1, int theRangeY = 1);
 
 // Animation, effects and drawing
-/*inline*/ void				TileImageHorizontally(Graphics* g, Image* theImage, int theX, int theY, int theWidth);
-/*inline*/ void				TileImageVertically(Graphics* g, Image* theImage, int theX, int theY, int theHeight);
+void				TileImageHorizontally(Graphics* g, Image* theImage, int theX, int theY, int theWidth);
+void				TileImageVertically(Graphics* g, Image* theImage, int theX, int theY, int theHeight);
 
 // Widgets
 Checkbox*					MakeNewCheckbox(int theId, CheckboxListener* theListener, bool theDefault);

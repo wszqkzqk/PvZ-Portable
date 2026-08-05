@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -136,7 +136,7 @@ void AnimInfo::Compute(int theNumCels, int theBeginFrameTime, int theEndFrameTim
 	if (!mFrameMap.empty())
 		mNumCels = (int)mFrameMap.size();
 
-	if (theBeginFrameTime>0) 
+	if (theBeginFrameTime>0)
 		SetPerFrameDelay(0,theBeginFrameTime);
 
 	if (theEndFrameTime>0)
@@ -151,7 +151,7 @@ void AnimInfo::Compute(int theNumCels, int theBeginFrameTime, int theEndFrameTim
 		{
 			if (mPerFrameDelay[i]<=0)
 				mPerFrameDelay[i] = mFrameDelay;
-				
+
 			mTotalAnimTime += mPerFrameDelay[i];
 		}
 	}
@@ -161,7 +161,7 @@ void AnimInfo::Compute(int theNumCels, int theBeginFrameTime, int theEndFrameTim
 	if (!mFrameMap.empty())
 		mFrameMap.resize(mNumCels);
 }
-	
+
 int AnimInfo::GetPerFrameCel(int theTime)
 {
 	for (int i=0; i<mNumCels; i++)
@@ -197,7 +197,7 @@ int AnimInfo::GetCel(int theTime)
 	if (mFrameMap.empty())
 		return aFrame;
 	else
-		return mFrameMap[aFrame];	
+		return mFrameMap[aFrame];
 }
 
 int	Image::GetAnimCel(int theTime)
@@ -232,7 +232,7 @@ void Image::CopyAttributes(Image *from)
 
 Graphics* Image::GetGraphics()
 {
-	Graphics* g = new Graphics(this);	
+	Graphics* g = new Graphics(this);
 
 	return g;
 }
@@ -258,8 +258,8 @@ void Image::FillScanLines(Span* theSpans, int theSpanCount, const Color& theColo
 {
 	for (int i = 0; i < theSpanCount; i++)
 	{
-		Span* aSpan = &theSpans[i];		
-		FillRect(Rect(aSpan->mX, aSpan->mY, aSpan->mWidth, 1), theColor, theDrawMode);		
+		Span* aSpan = &theSpans[i];
+		FillRect(Rect(aSpan->mX, aSpan->mY, aSpan->mWidth, 1), theColor, theDrawMode);
 	}
 }
 

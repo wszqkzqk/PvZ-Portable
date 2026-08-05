@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -39,7 +39,7 @@ class TextWidget : public Widget, public ScrollListener
 public:
 	_Font*				mFont;
 	ScrollbarWidget*	mScrollbar;
-	
+
 	std::vector<std::string>	mLogicalLines;
 	std::vector<std::string>	mPhysicalLines;
 	std::vector<int>	mLineMap;
@@ -48,7 +48,7 @@ public:
 	bool				mStickToBottom;
 	int					mHiliteArea[2][2];
 	int					mMaxLines;
-	
+
 public:
 	TextWidget();
 
@@ -63,7 +63,7 @@ public:
 	void         Resize(int theX, int theY, int theWidth, int theHeight) override;
 	virtual Color GetLastColor(std::string_view theString);
 	virtual void AddToPhysicalLines(int theIdx, const std::string& theLine);
-	
+
 	virtual void AddLine(const std::string& theString);
 	virtual bool SelectionReversed();
 	virtual void GetSelectedIndices(int theLineIdx, int* theIndices);
@@ -74,7 +74,7 @@ public:
 
 	void         MouseDown(int x, int y, int theClickCount) override;
 	void         MouseDrag(int x, int y) override;
-	
+
 	void         KeyDown(KeyCode theKey) override;
 };
 

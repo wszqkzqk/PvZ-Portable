@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -34,15 +34,15 @@ class SexyMatrix3
 {
 public:
 	union
-    {
-        float m[3][3];
-        struct
-        {
-            float m00, m01, m02; // scaleX*cos,	skewX*sin,	translateX
-            float m10, m11, m12; // skewY*-sin,	scaleY*cos,	translateY
-            float m20, m21, m22; // projective;	in this project always (0, 0, 1)
-        };
-    };
+	{
+		float m[3][3];
+		struct
+		{
+			float m00, m01, m02; // scaleX*cos,	skewX*sin,	translateX
+			float m10, m11, m12; // skewY*-sin,	scaleY*cos,	translateY
+			float m20, m21, m22; // projective;	in this project always (0, 0, 1)
+		};
+	};
 
 public:
 	SexyMatrix3();
@@ -67,10 +67,10 @@ public:
 
 	void Translate(float tx, float ty);
 
-	// Rotate has been replaced by RotateRad.  
-	// NOTE:  If you had Rotate(angle) you should now use RotateRad(-angle).  
+	// Rotate has been replaced by RotateRad.
+	// NOTE:  If you had Rotate(angle) you should now use RotateRad(-angle).
 	// This is to make positive rotations go counter-clockwise when using screen coordinates.
-	void RotateRad(float rot); 
+	void RotateRad(float rot);
 	void RotateDeg(float rot);
 	void Scale(float sx, float sy);
 };
@@ -95,7 +95,7 @@ public:
 	void Reset();
 
 	void Translate(float tx, float ty);
-	void RotateRad(float rot); 
+	void RotateRad(float rot);
 	void RotateDeg(float rot);
 	void Scale(float sx, float sy);
 

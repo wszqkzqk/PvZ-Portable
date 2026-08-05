@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -51,10 +51,10 @@ SDLSoundManager::SDLSoundManager()
 		mPlayingSounds[i] = nullptr;
 
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO))
-    {
+	{
 		Sexy::PrintF("Failed to initialize SDL audio subsystem\n");
 		return;
-    }
+	}
 
 	if (Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 2048))
 	{
@@ -88,15 +88,15 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 	fp = p_fopen(theFilename.c_str(), "rb");
 
 	if (fp == nullptr)
-		return false;	
+		return false;
 
-	char aHeaderId[5];	
-	aHeaderId[4] = '\0';	
-	p_fread(aHeaderId, 1, 4, fp);	
+	char aHeaderId[5];
+	aHeaderId[4] = '\0';
+	p_fread(aHeaderId, 1, 4, fp);
 	if ((!strcmp(aHeaderId, ".snd")) == 0)
 		return false;
 
-	uint32_t aHeaderSize;	
+	uint32_t aHeaderSize;
 	p_fread(&aHeaderSize, 4, 1, fp);
 	aHeaderSize = FromBE32(aHeaderSize);
 
@@ -116,12 +116,12 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 	p_fread(&aChannelCount, 4, 1, fp);
 	aChannelCount = FromBE32(aChannelCount);
 
-	p_fseek(fp, aHeaderSize, SEEK_SET);	
+	p_fseek(fp, aHeaderSize, SEEK_SET);
 
 	bool ulaw = false;
 
 	uint32_t aSrcBitCount = 8;
-	uint32_t aBitCount = 16;			
+	uint32_t aBitCount = 16;
 	switch (anEncoding)
 	{
 	case 1:
@@ -133,10 +133,10 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 		aSrcBitCount = 8;
 		aBitCount = 8;
 		break;
-	
+
 	/*
 	Support these formats?
-	
+
 	case 3:
 		aBitCount = 16;
 		break;
@@ -148,7 +148,7 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 		break;*/
 
 	default:
-		return false;		
+		return false;
 	}
 
 	uint32_t aDestSize = aDataSize * aBitCount/aSrcBitCount;
@@ -156,7 +156,7 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 	Mix_Chunk* aMixChunk = (Mix_Chunk *)SDL_malloc(sizeof(Mix_Chunk));
 	uint8_t* aDest = (uint8_t*)SDL_malloc(aDestSize);
 	uint8_t* aSrcBuffer = (uint8_t*)malloc(aDataSize);
-	
+
 	uint32_t aReadSize = p_fread(aSrcBuffer, 1, aDataSize, fp);
 	p_fclose(fp);
 
@@ -187,10 +187,10 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 			else if (ch > 128)
 				ch = (((0x80 | 15) - ch) * 256) + 4064;
 			else
-				ch = 0xff;			
+				ch = 0xff;
 
 			aDestBuffer[i] = sign * ch * 4;
-		}		
+		}
 	}
 	else
 		memcpy(aDest, aSrcBuffer, aDataSize);
@@ -300,7 +300,7 @@ intptr_t SDLSoundManager::LoadSound(const std::string& theFilename)
 			return i;
 
 	for (i = MAX_SOURCE_SOUNDS-1; i >= 0; i--)
-	{		
+	{
 		if (mSourceSounds[i] == nullptr)
 		{
 			if (!LoadSound(i, theFilename))
@@ -308,7 +308,7 @@ intptr_t SDLSoundManager::LoadSound(const std::string& theFilename)
 			else
 				return i;
 		}
-	}	
+	}
 
 	return -1;
 }
@@ -409,7 +409,7 @@ void SDLSoundManager::SetMasterVolume(double theVolume)
 
 void SDLSoundManager::Flush()
 {
-	
+
 }
 
 void SDLSoundManager::StopAllSounds()
@@ -458,10 +458,10 @@ int SDLSoundManager::FindFreeChannel()
 	}
 
 	for (int i = 0; i < MAX_CHANNELS; i++)
-	{		
+	{
 		if (mPlayingSounds[i] == nullptr)
 			return i;
-		
+
 		if (mPlayingSounds[i]->IsReleased())
 		{
 			delete mPlayingSounds[i];
@@ -469,7 +469,7 @@ int SDLSoundManager::FindFreeChannel()
 			return i;
 		}
 	}
-	
+
 	return -1;
 }
 

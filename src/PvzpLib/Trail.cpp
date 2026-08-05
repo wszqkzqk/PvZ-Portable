@@ -112,7 +112,7 @@ void Trail::AddPoint(float x, float y)
 			return;
 		}
 	}
-	
+
 	// drop the oldest point when the trail is full
 	if (mNumTrailPoints == aMaxPoints)
 	{

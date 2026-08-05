@@ -28,12 +28,12 @@ extern bool gNeedRecalcVariableToIdMap;
 
 namespace Sexy
 {
-    class _Font;
-    class Image;
-    class ResourceManager;
+	class _Font;
+	class Image;
+	class ResourceManager;
 
-    enum class ResourceId : int32_t
-    {
+	enum class ResourceId : int32_t
+	{
 		IMAGE_BLANK_ID,
 		IMAGE_POPCAP_LOGO_ID,
 		IMAGE_PARTNER_LOGO_ID,
@@ -913,8 +913,8 @@ namespace Sexy
 		IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT_ID,
 		IMAGE_ZOMBATAR_VIEW_BUTTON_ID,
 		IMAGE_ZOMBATAR_VIEW_BUTTON_HIGHLIGHT_ID,
-        RESOURCE_ID_MAX
-    };
+		RESOURCE_ID_MAX
+	};
 
 	// DelayLoad_Almanac Resources
 	extern Image* IMAGE_ALMANAC_CLOSEBUTTON;
@@ -1855,52 +1855,52 @@ namespace Sexy
 	extern intptr_t SOUND_ZOMBIE_FALLING_1;
 	extern intptr_t SOUND_ZOMBIE_FALLING_2;
 
-    bool                ExtractResourcesByName(ResourceManager* theResourceManager, const char* theName);
-    bool                ExtractDelayLoad_AlmanacResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_AwardScreenResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_Background1Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_Background2Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_Background3Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_Background4Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_Background5Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_Background6Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_BackgroundUnsoddedResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_ChallengeScreenResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_CreditsResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_GreenHouseGardenResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_GreenHouseOverlayResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_MushroomGardenResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_StoreResources(ResourceManager* theResourceManager);
+	bool                ExtractResourcesByName(ResourceManager* theResourceManager, const char* theName);
+	bool                ExtractDelayLoad_AlmanacResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_AwardScreenResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_Background1Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_Background2Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_Background3Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_Background4Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_Background5Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_Background6Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_BackgroundUnsoddedResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_ChallengeScreenResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_CreditsResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_GreenHouseGardenResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_GreenHouseOverlayResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_MushroomGardenResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_StoreResources(ResourceManager* theResourceManager);
 	bool                ExtractDelayLoad_ZombatarResources(ResourceManager* theResourceManager);
 	bool                ExtractDelayLoad_ZombieFinalNoteResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_ZombieNoteResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_ZombieNote1Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_ZombieNote2Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_ZombieNote3Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_ZombieNote4Resources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_ZombieNoteHelpResources(ResourceManager* theResourceManager);
-    bool                ExtractDelayLoad_ZombiquariumResources(ResourceManager* theResourceManager);
-    bool                ExtractInitResources(ResourceManager* theResourceManager);
-    bool                ExtractLoaderBarResources(ResourceManager* theResourceManager);
-    bool                ExtractLoadingFontsResources(ResourceManager* theResourceManager);
-    bool                ExtractLoadingImagesResources(ResourceManager* theResourceManager);
-    bool                ExtractLoadingSoundsResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_ZombieNoteResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_ZombieNote1Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_ZombieNote2Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_ZombieNote3Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_ZombieNote4Resources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_ZombieNoteHelpResources(ResourceManager* theResourceManager);
+	bool                ExtractDelayLoad_ZombiquariumResources(ResourceManager* theResourceManager);
+	bool                ExtractInitResources(ResourceManager* theResourceManager);
+	bool                ExtractLoaderBarResources(ResourceManager* theResourceManager);
+	bool                ExtractLoadingFontsResources(ResourceManager* theResourceManager);
+	bool                ExtractLoadingImagesResources(ResourceManager* theResourceManager);
+	bool                ExtractLoadingSoundsResources(ResourceManager* theResourceManager);
 
-    Image*              GetImageById(ResourceId theId);
-    _Font*              GetFontById(ResourceId theId);
-    intptr_t            GetSoundById(ResourceId theId);
-    
-    Image*&             GetImageRefById(ResourceId theId);
-    _Font*&             GetFontRefById(ResourceId theId);
-    intptr_t&           GetSoundRefById(ResourceId theId);
+	Image*              GetImageById(ResourceId theId);
+	_Font*              GetFontById(ResourceId theId);
+	intptr_t            GetSoundById(ResourceId theId);
 
-    ResourceId          GetIdByVariable(void* theVariable);
-    ResourceId          GetIdByImage(Image* theImage);
-    ResourceId          GetIdByFont(_Font* theFont);
-    ResourceId          GetIdBySound(intptr_t theSound);
-    
-    //const char*         GetStringIdById(ResourceId theId);
-    //ResourceId          GetIdByString(const char* theStringId);
+	Image*&             GetImageRefById(ResourceId theId);
+	_Font*&             GetFontRefById(ResourceId theId);
+	intptr_t&           GetSoundRefById(ResourceId theId);
+
+	ResourceId          GetIdByVariable(void* theVariable);
+	ResourceId          GetIdByImage(Image* theImage);
+	ResourceId          GetIdByFont(_Font* theFont);
+	ResourceId          GetIdBySound(intptr_t theSound);
+
+	//const char*         GetStringIdById(ResourceId theId);
+	//ResourceId          GetIdByString(const char* theStringId);
 };
 extern bool (*gExtractResourcesByName)(Sexy::ResourceManager* theResourceManager, const char* theName);
 

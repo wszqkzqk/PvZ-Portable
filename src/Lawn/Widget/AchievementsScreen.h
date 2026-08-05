@@ -51,26 +51,26 @@ enum AchievementId {
 	Immortal, //
 	ToweringWisdom, //
 	MustacheMode, //
-    MAX_ACHIEVEMENTS
+	MAX_ACHIEVEMENTS
 };
 
 class AchievementItem {
 public:
-    std::string_view name;
-    std::string_view description;
+	std::string_view name;
+	std::string_view description;
 };
 
 extern const AchievementItem gAchievementList[MAX_ACHIEVEMENTS];
 
 class AchievementsWidget : public Widget {
 public:
-	LawnApp*	mApp;                       //+GOTY @Patoke: 0xA8
-	int			mScrollDirection;			//+GOTY @Patoke: 0xAC
-	Rect		mMoreRockRect;				//+GOTY @Patoke: 0xC0
-	int			mScrollValue;				//+GOTY @Patoke: 0xB0
-	int			mScrollDecay;				//+GOTY @Patoke: 0xB4
-	int			mDefaultScrollValue;		//+GOTY @Patoke: 0xB8
-	bool		mDidPressMoreButton;		//+GOTY @Patoke: 0xBC
+	LawnApp*	mApp;                       //+0xA8
+	int			mScrollDirection;			//+0xAC
+	Rect		mMoreRockRect;				//+0xC0
+	int			mScrollValue;				//+0xB0
+	int			mScrollDecay;				//+0xB4
+	int			mDefaultScrollValue;		//+0xB8
+	bool		mDidPressMoreButton;		//+0xBC
 
 	AchievementsWidget(LawnApp* theApp);
 	~AchievementsWidget() override;

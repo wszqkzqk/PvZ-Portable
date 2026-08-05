@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -121,7 +121,7 @@ namespace Sexy
 	KEYCODE_F23           = 0x86,
 	KEYCODE_F24           = 0x87,
 	KEYCODE_NUMLOCK       = 0x90,
-	KEYCODE_SCROLL        = 0x91,	
+	KEYCODE_SCROLL        = 0x91,
 	KEYCODE_ASCIIBEGIN2	  = 0xB3, //ASCII + 0x80
 	KEYCODE_ASCIIEND2	  = 0xE0
 };

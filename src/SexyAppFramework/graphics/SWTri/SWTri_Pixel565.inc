@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -27,7 +27,7 @@
 	#if defined(TEXTURED)
 	{
 		#include "SWTri_GetTexel.inc"
-		
+
 		if (alpha > 0x08)
 		{
 			#include "SWTri_TexelARGB.inc"
@@ -48,7 +48,7 @@
 						tg = tex&0x00ff00;
 					}
 					#endif
-					
+
 					trb = ((trb>>8)&0xf800)|((trb>>3)&0x001f);
 					tg = ((tg>>5)&0x07e0);
 					tex = *pix;

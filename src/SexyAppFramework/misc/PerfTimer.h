@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -30,7 +30,7 @@
 namespace Sexy
 {
 
-class PerfTimer 
+class PerfTimer
 {
 protected:
 	int64_t mStart;
@@ -72,8 +72,8 @@ public:
 
 	SexyAutoPerf(const char *theName) : mName(theName), mIsStarted(true) { SexyPerf::StartTiming(theName); }
 	SexyAutoPerf(const char *theName, bool doStart) : mName(theName), mIsStarted(doStart)
-	{ 
-		if(doStart) 
+	{
+		if(doStart)
 			SexyPerf::StartTiming(theName);
 	}
 
@@ -88,10 +88,10 @@ public:
 		}
 	}
 
-	void Stop() 
-	{ 
-		if(mIsStarted) 
-		{ 
+	void Stop()
+	{
+		if(mIsStarted)
+		{
 			SexyPerf::StopTiming(mName);
 			mIsStarted = false;
 		}
@@ -112,22 +112,22 @@ public:
 
 #define SEXY_PERF_BEGIN_COND(theName,theCond) if(theCond) SexyPerf::StartTiming(theName)
 #define SEXY_PERF_END_COND(theName,theCond) if(theCond) SexyPerf::StopTiming(theName)
-#define SEXY_AUTO_PERF_MULTI_COND(theName,theSuffix,theCond) SexyAutoPerf anAutoPerf##theSuffix(theName,theCond); 
-#define SEXY_AUTO_PERF_COND_2(theName,theSuffix,theCond) SEXY_AUTO_PERF_MULTI_COND(theName,theSuffix,theCond); 
+#define SEXY_AUTO_PERF_MULTI_COND(theName,theSuffix,theCond) SexyAutoPerf anAutoPerf##theSuffix(theName,theCond);
+#define SEXY_AUTO_PERF_COND_2(theName,theSuffix,theCond) SEXY_AUTO_PERF_MULTI_COND(theName,theSuffix,theCond);
 #define SEXY_AUTO_PERF_CONDL(theName) SEXY_AUTO_PERF_COND_2(theName,__LINE__,theCond)
 #define SEXY_AUTO_PERF_COND(theName) SEXY_AUTO_PERF_COND_2(theName,UNIQUE,theCond)
 
 #else
 
-#define SEXY_PERF_BEGIN(theName) 
-#define SEXY_PERF_END(theName) 
+#define SEXY_PERF_BEGIN(theName)
+#define SEXY_PERF_END(theName)
 #define SEXY_AUTO_PERF_MULTI(theName,theSuffix)
-#define SEXY_AUTO_PERF(theName) 
+#define SEXY_AUTO_PERF(theName)
 
-#define SEXY_PERF_BEGIN_COND(theName,theCond) 
-#define SEXY_PERF_END_COND(theName,theCond) 
-#define SEXY_AUTO_PERF_MULTI_COND(theName,theSuffix,theCond) 
-#define SEXY_AUTO_PERF_COND(theName) 
+#define SEXY_PERF_BEGIN_COND(theName,theCond)
+#define SEXY_PERF_END_COND(theName,theCond)
+#define SEXY_AUTO_PERF_MULTI_COND(theName,theSuffix,theCond)
+#define SEXY_AUTO_PERF_COND(theName)
 
 #endif
 

@@ -3,10 +3,10 @@
 	double aSin = sin(theRot);
 
 	int aCosLong = (int) (aCos * 0x10000);
-	int aSinLong = (int) (aSin * 0x10000);	
+	int aSinLong = (int) (aSin * 0x10000);
 
 
-	uint32_t* aDestPixelsRow = GetBits() + ((int)aDestRect.mY * mWidth) + (int)aDestRect.mX;		
+	uint32_t* aDestPixelsRow = GetBits() + ((int)aDestRect.mY * mWidth) + (int)aDestRect.mX;
 	int aDestPixelsPitch = mWidth;
 
 	if (theColor == Color::White)
@@ -42,13 +42,13 @@
 				}\
 			}	\
 		}
-		
-		#include "BltRotatedHelper.inc"		
-		
+
+		#include "BltRotatedHelper.inc"
+
 		#undef WRITE_PIXEL
 		#undef DEST_PIXEL_TYPE
-		
-		
+
+
 	}
 	else
 	{
@@ -56,7 +56,7 @@
 		int cr = theColor.mRed + 1;
 		int cg = theColor.mGreen + 1;
 		int cb = theColor.mBlue + 1;
-	
+
 		#define DEST_PIXEL_TYPE uint32_t
 		#define WRITE_PIXEL\
 		{\
@@ -90,12 +90,12 @@
 				}\
 			}	\
 		}
-		
-		#include "BltRotatedHelper.inc"		
-		
+
+		#include "BltRotatedHelper.inc"
+
 		#undef WRITE_PIXEL
 		#undef DEST_PIXEL_TYPE
-		
-		
+
+
 	}
 }

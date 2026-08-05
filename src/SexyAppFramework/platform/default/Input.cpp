@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -671,7 +671,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
-				
+
 				mWidgetManager->MouseMove(x, y);
 				break;
 			}
@@ -686,7 +686,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
-				
+
 				mWidgetManager->MouseMove(x, y);
 				int btn =
 					(event.button.button == SDL_BUTTON_LEFT) ? 1 :
@@ -709,7 +709,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
-				
+
 				mWidgetManager->MouseMove(x, y);
 				int btn =
 					(event.button.button == SDL_BUTTON_LEFT) ? 1 :

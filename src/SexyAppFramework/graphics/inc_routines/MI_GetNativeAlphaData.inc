@@ -1,5 +1,5 @@
 {
-	uint32_t* anAlphaData = new uint32_t[mWidth*mHeight];	
+	uint32_t* anAlphaData = new uint32_t[mWidth*mHeight];
 
 	if (theNumBits == 16)
 	{
@@ -26,11 +26,11 @@
 		{
 			uint32_t val = NEXT_SRC_COLOR;
 
-			int anAlpha = val >> 24;			
+			int anAlpha = val >> 24;
 
 			int r = (((val >> 16) & 0xFF) * anAlpha) >> 8;
 			int g = (((val >> 8 ) & 0xFF) * anAlpha) >> 8;
-			int b = (((val      ) & 0xFF) * anAlpha) >> 8;			
+			int b = (((val      ) & 0xFF) * anAlpha) >> 8;
 
 			anAlphaData[i] =
 				(((r * theRMask) >> 8) & theRMask) |
@@ -39,6 +39,6 @@
 				(anAlpha << 24);
 		}
 	}
-	
-	mNativeAlphaData = anAlphaData;	
+
+	mNativeAlphaData = anAlphaData;
 }

@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -94,7 +94,7 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 
 	const unsigned int *	pTexture; (void)pTexture;
 	unsigned int		vShift, uMask, vMask; (void)vShift;(void)uMask;(void)vMask;
-	
+
 	#if defined(TEXTURED)
 	{
 		pTexture = textureInfo->pTexture;
@@ -145,13 +145,13 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 	(void)ldr;(void)ldg;(void)ldb;(void)lda;(void)ldu;(void)ldv;
 			ldx = static_cast<int>(((v2->x - v0->x) * oneOverHeight) >> 32);
 
-	#if defined(MOD_ARGB)		
+	#if defined(MOD_ARGB)
 		lda = static_cast<int>(((v2->a - v0->a) * oneOverHeight) >> 32);
 		ldr = static_cast<int>(((v2->r - v0->r) * oneOverHeight) >> 32);
 		ldg = static_cast<int>(((v2->g - v0->g) * oneOverHeight) >> 32);
 		ldb = static_cast<int>(((v2->b - v0->b) * oneOverHeight) >> 32);
 	#endif
-	
+
 	#if defined(TEXTURED)
 		ldu = static_cast<int>(((v2->u - v0->u) * oneOverHeight) >> 32);
 		ldv = static_cast<int>(((v2->v - v0->v) * oneOverHeight) >> 32);
@@ -177,7 +177,7 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 		lg = v0->g + static_cast<int>((ldg * subPix)>>16);
 		lb = v0->b + static_cast<int>((ldb * subPix)>>16);
 	#endif
-	
+
 	#if defined(TEXTURED)
 		lu = v0->u + static_cast<int>((ldu * subPix)>>16);
 		lv = v0->v + static_cast<int>((ldv * subPix)>>16);
@@ -188,17 +188,17 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 	SWHelper::signed64	oneOverWidth; (void)oneOverWidth;
 	int		dr, dg, db, da, du, dv;
 	(void)dr;(void)dg;(void)db;(void)da;(void)du;(void)dv;
-	#if defined(TEXTURED) || defined(MOD_ARGB)	
+	#if defined(TEXTURED) || defined(MOD_ARGB)
 		oneOverWidth = bigOne / (v1->x - mid);
 	#endif
-	
+
 	#if defined (MOD_ARGB)
 		da = static_cast<int>(((v1->a - (v0->a + ((topHeight * lda)>>16))) * oneOverWidth)>>32);
 		dr = static_cast<int>(((v1->r - (v0->r + ((topHeight * ldr)>>16))) * oneOverWidth)>>32);
 		dg = static_cast<int>(((v1->g - (v0->g + ((topHeight * ldg)>>16))) * oneOverWidth)>>32);
 		db = static_cast<int>(((v1->b - (v0->b + ((topHeight * ldb)>>16))) * oneOverWidth)>>32);
 	#endif
-	
+
 	#if defined (TEXTURED)
 		du = static_cast<int>(((v1->u - (v0->u + ((topHeight * ldu)>>16))) * oneOverWidth)>>32);
 		dv = static_cast<int>(((v1->v - (v0->v + ((topHeight * ldv)>>16))) * oneOverWidth)>>32);

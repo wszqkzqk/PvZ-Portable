@@ -29,22 +29,22 @@ using namespace Sexy;
 //enum DrawStringJustification;
 enum PvzpStringFormatFlag
 {
-    PVZP_FORMAT_IGNORE_NEWLINES,
-    PVZP_FORMAT_HIDE_UNTIL_MAGNETSHROOM
+	PVZP_FORMAT_IGNORE_NEWLINES,
+	PVZP_FORMAT_HIDE_UNTIL_MAGNETSHROOM
 };
 
 class PvzpStringListFormat
 {
 public:
-    const char*     mFormatName;
-    _Font**          mNewFont;
-    Color           mNewColor;
-    int             mLineSpacingOffset;
-    unsigned int    mFormatFlags;
+	const char*     mFormatName;
+	_Font**          mNewFont;
+	Color           mNewColor;
+	int             mLineSpacingOffset;
+	unsigned int    mFormatFlags;
 
 public:
-    PvzpStringListFormat();
-    PvzpStringListFormat(const char* theFormatName, _Font** theFont, const Color& theColor, int theLineSpacingOffset, unsigned int theFormatFlags);
+	PvzpStringListFormat();
+	PvzpStringListFormat(const char* theFormatName, _Font** theFont, const Color& theColor, int theLineSpacingOffset, unsigned int theFormatFlags);
 };
 extern int gPvzpStringFormatCount;
 extern PvzpStringListFormat* gPvzpStringFormats;
@@ -66,8 +66,8 @@ bool                PvzpStringListExists(std::string_view theString);
 void                PvzpStringRemoveReturnChars(std::string& theString);
 bool                CharIsSpaceInFormat(char theChar, const PvzpStringListFormat& theCurrentFormat);
 int                 PvzpWriteString(Graphics* g, const std::string& theString, int theX, int theY, PvzpStringListFormat& theCurrentFormat, int theWidth, DrawStringJustification theJustification, bool drawString, int theOffset, int theLength);
-/*inline*/ int      PvzpWriteWordWrappedHelper(Graphics* g, const std::string& theString, int theX, int theY, PvzpStringListFormat& theCurrentFormat, int theWidth, DrawStringJustification theJustification, bool drawString, int theOffset, int theLength, int theMaxChars);
+int      PvzpWriteWordWrappedHelper(Graphics* g, const std::string& theString, int theX, int theY, PvzpStringListFormat& theCurrentFormat, int theWidth, DrawStringJustification theJustification, bool drawString, int theOffset, int theLength, int theMaxChars);
 int                 PvzpDrawStringWrappedHelper(Graphics* g, const std::string& theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification, bool drawString);
-/*inline*/ void		PvzpDrawStringWrapped(Graphics* g, std::string_view theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification);
+void		PvzpDrawStringWrapped(Graphics* g, std::string_view theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification);
 
 #endif  //__PVZPSTRINGFILE_H__

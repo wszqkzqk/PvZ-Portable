@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -31,7 +31,7 @@
 
 using namespace Sexy;
 
-static int gEditWidgetColors[][3] = 
+static int gEditWidgetColors[][3] =
 {{255, 255, 255},
 {0, 0, 0},
 {0, 0, 0},
@@ -39,9 +39,9 @@ static int gEditWidgetColors[][3] =
 {255, 255, 255}};
 
 EditWidget::EditWidget(int theId, EditListener* theEditListener)
-{		
+{
 	mId = theId;
-	mEditListener = theEditListener;	
+	mEditListener = theEditListener;
 	mFont = nullptr;
 
 	mHadDoubleClick = false;
@@ -94,7 +94,7 @@ void EditWidget::SetText(const std::string& theText, bool leftPosToZero)
 		mLeftPos = 0;
 	else
 		FocusCursor(true);
-	
+
 	MarkDirty();
 }
 
@@ -108,7 +108,7 @@ void EditWidget::Resize(int theX, int theY, int theWidth, int theHeight)
 {
 	Widget::Resize(theX, theY, theWidth, theHeight);
 
-	FocusCursor(false);		
+	FocusCursor(false);
 }
 
 void EditWidget::SetFont(_Font* theFont, _Font* theWidthCheckFont)
@@ -122,7 +122,7 @@ void EditWidget::SetFont(_Font* theFont, _Font* theWidthCheckFont)
 }
 
 void EditWidget::Draw(Graphics* g) // Already translated
-{	
+{
 	if ((mFont == nullptr) && (mWidgetManager->mApp->mDefaultFont != nullptr))
 		mFont = mWidgetManager->mApp->mDefaultFont->Duplicate();
 	if (mFont == nullptr)
@@ -130,50 +130,50 @@ void EditWidget::Draw(Graphics* g) // Already translated
 
 	std::string_view aString = mString;
 
-	g->SetColor(mColors[COLOR_BKG]);			
+	g->SetColor(mColors[COLOR_BKG]);
 	g->FillRect(0, 0, mWidth, mHeight);
-	
+
 	for (int i = 0; i < 2; i++)
 	{
-		Graphics* aClipG = g->Create();		
+		Graphics* aClipG = g->Create();
 		aClipG->SetFont(mFont);
-				
+
 		if (i == 1)
 		{
 			int aCursorX = GetCaretXOffset();
 			int aHiliteX = aCursorX + 2;
 			if ((mHilitePos != -1) && (mCursorPos != mHilitePos))
 				aHiliteX = mFont->StringWidth(aString.substr(0, mHilitePos)) - mFont->StringWidth(aString.substr(0, mLeftPos));
-			
+
 			if (!mShowingCursor)
-				aCursorX += 2;								
-			
+				aCursorX += 2;
+
 			aCursorX = std::min(std::max(0, aCursorX), mWidth-8);
 			aHiliteX = std::min(std::max(0, aHiliteX), mWidth-8);
-			
+
 			aClipG->ClipRect(4 + std::min(aCursorX, aHiliteX), (mHeight - mFont->GetHeight())/2, abs(aHiliteX - aCursorX), mFont->GetHeight());
 		}
 		else
-			aClipG->ClipRect(4, 0, mWidth-8, mHeight);			
-		
+			aClipG->ClipRect(4, 0, mWidth-8, mHeight);
+
 		bool hasfocus = mHasFocus || mDrawSelOverride;
 		if (i == 1 && hasfocus)
 		{
 			aClipG->SetColor(mColors[COLOR_HILITE]);
 			aClipG->FillRect(0, 0, mWidth, mHeight);
 		}
-	
+
 		if (i == 0 || !hasfocus)
 			aClipG->SetColor(mColors[COLOR_TEXT]);
 		else
-			aClipG->SetColor(mColors[COLOR_HILITE_TEXT]);			
+			aClipG->SetColor(mColors[COLOR_HILITE_TEXT]);
 		aClipG->DrawString(aString.substr(mLeftPos), 4, (mHeight - mFont->GetHeight())/2 + mFont->GetAscent());
-		
+
 		delete aClipG;
-	}		
-			
+	}
+
 	g->SetColor(mColors[COLOR_OUTLINE]);
-	g->DrawRect(0, 0, mWidth-1, mHeight-1);				
+	g->DrawRect(0, 0, mWidth-1, mHeight-1);
 }
 
 void EditWidget::UpdateCaretPos()
@@ -226,7 +226,7 @@ void EditWidget::LostFocus()
 	Widget::LostFocus();
 
 	mWidgetManager->mApp->StopTextInput();
-	mShowingCursor = false;	
+	mShowingCursor = false;
 	MarkDirty();
 }
 
@@ -245,9 +245,9 @@ void EditWidget::Update()
 		{
 			MarkDirty();
 			mBlinkAcc = 0;
-			mShowingCursor = !mShowingCursor;			
-		}		
-	}	
+			mShowingCursor = !mShowingCursor;
+		}
+	}
 }
 
 void EditWidget::EnforceMaxChars()
@@ -303,10 +303,10 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 
 	bool bigChange = false;
 	bool removeHilite = !shiftDown;
-	
+
 	if (shiftDown && (mHilitePos == -1))
 		mHilitePos = mCursorPos;
-	
+
 	std::string anOldString = mString;
 	int anOldCursorPos = mCursorPos;
 	int anOldHilitePos = mHilitePos;
@@ -354,22 +354,22 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 	else if (theChar == 26)
 	{
 		// Undo
-		
+
 		mLastModifyIdx = -1;
-		
+
 		std::string aSwapString = mString;
 		int aSwapCursorPos = mCursorPos;
-		int aSwapHilitePos = mHilitePos;			
-		
+		int aSwapHilitePos = mHilitePos;
+
 		mString = mUndoString;
 		mCursorPos = mUndoCursor;
 		mHilitePos = mUndoHilitePos;
-					
+
 		mUndoString = aSwapString;
 		mUndoCursor = aSwapCursorPos;
-		mUndoHilitePos = aSwapHilitePos;			
-		
-		removeHilite = false;						
+		mUndoHilitePos = aSwapHilitePos;
+
+		removeHilite = false;
 	}
 	else if (theKey == KEYCODE_LEFT)
 	{
@@ -433,7 +433,7 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 				mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) + mString.substr(std::max(mCursorPos, mHilitePos));
 				mCursorPos = std::min(mCursorPos, mHilitePos);
 				mHilitePos = -1;
-				
+
 				bigChange = true;
 			}
 			else
@@ -462,7 +462,7 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 				mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) + mString.substr(std::max(mCursorPos, mHilitePos));
 				mCursorPos = std::min(mCursorPos, mHilitePos);
 				mHilitePos = -1;
-				
+
 				bigChange = true;
 			}
 			else
@@ -477,19 +477,19 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 					mLastModifyIdx = mCursorPos;
 				}
 			}
-		}	
+		}
 	}
 	else if (theKey == KEYCODE_HOME)
 	{
-		mCursorPos = 0;	
+		mCursorPos = 0;
 	}
 	else if (theKey == KEYCODE_END)
 	{
-		mCursorPos = mString.length();	
+		mCursorPos = mString.length();
 	}
 	else if (theKey == KEYCODE_RETURN)
 	{
-		mEditListener->EditWidgetText(mId, mString);		
+		mEditListener->EditWidgetText(mId, mString);
 	}
 	else
 	{
@@ -507,31 +507,31 @@ void EditWidget::ProcessKey(KeyCode theKey, char theChar)
 		else
 			removeHilite = false;
 	}
-	
+
 	EnforceMaxChars();
 
 	EnforceMaxPixels();
 
 	mCursorPos = std::clamp(mCursorPos, 0, (int) mString.length());
-	
+
 	if (anOldCursorPos != mCursorPos)
 	{
 		mBlinkAcc = 0;
 		mShowingCursor = true;
 	}
-	
+
 	FocusCursor(true);
-	
+
 	if (removeHilite || mHilitePos==mCursorPos)
 		mHilitePos = -1;
-	
+
 	if (bigChange)
 	{
 		mUndoString = anOldString;
 		mUndoCursor = anOldCursorPos;
 		mUndoHilitePos = anOldHilitePos;
 	}
-	
+
 	MarkDirty();
 }
 
@@ -703,15 +703,15 @@ void EditWidget::MouseDown(int x, int y, int theBtnNum, int theClickCount)
 
 	mHilitePos = -1;
 	mCursorPos = GetCharAt(x, y);
-	
+
 	if (theClickCount > 1)
 	{
 		mHadDoubleClick = true;
 		HiliteWord();
 	}
-	
+
 	MarkDirty();
-	
+
 	FocusCursor(false);
 }
 
@@ -720,11 +720,11 @@ void EditWidget::MouseUp(int x, int y, int theBtnNum, int theClickCount)
 	Widget::MouseUp(x,y,theBtnNum,theClickCount);
 	if (mHilitePos==mCursorPos)
 		mHilitePos = -1;
-	
+
 	if (mHadDoubleClick)
-	{		
+	{
 		mHilitePos = -1;
-		mCursorPos = GetCharAt(x, y);		
+		mCursorPos = GetCharAt(x, y);
 
 		mHadDoubleClick = false;
 		HiliteWord();
@@ -765,10 +765,10 @@ void EditWidget::MouseDrag(int x, int y)
 
 	if (mHilitePos == -1)
 		mHilitePos = mCursorPos;
-	
+
 	mCursorPos = GetCharAt(x, y);
 	MarkDirty();
-	
+
 	FocusCursor(false);
 }
 
@@ -780,7 +780,7 @@ void EditWidget::MouseEnter()
 }
 
 void EditWidget::MouseLeave()
-{	
+{
 	Widget::MouseLeave();
 
 	mWidgetManager->mApp->SetCursor(CURSOR_POINTER);

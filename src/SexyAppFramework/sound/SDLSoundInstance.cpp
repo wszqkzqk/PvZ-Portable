@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -108,11 +108,11 @@ void SDLSoundInstance::PitchHandlerFuncCallback(int mix_channel, void* stream, i
 	if(handler->position < handler->duration || handler->loop)
 	{
 		const float delta = 1000.0 / pThis->mSoundManagerP->mMixerFreq,  // normal duration of each sample
-			    vdelta = delta * speed_factor;  // virtual stretched duration, scaled by 'speedFactor'
-		
+				vdelta = delta * speed_factor;  // virtual stretched duration, scaled by 'speedFactor'
+
 		// if playback is unaltered and pitch is required (for the first time)
 		if(!handler->altered && speed_factor != 1.0f)
-		    handler->altered = 1;  // flags playback modification and proceed to the pitch routine
+			handler->altered = 1;  // flags playback modification and proceed to the pitch routine
 
 		if(handler->altered)  // if unaltered, this pitch routine is skipped
 		{
@@ -133,8 +133,8 @@ void SDLSoundInstance::PitchHandlerFuncCallback(int mix_channel, void* stream, i
 						int16_t v0 = chunk_data[(  k   * pThis->mSoundManagerP->mMixerChannels + c) % handler->chunk_size],
 								  // v_ = chunk_data[((k-1) * mSoundManagerP->mMixerChannels + c) % handler->chunk_size],
 								  // v2 = chunk_data[((k+2) * mSoundManagerP->mMixerChannels + c) % handler->chunk_size],
-						                  v1 = chunk_data[((k+1) * pThis->mSoundManagerP->mMixerChannels + c) % handler->chunk_size];
-					
+										  v1 = chunk_data[((k+1) * pThis->mSoundManagerP->mMixerChannels + c) % handler->chunk_size];
+
 						// put interpolated value on 'data'
 						// buffer[i + c] = (1 - prop) * v0 + prop * v1;  // linear interpolation
 						buffer[i + c] = v0 + prop * (v1 - v0);  // linear interpolation (single-multiplication version)
@@ -207,8 +207,8 @@ bool SDLSoundInstance::Play(bool looping, bool autoRelease)
 {
 	Stop();
 
-	mHasPlayed = true;	
-	mAutoRelease = autoRelease;	
+	mHasPlayed = true;
+	mAutoRelease = autoRelease;
 
 	if (gSexyAppBase->IsInDemoMode()) // demo sessions: derive playing state from game ticks, not the audio clock
 	{
@@ -271,5 +271,5 @@ bool SDLSoundInstance::IsReleased()
 
 double SDLSoundInstance::GetVolume()
 {
-	return mVolume; 
+	return mVolume;
 }

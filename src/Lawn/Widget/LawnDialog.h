@@ -43,17 +43,17 @@ using namespace Sexy;
 class ReanimationWidget : public Widget
 {
 public:
-    LawnApp*				mApp;
-    Reanimation*			mReanim;
-    LawnDialog*				mLawnDialog;
-    float					mPosX;
-    float					mPosY;
+	LawnApp*				mApp;
+	Reanimation*			mReanim;
+	LawnDialog*				mLawnDialog;
+	float					mPosX;
+	float					mPosY;
 
 public:
 	ReanimationWidget();
 	~ReanimationWidget() override;
 
-	/*inline*/ void			Dispose();
+	void			Dispose();
 	void					Draw(Graphics*) override;
 	void					Update() override;
 	void					AddReanimation(float x, float y, ReanimationType theReanimationType);

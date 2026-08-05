@@ -48,7 +48,7 @@ using namespace Sexy;
 
 struct PvzpWeightedArray
 {
-    intptr_t mItem;
+	intptr_t mItem;
 	int32_t mWeight;
 };
 
@@ -94,17 +94,17 @@ public:
 	bool				PvzpLoadResources(const std::string& theGroup);
 };
 
-/*inline*/ bool			PvzpLoadResources(const std::string& theGroup);
-/*inline*/ bool			PvzpLoadNextResource();
+bool			PvzpLoadResources(const std::string& theGroup);
+bool			PvzpLoadNextResource();
 void					PvzpAddImageToMap(SharedImageRef* theImage, const std::string& thePath);
 bool					PvzpFindImagePath(Image* theImage, std::string* thePath);
 bool					PvzpFindFontPath(_Font* theFont, std::string* thePath);
 
-/*inline*/ float		PvzpCurveQuad(float theTime);
-/*inline*/ float		PvzpCurveInvQuad(float theTime);
-/*inline*/ float		PvzpCurveS(float theTime);
-/*inline*/ float		PvzpCurveInvQuadS(float theTime);
-/*inline*/ float		PvzpCurveBounce(float theTime);
+float		PvzpCurveQuad(float theTime);
+float		PvzpCurveInvQuad(float theTime);
+float		PvzpCurveS(float theTime);
+float		PvzpCurveInvQuadS(float theTime);
+float		PvzpCurveBounce(float theTime);
 float					PvzpCurveQuadS(float theTime);
 float					PvzpCurveCubic(float theTime);
 float					PvzpCurveInvCubic(float theTime);
@@ -120,10 +120,10 @@ float					PvzpAnimateCurveFloatTime(float theTimeStart, float theTimeEnd, float 
 float					PvzpAnimateCurveFloat(int theTimeStart, int theTimeEnd, int theTimeAge, float thePositionStart, float thePositionEnd, PvzpCurves theCurve);
 int						PvzpAnimateCurve(int theTimeStart, int theTimeEnd, int theTimeAge, int thePositionStart, int thePositionEnd, PvzpCurves theCurve);
 
-/*inline*/ void			PvzpScaleTransformMatrix(SexyMatrix3& m, float x, float y, float theScaleX, float theScaleY);
+void			PvzpScaleTransformMatrix(SexyMatrix3& m, float x, float y, float theScaleX, float theScaleY);
 void					PvzpScaleRotateTransformMatrix(SexyMatrix3& m, float x, float y, float rad, float theScaleX, float theScaleY);
 void					SexyMatrix3ExtractScale(const SexyMatrix3& m, float& theScaleX, float& theScaleY);
-/*inline*/ void			SexyMatrix3Translation(SexyMatrix3& m, float x, float y);
+void			SexyMatrix3Translation(SexyMatrix3& m, float x, float y);
 void					SexyMatrix3Transpose(const SexyMatrix3& m, SexyMatrix3& r);  // r = m ^ T
 void					SexyMatrix3Inverse(const SexyMatrix3& m, SexyMatrix3& r);  // r = m ^ -1
 void					SexyMatrix3Multiply(SexyMatrix3& m, const SexyMatrix3& l, const SexyMatrix3& r);  // m = l × r
@@ -152,15 +152,15 @@ int						PvzpVsnprintf(char* theBuffer, int theSize, const char* theFormat, va_l
 PvzpAllocator*			FindGlobalAllocator(int theSize);
 void                    FreeGlobalAllocators();
 
-/*inline*/ int			RandRangeInt(int theMin, int theMax);
-/*inline*/ float		RandRangeFloat(float theMin, float theMax);
+int			RandRangeInt(int theMin, int theMax);
+float		RandRangeFloat(float theMin, float theMax);
 inline float			Distance2D(float x1, float y1, float x2, float y2)			{ return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)); }
 inline float			FloatLerp(float theStart, float theEnd, float theFactor)	{ return theStart + theFactor * (theEnd - theStart); }
 inline int				FloatRoundToInt(float theFloatValue)						{ return theFloatValue > 0 ? theFloatValue + 0.5f : theFloatValue - 0.5f; }
 inline bool				FloatApproxEqual(float theFloatVal1, float theFloatVal2)	{ return fabs(theFloatVal1 - theFloatVal2) < FLT_EPSILON; }
 
 Color					GetFlashingColor(uint32_t theCounter, int theFlashTime);
-/*inline*/ int			ColorComponentMultiply(int theColor1, int theColor2);
+int			ColorComponentMultiply(int theColor1, int theColor2);
 Color					ColorsMultiply(const Color& theColor1, const Color& theColor2);
 Color					ColorAdd(const Color& theColor1, const Color& theColor2);
 

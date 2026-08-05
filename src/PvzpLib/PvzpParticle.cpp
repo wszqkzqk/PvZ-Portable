@@ -28,10 +28,10 @@
 #include "graphics/GLInterface.h"
 #include <algorithm>
 
-int gParticleDefCount;                      // [0x6A9F08]
-PvzpParticleDefinition* gParticleDefArray;   // [0x6A9F0C]
-int gParticleParamArraySize;				// [0x6A9F10]
-const ParticleParams* gParticleParamArray;		// [0x6A9F14]
+int gParticleDefCount;
+PvzpParticleDefinition* gParticleDefArray;
+int gParticleParamArraySize;
+const ParticleParams* gParticleParamArray;
 
 constinit const ParticleParams gLawnParticleArray[ParticleEffect::NUM_PARTICLES] = {
 	{ .mParticleEffect = ParticleEffect::PARTICLE_MELONSPLASH, .mParticleFileName = "particles/MelonImpact.xml" },
@@ -448,7 +448,7 @@ PvzpParticle* PvzpParticleEmitter::SpawnParticle(int theIndex, int theSpawnCount
 	aParticle->mVelocity.y = cos(aLaunchAngle) * aLaunchSpeed;
 	aParticle->mPosition.x += FloatTrackEvaluate(mEmitterDef->mEmitterOffsetX, mSystemTimeValue, aEmitterOffsetXInterp);
 	aParticle->mPosition.y += FloatTrackEvaluate(mEmitterDef->mEmitterOffsetY, mSystemTimeValue, aEmitterOffsetYInterp);
-	
+
 	aParticle->mAnimationTimeValue = 0.0f;
 	if (mEmitterDef->mAnimated || FloatTrackIsSet(mEmitterDef->mAnimationRate))
 		aParticle->mImageFrame = 0;  // frame computed later from the time value; init to 0 for now
@@ -775,7 +775,7 @@ void PvzpParticleEmitter::DeleteParticle(PvzpParticle* theParticle)
 		aCrossFadeParticle->mParticleEmitter->DeleteParticle(aCrossFadeParticle);  // also delete the cross-fade source particle
 		theParticle->mCrossFadeParticleID = ParticleID::PARTICLEID_NULL;
 	}
-	
+
 	ParticleID aParticleID = static_cast<ParticleID>(mParticleSystem->mParticleHolder->mParticles.DataArrayGetID(theParticle));
 	mParticleList.RemoveAt(mParticleList.Find(aParticleID));
 	mParticleSystem->mParticleHolder->mParticles.DataArrayFree(theParticle);
@@ -1008,11 +1008,11 @@ void RenderParticle(Graphics* g, PvzpParticle* theParticle, const Color& theColo
 	{
 		SexyMatrix3 aTransform;
 		PvzpScaleRotateTransformMatrix(
-			aTransform, 
-			theParams->mPosX, 
-			theParams->mPosY, 
-			theParams->mSpinPosition, 
-			theParams->mParticleScale, 
+			aTransform,
+			theParams->mPosX,
+			theParams->mPosY,
+			theParams->mSpinPosition,
+			theParams->mParticleScale,
 			theParams->mParticleStretch * theParams->mParticleScale
 		);
 		theTriangleGroup->AddTriangle(g, aImage, aTransform, g->mClipRect, theColor, aDrawMode, aSrcRect);
@@ -1030,9 +1030,9 @@ void PvzpParticleEmitter::DrawParticle(Graphics* g, PvzpParticle* theParticle, P
 	if (GetRenderParams(theParticle, &aParams))
 	{
 		Color aColor(
-			std::clamp(FloatRoundToInt(aParams.mRed), 0, 255), 
-			std::clamp(FloatRoundToInt(aParams.mGreen), 0, 255), 
-			std::clamp(FloatRoundToInt(aParams.mBlue), 0, 255), 
+			std::clamp(FloatRoundToInt(aParams.mRed), 0, 255),
+			std::clamp(FloatRoundToInt(aParams.mGreen), 0, 255),
+			std::clamp(FloatRoundToInt(aParams.mBlue), 0, 255),
 			std::clamp(FloatRoundToInt(aParams.mAlpha), 0, 255)
 		);
 		if (aColor.mAlpha > 0)
@@ -1082,7 +1082,7 @@ void PvzpParticleEmitter::SystemMove(float theX, float theY)
 	float aDeltaY = theY - mSystemCenter.y;
 	if (FloatApproxEqual(aDeltaX, 0.0f) && FloatApproxEqual(aDeltaY, 0.0f))
 		return;
-	
+
 	mSystemCenter.x = theX;
 	mSystemCenter.y = theY;
 	if (!TestBit(mEmitterDef->mParticleFlags, static_cast<int>(ParticleFlags::PARTICLE_PARTICLES_DONT_FOLLOW)))

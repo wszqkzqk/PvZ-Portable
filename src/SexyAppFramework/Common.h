@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -176,12 +176,12 @@ void				SMemWStr(void*& _Dst, std::string_view theString);
 
 inline void			inlineLTrim(std::string &theData, std::string_view theChars = " \t\r\n")
 {
-    theData.erase(0, theData.find_first_not_of(theChars));
+	theData.erase(0, theData.find_first_not_of(theChars));
 }
 
 inline void			inlineRTrim(std::string &theData, std::string_view theChars = " \t\r\n")
 {
-    theData.resize(theData.find_last_not_of(theChars) + 1);
+	theData.resize(theData.find_last_not_of(theChars) + 1);
 }
 
 inline void			inlineTrim(std::string &theData, std::string_view theChars = " \t\r\n")

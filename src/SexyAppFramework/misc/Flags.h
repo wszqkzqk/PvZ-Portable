@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -42,12 +42,12 @@ public:
 	}
 };
 
-inline void ModFlags(int& theFlags, const FlagsMod& theFlagMod) 
+inline void ModFlags(int& theFlags, const FlagsMod& theFlagMod)
 {
 	theFlags = (theFlags | theFlagMod.mAddFlags) & ~theFlagMod.mRemoveFlags;
 }
 
-inline int GetModFlags(int theFlags, const FlagsMod& theFlagMod) 
+inline int GetModFlags(int theFlags, const FlagsMod& theFlagMod)
 {
 	return (theFlags | theFlagMod.mAddFlags) & ~theFlagMod.mRemoveFlags;
 }
@@ -57,7 +57,7 @@ class ModalFlags
 public:
 	int						mOverFlags;
 	int						mUnderFlags;
-	bool					mIsOver;	
+	bool					mIsOver;
 
 public:
 	void					ModFlags(const FlagsMod& theFlagsMod)
@@ -82,16 +82,16 @@ public:
 public:
 	AutoModalFlags(ModalFlags* theModalFlags, const FlagsMod& theFlagMod)
 	{
-		mModalFlags = theModalFlags;		
+		mModalFlags = theModalFlags;
 		mOldOverFlags = theModalFlags->mOverFlags;
 		mOldUnderFlags = theModalFlags->mUnderFlags;
-		theModalFlags->ModFlags(theFlagMod);		
+		theModalFlags->ModFlags(theFlagMod);
 	}
 
 	~AutoModalFlags()
-	{		
+	{
 		mModalFlags->mOverFlags = mOldOverFlags;
-		mModalFlags->mUnderFlags = mOldUnderFlags;	
+		mModalFlags->mUnderFlags = mOldUnderFlags;
 	}
 };
 

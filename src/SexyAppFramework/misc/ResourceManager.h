@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -85,7 +85,7 @@ public: // TODO: revert to protected
 		bool mPurgeBits;
 		bool mMinimizeSubdivisions;
 		int mRows;
-		int mCols;	
+		int mCols;
 		uint32_t mAlphaColor;
 		AnimInfo mAnimInfo;
 
@@ -207,7 +207,7 @@ public:
 	SharedImageRef			GetImage(const std::string &theId);
 	intptr_t					GetSound(const std::string &theId);
 	_Font*					GetFont(const std::string &theId);
-	
+
 	// Returns all the XML attributes associated with the image
 	const XMLParamMap&		GetImageAttributes(const std::string &theId);
 

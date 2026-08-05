@@ -31,12 +31,12 @@ class GameButton;
 
 class AchievementScreenItem {
 public:
-	int mId; //+GOTY @Patoke: 0x00
-	int mStartAnimTime; //+GOTY @Patoke: 0x04
-	int mEndAnimTime; //+GOTY @Patoke: 0x08
-	int mDestY; //+GOTY @Patoke: 0x0C
-	int mStartY; //+GOTY @Patoke: 0x10
-	int mY; //+GOTY @Patoke: 0x14
+	int mId; //+0x00
+	int mStartAnimTime; //+0x04
+	int mEndAnimTime; //+0x08
+	int mDestY; //+0x0C
+	int mStartY; //+0x10
+	int mY; //+0x14
 };
 
 class AwardScreen : public Widget
@@ -53,19 +53,19 @@ public:
 	GameButton*							mMenuButton;
 	LawnApp*							mApp;
 	int									mFadeInCounter;
-	AwardType							mAwardType;				//+GOTY @Patoke: 0xB8
-	GameButton*							mContinueButton;		//+GOTY @Patoke: 0xA8
-	bool								mShowStartButtonAfterAchievements;	//+GOTY @Patoke: 0xAC
-	bool								mShowMenuButtonAfterAchievements;	//+GOTY @Patoke: 0xAD
-	int									mAchievementAnimTime;	//+GOTY @Patoke: 0xBC
-	bool								mShowingAchievements;	//+GOTY @Patoke: 0xD8
-	std::vector<AchievementScreenItem>	mAchievementItems;		//+GOTY @Patoke: 0xC0
+	AwardType							mAwardType;				//+0xB8
+	GameButton*							mContinueButton;		//+0xA8
+	bool								mShowStartButtonAfterAchievements;	//+0xAC
+	bool								mShowMenuButtonAfterAchievements;	//+0xAD
+	int									mAchievementAnimTime;	//+0xBC
+	bool								mShowingAchievements;	//+0xD8
+	std::vector<AchievementScreenItem>	mAchievementItems;		//+0xC0
 
 public:
 	AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowingAchievements = false);
 	~AwardScreen() override;
 
-	/*inline*/ bool		IsPaperNote();
+	bool		IsPaperNote();
 	void				Resize(int theX, int theY, int theWidth, int theHeight) override { Widget::Resize(theX, theY, theWidth, theHeight); }
 	static void			DrawBottom(Graphics* g, std::string_view theTitle, std::string_view theAward, std::string_view theMessage);
 	void				DrawAwardSeed(Graphics* g);

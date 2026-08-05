@@ -3,7 +3,7 @@
 	double aSin = sin(theRot);
 
 	int aCosLong = (int) (aCos * 0x10000);
-	int aSinLong = (int) (aSin * 0x10000);	
+	int aSinLong = (int) (aSin * 0x10000);
 
 /* unused
 #ifdef OPTIMIZE_SOFTWARE_DRAWING
@@ -12,7 +12,7 @@
 #endif
 */
 
-	uint32_t* aDestPixelsRow = GetBits() + ((int)aDestRect.mY * mWidth) + (int)aDestRect.mX;		
+	uint32_t* aDestPixelsRow = GetBits() + ((int)aDestRect.mY * mWidth) + (int)aDestRect.mX;
 	int aDestPixelsPitch = mWidth;
 
 	if (theColor == Color::White)
@@ -33,19 +33,19 @@
 				*aDestPixels++ = (dest & 0xFF000000) | (r<<16) | (g<<8) | b; \
 			} \
 		}
-		
-		#include "BltRotatedHelper.inc"		
-		
+
+		#include "BltRotatedHelper.inc"
+
 		#undef WRITE_PIXEL
-		#undef DEST_PIXEL_TYPE		
+		#undef DEST_PIXEL_TYPE
 	}
-	else	
+	else
 	{
 		int ca = theColor.mAlpha;
 		int cr = (theColor.mRed * ca) / 255;
 		int cg = (theColor.mGreen * ca) / 255;
 		int cb = (theColor.mBlue * ca) / 255;
-		
+
 		#define DEST_PIXEL_TYPE uint32_t
 		#define WRITE_PIXEL\
 		{\
@@ -64,10 +64,10 @@
 				*aDestPixels++ = (dest & 0xFF000000) | (r<<16) | (g<<8) | b; \
 			}\
 		}
-		
-		#include "BltRotatedHelper.inc"		
-		
+
+		#include "BltRotatedHelper.inc"
+
 		#undef WRITE_PIXEL
-		#undef DEST_PIXEL_TYPE		
+		#undef DEST_PIXEL_TYPE
 	}
 }

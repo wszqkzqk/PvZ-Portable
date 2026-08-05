@@ -21,7 +21,7 @@
 
 // This file is included by EffectSystem.cpp and should not be built directly by the project.
 
-#if (TRI0==0) 
+#if (TRI0==0)
 #define PTYPE uint32_t
 #define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel8888.inc"
 #define NAME0 8888
@@ -154,7 +154,7 @@ void	funcname(SWHelper::SWVertex* pVerts, void* pFrameBuffer, const unsigned int
 	(void)ldr;(void)ldg;(void)ldb;(void)lda; // unused
 	ldx = static_cast<int>(((v2->x - v0->x) * oneOverHeight) >> 32);
 
-#if defined(MOD_ARGB)		
+#if defined(MOD_ARGB)
 	lda = static_cast<int>(((v2->a - v0->a) * oneOverHeight) >> 32);
 	ldr = static_cast<int>(((v2->r - v0->r) * oneOverHeight) >> 32);
 	ldg = static_cast<int>(((v2->g - v0->g) * oneOverHeight) >> 32);
@@ -197,7 +197,7 @@ void	funcname(SWHelper::SWVertex* pVerts, void* pFrameBuffer, const unsigned int
 	SWHelper::signed64	oneOverWidth;
 	int		dr, dg, db, da, du, dv;
 	(void)dr;(void)dg;(void)db;(void)da; // unused
-#if defined(TEXTURED) || defined(MOD_ARGB)	
+#if defined(TEXTURED) || defined(MOD_ARGB)
 	oneOverWidth = bigOne / (v1->x - mid);
 #endif
 

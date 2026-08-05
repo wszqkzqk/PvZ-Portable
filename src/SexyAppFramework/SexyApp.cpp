@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -56,7 +56,7 @@ SexyApp::SexyApp()
 	gSexyApp = this;
 
 	mDemoPrefix = "pvzp";
-	mDemoFileName = mDemoPrefix + ".dmo";	
+	mDemoFileName = mDemoPrefix + ".dmo";
 	mCompanyName = "Community";
 
 	mBuildNum = 0;
@@ -81,8 +81,8 @@ void SexyApp::HandleCmdLineParam(std::string_view theParamName, std::string_view
 	if (theParamName == "-version")
 	{
 		// Just print version info and then quit
-		
-		std::string aVersionString = 
+
+		std::string aVersionString =
 			"Product: " + mProdName + "\n" +
 			"Version: " + mProductVersion + "\n" +
 			"Build Num: " + StrFormat("%d", mBuildNum) + "\n" +
@@ -103,7 +103,7 @@ void SexyApp::HandleCmdLineParam(std::string_view theParamName, std::string_view
 
 std::string SexyApp::GetGameSEHInfo()
 {
-	std::string anInfoString = SexyAppBase::GetGameSEHInfo() + 
+	std::string anInfoString = SexyAppBase::GetGameSEHInfo() +
 		"Build Num: " + StrFormat("%d", mBuildNum) + "\r\n" +
 		"Commit Date: " + mCommitDate + "\r\n";
 
@@ -122,7 +122,7 @@ void SexyApp::InitPropertiesHook()
 
 	mProdName = GetString("ProdName", mProdName);
 #if !defined(__IPHONEOS__) && (!defined(__ANDROID__) || defined(__TERMUX__)) && !defined(__SWITCH__) && !defined(__EMSCRIPTEN__)
-	mIsWindowed = GetBoolean("DefaultWindowed", mIsWindowed);	
+	mIsWindowed = GetBoolean("DefaultWindowed", mIsWindowed);
 #endif
 
 	std::string aNewTitle = GetString("Title", "");

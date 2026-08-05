@@ -36,17 +36,17 @@ class GameObject
 public:
 	LawnApp*                        mApp;
 	Board*                          mBoard;
-    int32_t                         mX;
-    int32_t                         mY;
-    int32_t                         mWidth;
-    int32_t                         mHeight;
-    bool                            mVisible;
-    int32_t                         mRow;
-    int32_t                         mRenderOrder;
+	int32_t                         mX;
+	int32_t                         mY;
+	int32_t                         mWidth;
+	int32_t                         mHeight;
+	bool                            mVisible;
+	int32_t                         mRow;
+	int32_t                         mRenderOrder;
 
 public:
-    /*inline*/                      GameObject();
-    /*inline*/ bool                 BeginDraw(Graphics* g);
-    /*inline*/ void                 EndDraw(Graphics* g);
-    /*inline*/ void                 MakeParentGraphicsFrame(Graphics* g);
+	GameObject();
+	bool                 BeginDraw(Graphics* g);
+	void                 EndDraw(Graphics* g);
+	void                 MakeParentGraphicsFrame(Graphics* g);
 };

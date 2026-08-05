@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -40,7 +40,7 @@ std::string Sexy::DIALOG_NO_STRING				= "NO";
 std::string Sexy::DIALOG_OK_STRING				= "OK";
 std::string Sexy::DIALOG_CANCEL_STRING			= "CANCEL";
 
-static int gDialogColors[][3] = 
+static int gDialogColors[][3] =
 {{255, 255, 255},
 {255, 255, 0},
 {255, 255, 255},
@@ -71,7 +71,7 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 	if ((mButtonMode == BUTTONS_YES_NO) || (mButtonMode == BUTTONS_OK_CANCEL))
 	{
 		mYesButton = new DialogButton(theButtonComponentImage, ID_YES, this);
-		mNoButton = new DialogButton(theButtonComponentImage, ID_NO, this);						
+		mNoButton = new DialogButton(theButtonComponentImage, ID_NO, this);
 
 		if (mButtonMode == BUTTONS_YES_NO)
 		{
@@ -86,9 +86,9 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 	}
 	else if (mButtonMode == BUTTONS_FOOTER)
 	{
-		mYesButton = new DialogButton(theButtonComponentImage, ID_FOOTER, this);		
+		mYesButton = new DialogButton(theButtonComponentImage, ID_FOOTER, this);
 		mYesButton->mLabel = mDialogFooter;
-		mNoButton = nullptr;		
+		mNoButton = nullptr;
 	}
 	else
 	{
@@ -101,13 +101,13 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 
 	mButtonHeight = (theButtonComponentImage == nullptr) ? 24 : theButtonComponentImage->mHeight;
 
-	mHasTransparencies = true;	
+	mHasTransparencies = true;
 	mHasAlpha = true;
 
-	mHeaderFont = nullptr; 
-	mLinesFont = nullptr; 
+	mHeaderFont = nullptr;
+	mLinesFont = nullptr;
 
-	mDragging = false;	
+	mDragging = false;
 	mPriority = 1;
 
 	if (theButtonComponentImage == nullptr)
@@ -121,7 +121,7 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 	}
 
 	SetColors(gDialogColors, NUM_COLORS);
-}	
+}
 
 
 Dialog::~Dialog()
@@ -136,7 +136,7 @@ Dialog::~Dialog()
 void Dialog::SetColor(int theIdx, const Color& theColor)
 {
 	Widget::SetColor(theIdx, theColor);
-	
+
 	if (theIdx == COLOR_BUTTON_TEXT)
 	{
 		if (mYesButton != nullptr)
@@ -150,7 +150,7 @@ void Dialog::SetColor(int theIdx, const Color& theColor)
 			mYesButton->SetColor(DialogButton::COLOR_LABEL_HILITE, theColor);
 		if (mNoButton != nullptr)
 			mNoButton->SetColor(DialogButton::COLOR_LABEL_HILITE, theColor);
-	}	
+	}
 }
 
 void Dialog::SetButtonFont(_Font* theFont)
@@ -194,13 +194,13 @@ int	Dialog::GetPreferredHeight(int theWidth)
 		aHeight += mHeaderFont->GetHeight() - mHeaderFont->GetAscentPadding();
 		needSpace = true;
 	}
-	
+
 	if (mDialogLines.length() > 0)
 	{
 		if (needSpace)
 			aHeight += mSpaceAfterHeader;
 		Graphics g;
-		g.SetFont(mLinesFont);	
+		g.SetFont(mLinesFont);
 		aHeight += GetWordWrappedHeight(&g, theWidth-mContentInsets.mLeft-mContentInsets.mRight-mBackgroundInsets.mLeft-mBackgroundInsets.mRight-4, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset);
 		needSpace = true;
 	}
@@ -217,8 +217,8 @@ int	Dialog::GetPreferredHeight(int theWidth)
 	{
 		if (needSpace)
 			aHeight += 8;
-		aHeight += mButtonHeight + 8;		
-	}	
+		aHeight += mButtonHeight + 8;
+	}
 
 	return aHeight;
 }
@@ -238,7 +238,7 @@ void Dialog::Draw(Graphics* g)
 		g->DrawRect(12, 12, mWidth - 12*2 - 1, mHeight - 12*2 - 1);
 		g->SetColor(GetColor(COLOR_BKG, Color(gDialogColors[COLOR_BKG])));
 		g->FillRect(12+1, 12+1, mWidth - 12*2 - 2, mHeight - 12*2 - 2);
-		
+
 		g->SetColor(Color(0, 0, 0, 128));
 		g->FillRect(mWidth - 12, 12*2, 12, mHeight - 12*3);
 		g->FillRect(12*2, mHeight-12, mWidth - 12*2, 12);
@@ -249,10 +249,10 @@ void Dialog::Draw(Graphics* g)
 	if (mDialogHeader.length() > 0)
 	{
 		aCurY += mHeaderFont->GetAscent() - mHeaderFont->GetAscentPadding();
-		
+
 		g->SetFont(mHeaderFont);
 		g->SetColor(mColors[COLOR_HEADER]);
-		WriteCenteredLine(g, aCurY, mDialogHeader);		
+		WriteCenteredLine(g, aCurY, mDialogHeader);
 
 		aCurY += mHeaderFont->GetHeight() - mHeaderFont->GetAscent();
 
@@ -263,17 +263,17 @@ void Dialog::Draw(Graphics* g)
 	g->SetColor(mColors[COLOR_LINES]);
 
 	Rect aRect(mBackgroundInsets.mLeft+mContentInsets.mLeft+2, aCurY, mWidth-mContentInsets.mLeft-mContentInsets.mRight-mBackgroundInsets.mLeft-mBackgroundInsets.mRight-4, 0);
-	aCurY += WriteWordWrapped(g, aRect, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset, mTextAlign);	
+	aCurY += WriteWordWrapped(g, aRect, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset, mTextAlign);
 
 	if ((mDialogFooter.length() != 0) && (mButtonMode != BUTTONS_FOOTER))
-	{		
+	{
 		aCurY += 8;
 		aCurY += mHeaderFont->GetLineSpacing();
-		
+
 		g->SetFont(mHeaderFont);
 		g->SetColor(mColors[COLOR_FOOTER]);
-		WriteCenteredLine(g, aCurY, mDialogFooter);				
-	}	
+		WriteCenteredLine(g, aCurY, mDialogFooter);
+	}
 }
 
 void Dialog::AddedToManager(WidgetManager* theWidgetManager)
@@ -307,7 +307,7 @@ void Dialog::OrderInManagerChanged()
 
 void Dialog::Resize(int theX, int theY, int theWidth, int theHeight)
 {
-	Widget::Resize(theX, theY, theWidth, theHeight);	
+	Widget::Resize(theX, theY, theWidth, theHeight);
 
 	if ((mYesButton != nullptr) && (mNoButton != nullptr))
 	{
@@ -321,8 +321,8 @@ void Dialog::Resize(int theX, int theY, int theWidth, int theHeight)
 	{
 		int aBtnHeight = mButtonHeight;
 
-		mYesButton->Resize(mX + mContentInsets.mLeft + mBackgroundInsets.mLeft, mY + mHeight - mContentInsets.mBottom - mBackgroundInsets.mBottom - aBtnHeight, 
-			mWidth - mContentInsets.mLeft - mContentInsets.mRight - mBackgroundInsets.mLeft - mBackgroundInsets.mRight, aBtnHeight);	
+		mYesButton->Resize(mX + mContentInsets.mLeft + mBackgroundInsets.mLeft, mY + mHeight - mContentInsets.mBottom - mBackgroundInsets.mBottom - aBtnHeight,
+			mWidth - mContentInsets.mLeft - mContentInsets.mRight - mBackgroundInsets.mLeft - mBackgroundInsets.mRight, aBtnHeight);
 	}
 }
 
@@ -343,7 +343,7 @@ void Dialog::MouseDrag(int x, int y)
 	if (mDragging)
 	{
 		int aNewX = mX + x - mDragMouseX;
-		int aNewY = mY + y - mDragMouseY;	
+		int aNewY = mY + y - mDragMouseY;
 
 		if (aNewX < -8)
 			aNewX = -8;
@@ -376,7 +376,7 @@ void Dialog::MouseUp(int x, int y, int theBtnNum, int theClickCount)
 {
 	if (mDragging)
 	{
-		mWidgetManager->mApp->SetCursor(CURSOR_POINTER);		
+		mWidgetManager->mApp->SetCursor(CURSOR_POINTER);
 		mDragging = false;
 	}
 	Widget::MouseUp(x,y, theBtnNum, theClickCount);
@@ -395,7 +395,7 @@ bool Dialog::IsModal()
 }
 
 int Dialog::WaitForResult(bool autoKill)
-{	
+{
 #ifdef __EMSCRIPTEN__
 	const auto isWaitingForResult = [this]() {
 		return mWidgetManager != nullptr && mResult == 0x7FFFFFFF;
@@ -438,7 +438,7 @@ void Dialog::ButtonDepress(int theId)
 {
 	if ((theId == ID_YES) || (theId == ID_NO))
 	{
-		mResult = theId;		
+		mResult = theId;
 		mDialogListener->DialogButtonDepress(mId, theId);
 	}
 }

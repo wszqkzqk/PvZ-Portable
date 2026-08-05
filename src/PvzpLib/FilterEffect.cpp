@@ -165,7 +165,7 @@ MemoryImage* FilterEffectCreateImage(Image* theImage, FilterEffect theFilterEffe
 	Graphics aMemoryGraphics(aImage);
 	aMemoryGraphics.DrawImage(theImage, 0, 0);
 	FixPixelsOnAlphaEdgeForBlending(aImage);
-	
+
 	switch (theFilterEffect)
 	{
 	case FilterEffect::FILTER_EFFECT_WASHED_OUT:		FilterEffectDoWashedOut(aImage);		break;

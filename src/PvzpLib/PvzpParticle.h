@@ -41,35 +41,35 @@ using namespace Sexy;
 
 enum ParticleFlags : int32_t
 {
-    PARTICLE_RANDOM_LAUNCH_SPIN,        // random initial spin in [0, 2π] at launch
-    PARTICLE_ALIGN_LAUNCH_SPIN,         // initial spin aligns with the launch direction (lower priority than random launch spin)
-    PARTICLE_ALIGN_TO_PIXELS,           // render position rounded to integer pixels
-    PARTICLE_SYSTEM_LOOPS,              // emitter restarts its cycle when its lifetime ends
-    PARTICLE_PARTICLE_LOOPS,            // particle restarts its cycle when its lifetime ends
-    PARTICLE_PARTICLES_DONT_FOLLOW,     // launched particles don't move with the emitter
-    PARTICLE_RANDOM_START_TIME,         // particle starts at a random age within its duration
-    PARTICLE_DIE_IF_OVERLOADED,         // the particle system fails to be created when overloaded
-    PARTICLE_ADDITIVE,                  // always rendered in additive mode
-    PARTICLE_FULLSCREEN,                // rendered as a screen-filling rect
-    PARTICLE_SOFTWARE_ONLY,             // rendered only without 3D acceleration
-    PARTICLE_HARDWARE_ONLY              // rendered only with 3D acceleration
+	PARTICLE_RANDOM_LAUNCH_SPIN,        // random initial spin in [0, 2π] at launch
+	PARTICLE_ALIGN_LAUNCH_SPIN,         // initial spin aligns with the launch direction (lower priority than random launch spin)
+	PARTICLE_ALIGN_TO_PIXELS,           // render position rounded to integer pixels
+	PARTICLE_SYSTEM_LOOPS,              // emitter restarts its cycle when its lifetime ends
+	PARTICLE_PARTICLE_LOOPS,            // particle restarts its cycle when its lifetime ends
+	PARTICLE_PARTICLES_DONT_FOLLOW,     // launched particles don't move with the emitter
+	PARTICLE_RANDOM_START_TIME,         // particle starts at a random age within its duration
+	PARTICLE_DIE_IF_OVERLOADED,         // the particle system fails to be created when overloaded
+	PARTICLE_ADDITIVE,                  // always rendered in additive mode
+	PARTICLE_FULLSCREEN,                // rendered as a screen-filling rect
+	PARTICLE_SOFTWARE_ONLY,             // rendered only without 3D acceleration
+	PARTICLE_HARDWARE_ONLY              // rendered only with 3D acceleration
 };
 
 enum ParticleFieldType : int32_t
 {
-    FIELD_INVALID,
-    FIELD_FRICTION,                     // friction: velocity decays proportionally
-    FIELD_ACCELERATION,                 // acceleration: velocity increases by a fixed acceleration
-    FIELD_ATTRACTOR,                    // attractor: acceleration depends on the distance to the emitter
-    FIELD_MAX_VELOCITY,                 // velocity magnitude clamped to a limit
-    FIELD_VELOCITY,                     // constant drift velocity
-    FIELD_POSITION,                     // position pinned to a given value
-    FIELD_SYSTEM_POSITION,              // emitter only: emitter position pinned to a given value
-    FIELD_GROUND_CONSTRAINT,            // vertical position can't go below the ground; bounces on contact
-    FIELD_SHAKE,                        // shake: random -1.0..+1.0 position offset each frame
-    FIELD_CIRCLE,                       // circle: orbits the emitter center (a spiral in practice due to error)
-    FIELD_AWAY,                         // away: moves radially away from the emitter center
-    PARTICLE_FIELD_COUNT
+	FIELD_INVALID,
+	FIELD_FRICTION,                     // friction: velocity decays proportionally
+	FIELD_ACCELERATION,                 // acceleration: velocity increases by a fixed acceleration
+	FIELD_ATTRACTOR,                    // attractor: acceleration depends on the distance to the emitter
+	FIELD_MAX_VELOCITY,                 // velocity magnitude clamped to a limit
+	FIELD_VELOCITY,                     // constant drift velocity
+	FIELD_POSITION,                     // position pinned to a given value
+	FIELD_SYSTEM_POSITION,              // emitter only: emitter position pinned to a given value
+	FIELD_GROUND_CONSTRAINT,            // vertical position can't go below the ground; bounces on contact
+	FIELD_SHAKE,                        // shake: random -1.0..+1.0 position offset each frame
+	FIELD_CIRCLE,                       // circle: orbits the emitter center (a spiral in practice due to error)
+	FIELD_AWAY,                         // away: moves radially away from the emitter center
+	PARTICLE_FIELD_COUNT
 };  // see PvzpParticleEmitter::UpdateParticleField() (UpdateSystemField() for FIELD_SYSTEM_POSITION)
 
 // Correspondence between the definition types and the XML format:
@@ -84,28 +84,28 @@ enum ParticleFieldType : int32_t
 class FloatParameterTrackNode
 {
 public:
-    float                       mTime;                          // start time of the stage
-    float                       mLowValue;                      // minimum value allowed in the stage
-    float                       mHighValue;                     // maximum value allowed in the stage
-    PvzpCurves                   mCurveType;                     // easing curve of the transition to the next stage
-    PvzpCurves                   mDistribution;                  // probability distribution between min and max in the stage
+	float                       mTime;                          // start time of the stage
+	float                       mLowValue;                      // minimum value allowed in the stage
+	float                       mHighValue;                     // maximum value allowed in the stage
+	PvzpCurves                   mCurveType;                     // easing curve of the transition to the next stage
+	PvzpCurves                   mDistribution;                  // probability distribution between min and max in the stage
 };
 
 // Each track describes how one emitter attribute varies over time and its allowed range
 class FloatParameterTrack
 {
 public:
-    FloatParameterTrackNode*    mNodes;
-    int32_t                     mCountNodes;
+	FloatParameterTrackNode*    mNodes;
+	int32_t                     mCountNodes;
 };
 
 // Physical environment for particle motion; up to 4 fields can be stacked
 class ParticleField
 {
 public:
-    ParticleFieldType           mFieldType;                     // field type, determines how the field affects particle motion
-    FloatParameterTrack         mX;                             // field effect along the X axis
-    FloatParameterTrack         mY;                             // field effect along the Y axis
+	ParticleFieldType           mFieldType;                     // field type, determines how the field affects particle motion
+	FloatParameterTrack         mX;                             // field effect along the X axis
+	FloatParameterTrack         mY;                             // field effect along the Y axis
 };
 
 struct EmitterFieldArray
@@ -119,77 +119,77 @@ public:
 class PvzpEmitterDefinition
 {
 public:
-    Image*                      mImage;
-    int32_t                     mImageCol;
-    int32_t                     mImageRow;
-    int32_t                     mImageFrames;
-    int32_t                     mAnimated;
-    int32_t                     mParticleFlags;
-    EmitterType                 mEmitterType;
-    const char*                 mName;
-    const char*                 mOnDuration;
-    FloatParameterTrack         mSystemDuration;
-    FloatParameterTrack         mCrossFadeDuration;
-    FloatParameterTrack         mSpawnRate;
-    FloatParameterTrack         mSpawnMinActive;
-    FloatParameterTrack         mSpawnMaxActive;
-    FloatParameterTrack         mSpawnMaxLaunched;
-    FloatParameterTrack         mEmitterRadius;
-    FloatParameterTrack         mEmitterOffsetX;
-    FloatParameterTrack         mEmitterOffsetY;
-    FloatParameterTrack         mEmitterBoxX;
-    FloatParameterTrack         mEmitterBoxY;
-    FloatParameterTrack         mEmitterSkewX;
-    FloatParameterTrack         mEmitterSkewY;
-    FloatParameterTrack         mEmitterPath;
-    FloatParameterTrack         mParticleDuration;
-    FloatParameterTrack         mLaunchSpeed;
-    FloatParameterTrack         mLaunchAngle;
-    FloatParameterTrack         mSystemRed;
-    FloatParameterTrack         mSystemGreen;
-    FloatParameterTrack         mSystemBlue;
-    FloatParameterTrack         mSystemAlpha;
-    FloatParameterTrack         mSystemBrightness;
-    EmitterFieldArray           mParticleFields;
-    EmitterFieldArray           mSystemFields;
-    FloatParameterTrack         mParticleRed;
-    FloatParameterTrack         mParticleGreen;
-    FloatParameterTrack         mParticleBlue;
-    FloatParameterTrack         mParticleAlpha;
-    FloatParameterTrack         mParticleBrightness;
-    FloatParameterTrack         mParticleSpinAngle;
-    FloatParameterTrack         mParticleSpinSpeed;
-    FloatParameterTrack         mParticleScale;
-    FloatParameterTrack         mParticleStretch;
-    FloatParameterTrack         mCollisionReflect;
-    FloatParameterTrack         mCollisionSpin;
-    FloatParameterTrack         mClipTop;
-    FloatParameterTrack         mClipBottom;
-    FloatParameterTrack         mClipLeft;
-    FloatParameterTrack         mClipRight;
-    FloatParameterTrack         mAnimationRate;
+	Image*                      mImage;
+	int32_t                     mImageCol;
+	int32_t                     mImageRow;
+	int32_t                     mImageFrames;
+	int32_t                     mAnimated;
+	int32_t                     mParticleFlags;
+	EmitterType                 mEmitterType;
+	const char*                 mName;
+	const char*                 mOnDuration;
+	FloatParameterTrack         mSystemDuration;
+	FloatParameterTrack         mCrossFadeDuration;
+	FloatParameterTrack         mSpawnRate;
+	FloatParameterTrack         mSpawnMinActive;
+	FloatParameterTrack         mSpawnMaxActive;
+	FloatParameterTrack         mSpawnMaxLaunched;
+	FloatParameterTrack         mEmitterRadius;
+	FloatParameterTrack         mEmitterOffsetX;
+	FloatParameterTrack         mEmitterOffsetY;
+	FloatParameterTrack         mEmitterBoxX;
+	FloatParameterTrack         mEmitterBoxY;
+	FloatParameterTrack         mEmitterSkewX;
+	FloatParameterTrack         mEmitterSkewY;
+	FloatParameterTrack         mEmitterPath;
+	FloatParameterTrack         mParticleDuration;
+	FloatParameterTrack         mLaunchSpeed;
+	FloatParameterTrack         mLaunchAngle;
+	FloatParameterTrack         mSystemRed;
+	FloatParameterTrack         mSystemGreen;
+	FloatParameterTrack         mSystemBlue;
+	FloatParameterTrack         mSystemAlpha;
+	FloatParameterTrack         mSystemBrightness;
+	EmitterFieldArray           mParticleFields;
+	EmitterFieldArray           mSystemFields;
+	FloatParameterTrack         mParticleRed;
+	FloatParameterTrack         mParticleGreen;
+	FloatParameterTrack         mParticleBlue;
+	FloatParameterTrack         mParticleAlpha;
+	FloatParameterTrack         mParticleBrightness;
+	FloatParameterTrack         mParticleSpinAngle;
+	FloatParameterTrack         mParticleSpinSpeed;
+	FloatParameterTrack         mParticleScale;
+	FloatParameterTrack         mParticleStretch;
+	FloatParameterTrack         mCollisionReflect;
+	FloatParameterTrack         mCollisionSpin;
+	FloatParameterTrack         mClipTop;
+	FloatParameterTrack         mClipBottom;
+	FloatParameterTrack         mClipLeft;
+	FloatParameterTrack         mClipRight;
+	FloatParameterTrack         mAnimationRate;
 };
 
 // The set of emitter definitions that make up a particle system
 class PvzpParticleDefinition
 {
 public:
-    PvzpEmitterDefinition*       mEmitterDefs;
-    int32_t                     mEmitterDefCount;
+	PvzpEmitterDefinition*       mEmitterDefs;
+	int32_t                     mEmitterDefCount;
 };
 
-extern int gParticleDefCount;                       // [0x6A9F08]
-extern PvzpParticleDefinition* gParticleDefArray;    // [0x6A9F0C], loaded and assigned in LawnApp::LoadingThreadProc()
+extern int gParticleDefCount;
+extern PvzpParticleDefinition* gParticleDefArray;    // loaded and assigned in LawnApp::LoadingThreadProc()
 
 // Maps a particle system type to the file name of its data file
 class ParticleParams
 {
 public:
-    ParticleEffect              mParticleEffect;
-    const char*                 mParticleFileName;
+	ParticleEffect              mParticleEffect;
+	const char*                 mParticleFileName;
 };
-extern int gParticleParamArraySize;                 // [0x6A9F10]
-extern const ParticleParams* gParticleParamArray;         // [0x6A9F14]
+extern int gParticleParamArraySize;
+extern const ParticleParams* gParticleParamArray;
 
 bool                            PvzpParticleLoadADef(PvzpParticleDefinition* theParticleDef, const char* theParticleFileName);
 void                            PvzpParticleLoadDefinitions(const ParticleParams* theParticleParamArray, int theParticleParamArraySize);
@@ -248,13 +248,13 @@ public:
 	PvzpAllocator					mEmitterListNodeAllocator;
 
 public:
-    ~PvzpParticleHolder();
+	~PvzpParticleHolder();
 
-    void							InitializeHolder();
-    void							DisposeHolder();
-    PvzpParticleSystem*				AllocParticleSystemFromDef(float theX, float theY, int theRenderOrder, PvzpParticleDefinition* theDefinition, ParticleEffect theParticleEffect);
-    PvzpParticleSystem*				AllocParticleSystem(float theX, float theY, int theRenderOrder, ParticleEffect theParticleEffect);
-    /*inline*/ bool					IsOverLoaded();
+	void							InitializeHolder();
+	void							DisposeHolder();
+	PvzpParticleSystem*				AllocParticleSystemFromDef(float theX, float theY, int theRenderOrder, PvzpParticleDefinition* theDefinition, ParticleEffect theParticleEffect);
+	PvzpParticleSystem*				AllocParticleSystem(float theX, float theY, int theRenderOrder, ParticleEffect theParticleEffect);
+	bool					IsOverLoaded();
 };
 
 class ParticleRenderParams
@@ -340,43 +340,43 @@ public:
 	void							DeleteAll();
 	void							UpdateParticleField(PvzpParticle* theParticle, ParticleField* theParticleField, float theParticleTimeValue, int theFieldIndex);
 	void							UpdateSystemField(ParticleField* theParticleField, float theParticleTimeValue, int theFieldIndex);
-    /*inline*/ float				SystemTrackEvaluate(FloatParameterTrack& theTrack, ParticleSystemTracks theSystemTrack);
-	static /*inline*/ float			ParticleTrackEvaluate(FloatParameterTrack& theTrack, PvzpParticle* theParticle, ParticleTracks theParticleTrack);
+	float				SystemTrackEvaluate(FloatParameterTrack& theTrack, ParticleSystemTracks theSystemTrack);
+	static float			ParticleTrackEvaluate(FloatParameterTrack& theTrack, PvzpParticle* theParticle, ParticleTracks theParticleTrack);
 	void							DeleteParticle(PvzpParticle* theParticle);
 	void							DeleteNonCrossFading();
 };
-/*inline*/ float                    CrossFadeLerp(float theFrom, float theTo, bool theFromIsSet, bool theToIsSet, float theFraction);
+float                    CrossFadeLerp(float theFrom, float theTo, bool theFromIsSet, bool theToIsSet, float theFraction);
 void								RenderParticle(Graphics* g, PvzpParticle* theParticle, const Color& theColor, ParticleRenderParams* theParams, PvzpTriangleGroup* theTriangleGroup);
 
 class PvzpParticleSystem
 {
 public:
 	ParticleEffect					mEffectType;
-    PvzpParticleDefinition*			mParticleDef;
-    PvzpParticleHolder*				mParticleHolder;
-    PvzpList<ParticleEmitterID>		mEmitterList;
-    bool							mDead;
-    bool							mIsAttachment;
-    int32_t							mRenderOrder;
-    bool							mDontUpdate;
+	PvzpParticleDefinition*			mParticleDef;
+	PvzpParticleHolder*				mParticleHolder;
+	PvzpList<ParticleEmitterID>		mEmitterList;
+	bool							mDead;
+	bool							mIsAttachment;
+	int32_t							mRenderOrder;
+	bool							mDontUpdate;
 
 public:
-    PvzpParticleSystem();
-    ~PvzpParticleSystem();
+	PvzpParticleSystem();
+	~PvzpParticleSystem();
 
-    void							PvzpParticleInitializeFromDef(float theX, float theY, int theRenderOrder, PvzpParticleDefinition* theDefinition, ParticleEffect theEffectType);
-    void							ParticleSystemDie();
-    void							Update();
-    void							Draw(Graphics* g);
-    void							SystemMove(float theX, float theY);
-    void							OverrideColor(const char* theEmitterName, const Color& theColor);
-    void							OverrideExtraAdditiveDraw(const char* theEmitterName, bool theEnableExtraAdditiveDraw);
-    void							OverrideImage(const char* theEmitterName, Image* theImage);
-    void							OverrideFrame(const char* theEmitterName, int theFrame);
-    void							OverrideScale(const char* theEmitterName, float theScale);
-    void							CrossFade(const char* theEmitterName);
-    PvzpParticleEmitter*				FindEmitterByName(const char* theEmitterName);
-    PvzpEmitterDefinition*			FindEmitterDefByName(const char* theEmitterName);
+	void							PvzpParticleInitializeFromDef(float theX, float theY, int theRenderOrder, PvzpParticleDefinition* theDefinition, ParticleEffect theEffectType);
+	void							ParticleSystemDie();
+	void							Update();
+	void							Draw(Graphics* g);
+	void							SystemMove(float theX, float theY);
+	void							OverrideColor(const char* theEmitterName, const Color& theColor);
+	void							OverrideExtraAdditiveDraw(const char* theEmitterName, bool theEnableExtraAdditiveDraw);
+	void							OverrideImage(const char* theEmitterName, Image* theImage);
+	void							OverrideFrame(const char* theEmitterName, int theFrame);
+	void							OverrideScale(const char* theEmitterName, float theScale);
+	void							CrossFade(const char* theEmitterName);
+	PvzpParticleEmitter*				FindEmitterByName(const char* theEmitterName);
+	PvzpEmitterDefinition*			FindEmitterDefByName(const char* theEmitterName);
 };
 
 #endif

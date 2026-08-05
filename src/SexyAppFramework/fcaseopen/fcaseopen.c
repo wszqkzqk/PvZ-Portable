@@ -67,158 +67,158 @@ char *strsep(char **stringp, const char *delim)
 // r must have strlen(path) + 3 bytes
 static int casepath(char const *path, char *r)
 {
-    size_t l = strlen(path);
-    char *p = (char *)alloca(l + 1);
-    strcpy(p, path);
-    size_t rl = 0;
-    
-    DIR *d;
-    if (p[0] == '/')
-    {
-        d = opendir("/");
-        p = p + 1;
-    }
-    else
-    {
-        d = opendir(".");
-        r[0] = '.';
-        r[1] = 0;
-        rl = 1;
-    }
-    
-    int last = 0;
-    char *c = strsep(&p, "/");
-    while (c)
-    {
-        if (!d)
-        {
-            return 0;
-        }
-        
-        if (last)
-        {
-            closedir(d);
-            return 0;
-        }
-        
-        r[rl] = '/';
-        rl += 1;
-        r[rl] = 0;
-        
-        struct dirent *e = readdir(d);
-        while (e)
-        {
-            if (strcasecmp(c, e->d_name) == 0)
-            {
-                strcpy(r + rl, e->d_name);
-                rl += strlen(e->d_name);
+	size_t l = strlen(path);
+	char *p = (char *)alloca(l + 1);
+	strcpy(p, path);
+	size_t rl = 0;
 
-                closedir(d);
-                d = opendir(r);
-                
-                break;
-            }
-            
-            e = readdir(d);
-        }
-        
-        if (!e)
-        {
-            strcpy(r + rl, c);
-            rl += strlen(c);
-            last = 1;
-        }
-        
-        c = strsep(&p, "/");
-    }
-    
-    if (d) closedir(d);
-    return 1;
+	DIR *d;
+	if (p[0] == '/')
+	{
+		d = opendir("/");
+		p = p + 1;
+	}
+	else
+	{
+		d = opendir(".");
+		r[0] = '.';
+		r[1] = 0;
+		rl = 1;
+	}
+
+	int last = 0;
+	char *c = strsep(&p, "/");
+	while (c)
+	{
+		if (!d)
+		{
+			return 0;
+		}
+
+		if (last)
+		{
+			closedir(d);
+			return 0;
+		}
+
+		r[rl] = '/';
+		rl += 1;
+		r[rl] = 0;
+
+		struct dirent *e = readdir(d);
+		while (e)
+		{
+			if (strcasecmp(c, e->d_name) == 0)
+			{
+				strcpy(r + rl, e->d_name);
+				rl += strlen(e->d_name);
+
+				closedir(d);
+				d = opendir(r);
+
+				break;
+			}
+
+			e = readdir(d);
+		}
+
+		if (!e)
+		{
+			strcpy(r + rl, c);
+			rl += strlen(c);
+			last = 1;
+		}
+
+		c = strsep(&p, "/");
+	}
+
+	if (d) closedir(d);
+	return 1;
 }
 
 // r must have strlen(base) + strlen(path) + 3 bytes
 static int casepathat(char const *base, char const *path, char *r)
 {
-    if (!base || base[0] == '\0')
-        base = ".";
+	if (!base || base[0] == '\0')
+		base = ".";
 
-    // Copy base directly - it's already case-correct
-    strcpy(r, base);
-    size_t rl = strlen(r);
-    if (rl == 0)
-    {
-        r[0] = '.';
-        r[1] = 0;
-        rl = 1;
-    }
+	// Copy base directly - it's already case-correct
+	strcpy(r, base);
+	size_t rl = strlen(r);
+	if (rl == 0)
+	{
+		r[0] = '.';
+		r[1] = 0;
+		rl = 1;
+	}
 
-    // Ensure trailing separator
-    if (r[rl - 1] != '/' && r[rl - 1] != '\\')
-    {
-        r[rl++] = '/';
-        r[rl] = 0;
-    }
+	// Ensure trailing separator
+	if (r[rl - 1] != '/' && r[rl - 1] != '\\')
+	{
+		r[rl++] = '/';
+		r[rl] = 0;
+	}
 
-    // Open base directory directly (no case correction needed)
-    DIR *d = opendir(base);
-    if (!d)
-        return 0;
+	// Open base directory directly (no case correction needed)
+	DIR *d = opendir(base);
+	if (!d)
+		return 0;
 
-    // Prepare to parse the relative path
-    char *p = (char *)alloca(strlen(path) + 1);
-    strcpy(p, path);
+	// Prepare to parse the relative path
+	char *p = (char *)alloca(strlen(path) + 1);
+	strcpy(p, path);
 
-    int last = 0;
-    char *c = strsep(&p, "/\\");
-    while (c)
-    {
-        if (!d)
-            return 0;
+	int last = 0;
+	char *c = strsep(&p, "/\\");
+	while (c)
+	{
+		if (!d)
+			return 0;
 
-        if (last)
-        {
-            closedir(d);
-            return 0;
-        }
+		if (last)
+		{
+			closedir(d);
+			return 0;
+		}
 
-        // Skip empty components (e.g., from leading or double slashes)
-        if (c[0] == 0)
-        {
-            c = strsep(&p, "/\\");
-            continue;
-        }
+		// Skip empty components (e.g., from leading or double slashes)
+		if (c[0] == 0)
+		{
+			c = strsep(&p, "/\\");
+			continue;
+		}
 
-        r[rl] = '/';
-        rl += 1;
-        r[rl] = 0;
+		r[rl] = '/';
+		rl += 1;
+		r[rl] = 0;
 
-        struct dirent *e = readdir(d);
-        while (e)
-        {
-            if (strcasecmp(c, e->d_name) == 0)
-            {
-                strcpy(r + rl, e->d_name);
-                rl += strlen(e->d_name);
+		struct dirent *e = readdir(d);
+		while (e)
+		{
+			if (strcasecmp(c, e->d_name) == 0)
+			{
+				strcpy(r + rl, e->d_name);
+				rl += strlen(e->d_name);
 
-                closedir(d);
-                d = opendir(r);
-                break;
-            }
-            e = readdir(d);
-        }
+				closedir(d);
+				d = opendir(r);
+				break;
+			}
+			e = readdir(d);
+		}
 
-        if (!e)
-        {
-            strcpy(r + rl, c);
-            rl += strlen(c);
-            last = 1;
-        }
+		if (!e)
+		{
+			strcpy(r + rl, c);
+			rl += strlen(c);
+			last = 1;
+		}
 
-        c = strsep(&p, "/\\");
-    }
+		c = strsep(&p, "/\\");
+	}
 
-    if (d) closedir(d);
-    return 1;
+	if (d) closedir(d);
+	return 1;
 }
 #endif
 
@@ -241,100 +241,100 @@ static wchar_t *utf8_to_wide_alloc(const char *utf8)
 FILE *fcaseopen(char const *path, char const *mode)
 {
 #if defined(_WIN32)
-    wchar_t *wpath = utf8_to_wide_alloc(path);
-    wchar_t *wmode = utf8_to_wide_alloc(mode);
-    if (!wpath || !wmode)
-    {
-        if (wpath) free(wpath);
-        if (wmode) free(wmode);
-        return NULL;
-    }
-    FILE *f = _wfopen(wpath, wmode);
-    free(wpath);
-    free(wmode);
+	wchar_t *wpath = utf8_to_wide_alloc(path);
+	wchar_t *wmode = utf8_to_wide_alloc(mode);
+	if (!wpath || !wmode)
+	{
+		if (wpath) free(wpath);
+		if (wmode) free(wmode);
+		return NULL;
+	}
+	FILE *f = _wfopen(wpath, wmode);
+	free(wpath);
+	free(wmode);
 #else
-    FILE *f = fopen(path, mode);
+	FILE *f = fopen(path, mode);
 #if !defined(_WIN32)
-    if (!f)
-    {
-        char *r = (char *)alloca(strlen(path) + 3);
-        if (casepath(path, r))
-        {
-            f = fopen(r, mode);
-        }
-    }
+	if (!f)
+	{
+		char *r = (char *)alloca(strlen(path) + 3);
+		if (casepath(path, r))
+		{
+			f = fopen(r, mode);
+		}
+	}
 #endif
 #endif
-    return f;
+	return f;
 }
 
 int casechdir(char const *path)
 {
 #if !defined(_WIN32)
-    char *r = (char *)alloca(strlen(path) + 3);
-    if (casepath(path, r))
-    {
-        return chdir(r);
-    }
-    else
-    {
-        errno = ENOENT;
-        return -1;
-    }
+	char *r = (char *)alloca(strlen(path) + 3);
+	if (casepath(path, r))
+	{
+		return chdir(r);
+	}
+	else
+	{
+		errno = ENOENT;
+		return -1;
+	}
 #else
-    wchar_t *wpath = utf8_to_wide_alloc(path);
-    if (!wpath)
-        return -1;
-    int ret = _wchdir(wpath);
-    free(wpath);
-    return ret;
+	wchar_t *wpath = utf8_to_wide_alloc(path);
+	if (!wpath)
+		return -1;
+	int ret = _wchdir(wpath);
+	free(wpath);
+	return ret;
 #endif
 }
 
 FILE *fcaseopenat(char const *base, char const *path, char const *mode)
 {
 #if !defined(_WIN32)
-    if (!base || base[0] == '\0')
-        base = ".";
+	if (!base || base[0] == '\0')
+		base = ".";
 
-    size_t baseLen = strlen(base);
-    size_t pathLen = strlen(path);
-    char *full = (char *)alloca(baseLen + pathLen + 3);
+	size_t baseLen = strlen(base);
+	size_t pathLen = strlen(path);
+	char *full = (char *)alloca(baseLen + pathLen + 3);
 
-    strcpy(full, base);
-    size_t fl = strlen(full);
-    if (fl > 0 && full[fl - 1] != '/' && full[fl - 1] != '\\')
-    {
-        full[fl++] = '/';
-        full[fl] = 0;
-    }
-    strcpy(full + fl, path);
+	strcpy(full, base);
+	size_t fl = strlen(full);
+	if (fl > 0 && full[fl - 1] != '/' && full[fl - 1] != '\\')
+	{
+		full[fl++] = '/';
+		full[fl] = 0;
+	}
+	strcpy(full + fl, path);
 
-    FILE *f = fopen(full, mode);
-    if (!f)
-    {
-        char *r = (char *)alloca(baseLen + pathLen + 3);
-        if (casepathat(base, path, r))
-        {
-            f = fopen(r, mode);
-        }
-    }
-    return f;
+	FILE *f = fopen(full, mode);
+	if (!f)
+	{
+		char *r = (char *)alloca(baseLen + pathLen + 3);
+		if (casepathat(base, path, r))
+		{
+			f = fopen(r, mode);
+		}
+	}
+	return f;
 #else
-    if (!base || base[0] == '\0')
-        return fcaseopen(path, mode);
+	if (!base || base[0] == '\0')
+		return fcaseopen(path, mode);
 
-    size_t baseLen = strlen(base);
-    size_t pathLen = strlen(path);
-    char *full = (char *)alloca(baseLen + pathLen + 3);
-    strcpy(full, base);
-    size_t fl = strlen(full);
-    if (fl > 0 && full[fl - 1] != '/' && full[fl - 1] != '\\')
-    {
-        full[fl++] = '/';
-        full[fl] = 0;
-    }
-    strcpy(full + fl, path);
-    return fcaseopen(full, mode);
+	size_t baseLen = strlen(base);
+	size_t pathLen = strlen(path);
+	char *full = (char *)alloca(baseLen + pathLen + 3);
+	strcpy(full, base);
+	size_t fl = strlen(full);
+	if (fl > 0 && full[fl - 1] != '/' && full[fl - 1] != '\\')
+	{
+		full[fl++] = '/';
+		full[fl] = 0;
+	}
+	strcpy(full + fl, path);
+	return fcaseopen(full, mode);
 #endif
 }

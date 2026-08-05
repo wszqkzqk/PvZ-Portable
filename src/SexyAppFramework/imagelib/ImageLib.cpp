@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -134,7 +134,7 @@ Image* GetPNGImage(const std::string& theFileName)
 
 	png_read_info(png_ptr, info_ptr);
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, nullptr, nullptr,
-       nullptr, nullptr, nullptr);
+	   nullptr, nullptr, nullptr);
 
 	png_set_expand(png_ptr);
 	if constexpr (std::endian::native == std::endian::big)
@@ -186,7 +186,7 @@ Image* GetTGAImage(const std::string& theFileName)
 
 	uint8_t aColorMapType;
 	p_fread(&aColorMapType, sizeof(uint8_t), 1, aTGAFile);
-	
+
 	uint8_t anImageType;
 	p_fread(&anImageType, sizeof(uint8_t), 1, aTGAFile);
 
@@ -199,7 +199,7 @@ Image* GetTGAImage(const std::string& theFileName)
 	aColorMapLen = Sexy::FromLE16(aColorMapLen);
 
 	uint8_t aColorMapEntrySize;
-	p_fread(&aColorMapEntrySize, sizeof(uint8_t), 1, aTGAFile);	
+	p_fread(&aColorMapEntrySize, sizeof(uint8_t), 1, aTGAFile);
 
 	uint16_t anXOrigin;
 	p_fread(&anXOrigin, sizeof(uint16_t), 1, aTGAFile);
@@ -210,15 +210,15 @@ Image* GetTGAImage(const std::string& theFileName)
 	aYOrigin = Sexy::FromLE16(aYOrigin);
 
 	uint16_t anImageWidth;
-	p_fread(&anImageWidth, sizeof(uint16_t), 1, aTGAFile);	
+	p_fread(&anImageWidth, sizeof(uint16_t), 1, aTGAFile);
 	anImageWidth = Sexy::FromLE16(anImageWidth);
 
 	uint16_t anImageHeight;
-	p_fread(&anImageHeight, sizeof(uint16_t), 1, aTGAFile);	
+	p_fread(&anImageHeight, sizeof(uint16_t), 1, aTGAFile);
 	anImageHeight = Sexy::FromLE16(anImageHeight);
 
 	uint8_t aBitCount = 32;
-	p_fread(&aBitCount, sizeof(uint8_t), 1, aTGAFile);	
+	p_fread(&aBitCount, sizeof(uint8_t), 1, aTGAFile);
 
 	uint8_t anImageDescriptor = 8 | (1<<5);
 	p_fread(&anImageDescriptor, sizeof(uint8_t), 1, aTGAFile);
@@ -895,7 +895,7 @@ bool ImageLib::WritePNGImage(const std::string& theFileName, Image* theImage)
 	png_set_bgr(png_ptr);
 
 	png_set_IHDR(png_ptr, info_ptr, theImage->mWidth, theImage->mHeight, 8, PNG_COLOR_TYPE_RGB_ALPHA,
-       PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+	   PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
 	png_write_info(png_ptr, info_ptr);
 
@@ -928,7 +928,7 @@ bool ImageLib::WriteTGAImage(const std::string& theFileName, Image* theImage)
 
 	uint8_t aColorMapType = 0;
 	fwrite(&aColorMapType, sizeof(uint8_t), 1, aTGAFile);
-	
+
 	uint8_t anImageType = 2;
 	fwrite(&anImageType, sizeof(uint8_t), 1, aTGAFile);
 
@@ -941,7 +941,7 @@ bool ImageLib::WriteTGAImage(const std::string& theFileName, Image* theImage)
 	fwrite(&aColorMapLen, sizeof(uint16_t), 1, aTGAFile);
 
 	uint8_t aColorMapEntrySize = 0;
-	fwrite(&aColorMapEntrySize, sizeof(uint8_t), 1, aTGAFile);	
+	fwrite(&aColorMapEntrySize, sizeof(uint8_t), 1, aTGAFile);
 
 	uint16_t anXOrigin = 0;
 	anXOrigin = Sexy::ToLE16(anXOrigin);
@@ -953,14 +953,14 @@ bool ImageLib::WriteTGAImage(const std::string& theFileName, Image* theImage)
 
 	uint16_t anImageWidth = theImage->mWidth;
 	anImageWidth = Sexy::ToLE16(anImageWidth);
-	fwrite(&anImageWidth, sizeof(uint16_t), 1, aTGAFile);	
+	fwrite(&anImageWidth, sizeof(uint16_t), 1, aTGAFile);
 
 	uint16_t anImageHeight = theImage->mHeight;
 	anImageHeight = Sexy::ToLE16(anImageHeight);
-	fwrite(&anImageHeight, sizeof(uint16_t), 1, aTGAFile);	
+	fwrite(&anImageHeight, sizeof(uint16_t), 1, aTGAFile);
 
 	uint8_t aBitCount = 32;
-	fwrite(&aBitCount, sizeof(uint8_t), 1, aTGAFile);	
+	fwrite(&aBitCount, sizeof(uint8_t), 1, aTGAFile);
 
 	uint8_t anImageDescriptor = 8 | (1<<5);
 	fwrite(&anImageDescriptor, sizeof(uint8_t), 1, aTGAFile);

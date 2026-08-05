@@ -1,14 +1,14 @@
-{	
+{
 	if (mLockedSurfaceDesc.ddpfPixelFormat.dwRGBBitCount == 16)
 	{
-		ushort* aDestPixelsRow = ((ushort*) mLockedSurfaceDesc.lpSurface) + (theY * mLockedSurfaceDesc.lPitch/2) + theX;		
+		ushort* aDestPixelsRow = ((ushort*) mLockedSurfaceDesc.lpSurface) + (theY * mLockedSurfaceDesc.lPitch/2) + theX;
 
 		if (aMemoryImage->mHasTrans)
 		{
 			for (int y = 0; y < theSrcRect.mHeight; y++)
 			{
-				ushort* aDestPixels = aDestPixelsRow;								
-				
+				ushort* aDestPixels = aDestPixelsRow;
+
 				aSrcPixels = aSrcPixelsRow;
 
 				for (int x = 0; x < theSrcRect.mWidth; x++)
@@ -22,7 +22,7 @@
 				}
 
 				aDestPixelsRow += mLockedSurfaceDesc.lPitch/2;
-				aSrcPixelsRow += theImage->mWidth;				
+				aSrcPixelsRow += theImage->mWidth;
 			}
 		}
 		else
@@ -30,12 +30,12 @@
 			for (int y = 0; y < theSrcRect.mHeight; y++)
 			{
 				ushort* aDestPixels = aDestPixelsRow;
-				
+
 				aSrcPixels = aSrcPixelsRow;
 
 				for (int x = 0; x < theSrcRect.mWidth; x++)
 				{
-					*(aDestPixels++) = (ushort) NEXT_SRC_COLOR;							
+					*(aDestPixels++) = (ushort) NEXT_SRC_COLOR;
 				}
 
 				aDestPixelsRow += mLockedSurfaceDesc.lPitch/2;
@@ -45,14 +45,14 @@
 	}
 	else if (mLockedSurfaceDesc.ddpfPixelFormat.dwRGBBitCount == 32)
 	{
-		uint32_t* aDestPixelsRow = ((uint32_t*) mLockedSurfaceDesc.lpSurface) + (theY * mLockedSurfaceDesc.lPitch/4) + theX;		
+		uint32_t* aDestPixelsRow = ((uint32_t*) mLockedSurfaceDesc.lpSurface) + (theY * mLockedSurfaceDesc.lPitch/4) + theX;
 
 		if (aMemoryImage->mHasTrans)
 		{
 			for (int y = 0; y < theSrcRect.mHeight; y++)
 			{
 				uint32_t* aDestPixels = aDestPixelsRow;
-				
+
 				aSrcPixels = aSrcPixelsRow;
 
 				for (int x = 0; x < theSrcRect.mWidth; x++)
@@ -74,7 +74,7 @@
 			for (int y = 0; y < theSrcRect.mHeight; y++)
 			{
 				uint32_t* aDestPixels = aDestPixelsRow;
-				
+
 				aSrcPixels = aSrcPixelsRow;
 
 				for (int x = 0; x < theSrcRect.mWidth; x++)

@@ -33,11 +33,11 @@
 #include "widget/Checkbox.h"
 
 int gLawnEditWidgetColors[][4] = {
-    { 0,   0,   0,   0 },
-    { 0,   0,   0,   0 },
-    { 240, 240, 255, 255 },
-    { 255, 255, 255, 255 },
-    { 0,   0,   0,   255 },
+	{ 0,   0,   0,   0 },
+	{ 0,   0,   0,   0 },
+	{ 240, 240, 255, 255 },
+	{ 255, 255, 255, 255 },
+	{ 0,   0,   0,   255 },
 };
 
 // returns whether [theNumber - theRange, theNumber + theRange] contains a multiple of theMod
@@ -79,8 +79,8 @@ void TileImageVertically(Graphics* g, Image* theImage, int theX, int theY, int t
 
 LawnEditWidget::LawnEditWidget(int theId, EditListener* theListener, Dialog* theDialog) : EditWidget(theId, theListener)
 {
-    mDialog = theDialog;
-    mAutoCapFirstLetter = true;
+	mDialog = theDialog;
+	mAutoCapFirstLetter = true;
 }
 
 LawnEditWidget::~LawnEditWidget()
@@ -89,92 +89,92 @@ LawnEditWidget::~LawnEditWidget()
 
 void LawnEditWidget::KeyDown(KeyCode theKey)
 {
-    EditWidget::KeyDown(theKey);
-    if (theKey == KeyCode::KEYCODE_ESCAPE)
-        mDialog->KeyDown(KeyCode::KEYCODE_ESCAPE);
+	EditWidget::KeyDown(theKey);
+	if (theKey == KeyCode::KEYCODE_ESCAPE)
+		mDialog->KeyDown(KeyCode::KEYCODE_ESCAPE);
 }
 
 // Uppercase ASCII letters in place; locale-independent, safe on UTF-8 bytes.
 static bool AutoCapChar(char& theChar)
 {
-    if (theChar >= 'a' && theChar <= 'z')
-    {
-        theChar = theChar - 'a' + 'A';
-        return true;
-    }
+	if (theChar >= 'a' && theChar <= 'z')
+	{
+		theChar = theChar - 'a' + 'A';
+		return true;
+	}
 
-    return theChar >= 'A' && theChar <= 'Z';
+	return theChar >= 'A' && theChar <= 'Z';
 }
 
 void LawnEditWidget::KeyChar(char theChar)
 {
-    if (mAutoCapFirstLetter && AutoCapChar(theChar))
-        mAutoCapFirstLetter = false;
+	if (mAutoCapFirstLetter && AutoCapChar(theChar))
+		mAutoCapFirstLetter = false;
 
-    EditWidget::KeyChar(theChar);
+	EditWidget::KeyChar(theChar);
 }
 
 void LawnEditWidget::KeyText(std::string_view theText)
 {
-    if (!mAutoCapFirstLetter)
-    {
-        EditWidget::KeyText(theText);
-        return;
-    }
+	if (!mAutoCapFirstLetter)
+	{
+		EditWidget::KeyText(theText);
+		return;
+	}
 
-    std::string aText(theText);
-    for (char& aCh : aText)
-    {
-        if (AutoCapChar(aCh))
-        {
-            mAutoCapFirstLetter = false;
-            break;
-        }
-    }
+	std::string aText(theText);
+	for (char& aCh : aText)
+	{
+		if (AutoCapChar(aCh))
+		{
+			mAutoCapFirstLetter = false;
+			break;
+		}
+	}
 
-    EditWidget::KeyText(aText);
+	EditWidget::KeyText(aText);
 }
 
 LawnEditWidget* CreateEditWidget(int theId, EditListener* theListener, Dialog* theDialog)
 {
-    LawnEditWidget* aEditWidget = new LawnEditWidget(theId, theListener, theDialog);
-    aEditWidget->SetFont(Sexy::FONT_BRIANNETOD16);
-    aEditWidget->SetColors(gLawnEditWidgetColors, EditWidget::NUM_COLORS);
-    aEditWidget->mBlinkDelay = 14;
+	LawnEditWidget* aEditWidget = new LawnEditWidget(theId, theListener, theDialog);
+	aEditWidget->SetFont(Sexy::FONT_BRIANNETOD16);
+	aEditWidget->SetColors(gLawnEditWidgetColors, EditWidget::NUM_COLORS);
+	aEditWidget->mBlinkDelay = 14;
 
-    return aEditWidget;
+	return aEditWidget;
 }
 
 void DrawEditBox(Graphics* g, EditWidget* theWidget)
 {
-    Rect aDest(theWidget->mX - 8, theWidget->mY - 4, theWidget->mWidth + 16, theWidget->mHeight + 8);
-    g->DrawImageBox(aDest, IMAGE_EDITBOX);
+	Rect aDest(theWidget->mX - 8, theWidget->mY - 4, theWidget->mWidth + 16, theWidget->mHeight + 8);
+	g->DrawImageBox(aDest, IMAGE_EDITBOX);
 }
 
 Checkbox* MakeNewCheckbox(int theId, CheckboxListener* theListener, bool theDefault)
 {
-    Checkbox* aCheckbox = new Checkbox(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
-    aCheckbox->mChecked = theDefault;
-    aCheckbox->mHasAlpha = true;
-    aCheckbox->mHasTransparencies = true;
+	Checkbox* aCheckbox = new Checkbox(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
+	aCheckbox->mChecked = theDefault;
+	aCheckbox->mHasAlpha = true;
+	aCheckbox->mHasTransparencies = true;
 
-    return aCheckbox;
+	return aCheckbox;
 }
 
 std::string GetSavedGameName(GameMode theGameMode, int theProfileId)
 {
-    return GetAppDataPath(StrFormat("userdata/game%d_%d.v4", theProfileId, static_cast<int>(theGameMode)));
+	return GetAppDataPath(StrFormat("userdata/game%d_%d.v4", theProfileId, static_cast<int>(theGameMode)));
 }
 
 std::string GetLegacySavedGameName(GameMode theGameMode, int theProfileId)
 {
-    return GetAppDataPath(StrFormat("userdata/game%d_%d.dat", theProfileId, static_cast<int>(theGameMode)));
+	return GetAppDataPath(StrFormat("userdata/game%d_%d.dat", theProfileId, static_cast<int>(theGameMode)));
 }
 
 int GetCurrentDaysSince2000(time_t theTime)
 {
-    tm aNowTM = gLawnApp->GetLocalTime(theTime);
+	tm aNowTM = gLawnApp->GetLocalTime(theTime);
 
-    int dy = aNowTM.tm_year - 100;
-    return dy * 365 + (dy - 1) / 400 - (dy - 1) / 100 + (dy - 1) / 4 + aNowTM.tm_yday + 1;
+	int dy = aNowTM.tm_year - 100;
+	return dy * 365 + (dy - 1) / 400 - (dy - 1) / 100 + (dy - 1) / 4 + aNowTM.tm_yday + 1;
 }

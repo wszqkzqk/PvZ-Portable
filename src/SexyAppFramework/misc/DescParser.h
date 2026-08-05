@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -30,9 +30,9 @@
 namespace Sexy
 {
 
-class DataElement 
+class DataElement
 {
-public:	
+public:
 	bool					mIsList;
 
 public:
@@ -45,7 +45,7 @@ public:
 class SingleDataElement : public DataElement
 {
 public:
-	std::string				mString;	
+	std::string				mString;
 
 public:
 	SingleDataElement();
@@ -66,7 +66,7 @@ public:
 	ListDataElement();
 	ListDataElement(const ListDataElement& theListDataElement);
 	~ListDataElement() override;
-	
+
 	ListDataElement&		operator=(const ListDataElement& theListDataElement);
 
 	DataElement*			Duplicate() override;
@@ -110,12 +110,12 @@ public:
 
 	// You must implement this one
 	virtual bool			HandleCommand(const ListDataElement& theParams) = 0;
-	
+
 public:
 	DescParser();
-	virtual ~DescParser();	
+	virtual ~DescParser();
 
-	bool					LoadDescriptor(const std::string& theFileName);	
+	bool					LoadDescriptor(const std::string& theFileName);
 };
 
 }

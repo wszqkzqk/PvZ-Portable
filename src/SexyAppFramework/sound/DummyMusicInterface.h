@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -49,7 +49,7 @@ public:
 	void 					SetSongVolume(int, double) override{}
 	void 					SetSongMaxVolume(int, double) override{}
 	bool					IsPlaying(int) override{return false;};
-	
+
 	void					SetVolume(double) override{}
 	void					SetMusicAmplify(int, double) override{}
 	void					Update() override{}

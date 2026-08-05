@@ -105,7 +105,7 @@ void TitleScreen::Draw(Graphics* g)
 
 		return;
 	}
-	
+
 	if (mTitleState == TitleState::TITLESTATE_POPCAP_LOGO)
 	{
 		g->SetColor(Color::Black);
@@ -243,7 +243,7 @@ void TitleScreen::Update()
 		{
 			mTitleStateDuration = 200;
 		}
-		
+
 		mTitleStateCounter = mTitleStateDuration;
 	}
 
@@ -448,12 +448,12 @@ void TitleScreen::Update()
 		}
 	}
 
-	float aTriggerPoint[] = { 
-		mTotalBarWidth * 0.11f, 
-		mTotalBarWidth * 0.32f, 
-		mTotalBarWidth * 0.54f, 
-		mTotalBarWidth * 0.72f, 
-		mTotalBarWidth * 0.91f 
+	float aTriggerPoint[] = {
+		mTotalBarWidth * 0.11f,
+		mTotalBarWidth * 0.32f,
+		mTotalBarWidth * 0.54f,
+		mTotalBarWidth * 0.72f,
+		mTotalBarWidth * 0.91f
 	};
 
 	for (size_t i = 0; i < LENGTH(aTriggerPoint); i++)

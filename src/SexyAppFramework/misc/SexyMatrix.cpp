@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -35,7 +35,7 @@ SexyMatrix3::SexyMatrix3()
 void SexyMatrix3::ZeroMatrix()
 {
 	m00 = m01 = m02 =
-	m10 = m11 = m12 = 
+	m10 = m11 = m12 =
 	m20 = m21 = m22 = 0;
 }
 
@@ -54,7 +54,7 @@ SexyMatrix3 SexyMatrix3::operator*(const SexyMatrix3 &theMat) const
 		for(int j=0; j<3; j++)
 		{
 			float x = 0;
-			for(int k=0; k<3; k++)				
+			for(int k=0; k<3; k++)
 				x += m[i][k]*theMat.m[k][j];
 
 			aResult.m[i][j] = x;
@@ -70,7 +70,7 @@ SexyVector2 SexyMatrix3::operator*(const SexyVector2 &theVec) const
 		m00*theVec.x + m01*theVec.y + m02,
 		m10*theVec.x + m11*theVec.y + m12);
 }
-	
+
 SexyVector3 SexyMatrix3::operator*(const SexyVector3 &theVec) const
 {
 	return SexyVector3(
@@ -193,7 +193,7 @@ void Transform::RotateRad(float rot)
 			MakeComplex();
 			mMatrix.RotateRad(rot);
 		}
-		else 
+		else
 		{
 			mNeedCalcMatrix = true;
 			mHaveRot = true;

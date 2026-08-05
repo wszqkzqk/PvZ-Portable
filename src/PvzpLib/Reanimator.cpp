@@ -548,7 +548,7 @@ void Reanimation::GetCurrentTransform(int theTrackIndex, ReanimatorTransform* th
 	ReanimatorFrameTime aFrameTime;
 	GetFrameTime(&aFrameTime);
 	GetTransformAtTime(theTrackIndex, theTransformCurrent, &aFrameTime);  // base transform interpolated between the two frames
-	
+
 	ReanimatorTrackInstance* aTrack = &mTrackInstances[theTrackIndex];
 	if (FloatRoundToInt(theTransformCurrent->mFrame) >= 0 && aTrack->mBlendCounter > 0)  // not a blank frame and a blend is in progress
 	{
@@ -1091,12 +1091,12 @@ void Reanimation::ReanimationDie()
 }
 
 void Reanimation::SetShakeOverride(const char* theTrackName, float theShakeAmount)
-{ 
+{
 	GetTrackInstanceByName(theTrackName)->mShakeOverride = theShakeAmount;
 }
 
-void Reanimation::SetPosition(float theX, float theY) 
-{ 
+void Reanimation::SetPosition(float theX, float theY)
+{
 	mOverlayMatrix.m02 = theX;
 	mOverlayMatrix.m12 = theY;
 }
@@ -1339,7 +1339,7 @@ void Reanimation::ParseAttacherTrack(const ReanimatorTransform& theTransform, At
 		const char* aTagEnds = strstr(aTags + 1, "]");
 		if (aTagEnds == nullptr)  // no closing "]"
 			break;
-		
+
 		std::string aCode(aTags + 1, aTagEnds - aTags - 1);  // text inside the brackets
 		if (sscanf(aCode.c_str(), "%f", &theAttacherInfo.mAnimRate) != 1)  // if the text parses as a float, it is the anim rate
 		{

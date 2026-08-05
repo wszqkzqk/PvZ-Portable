@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -233,7 +233,7 @@ bool Sexy::StringToDouble(const std::string& theString, double* theDoubleVal)
 
 // TODO: Use <locale> for localization of number output?
 std::string Sexy::CommaSeperate(int theValue)
-{	
+{
 	if (theValue == 0)
 		return "0";
 
@@ -384,7 +384,7 @@ std::string Sexy::RemoveTrailingSlash(std::string_view theDirectory)
 
 	return PathToU8(PathFromU8(theDirectory).lexically_normal());
 }
-std::string Sexy::VFormat(const char* fmt, va_list argPtr) 
+std::string Sexy::VFormat(const char* fmt, va_list argPtr)
 {
 	va_list argsCopy;
 	va_copy(argsCopy, argPtr);
@@ -417,14 +417,14 @@ std::string Sexy::VFormat(const char* fmt, va_list argPtr)
 }
 
 //overloaded StrFormat: should only be used by the xml strings
-std::string Sexy::StrFormat(const char* fmt ...) 
+std::string Sexy::StrFormat(const char* fmt ...)
 {
-    va_list argList;
-    va_start(argList, fmt);
+	va_list argList;
+	va_start(argList, fmt);
 	std::string result = VFormat(fmt, argList);
-    va_end(argList);
+	va_end(argList);
 
-    return result;
+	return result;
 }
 
 std::string Sexy::Evaluate(std::string_view theString, const DefinesMap& theDefinesMap)
@@ -437,7 +437,7 @@ std::string Sexy::Evaluate(std::string_view theString, const DefinesMap& theDefi
 
 		if (aPercentPos == std::string::npos)
 			break;
-		
+
 		size_t aSecondPercentPos = anEvaluatedString.find('%', aPercentPos + 1);
 		if (aSecondPercentPos == std::string::npos)
 			break;
@@ -445,11 +445,11 @@ std::string Sexy::Evaluate(std::string_view theString, const DefinesMap& theDefi
 		std::string aName = anEvaluatedString.substr(aPercentPos + 1, aSecondPercentPos - aPercentPos - 1);
 
 		std::string aValue;
-		DefinesMap::const_iterator anItr = theDefinesMap.find(aName);		
+		DefinesMap::const_iterator anItr = theDefinesMap.find(aName);
 		if (anItr != theDefinesMap.end())
 			aValue = anItr->second;
 		else
-			aValue = "";		
+			aValue = "";
 
 		anEvaluatedString.replace(aPercentPos, aSecondPercentPos - aPercentPos + 1, aValue);
 	}
@@ -477,7 +477,7 @@ std::string Sexy::XMLDecodeString(std::string_view theString)
 			{
 				std::string anEntName(theString.substr(i+1, aSemiPos-i-1));
 				i = aSemiPos;
-											
+
 				if (anEntName == "lt")
 					c = '<';
 				else if (anEntName == "amp")
@@ -493,8 +493,8 @@ std::string Sexy::XMLDecodeString(std::string_view theString)
 				else if (anEntName == "cr")
 					c = '\n';
 			}
-		}				
-		
+		}
+
 		aNewString += c;
 	}
 
@@ -519,7 +519,7 @@ std::string Sexy::XMLEncodeString(std::string_view theString)
 				aNewString += "&nbsp;";
 				continue;
 			}
-			
+
 			hasSpace = true;
 		}
 		else
@@ -530,7 +530,7 @@ std::string Sexy::XMLEncodeString(std::string_view theString)
 		case '<':
 			aNewString += "&lt;";
 			break;
-		case '&':		
+		case '&':
 			aNewString += "&amp;";
 			break;
 		case '>':

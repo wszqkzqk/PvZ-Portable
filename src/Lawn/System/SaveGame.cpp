@@ -3058,7 +3058,7 @@ static void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 	theContext.SyncBytes(theBoard->mSeedBank, sizeof(SeedBank));
 	theContext.SyncBytes(theBoard->mChallenge, sizeof(Challenge));
 	theContext.SyncBytes(theBoard->mApp->mMusic, sizeof(Music));
-	
+
 	if (theContext.mReading)
 	{
 		if (theContext.ByteLeftToRead() < 4)

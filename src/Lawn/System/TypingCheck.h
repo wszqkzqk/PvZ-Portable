@@ -36,9 +36,9 @@ public:
 	TypingCheck(std::string_view thePhrase);
 
 	void			SetPhrase(std::string_view thePhrase);
-	/*inline*/ void	AddKeyCode(Sexy::KeyCode theKeyCode);
+	void	AddKeyCode(Sexy::KeyCode theKeyCode);
 	void			AddChar(char theChar);
-	/*inline*/ bool	Check();
+	bool	Check();
 	bool			Check(Sexy::KeyCode theKeyCode);
 };
 

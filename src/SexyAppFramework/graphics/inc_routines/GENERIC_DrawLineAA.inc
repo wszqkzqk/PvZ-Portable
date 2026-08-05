@@ -2,7 +2,7 @@
 	PIXEL_TYPE* aDestPixels = &aBits[aY0*STRIDE + aX0];
 	uint32_t anErrAcc = (uint32_t)(fabs(theStartX - aX0)*fabs(theStartY - aY0) * 0x10000);
 	if (dx >= dy) // mostly horizontal
-	{ 
+	{
 		//uint32_t anErrAdj = (((uint32_t)dy << 16) / (uint32_t)dx);
 		uint32_t anErrAdj = (uint32_t)(dyd / dxd * 0x10000);
 

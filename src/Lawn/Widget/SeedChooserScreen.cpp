@@ -228,7 +228,7 @@ void SeedChooserScreen::CrazyDavePickSeeds()
 	for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER; aSeedType = (SeedType)(aSeedType + 1))
 	{
 		aSeedArray[aSeedType].mItem = aSeedType;
-		if (!mApp->HasSeedType(aSeedType) || SeedNotRecommendedToPick(aSeedType) || SeedNotAllowedToPick(aSeedType) || Plant::IsUpgrade(aSeedType) || 
+		if (!mApp->HasSeedType(aSeedType) || SeedNotRecommendedToPick(aSeedType) || SeedNotAllowedToPick(aSeedType) || Plant::IsUpgrade(aSeedType) ||
 			aSeedType == SEED_IMITATER || aSeedType == SEED_UMBRELLA || aSeedType == SEED_BLOVER)
 		{
 			aSeedArray[aSeedType].mWeight = 0;
@@ -250,7 +250,7 @@ void SeedChooserScreen::CrazyDavePickSeeds()
 	{
 		aSeedArray[SEED_TORCHWOOD].mWeight = 0;
 	}
-	
+
 	MTRand aLevelRNG = MTRand(mBoard->GetLevelRandSeed());
 	for (int i = 0; i < 3; i++)
 	{
@@ -333,7 +333,7 @@ unsigned int SeedChooserScreen::SeedNotRecommendedToPick(SeedType theSeedType)
 
 bool SeedChooserScreen::SeedNotAllowedToPick(SeedType theSeedType)
 {
-	return mApp->mGameMode == GAMEMODE_CHALLENGE_LAST_STAND && (theSeedType == SEED_SUNFLOWER || theSeedType == SEED_SUNSHROOM || 
+	return mApp->mGameMode == GAMEMODE_CHALLENGE_LAST_STAND && (theSeedType == SEED_SUNFLOWER || theSeedType == SEED_SUNSHROOM ||
 		theSeedType == SEED_TWINSUNFLOWER || theSeedType == SEED_SEASHROOM || theSeedType == SEED_PUFFSHROOM);
 }
 
@@ -398,14 +398,14 @@ void SeedChooserScreen::Draw(Graphics* g)
 	{
 		ChosenSeed& aChosenSeed = mChosenSeeds[aSeedType];
 		ChosenSeedState aSeedState = aChosenSeed.mSeedState;
-		if (mApp->HasSeedType(aSeedType) && aSeedState != SEED_FLYING_TO_BANK && aSeedState != SEED_FLYING_TO_CHOOSER && 
+		if (mApp->HasSeedType(aSeedType) && aSeedState != SEED_FLYING_TO_BANK && aSeedState != SEED_FLYING_TO_CHOOSER &&
 			aSeedState != SEED_PACKET_HIDDEN && (aSeedState == SEED_IN_CHOOSER || mBoard->mCutScene->mSeedChoosing))
 		{
 			bool aGrayed = false;
 			if (((SeedNotRecommendedToPick(aSeedType) || SeedNotAllowedToPick(aSeedType)) && aSeedState == SEED_IN_CHOOSER) ||
 				SeedNotAllowedDuringTrial(aSeedType))
 				aGrayed = true;
-			
+
 			int aPosX = aChosenSeed.mX;
 			int aPosY = aChosenSeed.mY;
 			if (aSeedState == SEED_IN_BANK)
@@ -565,11 +565,11 @@ void SeedChooserScreen::Update()
 bool SeedChooserScreen::DisplayRepickWarningDialog(const char* theMessage)
 {
 	return mApp->LawnMessageBox(
-		Dialogs::DIALOG_CHOOSER_WARNING, 
-		"[DIALOG_WARNING]", 
-		theMessage, 
-		"[DIALOG_BUTTON_YES]", 
-		"[REPICK_BUTTON]", 
+		Dialogs::DIALOG_CHOOSER_WARNING,
+		"[DIALOG_WARNING]",
+		theMessage,
+		"[DIALOG_BUTTON_YES]",
+		"[REPICK_BUTTON]",
 		Dialog::BUTTONS_YES_NO
 	) == Dialog::ID_YES;
 }
@@ -677,7 +677,7 @@ void SeedChooserScreen::OnStartButton()
 			return;
 		}
 	}
-	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ART_CHALLENGE_SUNFLOWER && 
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ART_CHALLENGE_SUNFLOWER &&
 		(!PickedPlantType(SEED_STARFRUIT) || !PickedPlantType(SEED_UMBRELLA) || !PickedPlantType(SEED_WALLNUT)))
 	{
 		if (!DisplayRepickWarningDialog("[SEED_CHOOSER_ART_2_WARNING]"))
@@ -694,13 +694,13 @@ void SeedChooserScreen::OnStartButton()
 		}
 	}
 
-	if (!CheckSeedUpgrade(SEED_GATLINGPEA, SEED_REPEATER) || 
-		!CheckSeedUpgrade(SEED_WINTERMELON, SEED_MELONPULT) || 
-		!CheckSeedUpgrade(SEED_TWINSUNFLOWER, SEED_SUNFLOWER) || 
-		!CheckSeedUpgrade(SEED_SPIKEROCK, SEED_SPIKEWEED) || 
-		!CheckSeedUpgrade(SEED_COBCANNON, SEED_KERNELPULT) || 
-		!CheckSeedUpgrade(SEED_GOLD_MAGNET, SEED_MAGNETSHROOM) || 
-		!CheckSeedUpgrade(SEED_GLOOMSHROOM, SEED_FUMESHROOM) || 
+	if (!CheckSeedUpgrade(SEED_GATLINGPEA, SEED_REPEATER) ||
+		!CheckSeedUpgrade(SEED_WINTERMELON, SEED_MELONPULT) ||
+		!CheckSeedUpgrade(SEED_TWINSUNFLOWER, SEED_SUNFLOWER) ||
+		!CheckSeedUpgrade(SEED_SPIKEROCK, SEED_SPIKEWEED) ||
+		!CheckSeedUpgrade(SEED_COBCANNON, SEED_KERNELPULT) ||
+		!CheckSeedUpgrade(SEED_GOLD_MAGNET, SEED_MAGNETSHROOM) ||
+		!CheckSeedUpgrade(SEED_GLOOMSHROOM, SEED_FUMESHROOM) ||
 		!CheckSeedUpgrade(SEED_CATTAIL, SEED_LILYPAD))
 		return;
 
@@ -1042,7 +1042,7 @@ void SeedChooserScreen::MouseDown(int x, int y, int theClickCount)
 				return;
 			}
 		}
-		
+
 		SeedType aSeedType = SeedHitTest(x, y);
 		if (aSeedType != SEED_NONE && !SeedNotAllowedToPick(aSeedType))
 		{
@@ -1050,11 +1050,11 @@ void SeedChooserScreen::MouseDown(int x, int y, int theClickCount)
 			{
 				mApp->PlaySample(Sexy::SOUND_TAP);
 				if (mApp->LawnMessageBox(
-					DIALOG_MESSAGE, 
-					"[GET_FULL_VERSION_TITLE]", 
-					"[GET_FULL_VERSION_BODY]", 
+					DIALOG_MESSAGE,
+					"[GET_FULL_VERSION_TITLE]",
+					"[GET_FULL_VERSION_BODY]",
 					"[GET_FULL_VERSION_YES_BUTTON]",
-					"[GET_FULL_VERSION_NO_BUTTON]", 
+					"[GET_FULL_VERSION_NO_BUTTON]",
 					Dialog::BUTTONS_YES_NO
 				) == Dialog::ID_YES)
 				{

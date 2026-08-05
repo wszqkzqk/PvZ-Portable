@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -61,26 +61,26 @@ public:
 	int						mPriority;
 	int						mZOrder;
 
-public:	
+public:
 	Widget*					GetWidgetAtHelper(int x, int y, int theFlags, bool* found, int* theWidgetX, int* theWidgetY);
 	bool					IsBelowHelper(Widget* theWidget1, Widget* theWidget2, bool* found);
 	void					InsertWidgetHelper(const WidgetList::iterator &where, Widget *theWidget);
 
-public:	
+public:
 	WidgetContainer();
 	virtual ~WidgetContainer();
 
 	virtual Rect			GetRect();
-	virtual bool			Intersects(WidgetContainer* theWidget);	
+	virtual bool			Intersects(WidgetContainer* theWidget);
 
 	virtual void			AddWidget(Widget* theWidget);
-	virtual void			RemoveWidget(Widget* theWidget);	
-	virtual bool			HasWidget(Widget* theWidget);	
+	virtual void			RemoveWidget(Widget* theWidget);
+	virtual bool			HasWidget(Widget* theWidget);
 	virtual void			DisableWidget(Widget* theWidget);
 	virtual void			RemoveAllWidgets(bool doDelete = false, bool recursive = false);
-	
+
 	virtual void			SetFocus(Widget* theWidget);
-	virtual bool			IsBelow(Widget* theWidget1, Widget* theWidget2);			
+	virtual bool			IsBelow(Widget* theWidget1, Widget* theWidget2);
 	virtual void			MarkAllDirty();
 	virtual void			BringToFront(Widget* theWidget);
 	virtual void			BringToBack(Widget* theWidget);
@@ -94,13 +94,13 @@ public:
 	virtual void			MarkDirty(WidgetContainer* theWidget);
 
 	virtual void			AddedToManager(WidgetManager* theWidgetManager);
-	virtual void			RemovedFromManager(WidgetManager* theWidgetManager);			
+	virtual void			RemovedFromManager(WidgetManager* theWidgetManager);
 
 	virtual void			Update();
 	virtual void			UpdateAll(ModalFlags* theFlags);
 	virtual void			UpdateFAll(ModalFlags* theFlags, float theFrac);
 	virtual void			Draw(Graphics* g);
-	virtual void			DrawAll(ModalFlags* theFlags, Graphics* g);	
+	virtual void			DrawAll(ModalFlags* theFlags, Graphics* g);
 	virtual void			SysColorChangedAll();
 	virtual void			SysColorChanged();
 };

@@ -57,13 +57,13 @@ public:
 	MessageWidget(LawnApp* theApp);
 	~MessageWidget() { ClearReanim(); }
 
-	/*inline*/ void		SetLabel(std::string_view theNewLabel, MessageStyle theMessageStyle);
+	void		SetLabel(std::string_view theNewLabel, MessageStyle theMessageStyle);
 	void				Update();
 	void				Draw(Sexy::Graphics* g);
 	void				ClearReanim();
-	/*inline*/ void		ClearLabel();
+	void		ClearLabel();
 	inline bool			IsBeingDisplayed() { return mDuration != 0; }
-	/*inline*/ _Font*	GetFont();
+	_Font*	GetFont();
 	void				DrawReanimatedText(Sexy::Graphics* g, Sexy::_Font* theFont, const Sexy::Color& theColor, float thePosY);
 	void				LayoutReanimText();
 };

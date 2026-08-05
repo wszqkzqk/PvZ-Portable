@@ -30,78 +30,78 @@ class Plant;
 class Zombie;
 namespace Sexy
 {
-    class Graphics;
+	class Graphics;
 };
 using namespace Sexy;
 
 class ProjectileDefinition
 {
 public:
-    ProjectileType          mProjectileType;
-    int32_t                 mImageRow;
-    int32_t                 mDamage;
+	ProjectileType          mProjectileType;
+	int32_t                 mImageRow;
+	int32_t                 mDamage;
 };
 extern const ProjectileDefinition gProjectileDefinition[NUM_PROJECTILES];
 
 class Projectile : public GameObject
 {
 public:
-    int32_t                 mFrame;
-    int32_t                 mNumFrames;
-    int32_t                 mAnimCounter;
-    float                   mPosX;
-    float                   mPosY;
-    float                   mPosZ;
-    float                   mVelX;
-    float                   mVelY;
-    float                   mVelZ;
-    float                   mAccZ;
-    float                   mShadowY;
-    bool                    mDead;
-    int32_t                 mAnimTicksPerFrame;
-    ProjectileMotion        mMotionType;
-    ProjectileType          mProjectileType;
-    int32_t                 mProjectileAge;
-    int32_t                 mClickBackoffCounter;
-    float                   mRotation;
-    float                   mRotationSpeed;
-    bool                    mOnHighGround;
-    int32_t                 mDamageRangeFlags;
-    int32_t                 mHitTorchwoodGridX;
-    AttachmentID            mAttachmentID;
-    float                   mCobTargetX;
-    int32_t                 mCobTargetRow;
-    ZombieID                mTargetZombieID;
-    int32_t                 mLastPortalX;
+	int32_t                 mFrame;
+	int32_t                 mNumFrames;
+	int32_t                 mAnimCounter;
+	float                   mPosX;
+	float                   mPosY;
+	float                   mPosZ;
+	float                   mVelX;
+	float                   mVelY;
+	float                   mVelZ;
+	float                   mAccZ;
+	float                   mShadowY;
+	bool                    mDead;
+	int32_t                 mAnimTicksPerFrame;
+	ProjectileMotion        mMotionType;
+	ProjectileType          mProjectileType;
+	int32_t                 mProjectileAge;
+	int32_t                 mClickBackoffCounter;
+	float                   mRotation;
+	float                   mRotationSpeed;
+	bool                    mOnHighGround;
+	int32_t                 mDamageRangeFlags;
+	int32_t                 mHitTorchwoodGridX;
+	AttachmentID            mAttachmentID;
+	float                   mCobTargetX;
+	int32_t                 mCobTargetRow;
+	ZombieID                mTargetZombieID;
+	int32_t                 mLastPortalX;
 
 public:
-    Projectile();
-    ~Projectile();
+	Projectile();
+	~Projectile();
 
-    void                    ProjectileInitialize(int theX, int theY, int theRenderOrder, int theRow, ProjectileType theProjectileType);
-    void                    Update();
-    void                    Draw(Graphics* g);
-    void                    DrawShadow(Graphics* g);
-    void                    Die();
-    void                    DoImpact(Zombie* theZombie);
-    void                    UpdateMotion();
-    void                    CheckForCollision();
-    Zombie*                 FindCollisionTarget();
-    void                    UpdateLobMotion();
-    void                    CheckForHighGround();
-    bool                    CantHitHighGround();
-    void                    DoSplashDamage(Zombie* theZombie);
-    const ProjectileDefinition&   GetProjectileDef();
-    unsigned int            GetDamageFlags(Zombie* theZombie/* = nullptr*/);
-    Rect                    GetProjectileRect();
-    void                    UpdateNormalMotion();
-    Plant*                  FindCollisionTargetPlant();
-    void                    ConvertToFireball(int theGridX);
-    void                    ConvertToPea(int theGridX);
-    bool                    IsSplashDamage(Zombie* theZombie/* = nullptr*/);
-    void                    PlayImpactSound(Zombie* theZombie);
-    bool                    IsZombieHitBySplash(Zombie* theZombie);
-    bool                    PeaAboutToHitTorchwood();
+	void                    ProjectileInitialize(int theX, int theY, int theRenderOrder, int theRow, ProjectileType theProjectileType);
+	void                    Update();
+	void                    Draw(Graphics* g);
+	void                    DrawShadow(Graphics* g);
+	void                    Die();
+	void                    DoImpact(Zombie* theZombie);
+	void                    UpdateMotion();
+	void                    CheckForCollision();
+	Zombie*                 FindCollisionTarget();
+	void                    UpdateLobMotion();
+	void                    CheckForHighGround();
+	bool                    CantHitHighGround();
+	void                    DoSplashDamage(Zombie* theZombie);
+	const ProjectileDefinition&   GetProjectileDef();
+	unsigned int            GetDamageFlags(Zombie* theZombie/* = nullptr*/);
+	Rect                    GetProjectileRect();
+	void                    UpdateNormalMotion();
+	Plant*                  FindCollisionTargetPlant();
+	void                    ConvertToFireball(int theGridX);
+	void                    ConvertToPea(int theGridX);
+	bool                    IsSplashDamage(Zombie* theZombie/* = nullptr*/);
+	void                    PlayImpactSound(Zombie* theZombie);
+	bool                    IsZombieHitBySplash(Zombie* theZombie);
+	bool                    PeaAboutToHitTorchwood();
 
 };
 

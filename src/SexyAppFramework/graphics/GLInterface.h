@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -45,7 +45,7 @@ class TriVertex;
 
 typedef std::set<GLImage*> GLImageSet;
 
-enum RenderImageFlags 
+enum RenderImageFlags
 {
 	RenderImageFlag_MinimizeNumSubdivisions	=			0x0001,		// subdivide image into fewest possible textures (may use more memory)
 	RenderImageFlag_Use64By64Subdivisions	=			0x0002,		// good to use with image strips so the entire texture isn't pulled in when drawing just a piece
@@ -149,7 +149,7 @@ public:
 	typedef std::vector<TextureDataPiece> TextureVector;
 
 	TextureVector mTextures;
-	
+
 	int mWidth,mHeight;
 	int mTexVecWidth, mTexVecHeight;
 	int mTexPieceWidth, mTexPieceHeight;
@@ -171,7 +171,7 @@ public:
 	GLuint& GetTextureF(float x, float y, float &width, float &height, float &u1, float &v1, float &u2, float &v2, float *uvBounds);
 
 	void Blt(float theX, float theY, const Rect& theSrcRect, const Color& theColor);
-	void BltTransformed(const SexyMatrix3 &theTrans, const Rect& theSrcRect, const Color& theColor, const Rect *theClipRect = nullptr, float theX = 0, float theY = 0, bool center = false);	
+	void BltTransformed(const SexyMatrix3 &theTrans, const Rect& theSrcRect, const Color& theColor, const Rect *theClipRect = nullptr, float theX = 0, float theY = 0, bool center = false);
 	void BltTriangles(const TriVertex theVertices[][3], int theNumTriangles, unsigned int theColor, float tx = 0, float ty = 0, bool clampUv = true);
 };
 

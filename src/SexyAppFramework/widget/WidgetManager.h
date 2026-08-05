@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -43,9 +43,9 @@ enum
 	WIDGETFLAGS_UPDATE			= 1,
 	WIDGETFLAGS_MARK_DIRTY		= 2,
 	WIDGETFLAGS_DRAW			= 4,
-	WIDGETFLAGS_CLIP			= 8,	
+	WIDGETFLAGS_CLIP			= 8,
 	WIDGETFLAGS_ALLOW_MOUSE		= 16,
-	WIDGETFLAGS_ALLOW_FOCUS		= 32,	
+	WIDGETFLAGS_ALLOW_FOCUS		= 32,
 };
 
 class PreModalInfo
@@ -63,18 +63,18 @@ typedef std::vector<std::pair<Widget*, int> > DeferredOverlayVector;
 
 class WidgetManager : public WidgetContainer
 {
-public:	
+public:
 	Widget*					mDefaultTab;
-	
+
 	Graphics*				mCurG;
 	SexyAppBase*			mApp;
-	MemoryImage*			mImage;	
+	MemoryImage*			mImage;
 	MemoryImage*			mTransientImage;
-	bool					mLastHadTransients;	
-	Widget*					mPopupCommandWidget;	
+	bool					mLastHadTransients;
+	Widget*					mPopupCommandWidget;
 	DeferredOverlayVector	mDeferredOverlayWidgets;
 	int						mMinDeferredOverlayPriority;
-	
+
 	bool					mHasFocus;
 	Widget*					mFocusWidget;
 	Widget*					mLastDownWidget;
@@ -92,8 +92,8 @@ public:
 	int						mDownButtons;
 	int						mActualDownButtons;
 	bool					mKeyDown[0xFF];
-	int						mLastDownButtonId;	
-	
+	int						mLastDownButtonId;
+
 	int						mWidgetFlags;
 
 protected:
@@ -107,8 +107,8 @@ protected:
 public:
 	WidgetManager(SexyAppBase* theApplet);
 	~WidgetManager() override;
-	
-	void					FreeResources();		
+
+	void					FreeResources();
 	void					AddBaseModal(Widget* theWidget, const FlagsMod& theBelowFlagsMod);
 	void					AddBaseModal(Widget* theWidget);
 	void					RemoveBaseModal(Widget* theWidget);
@@ -117,21 +117,21 @@ public:
 	Widget*					GetAnyWidgetAt(int x, int y, int* theWidgetX, int* theWidgetY);
 	Widget*					GetWidgetAt(int x, int y, int* theWidgetX, int* theWidgetY);
 	void					SetFocus(Widget* aWidget) override;
-	void					GotFocus();	
-	void					LostFocus();	
+	void					GotFocus();
+	void					LostFocus();
 	void					InitModalFlags(ModalFlags* theModalFlags);
 	void					DrawWidgetsTo(Graphics* g);
-	void					DoMouseUps(Widget* theWidget, ulong theDownCode);	
+	void					DoMouseUps(Widget* theWidget, ulong theDownCode);
 	void					DoMouseUps();
 	void					DeferOverlay(Widget* theWidget, int thePriority);
 	void					FlushDeferredOverlayWidgets(int theMaxPriority);
-	
+
 	bool					DrawScreen();
-	bool					UpdateFrame();				
+	bool					UpdateFrame();
 	bool					UpdateFrameF(float theFrac);
 	void					SetPopupCommandWidget(Widget* theList);
-	void					RemovePopupCommandWidget();	
-	void					MousePosition(int x, int y);	
+	void					RemovePopupCommandWidget();
+	void					MousePosition(int x, int y);
 	void					RehupMouse();
 	void					RemapMouse(int& theX, int& theY);
 	bool					MouseUp(int x, int y, int theClickCount);

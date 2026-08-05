@@ -167,7 +167,7 @@ void MessageWidget::SetLabel(std::string_view theNewLabel, MessageStyle theMessa
 			PVZP_ASSERT(false);
 			break;
 		}
-		
+
 		if (mReanimType != ReanimationType::REANIM_NONE)
 		{
 			LayoutReanimText();
@@ -195,7 +195,7 @@ void MessageWidget::LayoutReanimText()
 			int aOff = aCurPos;
 			aCurPos = aPos + 1;
 			std::string aLine(&mLabel[aOff], aLen);
-			
+
 			aLineWidth[aCurLine] = aFont->StringWidth(aLine);
 			aMaxWidth = std::max(aMaxWidth, aLineWidth[aCurLine]);
 			aCurLine++;
@@ -363,7 +363,7 @@ void MessageWidget::Draw(Graphics* g)
 {
 	if (mDuration <= 0)
 		return;
-	
+
 	_Font* aFont = GetFont();
 	_Font* aOutlineFont = nullptr;
 	int aPosX = BOARD_WIDTH / 2;
@@ -506,12 +506,12 @@ void MessageWidget::Draw(Graphics* g)
 			if (aSubStr.size() > 0)
 			{
 				PvzpDrawString(
-					g, 
-					aSubStr, 
-					BOARD_WIDTH / 2 - mApp->mBoard->mX, 
-					aPosY + 26, 
-					Sexy::FONT_HOUSEOFTERROR16, 
-					Color(224, 187, 62, aColor.mAlpha), 
+					g,
+					aSubStr,
+					BOARD_WIDTH / 2 - mApp->mBoard->mX,
+					aPosY + 26,
+					Sexy::FONT_HOUSEOFTERROR16,
+					Color(224, 187, 62, aColor.mAlpha),
 					DrawStringJustification::DS_ALIGN_CENTER
 				);
 			}

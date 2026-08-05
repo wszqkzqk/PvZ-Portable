@@ -1,7 +1,7 @@
 /*
  * Portions of this file are based on the PopCap Games Framework
  * Copyright (C) 2005-2009 PopCap Games, Inc.
- * 
+ *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
@@ -51,12 +51,12 @@ public:
 
 public:
 	SexyAllocMap() { gSexyAllocMapValid = true; }
-	~SexyAllocMap() 
-	{ 
-		if (gShowLeaks) 
-			SexyDumpUnfreed();		
+	~SexyAllocMap()
+	{
+		if (gShowLeaks)
+			SexyDumpUnfreed();
 
-		gSexyAllocMapValid = false; 
+		gSexyAllocMapValid = false;
 	}
 };
 static SexyAllocMap gSexyAllocMap;
@@ -111,7 +111,7 @@ void SexyDumpUnfreed()
 	snprintf(buf, sizeof(buf), "Memory Leak Report for %s\n", asctime(localtime(&aTime)));
 	fprintf(f, "%s", buf);
 	Sexy::PrintF("\n%s", buf);
-	for(i = gSexyAllocMap.begin(); i != gSexyAllocMap.end(); i++) 
+	for(i = gSexyAllocMap.begin(); i != gSexyAllocMap.end(); i++)
 	{
 		snprintf(buf, sizeof(buf), "%s(%d) : Leak %d byte%s\n", i->second.file, i->second.line, i->second.size,i->second.size>1?"s":"");
 		Sexy::PrintF("%s", buf);
@@ -121,14 +121,14 @@ void SexyDumpUnfreed()
 		unsigned char* data = (unsigned char*)i->first;
 
 		for (index = 0; index < i->second.size; index++)
-		{			
+		{
 			unsigned char _c = *data;
-			
+
 			if (count == 0)
 				sprintf(hex_dump, "\t%02X ", _c);
 			else
 				sprintf(hex_dump, "%s%02X ", hex_dump, _c);
-		
+
 			if ((_c < 32) || (_c > 126))
 				_c = '.';
 
@@ -136,7 +136,7 @@ void SexyDumpUnfreed()
 				sprintf(ascii_dump, "%s%c ", ascii_dump, _c);
 			else
 				sprintf(ascii_dump, "%s%c", count == 0 ? "\t" : ascii_dump, _c);
-			
+
 
 			if (++count == 16)
 			{
@@ -165,7 +165,7 @@ void SexyDumpUnfreed()
 
 		count = 0;
 		fprintf(f, "\n\n");
-		memset((void*)hex_dump, 0, 1024);	
+		memset((void*)hex_dump, 0, 1024);
 		memset((void*)ascii_dump, 0, 1024);
 
 #endif // SEXY_DUMP_LEAKED_MEM

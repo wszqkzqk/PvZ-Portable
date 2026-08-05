@@ -105,7 +105,7 @@ bool CheatDialog::AllowChar(int theId, char theChar)
 bool CheatDialog::ApplyCheat()
 {
 	int aChallengeIndex;
-	if (sscanf(mLevelEditWidget->mString.c_str(), "c%d", &aChallengeIndex) == 1 || 
+	if (sscanf(mLevelEditWidget->mString.c_str(), "c%d", &aChallengeIndex) == 1 ||
 		sscanf(mLevelEditWidget->mString.c_str(), "C%d", &aChallengeIndex) == 1)
 	{
 		mApp->mGameMode = (GameMode)std::clamp(aChallengeIndex, 0, NUM_CHALLENGE_MODES);
@@ -137,11 +137,11 @@ bool CheatDialog::ApplyCheat()
 	if (aLevel <= 0)
 	{
 		mApp->DoDialog(
-			Dialogs::DIALOG_CHEATERROR, 
-			true, 
-			"Enter Level", 
-			"Invalid Level. Do 'number' or 'area-subarea' or 'Cnumber' or 'Farea-subarea'.", 
-			"[DIALOG_BUTTON_OK]", 
+			Dialogs::DIALOG_CHEATERROR,
+			true,
+			"Enter Level",
+			"Invalid Level. Do 'number' or 'area-subarea' or 'Cnumber' or 'Farea-subarea'.",
+			"[DIALOG_BUTTON_OK]",
 			Dialog::BUTTONS_FOOTER
 		);
 		return false;

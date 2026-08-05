@@ -64,6 +64,6 @@ bool TypingCheck::Check(Sexy::KeyCode theKeyCode)
 
 	if (mRecentTyping.size() > aLength)
 		mRecentTyping = mRecentTyping.substr(1, aLength);
-	
+
 	return Check();
 }
