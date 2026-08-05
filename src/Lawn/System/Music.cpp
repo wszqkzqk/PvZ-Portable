@@ -267,7 +267,6 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 	mCurMusicFileMain = MusicFile::MUSIC_FILE_NONE;
 	mCurMusicFileDrums = MusicFile::MUSIC_FILE_NONE;
 	mCurMusicFileHihats = MusicFile::MUSIC_FILE_NONE;
-	bool aRestartingSong = theOffset != -1;
 
 	switch (theMusicTune)
 	{
@@ -371,15 +370,6 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 		PVZP_ASSERT(false);
 		break;
 	}
-
-	if (aRestartingSong)
-	{
-		// TODO: Restore BPM/speed for restarting songs when tempo API is implemented
-	}
-	else
-	{
-		// TODO: Read base BPM/speed from newly started song when tempo API is implemented
-	}
 }
 
 unsigned long Music::GetMusicOrder(MusicFile theMusicFile)
@@ -388,34 +378,8 @@ unsigned long Music::GetMusicOrder(MusicFile theMusicFile)
 	return ((SDLMusicInterface*)mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
 }
 
-void Music::MusicResyncChannel(MusicFile theMusicFileToMatch, MusicFile theMusicFileToSync)
-{
-	unsigned int aPosToMatch = GetMusicOrder(theMusicFileToMatch);
-	unsigned int aPosToSync = GetMusicOrder(theMusicFileToSync);
-	int aDiff = (aPosToSync >> 16) - (aPosToMatch >> 16);
-	if (abs(aDiff) <= 128)
-	{
-		int aBPM = mBaseBPM;
-		if (aDiff > 2)
-			aBPM -= 2;
-		else if (aDiff > 0)
-			aBPM -= 1;
-		else if (aDiff < -2)
-			aBPM += 2;
-		else if (aDiff < 0)
-			aBPM -= 1;
-
-		// TODO: Apply BPM adjustment when tempo API is implemented
-	}
-}
-
 void Music::MusicResync()
 {
-	if (mCurMusicFileMain != MusicFile::MUSIC_FILE_NONE)
-	{
-		if (mCurMusicFileDrums != MusicFile::MUSIC_FILE_NONE)
-			MusicResyncChannel(mCurMusicFileMain, mCurMusicFileDrums);
-	}
 }
 
 void Music::StartBurst()
