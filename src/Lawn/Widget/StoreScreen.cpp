@@ -1077,7 +1077,6 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
 			if (aGiveAchievement) {
 				ReportAchievement::GiveAchievement(mApp, Morticulturalist, aGiveAchievement);
 				SetBubbleText(4000, 800, false);
-				// todo: add these?
 			}
 
 			mApp->WriteCurrentUserConfig();

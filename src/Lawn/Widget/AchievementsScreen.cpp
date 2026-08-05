@@ -223,7 +223,6 @@ void AchievementsWidget::MouseWheel(int theDelta) {
 }
 
 void ReportAchievement::GiveAchievement(LawnApp* theApp, int theAchievement, bool theForceGive) {
-	// todo: finish adding the achievement give events
 	if (!theApp->mPlayerInfo)
 		return;
 

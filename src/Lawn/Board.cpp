@@ -1671,7 +1671,6 @@ void Board::StartLevel()
 	unsigned int aSurvivalStage = mApp->mGameMode - GAMEMODE_SURVIVAL_ENDLESS_STAGE_1;
 	if (aSurvivalStage <= 4) {
 		if (GetSurvivalFlagsCompleted() >= 20) {
-			// if ( !*(mApp->mPlayerInfo + 53) ) todo: add this?
 			ReportAchievement::GiveAchievement(mApp, Immortal, true);
 		}
 	}
@@ -8468,7 +8467,6 @@ void Board::AddSunMoney(int theAmount)
 	mSunMoney += theAmount;
 	mSunMoney = std::min(mSunMoney, 9990);
 	if (mSunMoney >= 8000)
-		// if ( !*(mApp->mPlayerInfo + 48) ) todo: figure this out
 		ReportAchievement::GiveAchievement(mApp, SunnyDays, true);
 }
 
