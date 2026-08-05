@@ -1919,10 +1919,7 @@ void LawnApp::ButtonDepress(int theId)
 		case Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN:
 			KillDialog(Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN);
 			mBoardResult = BoardResult::BOARDRESULT_QUIT;
-			if (mBoard)
-			{
-				mBoard->TryToSaveGame();
-			}
+			mBoard->TryToSaveGame();
 			DoBackToMain();
 			return;
 
@@ -3327,7 +3324,12 @@ void LawnApp::DoNeedRegisterDialog()
 
 void LawnApp::FinishModelessDialogs()
 {
-
+	// Kill dialogs bound to the board; a killed dialog counts as cancelled and deletion is deferred
+	KillDialog(Dialogs::DIALOG_CONFIRM_RESTART);
+	KillDialog(Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN);
+	KillDialog(Dialogs::DIALOG_PAUSED);
+	KillDialog(Dialogs::DIALOG_ALMANAC);  // may be mid-WaitForResult with the options dialog parked under it
+	KillNewOptionsDialog();
 }
 
 bool LawnApp::NeedRegister()

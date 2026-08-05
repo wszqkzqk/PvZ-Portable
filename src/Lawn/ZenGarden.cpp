@@ -493,10 +493,8 @@ void ZenGarden::MouseDownWithMoneySign(Plant* thePlant)
 
 	if (aResult == Dialog::ID_YES)
 	{
-		// the plant may have been replaced or removed during the modal dialog
 		Plant* aSellPlant = mBoard->mPlants.DataArrayTryToGet(static_cast<unsigned int>(aPlantID));
-		if (aSellPlant == nullptr || aSellPlant->mDead ||
-			aSellPlant->mPottedPlantIndex < 0 || aSellPlant->mPottedPlantIndex >= mApp->mPlayerInfo->mNumPottedPlants)
+		if (aSellPlant == nullptr || aSellPlant->mDead)  // the plant may have been replaced during the modal wait
 		{
 			return;
 		}
@@ -538,8 +536,15 @@ void ZenGarden::PlantFertilized(Plant* thePlant)
 
 	if (aPottedPlant->mPlantAge == PottedPlantAge::PLANTAGE_SMALL)
 	{
+		PlantID aOldPlantID = (PlantID)mBoard->mPlants.DataArrayGetID(thePlant);
 		RemovePottedPlant(thePlant);
-		PlacePottedPlant(thePlant->mPottedPlantIndex);
+		Plant* aNewPlant = PlacePottedPlant(thePlant->mPottedPlantIndex);
+		if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE &&
+			mBoard->mCursorObject->mGlovePlantID == aOldPlantID)
+		{
+			// keep the glove holding the replacement plant
+			mBoard->mCursorObject->mGlovePlantID = (PlantID)mBoard->mPlants.DataArrayGetID(aNewPlant);
+		}
 		mApp->PlaySample(SOUND_LOADINGBAR_FLOWER);
 	}
 	else
@@ -1023,7 +1028,7 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType)
 	{
 		for (Plant* aPlant : mBoard->mPlants)
 		{
-			if (aPlant->mDead)
+			if (aPlant->mDead || aPlant->mPottedPlantIndex == -1)
 				continue;
 			if (mBoard->IsPlantInGoldWateringCanRange(x, y, aPlant))
 			{
@@ -1042,6 +1047,24 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType)
 	Plant* aPlant = mBoard->GetTopPlantAt(aGridX, aGridY, PlantPriority::TOPPLANT_ZEN_TOOL_ORDER);
 	if (aPlant && aPlant->mPottedPlantIndex != -1)
 	{
+		PottedPlant* aPottedPlant = PottedPlantFromIndex(aPlant->mPottedPlantIndex);
+		PottedPlantNeed aNeed = GetPlantsNeed(aPottedPlant);
+		if (aNeed == PottedPlantNeed::PLANTNEED_WATER && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_WATERING_CAN)
+		{
+			PlantWatered(aPlant);
+		}
+		else if (aNeed == PottedPlantNeed::PLANTNEED_FERTILIZER && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_FERTILIZER)
+		{
+			PlantFertilized(aPlant);
+		}
+		else if (aNeed == PottedPlantNeed::PLANTNEED_BUGSPRAY && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_BUG_SPRAY)
+		{
+			PlantFulfillNeed(aPlant);
+		}
+		else if (aNeed == PottedPlantNeed::PLANTNEED_PHONOGRAPH && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_PHONOGRAPH)
+		{
+			PlantFulfillNeed(aPlant);
+		}
 
 		if (mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_FERTILIZE_PLANTS && theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_FERTILIZER)
 		{

@@ -154,11 +154,7 @@ void CursorObject::Draw(Graphics* g)
 
 	case CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE:
 	{
-		Plant* aPlant = mBoard->mPlants.DataArrayTryToGet(static_cast<unsigned int>(mGlovePlantID));
-		if (aPlant == nullptr || aPlant->mPottedPlantIndex < 0)
-		{
-			break;
-		}
+		Plant* aPlant = mBoard->mPlants.DataArrayGet(static_cast<unsigned int>(mGlovePlantID));
 		PottedPlant* aPottedPlant = &mApp->mPlayerInfo->mPottedPlant[aPlant->mPottedPlantIndex];
 		if (mBoard->mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN || mBoard->mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM)
 		{
@@ -295,11 +291,7 @@ void CursorPreview::Draw(Graphics* g)
 	}
 	else if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE)
 	{
-		Plant* aPlant = mBoard->mPlants.DataArrayTryToGet(static_cast<unsigned int>(mBoard->mCursorObject->mGlovePlantID));
-		if (aPlant && aPlant->mPottedPlantIndex >= 0)
-		{
-			aPottedPlant = &mApp->mPlayerInfo->mPottedPlant[aPlant->mPottedPlantIndex];
-		}
+		aPottedPlant = &mApp->mPlayerInfo->mPottedPlant[mBoard->mPlants.DataArrayGet(static_cast<unsigned int>(mBoard->mCursorObject->mGlovePlantID))->mPottedPlantIndex];
 	}
 
 	if (aPottedPlant)
