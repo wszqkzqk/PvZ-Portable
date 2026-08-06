@@ -941,6 +941,12 @@ void Reanimation::Draw(Graphics* g)
 	DrawRenderGroup(g, RENDER_GROUP_NORMAL);
 }
 
+void Reanimation::DrawAllRenderGroups(Graphics* g)
+{
+	for (int aRenderGroup = RENDER_GROUP_NORMAL; aRenderGroup <= RENDER_GROUP_MAX; aRenderGroup++)
+		DrawRenderGroup(g, aRenderGroup);
+}
+
 int Reanimation::FindTrackIndex(const char* theTrackName)
 {
 	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)

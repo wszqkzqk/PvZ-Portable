@@ -112,4 +112,29 @@ constexpr int ZombatarRemapAccessoryForRuntime(int theIndex)
 	}
 }
 
+enum ZombatarPage
+{
+	ZOMBATAR_PAGE_SKIN,
+	ZOMBATAR_PAGE_HAIR,
+	ZOMBATAR_PAGE_FACIAL_HAIR,
+	ZOMBATAR_PAGE_TIDBITS,
+	ZOMBATAR_PAGE_EYEWEAR,
+	ZOMBATAR_PAGE_CLOTHES,
+	ZOMBATAR_PAGE_ACCESSORY,
+	ZOMBATAR_PAGE_HATS,
+	ZOMBATAR_PAGE_BACKDROPS,
+	NUM_ZOMBATAR_PAGES
+};
+
+struct ZombatarPartLayout
+{
+	int mOffsetX;
+	int mOffsetY;
+	int mColorOffsetX;
+	int mColorOffsetY;
+	int mDrawOrder;
+};
+
+const ZombatarPartLayout* GetPartLayout(ZombatarPage thePage, int theIndex);
+
 #endif

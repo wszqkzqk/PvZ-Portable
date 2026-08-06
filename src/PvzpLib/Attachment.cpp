@@ -499,7 +499,7 @@ void Attachment::Draw(Graphics* g, bool theParentHidden)
 			Reanimation* aReanimation = aReanimations.DataArrayTryToGet(aAttachEffect->mEffectID);
 			if (aReanimation)
 			{
-				aReanimation->Draw(g);
+				aReanimation->DrawAllRenderGroups(g);
 			}
 			break;
 		}

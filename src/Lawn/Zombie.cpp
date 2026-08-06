@@ -3418,18 +3418,19 @@ void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
 		int mColorSlot;
 		int mMaxCount;
 		const char* mPrefix;
+		ZombatarPage mPage;
 		bool mRemapAccessory;
 		bool mCompactTrackRange;
 	};
 
 	static constexpr RuntimePart aRuntimeParts[] =
 	{
-		{ ZOMBATAR_SLOT_HATS, ZOMBATAR_SLOT_HATS_COLOR, 14, "hats_", false, false },
-		{ ZOMBATAR_SLOT_HAIR, ZOMBATAR_SLOT_HAIR_COLOR, 16, "hair_", false, false },
-		{ ZOMBATAR_SLOT_TIDBITS, ZOMBATAR_SLOT_TIDBITS_COLOR, 14, "tidBits_", false, false },
-		{ ZOMBATAR_SLOT_EYEWEAR, ZOMBATAR_SLOT_EYEWEAR_COLOR, 16, "eyeWear_", false, false },
-		{ ZOMBATAR_SLOT_ACCESSORY, ZOMBATAR_SLOT_ACCESSORY_COLOR, 15, "accessories_", true, false },
-		{ ZOMBATAR_SLOT_FACIAL_HAIR, ZOMBATAR_SLOT_FACIAL_HAIR_COLOR, 25, "facialHair_", false, true }
+		{ ZOMBATAR_SLOT_HATS, ZOMBATAR_SLOT_HATS_COLOR, 14, "hats_", ZOMBATAR_PAGE_HATS, false, false },
+		{ ZOMBATAR_SLOT_HAIR, ZOMBATAR_SLOT_HAIR_COLOR, 16, "hair_", ZOMBATAR_PAGE_HAIR, false, false },
+		{ ZOMBATAR_SLOT_TIDBITS, ZOMBATAR_SLOT_TIDBITS_COLOR, 14, "tidBits_", ZOMBATAR_PAGE_TIDBITS, false, false },
+		{ ZOMBATAR_SLOT_EYEWEAR, ZOMBATAR_SLOT_EYEWEAR_COLOR, 16, "eyeWear_", ZOMBATAR_PAGE_EYEWEAR, false, false },
+		{ ZOMBATAR_SLOT_ACCESSORY, ZOMBATAR_SLOT_ACCESSORY_COLOR, 15, "accessories_", ZOMBATAR_PAGE_ACCESSORY, true, false },
+		{ ZOMBATAR_SLOT_FACIAL_HAIR, ZOMBATAR_SLOT_FACIAL_HAIR_COLOR, 25, "facialHair_", ZOMBATAR_PAGE_FACIAL_HAIR, false, true }
 	};
 
 	for (const RuntimePart& aPart : aRuntimeParts)
@@ -3442,13 +3443,21 @@ void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
 			aTrackIndex -= aTrackIndex / 17;
 		if (aPart.mRemapAccessory)
 			aTrackIndex = ZombatarRemapAccessoryForRuntime(aTrackIndex);
-		std::string aPrefix = ZombatarTrackName(aPart.mPrefix, aTrackIndex);
+		std::string aTrackName = ZombatarTrackName(aPart.mPrefix, aTrackIndex);
 
-		if (!aHeadReanim->TrackExists(aPrefix.c_str()))
-			continue;
-		ReanimatorTrackInstance* aPartTrack = aHeadReanim->GetTrackInstanceByName(aPrefix.c_str());
-		aHeadReanim->AssignRenderGroupToPrefix(aPrefix.c_str(), RENDER_GROUP_NORMAL);
-		aPartTrack->mTrackColor = ZombatarGetColor(ZombatarReadSignedRecordSlot(theRecord, aPart.mColorSlot));
+		const ZombatarPartLayout* aLayout = GetPartLayout(aPart.mPage, aPartIndex);
+		const int aDrawOrder = aLayout ? aLayout->mDrawOrder : 0;
+		if (aHeadReanim->TrackExists(aTrackName.c_str()))
+		{
+			aHeadReanim->AssignRenderGroupToTrack(aTrackName.c_str(), aDrawOrder);
+			aHeadReanim->GetTrackInstanceByName(aTrackName.c_str())->mTrackColor =
+				ZombatarGetColor(ZombatarReadSignedRecordSlot(theRecord, aPart.mColorSlot));
+		}
+
+		// some parts exist only as a "_line" detail track without a base track
+		std::string aLineTrackName = aTrackName + "_line";
+		if (aHeadReanim->TrackExists(aLineTrackName.c_str()))
+			aHeadReanim->AssignRenderGroupToTrack(aLineTrackName.c_str(), aDrawOrder + 1);
 	}
 }
 

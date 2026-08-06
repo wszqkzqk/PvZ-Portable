@@ -115,7 +115,8 @@ extern const ReanimationParams gLawnReanimationArray[static_cast<int>(Reanimatio
 enum
 {
 	RENDER_GROUP_HIDDEN = -1,
-	RENDER_GROUP_NORMAL = 0
+	RENDER_GROUP_NORMAL = 0,
+	RENDER_GROUP_MAX = 17
 };
 
 class ReanimationHolder
@@ -217,6 +218,7 @@ public:
 	void                            ReanimationDie();
 	void                            Update();
 	void                 Draw(Graphics* g);
+	void                            DrawAllRenderGroups(Graphics* g);
 	void                            DrawRenderGroup(Graphics* g, int theRenderGroup);
 	bool                            DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, PvzpTriangleGroup* theTriangleGroup);
 	void                            GetCurrentTransform(int theTrackIndex, ReanimatorTransform* theTransformCurrent);

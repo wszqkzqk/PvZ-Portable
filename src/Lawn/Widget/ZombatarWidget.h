@@ -24,6 +24,7 @@
 
 #include "widget/Widget.h"
 #include "widget/ButtonListener.h"
+#include "../System/Zombatar.h"
 
 class GameSelector;
 class LawnApp;
@@ -32,20 +33,6 @@ class NewLawnButton;
 class Zombie;
 
 using namespace Sexy;
-
-enum ZombatarPage
-{
-	ZOMBATAR_PAGE_SKIN,
-	ZOMBATAR_PAGE_HAIR,
-	ZOMBATAR_PAGE_FACIAL_HAIR,
-	ZOMBATAR_PAGE_TIDBITS,
-	ZOMBATAR_PAGE_EYEWEAR,
-	ZOMBATAR_PAGE_CLOTHES,
-	ZOMBATAR_PAGE_ACCESSORY,
-	ZOMBATAR_PAGE_HATS,
-	ZOMBATAR_PAGE_BACKDROPS,
-	NUM_ZOMBATAR_PAGES
-};
 
 enum ZombatarWidgetState
 {
