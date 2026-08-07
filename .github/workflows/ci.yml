@@ -93,6 +93,7 @@ jobs:
           libXScrnSaver-devel \
           libxkbcommon-devel \
           mesa-libGL-devel \
+          nasm \
           ninja-build \
           pipewire-devel \
           pkgconf-pkg-config \
@@ -234,7 +235,6 @@ jobs:
           -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
           -DENABLE_SHARED=OFF \
           -DENABLE_STATIC=ON \
-          -DWITH_SIMD=OFF \
           -DWITH_TURBOJPEG=OFF
         cmake --build build-jpeg -j$(nproc)
         cmake --install build-jpeg
