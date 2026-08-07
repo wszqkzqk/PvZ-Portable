@@ -179,6 +179,72 @@ static bool IsValidUTF8(const char* theData, int theLen)
 	return true;
 }
 
+// Decode UTF-16 to UTF-8 without iconv. SDL_iconv_string falls through to the
+// system iconv when SDL is built with it, which needs glibc's gconv modules --
+// and some handheld firmware ships none, leaving every string from the pak
+// (LawnStrings.txt is UTF-16LE) empty. Unpaired surrogates become U+FFFD.
+static std::string UTF16ToUTF8(const char* theData, int theLen, bool isBigEndian)
+{
+	auto p = reinterpret_cast<const unsigned char*>(theData);
+	std::string aResult;
+	aResult.reserve(theLen);	// one byte per input byte is a fair first guess
+
+	for (int i = 0; i + 1 < theLen; i += 2)
+	{
+		uint32_t aCodepoint = isBigEndian
+			? static_cast<uint32_t>((p[i] << 8) | p[i + 1])
+			: static_cast<uint32_t>((p[i + 1] << 8) | p[i]);
+
+		if (aCodepoint >= 0xD800 && aCodepoint <= 0xDBFF)
+		{
+			// High surrogate: needs its low surrogate to form one codepoint.
+			uint32_t aLow = 0;
+			if (i + 3 < theLen)
+			{
+				aLow = isBigEndian
+					? static_cast<uint32_t>((p[i + 2] << 8) | p[i + 3])
+					: static_cast<uint32_t>((p[i + 3] << 8) | p[i + 2]);
+			}
+			if (aLow >= 0xDC00 && aLow <= 0xDFFF)
+			{
+				aCodepoint = 0x10000 + ((aCodepoint - 0xD800) << 10) + (aLow - 0xDC00);
+				i += 2;
+			}
+			else
+			{
+				aCodepoint = 0xFFFD;
+			}
+		}
+		else if (aCodepoint >= 0xDC00 && aCodepoint <= 0xDFFF)
+		{
+			aCodepoint = 0xFFFD;	// low surrogate without a high one
+		}
+
+		if (aCodepoint < 0x80)
+			aResult += static_cast<char>(aCodepoint);
+		else if (aCodepoint < 0x800)
+		{
+			aResult += static_cast<char>(0xC0 | (aCodepoint >> 6));
+			aResult += static_cast<char>(0x80 | (aCodepoint & 0x3F));
+		}
+		else if (aCodepoint < 0x10000)
+		{
+			aResult += static_cast<char>(0xE0 | (aCodepoint >> 12));
+			aResult += static_cast<char>(0x80 | ((aCodepoint >> 6) & 0x3F));
+			aResult += static_cast<char>(0x80 | (aCodepoint & 0x3F));
+		}
+		else
+		{
+			aResult += static_cast<char>(0xF0 | (aCodepoint >> 18));
+			aResult += static_cast<char>(0x80 | ((aCodepoint >> 12) & 0x3F));
+			aResult += static_cast<char>(0x80 | ((aCodepoint >> 6) & 0x3F));
+			aResult += static_cast<char>(0x80 | (aCodepoint & 0x3F));
+		}
+	}
+
+	return aResult;
+}
+
 bool Buffer::ToUTF8String(std::string* theString) const
 {
 	const char* aData = (const char*)GetDataPtr();
@@ -190,27 +256,21 @@ bool Buffer::ToUTF8String(std::string* theString) const
 		return true;
 	}
 
-	char* aStringBuffer = nullptr;
 	if (aLen >= 2 && memcmp(aData, "\xFF\xFE", 2) == 0) {
 		if ((aLen - 2) % 2 != 0) return false;
-		aStringBuffer = SDL_iconv_string("UTF-8", "UTF-16LE", aData + 2, aLen - 2);
+		*theString = UTF16ToUTF8(aData + 2, aLen - 2, false);
+		return true;
 	} else if (aLen >= 2 && memcmp(aData, "\xFE\xFF", 2) == 0) {
 		if ((aLen - 2) % 2 != 0) return false;
-		aStringBuffer = SDL_iconv_string("UTF-8", "UTF-16BE", aData + 2, aLen - 2);
+		*theString = UTF16ToUTF8(aData + 2, aLen - 2, true);
+		return true;
 	} else if (IsValidUTF8(aData, aLen)) {
 		*theString = std::string(aData, aLen);
 		return true;
-	} else {
-		*theString = Win1252ToUTF8(aData, aLen);
-		return true;
 	}
 
-	if (aStringBuffer) {
-		*theString = std::string(aStringBuffer);
-		SDL_free(aStringBuffer);
-		return true;
-	}
-	return false;
+	*theString = Win1252ToUTF8(aData, aLen);
+	return true;
 }
 
 void Buffer::FromWebString(std::string_view theString)
