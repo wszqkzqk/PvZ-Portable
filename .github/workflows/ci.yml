@@ -159,7 +159,7 @@ jobs:
 
     - name: Cache Source-Built Deps
       id: deps-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/pvz-deps
         key: linux-static-deps-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
@@ -337,7 +337,7 @@ jobs:
         echo "VCPKG_TC=msvc-$tc" >> $env:GITHUB_ENV
 
     - name: Restore vcpkg binary cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: vcpkg-cache
         # Triplet is in the key so the x86 and x64 jobs don't share caches.
@@ -391,7 +391,7 @@ jobs:
         echo "VCPKG_TC=msvc-$tc" >> $env:GITHUB_ENV
 
     - name: Restore vcpkg binary cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: vcpkg-cache
         # Triplet is in the key so the x86 and x64 jobs don't share caches.
@@ -560,7 +560,7 @@ jobs:
         echo "VCPKG_TC=ndk-$NDK_VER" >> "$GITHUB_ENV"
 
     - name: Restore vcpkg binary cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: vcpkg-cache
         key: vcpkg-android-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
@@ -690,7 +690,7 @@ jobs:
         echo "VCPKG_TC=clang-${CLANG_VER:-unknown}" >> "$GITHUB_ENV"
 
     - name: Restore vcpkg binary cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: vcpkg-cache
         key: vcpkg-ios-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMake/triplets/arm64-ios.cmake') }}
