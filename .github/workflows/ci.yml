@@ -99,27 +99,28 @@ jobs:
           pkgconf-pkg-config \
           pulseaudio-libs-devel \
           wayland-devel \
+          wget \
           zlib-devel \
           zlib-static
 
     - name: Resolve Dep Versions
       run: |
         SDL2_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-2.*' \
-          | sed 's|.*refs/tags/release-||' | sort -V | tail -1)
+          | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
         if [ -z "$SDL2_TAG" ]; then
           SDL2_TAG="2.32.10" # Fallback to a known stable version if tag retrieval fails
         fi
         echo "SDL2_TAG=$SDL2_TAG" >> "$GITHUB_ENV"
 
         OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
-          | grep -v '\^{}' | sed 's|.*refs/tags/libopenmpt-||' \
+          | sed 's|.*refs/tags/libopenmpt-||' \
           | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
         if [ -z "$OPENMPT_TAG" ]; then
           OPENMPT_TAG="0.8.4" # Fallback to a known stable version if tag retrieval fails
         fi
         echo "OPENMPT_TAG=$OPENMPT_TAG" >> "$GITHUB_ENV"
 
-        MPG123_VERSION=$(curl -sL https://sourceforge.net/projects/mpg123/best_release.json \
+        MPG123_VERSION=$(wget -qO- https://sourceforge.net/projects/mpg123/best_release.json \
           | grep -oE 'mpg123-[0-9]+\.[0-9]+\.[0-9]+' | head -1 | sed 's/mpg123-//')
         if [ -z "$MPG123_VERSION" ]; then
           MPG123_VERSION="1.33.7" # Fallback to a known stable version if retrieval fails
@@ -127,7 +128,7 @@ jobs:
         echo "MPG123_VERSION=$MPG123_VERSION" >> "$GITHUB_ENV"
 
         LIBPNG_VERSION=$(git ls-remote --tags https://github.com/pnggroup/libpng.git 'refs/tags/v1.6.*' \
-          | sed 's|.*refs/tags/v||' | grep -E '^[0-9.]+$' | sort -V | tail -1)
+          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
         if [ -z "$LIBPNG_VERSION" ]; then
           LIBPNG_VERSION="1.6.58" # Fallback to a known stable version if tag retrieval fails
         fi
@@ -167,7 +168,7 @@ jobs:
     - name: Build SDL2 (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
       run: |
-        curl -sL "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_TAG}/SDL2-${SDL2_TAG}.tar.gz" -o "SDL2-${SDL2_TAG}.tar.gz"
+        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_TAG}/SDL2-${SDL2_TAG}.tar.gz"
         tar xf "SDL2-${SDL2_TAG}.tar.gz"
         cmake -G Ninja -B build-sdl2 \
           -DCMAKE_BUILD_TYPE=Release \
@@ -206,7 +207,7 @@ jobs:
     - name: Build mpg123 (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
       run: |
-        curl -sL "https://downloads.sourceforge.net/project/mpg123/mpg123/${MPG123_VERSION}/mpg123-${MPG123_VERSION}.tar.bz2" -o mpg123.tar.bz2
+        wget -qO mpg123.tar.bz2 "https://downloads.sourceforge.net/project/mpg123/mpg123/${MPG123_VERSION}/mpg123-${MPG123_VERSION}.tar.bz2"
         mkdir -p mpg123-src
         tar xf mpg123.tar.bz2 -C mpg123-src --strip-components=1
         cd mpg123-src
@@ -239,7 +240,7 @@ jobs:
         cmake --build build-jpeg -j$(nproc)
         cmake --install build-jpeg
 
-        curl -sL "https://downloads.xiph.org/releases/ogg/libogg-${OGG_VERSION}.tar.gz" -o libogg.tar.gz
+        wget -qO libogg.tar.gz "https://downloads.xiph.org/releases/ogg/libogg-${OGG_VERSION}.tar.gz"
         mkdir -p libogg-src
         tar xf libogg.tar.gz -C libogg-src --strip-components=1
         cd libogg-src
@@ -248,7 +249,7 @@ jobs:
         make install
         cd ..
 
-        curl -sL "https://downloads.xiph.org/releases/vorbis/libvorbis-${VORBIS_VERSION}.tar.gz" -o libvorbis.tar.gz
+        wget -qO libvorbis.tar.gz "https://downloads.xiph.org/releases/vorbis/libvorbis-${VORBIS_VERSION}.tar.gz"
         mkdir -p libvorbis-src
         tar xf libvorbis.tar.gz -C libvorbis-src --strip-components=1
         cd libvorbis-src
@@ -544,7 +545,7 @@ jobs:
     - name: Download SDL2 Source
       run: |
         SDL2_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-2.*' \
-          | sed 's|.*refs/tags/release-||' | sort -V | tail -1)
+          | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
         if [ -z "$SDL2_TAG" ]; then
           SDL2_TAG="2.32.10" # Fallback to a known stable version if tag retrieval fails
         fi
@@ -757,7 +758,7 @@ jobs:
       run: |
         SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
         OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
-          | grep -v '\^{}' | sed 's|.*refs/tags/libopenmpt-||' \
+          | sed 's|.*refs/tags/libopenmpt-||' \
           | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
         if [ -z "$OPENMPT_TAG" ]; then
           OPENMPT_TAG="0.8.4" # Fallback to a known stable version if tag retrieval fails
