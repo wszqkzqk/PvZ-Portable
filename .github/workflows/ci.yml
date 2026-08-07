@@ -229,7 +229,6 @@ jobs:
         cmake -G Ninja -B build-jpeg libjpeg-turbo-src \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
-          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
           -DENABLE_SHARED=OFF \
           -DENABLE_STATIC=ON \
           -DWITH_SIMD=OFF \
