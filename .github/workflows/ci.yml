@@ -218,7 +218,6 @@ jobs:
         cmake -G Ninja -B build-libpng libpng-src \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
-          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
           -DPNG_SHARED=OFF \
           -DPNG_STATIC=ON \
           -DPNG_EXECUTABLES=OFF \
@@ -230,6 +229,7 @@ jobs:
         cmake -G Ninja -B build-jpeg libjpeg-turbo-src \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
+          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
           -DENABLE_SHARED=OFF \
           -DENABLE_STATIC=ON \
           -DWITH_SIMD=OFF \
@@ -237,25 +237,23 @@ jobs:
         cmake --build build-jpeg -j$(nproc)
         cmake --install build-jpeg
 
-        git clone --depth=1 --branch "v${OGG_VERSION}" https://github.com/xiph/libogg.git libogg-src
-        cmake -G Ninja -B build-ogg libogg-src \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
-          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-          -DBUILD_SHARED_LIBS=OFF \
-          -DBUILD_TESTING=OFF \
-          -DINSTALL_DOCS=OFF
-        cmake --build build-ogg -j$(nproc)
-        cmake --install build-ogg
+        curl -sL "https://downloads.xiph.org/releases/ogg/libogg-${OGG_VERSION}.tar.gz" -o libogg.tar.gz
+        mkdir -p libogg-src
+        tar xf libogg.tar.gz -C libogg-src --strip-components=1
+        cd libogg-src
+        ./configure --prefix="$HOME/pvz-deps" --enable-static --disable-shared
+        make -j$(nproc)
+        make install
+        cd ..
 
-        git clone --depth=1 --branch "v${VORBIS_VERSION}" https://github.com/xiph/vorbis.git vorbis-src
-        cmake -G Ninja -B build-vorbis vorbis-src \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
-          -DBUILD_SHARED_LIBS=OFF \
-          -DCMAKE_PREFIX_PATH="$HOME/pvz-deps"
-        cmake --build build-vorbis -j$(nproc)
-        cmake --install build-vorbis
+        curl -sL "https://downloads.xiph.org/releases/vorbis/libvorbis-${VORBIS_VERSION}.tar.gz" -o libvorbis.tar.gz
+        mkdir -p libvorbis-src
+        tar xf libvorbis.tar.gz -C libvorbis-src --strip-components=1
+        cd libvorbis-src
+        PKG_CONFIG_PATH="$HOME/pvz-deps/lib/pkgconfig" \
+          ./configure --prefix="$HOME/pvz-deps" --enable-static --disable-shared
+        make -j$(nproc)
+        make install
 
     - name: Build PvZ-Portable
       run: |
