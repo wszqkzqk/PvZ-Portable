@@ -69,6 +69,149 @@ jobs:
         name: pvz-portable-archlinux
         path: dist/
 
+  build-linux-static:
+    name: Build for Linux (x86_64, static)
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04 # For an old enough glibc baseline
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Install Dependencies
+      run: |
+        apt-get update
+        apt-get install -y --no-install-recommends \
+          build-essential \
+          ca-certificates \
+          cmake \
+          curl \
+          git \
+          libasound2-dev \
+          libdecor-0-dev \
+          libgl1-mesa-dev \
+          libjpeg-dev \
+          libogg-dev \
+          libpipewire-0.3-dev \
+          libpng-dev \
+          libpulse-dev \
+          libvorbis-dev \
+          libwayland-bin \
+          libwayland-dev \
+          libxcursor-dev \
+          libxext-dev \
+          libxi-dev \
+          libxkbcommon-dev \
+          libxrandr-dev \
+          libxss-dev \
+          ninja-build \
+          pkg-config \
+          wget \
+          zlib1g-dev
+
+    - name: Resolve Dep Versions
+      run: |
+        SDL2_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-2.*' \
+          | sed 's|.*refs/tags/release-||' | sort -V | tail -1)
+        if [ -z "$SDL2_TAG" ]; then
+          SDL2_TAG="2.32.10" # Fallback to a known stable version if tag retrieval fails
+        fi
+        echo "SDL2_TAG=$SDL2_TAG" >> "$GITHUB_ENV"
+
+        OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
+          | grep -v '\^{}' | sed 's|.*refs/tags/libopenmpt-||' \
+          | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+        if [ -z "$OPENMPT_TAG" ]; then
+          OPENMPT_TAG="0.8.4" # Fallback to a known stable version if tag retrieval fails
+        fi
+        echo "OPENMPT_TAG=$OPENMPT_TAG" >> "$GITHUB_ENV"
+
+        MPG123_VERSION=$(curl -sL https://sourceforge.net/projects/mpg123/best_release.json \
+          | grep -oE 'mpg123-[0-9]+\.[0-9]+\.[0-9]+' | head -1 | sed 's/mpg123-//')
+        if [ -z "$MPG123_VERSION" ]; then
+          MPG123_VERSION="1.33.7" # Fallback to a known stable version if retrieval fails
+        fi
+        echo "MPG123_VERSION=$MPG123_VERSION" >> "$GITHUB_ENV"
+
+        echo "Using SDL2 $SDL2_TAG, libopenmpt $OPENMPT_TAG, mpg123 $MPG123_VERSION"
+
+    - name: Cache Source-Built Deps
+      id: deps-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/pvz-deps
+        key: linux-static-deps-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}
+
+    - name: Build SDL2 (static)
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      run: |
+        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_TAG}/SDL2-${SDL2_TAG}.tar.gz"
+        tar xf "SDL2-${SDL2_TAG}.tar.gz"
+        cmake -G Ninja -B build-sdl2 \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
+          -DSDL_SHARED=OFF \
+          -DSDL_STATIC=ON \
+          -DSDL_TEST=OFF \
+          -DSDL_KMSDRM=OFF \
+          -DSDL_JACK=OFF \
+          -DSDL_SNDIO=OFF \
+          -DSDL_DBUS=OFF \
+          -DSDL_IBUS=OFF \
+          -DSDL_LIBUDEV=OFF \
+          -DSDL_LIBSAMPLERATE=OFF \
+          "SDL2-${SDL2_TAG}"
+        cmake --build build-sdl2 -j$(nproc)
+        cmake --install build-sdl2
+
+    - name: Build libopenmpt (static)
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      run: |
+        git clone --depth=1 --branch "libopenmpt-${OPENMPT_TAG}" https://github.com/OpenMPT/openmpt.git libopenmpt-src
+        cd libopenmpt-src
+        make CONFIG=gcc \
+          STATIC_LIB=1 SHARED_LIB=0 \
+          EXAMPLES=0 OPENMPT123=0 TEST=0 \
+          NO_ZLIB=1 NO_MPG123=1 NO_OGG=1 NO_VORBIS=1 NO_VORBISFILE=1 \
+          NO_PORTAUDIO=1 NO_PORTAUDIOCPP=1 NO_PULSEAUDIO=1 \
+          NO_SDL2=1 NO_FLAC=1 NO_SNDFILE=1 \
+          -j$(nproc)
+        make CONFIG=gcc \
+          STATIC_LIB=1 SHARED_LIB=0 \
+          EXAMPLES=0 OPENMPT123=0 TEST=0 \
+          PREFIX="$HOME/pvz-deps" install
+
+    - name: Build mpg123 (static)
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      run: |
+        curl -sL "https://downloads.sourceforge.net/project/mpg123/mpg123/${MPG123_VERSION}/mpg123-${MPG123_VERSION}.tar.bz2" -o mpg123.tar.bz2
+        mkdir -p mpg123-src
+        tar xf mpg123.tar.bz2 -C mpg123-src --strip-components=1
+        cd mpg123-src
+        ./configure --prefix="$HOME/pvz-deps" --enable-static --disable-shared \
+          --disable-components --enable-libmpg123
+        make -j$(nproc)
+        make install
+
+    - name: Build PvZ-Portable
+      run: |
+        cmake -G Ninja -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_STATIC=ON \
+          -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++" \
+          -DCMAKE_PREFIX_PATH="$HOME/pvz-deps"
+        cmake --build build
+
+        mkdir -p dist
+        cp build/pvz-portable dist/
+        strip dist/pvz-portable
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: pvz-portable-linux-static
+        path: dist/
+
   build-windows-msys2-ucrt64:
     name: Build for Windows (MSYS2 UCRT64)
     runs-on: windows-latest
@@ -587,7 +730,7 @@ jobs:
 
   release:
     name: Release
-    needs: ['build-archlinux', 'build-windows-msys2-ucrt64', 'build-windows-msvc-x64', 'build-windows-msvc-x86', 'build-macos', 'build-android', 'build-ios', 'build-wasm']
+    needs: ['build-archlinux', 'build-linux-static', 'build-windows-msys2-ucrt64', 'build-windows-msvc-x64', 'build-windows-msvc-x86', 'build-macos', 'build-android', 'build-ios', 'build-wasm']
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
@@ -605,6 +748,10 @@ jobs:
         echo "Preparing Arch Linux file..."
         chmod +x artifacts/pvz-portable-archlinux/pvz-portable
         mv artifacts/pvz-portable-archlinux/pvz-portable release_files/pvz-portable-archlinux-x86_64
+
+        echo "Preparing Linux static file..."
+        chmod +x artifacts/pvz-portable-linux-static/pvz-portable
+        mv artifacts/pvz-portable-linux-static/pvz-portable release_files/pvz-portable-linux-static-x86_64
 
         echo "Preparing Windows MSVC x64 file..."
         mv artifacts/pvz-portable-windows-msvc-x64/pvz-portable.exe release_files/pvz-portable-windows-msvc-x64-static.exe
