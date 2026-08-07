@@ -72,7 +72,7 @@ jobs:
   build-linux-static:
     name: Build for Linux (x86_64, static)
     runs-on: ubuntu-latest
-    container: ubuntu:22.04 # For an old enough glibc baseline
+    container: quay.io/pypa/manylinux_2_34_x86_64 # Old glibc baseline with a recent toolchain
     steps:
     - uses: actions/checkout@v6
       with:
@@ -80,34 +80,23 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        apt-get update
-        apt-get install -y --no-install-recommends \
-          build-essential \
-          ca-certificates \
-          cmake \
-          curl \
-          git \
-          libasound2-dev \
-          libdecor-0-dev \
-          libgl1-mesa-dev \
-          libjpeg-dev \
-          libogg-dev \
-          libpipewire-0.3-dev \
-          libpng-dev \
-          libpulse-dev \
-          libvorbis-dev \
-          libwayland-bin \
-          libwayland-dev \
-          libxcursor-dev \
-          libxext-dev \
-          libxi-dev \
-          libxkbcommon-dev \
-          libxrandr-dev \
-          libxss-dev \
+        dnf install -y \
+          alsa-lib-devel \
+          libdecor-devel \
+          libXcursor-devel \
+          libXext-devel \
+          libXi-devel \
+          libXrandr-devel \
+          libXScrnSaver-devel \
+          libxkbcommon-devel \
+          mesa-libGL-devel \
           ninja-build \
-          pkg-config \
-          wget \
-          zlib1g-dev
+          pipewire-devel \
+          pkgconf-pkg-config \
+          pulseaudio-libs-devel \
+          wayland-devel \
+          zlib-devel \
+          zlib-static
 
     - name: Resolve Dep Versions
       run: |
@@ -133,19 +122,48 @@ jobs:
         fi
         echo "MPG123_VERSION=$MPG123_VERSION" >> "$GITHUB_ENV"
 
-        echo "Using SDL2 $SDL2_TAG, libopenmpt $OPENMPT_TAG, mpg123 $MPG123_VERSION"
+        LIBPNG_VERSION=$(git ls-remote --tags https://github.com/pnggroup/libpng.git 'refs/tags/v1.6.*' \
+          | sed 's|.*refs/tags/v||' | grep -E '^[0-9.]+$' | sort -V | tail -1)
+        if [ -z "$LIBPNG_VERSION" ]; then
+          LIBPNG_VERSION="1.6.58" # Fallback to a known stable version if tag retrieval fails
+        fi
+        echo "LIBPNG_VERSION=$LIBPNG_VERSION" >> "$GITHUB_ENV"
+
+        JPEG_TURBO_VERSION=$(git ls-remote --tags https://github.com/libjpeg-turbo/libjpeg-turbo.git 'refs/tags/[0-9]*' \
+          | sed 's|.*refs/tags/||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+        if [ -z "$JPEG_TURBO_VERSION" ]; then
+          JPEG_TURBO_VERSION="3.1.3" # Fallback to a known stable version if tag retrieval fails
+        fi
+        echo "JPEG_TURBO_VERSION=$JPEG_TURBO_VERSION" >> "$GITHUB_ENV"
+
+        OGG_VERSION=$(git ls-remote --tags https://github.com/xiph/libogg.git 'refs/tags/v*' \
+          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+        if [ -z "$OGG_VERSION" ]; then
+          OGG_VERSION="1.3.6" # Fallback to a known stable version if tag retrieval fails
+        fi
+        echo "OGG_VERSION=$OGG_VERSION" >> "$GITHUB_ENV"
+
+        VORBIS_VERSION=$(git ls-remote --tags https://github.com/xiph/vorbis.git 'refs/tags/v*' \
+          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+        if [ -z "$VORBIS_VERSION" ]; then
+          VORBIS_VERSION="1.3.7" # Fallback to a known stable version if tag retrieval fails
+        fi
+        echo "VORBIS_VERSION=$VORBIS_VERSION" >> "$GITHUB_ENV"
+
+        echo "Using SDL2 $SDL2_TAG, libopenmpt $OPENMPT_TAG, mpg123 $MPG123_VERSION,"
+        echo "libpng $LIBPNG_VERSION, libjpeg-turbo $JPEG_TURBO_VERSION, libogg $OGG_VERSION, libvorbis $VORBIS_VERSION"
 
     - name: Cache Source-Built Deps
       id: deps-cache
       uses: actions/cache@v4
       with:
         path: ~/pvz-deps
-        key: linux-static-deps-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}
+        key: linux-static-deps-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
 
     - name: Build SDL2 (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
       run: |
-        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_TAG}/SDL2-${SDL2_TAG}.tar.gz"
+        curl -sL "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_TAG}/SDL2-${SDL2_TAG}.tar.gz" -o "SDL2-${SDL2_TAG}.tar.gz"
         tar xf "SDL2-${SDL2_TAG}.tar.gz"
         cmake -G Ninja -B build-sdl2 \
           -DCMAKE_BUILD_TYPE=Release \
@@ -192,6 +210,52 @@ jobs:
           --disable-components --enable-libmpg123
         make -j$(nproc)
         make install
+
+    - name: Build Codec Libraries (static)
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      run: |
+        git clone --depth=1 --branch "v${LIBPNG_VERSION}" https://github.com/pnggroup/libpng.git libpng-src
+        cmake -G Ninja -B build-libpng libpng-src \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
+          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+          -DPNG_SHARED=OFF \
+          -DPNG_STATIC=ON \
+          -DPNG_EXECUTABLES=OFF \
+          -DPNG_TESTS=OFF
+        cmake --build build-libpng -j$(nproc)
+        cmake --install build-libpng
+
+        git clone --depth=1 --branch "${JPEG_TURBO_VERSION}" https://github.com/libjpeg-turbo/libjpeg-turbo.git libjpeg-turbo-src
+        cmake -G Ninja -B build-jpeg libjpeg-turbo-src \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
+          -DENABLE_SHARED=OFF \
+          -DENABLE_STATIC=ON \
+          -DWITH_SIMD=OFF \
+          -DWITH_TURBOJPEG=OFF
+        cmake --build build-jpeg -j$(nproc)
+        cmake --install build-jpeg
+
+        git clone --depth=1 --branch "v${OGG_VERSION}" https://github.com/xiph/libogg.git libogg-src
+        cmake -G Ninja -B build-ogg libogg-src \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
+          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DBUILD_TESTING=OFF \
+          -DINSTALL_DOCS=OFF
+        cmake --build build-ogg -j$(nproc)
+        cmake --install build-ogg
+
+        git clone --depth=1 --branch "v${VORBIS_VERSION}" https://github.com/xiph/vorbis.git vorbis-src
+        cmake -G Ninja -B build-vorbis vorbis-src \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DCMAKE_PREFIX_PATH="$HOME/pvz-deps"
+        cmake --build build-vorbis -j$(nproc)
+        cmake --install build-vorbis
 
     - name: Build PvZ-Portable
       run: |
