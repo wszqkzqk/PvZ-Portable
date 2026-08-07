@@ -106,7 +106,7 @@ jobs:
     - name: Resolve Dep Versions
       run: |
         SDL2_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-2.*' \
-          | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
         if [ -z "$SDL2_TAG" ]; then
           SDL2_TAG="2.32.10" # Fallback to a known stable version if tag retrieval fails
         fi
@@ -114,42 +114,42 @@ jobs:
 
         OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
           | sed 's|.*refs/tags/libopenmpt-||' \
-          | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
         if [ -z "$OPENMPT_TAG" ]; then
           OPENMPT_TAG="0.8.4" # Fallback to a known stable version if tag retrieval fails
         fi
         echo "OPENMPT_TAG=$OPENMPT_TAG" >> "$GITHUB_ENV"
 
         MPG123_VERSION=$(wget -qO- https://sourceforge.net/projects/mpg123/best_release.json \
-          | grep -oE 'mpg123-[0-9]+\.[0-9]+\.[0-9]+' | head -1 | sed 's/mpg123-//')
+          | grep -oE 'mpg123-[0-9]+\.[0-9]+\.[0-9]+' | head -1 | sed 's/mpg123-//' || true)
         if [ -z "$MPG123_VERSION" ]; then
           MPG123_VERSION="1.33.7" # Fallback to a known stable version if retrieval fails
         fi
         echo "MPG123_VERSION=$MPG123_VERSION" >> "$GITHUB_ENV"
 
         LIBPNG_VERSION=$(git ls-remote --tags https://github.com/pnggroup/libpng.git 'refs/tags/v1.6.*' \
-          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
         if [ -z "$LIBPNG_VERSION" ]; then
           LIBPNG_VERSION="1.6.58" # Fallback to a known stable version if tag retrieval fails
         fi
         echo "LIBPNG_VERSION=$LIBPNG_VERSION" >> "$GITHUB_ENV"
 
         JPEG_TURBO_VERSION=$(git ls-remote --tags https://github.com/libjpeg-turbo/libjpeg-turbo.git 'refs/tags/[0-9]*' \
-          | sed 's|.*refs/tags/||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          | sed 's|.*refs/tags/||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
         if [ -z "$JPEG_TURBO_VERSION" ]; then
           JPEG_TURBO_VERSION="3.1.3" # Fallback to a known stable version if tag retrieval fails
         fi
         echo "JPEG_TURBO_VERSION=$JPEG_TURBO_VERSION" >> "$GITHUB_ENV"
 
         OGG_VERSION=$(git ls-remote --tags https://github.com/xiph/libogg.git 'refs/tags/v*' \
-          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
         if [ -z "$OGG_VERSION" ]; then
           OGG_VERSION="1.3.6" # Fallback to a known stable version if tag retrieval fails
         fi
         echo "OGG_VERSION=$OGG_VERSION" >> "$GITHUB_ENV"
 
         VORBIS_VERSION=$(git ls-remote --tags https://github.com/xiph/vorbis.git 'refs/tags/v*' \
-          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
         if [ -z "$VORBIS_VERSION" ]; then
           VORBIS_VERSION="1.3.7" # Fallback to a known stable version if tag retrieval fails
         fi
@@ -158,12 +158,13 @@ jobs:
         echo "Using SDL2 $SDL2_TAG, libopenmpt $OPENMPT_TAG, mpg123 $MPG123_VERSION,"
         echo "libpng $LIBPNG_VERSION, libjpeg-turbo $JPEG_TURBO_VERSION, libogg $OGG_VERSION, libvorbis $VORBIS_VERSION"
 
-    - name: Cache Source-Built Deps
+    - name: Restore Source-Built Deps Cache
       id: deps-cache
-      uses: actions/cache@v6
+      uses: actions/cache/restore@v6
       with:
         path: ~/pvz-deps
-        key: linux-static-deps-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
+        # Bump the -vN suffix when the dep build recipe changes
+        key: linux-static-deps-v2-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
 
     - name: Build SDL2 (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
@@ -257,6 +258,14 @@ jobs:
           ./configure --prefix="$HOME/pvz-deps" --enable-static --disable-shared
         make -j$(nproc)
         make install
+
+    # Skipped on failure, so partial deps never poison the cache.
+    - name: Save Source-Built Deps Cache
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ~/pvz-deps
+        key: linux-static-deps-v2-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
 
     - name: Build PvZ-Portable
       run: |
@@ -545,7 +554,7 @@ jobs:
     - name: Download SDL2 Source
       run: |
         SDL2_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-2.*' \
-          | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
         if [ -z "$SDL2_TAG" ]; then
           SDL2_TAG="2.32.10" # Fallback to a known stable version if tag retrieval fails
         fi
@@ -759,7 +768,7 @@ jobs:
         SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
         OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
           | sed 's|.*refs/tags/libopenmpt-||' \
-          | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
         if [ -z "$OPENMPT_TAG" ]; then
           OPENMPT_TAG="0.8.4" # Fallback to a known stable version if tag retrieval fails
         fi
