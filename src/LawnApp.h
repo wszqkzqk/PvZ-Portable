@@ -85,9 +85,7 @@ public:
 	ButtonList						mControlButtonList;
 	ImageList						mCreatedImageList;
 	std::string						mReferId;
-	std::string						mRegisterLink;
 	std::string						mMod;
-	bool							mRegisterResourcesLoaded;
 	bool							mCheatKeys;
 	GameMode						mGameMode;
 	GameScenes						mGameScene;
@@ -154,14 +152,9 @@ public:
 	void							LoadingThreadProc() override;
 	virtual void					LoadingCompleted();
 	void							LoadingThreadCompleted() override;
-	void							URLOpenFailed(const std::string& theURL) override;
-	void							URLOpenSucceeded(const std::string& theURL) override;
-	bool							OpenURL(const std::string& theURL, bool shutdownOnOpen) override;
 	bool							DebugKeyDown(int theKey) override;
 	void							HandleCmdLineParam(std::string_view theParamName, std::string_view theParamValue) override;
 	void							ConfirmQuit();
-	void							ConfirmCheckForUpdates() { ; }
-	void							CheckForUpdates() { ; }
 	void							DoUserDialog();
 	void							FinishUserDialog(bool isYes);
 	void							DoCreateUserDialog();
@@ -175,7 +168,6 @@ public:
 	void							FinishNameError(int theId);
 	void							FinishRestartConfirmDialog();
 	void							DoConfirmSellDialog(const std::string& theMessage);
-	void							FinishTimesUpDialog();
 	void							KillBoard();
 	void							MakeNewBoard();
 	void							StartPlaying();
@@ -188,16 +180,11 @@ public:
 	void							KillAwardScreen();
 	void							ShowSeedChooserScreen();
 	void							KillSeedChooserScreen();
-	void							DoHighScoreDialog();
 	void							DoBackToMain();
 	void							DoConfirmBackToMain();
 	void							DoNewOptions(bool theFromGameSelector);
 	void							ShowZombatarTOS();
-	void							DoRegister();
-	void							DoRegisterError();
-	bool							CanDoRegisterDialog();
 	bool					WriteCurrentUserConfig();
-	void							DoNeedRegisterDialog();
 	void							DoContinueDialog();
 	void							DoPauseDialog();
 	void							FinishModelessDialogs();
@@ -213,8 +200,6 @@ public:
 	void							ModalClose() override;
 	void							PreDisplayHook() override;
 	bool							ChangeDirHook(const char* theIntendedPath) override;
-	virtual bool					NeedRegister();
-	virtual void					UpdateRegisterInfo();
 	void							ButtonPress(int theId) override;
 	void							ButtonDepress(int theId) override;
 	void							ButtonDownTick(int theId) override;
@@ -298,9 +283,6 @@ public:
 	static std::string				Pluralize(int theCount, const char* theSingular, const char* thePlural);
 	int								GetNumTrophies(ChallengePage thePage);
 	bool					EarnedGoldTrophy();
-	inline bool						IsRegistered() { return false; }
-	inline bool						IsExpired() { return false; }
-	inline bool						IsDRMConnected() { return false; }
 	bool					IsScaryPotterLevel();
 	static bool			IsEndlessScaryPotter(GameMode theGameMode);
 	bool					IsSquirrelLevel();

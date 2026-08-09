@@ -47,8 +47,7 @@ class TitleScreen :public Sexy::Widget, public Sexy::ButtonListener
 public:
 	enum
 	{
-		TitleScreen_Start,
-		TitleScreen_Register
+		TitleScreen_Start
 	};
 
 public:
@@ -57,12 +56,9 @@ public:
 	float					mTotalBarWidth;
 	float					mBarVel;
 	float					mBarStartProgress;
-	bool					mRegisterClicked;
 	bool					mLoadingThreadComplete;
 	int						mTitleAge;
 	KeyCode					mQuickLoadKey;
-	bool					mNeedRegister;
-	bool					mNeedShowRegisterBox;
 	bool					mDrawnYet;
 	bool					mNeedToInit;
 	float					mPrevLoadingPercent;
@@ -90,7 +86,6 @@ public:
 	void					ButtonMouseMove(int, int, int) override{}
 	void					MouseDown(int x, int y, int theClickCount) override;
 	void					KeyDown(KeyCode theKey) override;
-	void					SetRegistered();
 	void					DrawToPreload(Graphics* g);
 };
 

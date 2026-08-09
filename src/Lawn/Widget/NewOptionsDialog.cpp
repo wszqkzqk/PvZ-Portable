@@ -395,8 +395,5 @@ void NewOptionsDialog::ButtonDepress(int theId)
 		break;
 	}
 
-	case NewOptionsDialog::NewOptionsDialog_Update:
-		mApp->CheckForUpdates();
-		break;
 	}
 }

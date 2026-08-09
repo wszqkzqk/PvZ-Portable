@@ -287,7 +287,6 @@ SexyAppBase::SexyAppBase()
 	mHasFocus = true;
 	mCustomCursorsEnabled = false;
 	mCustomCursorDirty = false;
-	mIsOpeningURL = false;
 	mInitialized = false;
 	mLastShutdownWasGraceful = true;
 	mReadFromRegistry = false;
@@ -362,14 +361,6 @@ SexyAppBase::SexyAppBase()
 	// Set default strings.  Init could read in overrides from partner.xml
 	SetString("DIALOG_BUTTON_OK",		"OK");
 	SetString("DIALOG_BUTTON_CANCEL","CANCEL");
-
-	SetString("UPDATE_CHECK_TITLE",		"Update Check");
-	SetString("UPDATE_CHECK_BODY",		"Checking if there are any updates available for this product ...");
-
-	SetString("UP_TO_DATE_TITLE",		"Up to Date");
-	SetString("UP_TO_DATE_BODY",		"There are no updates available for this product at this time.");
-	SetString("NEW_VERSION_TITLE",		"New Version");
-	SetString("NEW_VERSION_BODY",		"There is an update available for this product.  Would you like to visit the web site to download it?");
 
 	mDemoPrefix = "sexyapp";
 	mDemoFileName = mDemoPrefix + ".dmo";
@@ -954,34 +945,6 @@ void SexyAppBase::GotFocus()
 
 void SexyAppBase::LostFocus()
 {
-}
-
-void SexyAppBase::URLOpenFailed(const std::string& theURL)
-{
-	(void)theURL;
-	mIsOpeningURL = false;
-}
-
-void SexyAppBase::URLOpenSucceeded(const std::string& theURL)
-{
-	(void)theURL;
-	mIsOpeningURL = false;
-
-	if (mShutdownOnURLOpen)
-		Shutdown();
-}
-
-bool SexyAppBase::OpenURL(const std::string& theURL, bool shutdownOnOpen)
-{
-	if ((!mIsOpeningURL) || (theURL != mOpeningURL))
-	{
-		mShutdownOnURLOpen = shutdownOnOpen;
-		mIsOpeningURL = true;
-		mOpeningURL = theURL;
-		mOpeningURLTime = SDL_GetTicks();
-	}
-
-	return true;
 }
 
 std::string SexyAppBase::GetProductVersion(const std::string& thePath)
@@ -2169,9 +2132,6 @@ void SexyAppBase::ProcessDemo()
 
 							if ((mActive) && (!mIsWindowed))
 								mWidgetManager->MarkAllDirty();
-
-							if ((mIsOpeningURL) && (!mActive))
-								URLOpenSucceeded(mOpeningURL);
 						}
 						break;
 					case DEMO_SIZE:
@@ -2431,15 +2391,6 @@ void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
 	mIsWindowed = wantWindowed;
 
 	MakeWindow();
-
-	// We need to do this check to allow IE to get focus instead of
-	//  stealing it away for ourselves
-	if (!mIsOpeningURL)
-	{
-	}
-	else
-	{
-	}
 
 	if (mSoundManager!=nullptr)
 	{

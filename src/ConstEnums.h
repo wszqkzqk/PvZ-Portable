@@ -272,54 +272,39 @@ enum Dialogs : int32_t
 	DIALOG_NEWOPTIONS,                          // 2
 	DIALOG_ALMANAC,                             // 3
 	DIALOG_STORE,                               // 4
-	DIALOG_PREGAME_NAG,                         // 5
-	DIALOG_LOAD_GAME,                           // 6
-	DIALOG_CONFIRM_UPDATE_CHECK,                // 7
-	DIALOG_CHECKING_UPDATES,                    // 8
-	DIALOG_REGISTER_ERROR,                      // 9
-	DIALOG_COLORDEPTH_EXP,                      // 10: windowed mode unsupported
-	DIALOG_OPENURL_WAIT,                        // 11
-	DIALOG_OPENURL_FAIL,                        // 12
-	DIALOG_QUIT,                                // 13: quit from the main menu
-	DIALOG_HIGH_SCORES,                         // 14
-	DIALOG_NAG,                                 // 15
-	DIALOG_INFO,                                // 16: 3D acceleration unsupported/not recommended
-	DIALOG_GAME_OVER,                           // 17: level failed
-	DIALOG_LEVEL_COMPLETE,                      // 18
-	DIALOG_PAUSED,                              // 19
-	DIALOG_NO_MORE_MONEY,                       // 20
-	DIALOG_BONUS,                               // 21
-	DIALOG_CONFIRM_BACK_TO_MAIN,                // 22
-	DIALOG_CONFIRM_RESTART,                     // 23
-	DIALOG_THANKS_FOR_REGISTERING,              // 24
-	DIALOG_NOT_ENOUGH_MONEY,                    // 25: shop purchase with insufficient funds
-	DIALOG_UPGRADED,                            // 26: seed slot upgrade
-	DIALOG_NO_UPGRADE,                          // 27
-	DIALOG_CHOOSER_WARNING,                     // 28: no sun-producing plant or missing upgrade base plant
-	DIALOG_USERDIALOG,                          // 29
-	DIALOG_CREATEUSER,                          // 30
-	DIALOG_CONFIRMDELETEUSER,                   // 31
-	DIALOG_RENAMEUSER,                          // 32
-	DIALOG_CREATEUSERERROR,                     // 33: empty name in the create-user dialog
-	DIALOG_RENAMEUSERERROR,                     // 34: empty name in the rename-user dialog
-	DIALOG_CHEAT,                               // 35
-	DIALOG_CHEATERROR,                          // 36
-	DIALOG_CONTINUE,                            // 37: entering a level from a save
-	DIALOG_GETREADY,                            // 38
-	DIALOG_RESTARTCONFIRM,                      // 39: new game chosen in the continue dialog
-	DIALOG_CONFIRMPURCHASE,                     // 40
-	DIALOG_CONFIRMSELL,                         // 41
-	DIALOG_TIMESUP,                             // 42
-	DIALOG_VIRTUALHELP,                         // 43
-	DIALOG_JUMPAHEAD,                           // 44
-	DIALOG_CRAZY_DAVE,                          // 45
-	DIALOG_STORE_PURCHASE,                      // 46
-	DIALOG_ZEN_SELL,                            // 47
-	DIALOG_MESSAGE,                             // 48: generic message (loading, mode not unlocked, ...)
-	DIALOG_IMITATER,                            // 49
-	DIALOG_PURCHASE_PACKET_SLOT,                // 50
-	DIALOG_ZOMBATAR_TOS,                        // 51: terms of service
-	DIALOG_ZOMBATAR_DELETE,                     // 52
+	DIALOG_LOAD_GAME,                           // 5
+	DIALOG_COLORDEPTH_EXP,                      // 6: windowed mode unsupported
+	DIALOG_QUIT,                                // 7: quit from the main menu
+	DIALOG_INFO,                                // 8: 3D acceleration unsupported/not recommended
+	DIALOG_GAME_OVER,                           // 9: level failed
+	DIALOG_LEVEL_COMPLETE,                      // 10
+	DIALOG_PAUSED,                              // 11
+	DIALOG_NO_MORE_MONEY,                       // 12
+	DIALOG_CONFIRM_BACK_TO_MAIN,                // 13
+	DIALOG_CONFIRM_RESTART,                     // 14
+	DIALOG_NOT_ENOUGH_MONEY,                    // 15: shop purchase with insufficient funds
+	DIALOG_UPGRADED,                            // 16: seed slot upgrade
+	DIALOG_NO_UPGRADE,                          // 17
+	DIALOG_CHOOSER_WARNING,                     // 18: no sun-producing plant or missing upgrade base plant
+	DIALOG_USERDIALOG,                          // 19
+	DIALOG_CREATEUSER,                          // 20
+	DIALOG_CONFIRMDELETEUSER,                   // 21
+	DIALOG_RENAMEUSER,                          // 22
+	DIALOG_CREATEUSERERROR,                     // 23: empty name in the create-user dialog
+	DIALOG_RENAMEUSERERROR,                     // 24: empty name in the rename-user dialog
+	DIALOG_CHEAT,                               // 25
+	DIALOG_CHEATERROR,                          // 26
+	DIALOG_CONTINUE,                            // 27: entering a level from a save
+	DIALOG_GETREADY,                            // 28
+	DIALOG_RESTARTCONFIRM,                      // 29: new game chosen in the continue dialog
+	DIALOG_CRAZY_DAVE,                          // 30
+	DIALOG_STORE_PURCHASE,                      // 31
+	DIALOG_ZEN_SELL,                            // 32
+	DIALOG_MESSAGE,                             // 33: generic message (loading, mode not unlocked, ...)
+	DIALOG_IMITATER,                            // 34
+	DIALOG_PURCHASE_PACKET_SLOT,                // 35
+	DIALOG_ZOMBATAR_TOS,                        // 36: terms of service
+	DIALOG_ZOMBATAR_DELETE,                     // 37
 	NUM_DIALOGS
 };
 enum DebugTextMode : int32_t

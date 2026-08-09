@@ -209,13 +209,8 @@ public:
 	bool					mAlphaDisabled;
 	MusicInterface*			mMusicInterface;
 	bool					mReadFromRegistry;
-	std::string				mRegisterLink;
 	std::string				mProductVersion;
 	Image*					mCursorImages[NUM_CURSORS];
-	bool					mIsOpeningURL;
-	bool					mShutdownOnURLOpen;
-	std::string				mOpeningURL;
-	uint32_t				mOpeningURLTime;
 	uint32_t				mLastTimerTime;
 	uint32_t				mLastBigDelayTime;
 	double					mUnmutedMusicVolume;
@@ -442,9 +437,6 @@ public:
 	virtual void			LogScreenSaverError(const std::string &theError);
 	virtual void			SafeDeleteWidget(Widget* theWidget);
 
-	virtual void			URLOpenFailed(const std::string& theURL);
-	virtual void			URLOpenSucceeded(const std::string& theURL);
-	virtual bool			OpenURL(const std::string& theURL, bool shutdownOnOpen = false);
 	virtual std::string		GetProductVersion(const std::string& thePath);
 
 	virtual void			SEHOccured();

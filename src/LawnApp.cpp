@@ -179,7 +179,6 @@ LawnApp::LawnApp()
 	mMaxTime = 0;
 	mCompletedLoadingThreadTasks = 0;
 	mProfileMgr = new ProfileMgr();
-	mRegisterResourcesLoaded = false;
 	mCheatKeys = false;
 	mCrazyDaveReanimID = ReanimationID::REANIMATIONID_NULL;
 	mCrazyDaveState = CrazyDaveState::CRAZY_DAVE_OFF;
@@ -304,7 +303,6 @@ LawnApp::~LawnApp()
 	ReanimatorFreeDefinitions();
 	TrailFreeDefinitions();
 	FreeGlobalAllocators();
-	UpdateRegisterInfo();
 
 	delete mProfileMgr;
 	delete mLastLevelStats;
@@ -424,12 +422,6 @@ bool LawnApp::WriteCurrentUserConfig()
 
 void LawnApp::PreNewGame(GameMode theGameMode, bool theLookForSavedGame)
 {
-	//if (NeedRegister())
-	//{
-	//	ShowGameSelector();
-	//	return;
-	//}
-
 	mGameMode = theGameMode;
 	if (theLookForSavedGame && TryLoadGame())
 		return;
@@ -525,7 +517,6 @@ void LawnApp::NewGame()
 void LawnApp::ShowGameSelector()
 {
 	KillBoard();
-	//UpdateRegisterInfo();
 	if (mGameSelector)
 	{
 		mWidgetManager->RemoveWidget(mGameSelector);
@@ -538,11 +529,6 @@ void LawnApp::ShowGameSelector()
 	mWidgetManager->AddWidget(mGameSelector);
 	mWidgetManager->BringToBack(mGameSelector);
 	mWidgetManager->SetFocus(mGameSelector);
-
-	//if (NeedRegister())
-	//{
-	//	DoNeedRegisterDialog();
-	//}
 }
 
 void LawnApp::KillGameSelector()
@@ -616,7 +602,6 @@ void LawnApp::KillChallengeScreen()
 
 StoreScreen* LawnApp::ShowStoreScreen()
 {
-	//FinishModelessDialogs();
 	PVZP_ASSERT(!GetDialog(static_cast<int>(Dialogs::DIALOG_STORE)));
 
 	StoreScreen* aStoreScreen = new StoreScreen(this);
@@ -697,13 +682,10 @@ void LawnApp::DoConfirmBackToMain()
 
 	aDialog->mLawnYesButton->mLabel = PvzpStringTranslate("[LEAVE_BUTTON]");
 	aDialog->mLawnNoButton->mLabel = PvzpStringTranslate("[DIALOG_BUTTON_CANCEL]");
-	//aDialog->CalcSize(0, 0);
 }
 
 void LawnApp::DoNewOptions(bool theFromGameSelector)
 {
-	//FinishModelessDialogs();
-
 	NewOptionsDialog* aDialog = new NewOptionsDialog(this, theFromGameSelector);
 	CenterDialog(aDialog, IMAGE_OPTIONS_MENUBACK->mWidth, IMAGE_OPTIONS_MENUBACK->mHeight);
 	AddDialog(Dialogs::DIALOG_NEWOPTIONS, aDialog);
@@ -722,8 +704,6 @@ AlmanacDialog* LawnApp::DoAlmanacDialog(SeedType theSeedType, ZombieType theZomb
 {
 	PerfTimer mTimer;
 	mTimer.Start();
-
-	//FinishModelessDialogs();
 
 	AlmanacDialog* aDialog = new AlmanacDialog(this);
 	AddDialog(Dialogs::DIALOG_ALMANAC, aDialog);
@@ -755,7 +735,6 @@ void LawnApp::DoContinueDialog()
 void LawnApp::DoPauseDialog()
 {
 	mBoard->Pause(true);
-	//FinishModelessDialogs();
 
 	LawnDialog* aDialog = (LawnDialog*)DoDialog(
 		Dialogs::DIALOG_PAUSED,
@@ -785,7 +764,6 @@ int LawnApp::LawnMessageBox(int theDialogId, const char* theHeaderName, const ch
 	{
 		aDialog->mLawnNoButton->mLabel = PvzpStringTranslate(theButton2Name);
 	}
-	//aDialog->CalcSize(0, 0);
 
 	mWidgetManager->SetFocus(aDialog);
 	int aResult = aDialog->WaitForResult(true);
@@ -1088,11 +1066,6 @@ void LawnApp::FinishCheatDialog(bool isYes)
 		mBoardResult = BoardResult::BOARDRESULT_CHEAT;
 		PreNewGame(mGameMode, false);
 	}
-}
-
-void LawnApp::FinishTimesUpDialog()
-{
-	KillDialog(Dialogs::DIALOG_TIMESUP);
 }
 
 void LawnApp::DoConfirmSellDialog(const std::string& theMessage)
@@ -1738,8 +1711,6 @@ void LawnApp::LoadingThreadProc()
 	PvzpTrace("loading '%s' %d ms", "resources", static_cast<int>(aTimer.GetDuration()));
 
 	mMusic->MusicInit();
-	// aDuration goes unused
-	//int aDuration = max(aTimer.GetDuration(), 0.0);
 	aTimer.Start();
 
 	mPoolEffect = new PoolEffect();
@@ -1758,14 +1729,12 @@ void LawnApp::LoadingThreadProc()
 	PvzpHesitationTrace("trail");
 
 	PvzpParticleLoadDefinitions(gLawnParticleArray, LENGTH(gLawnParticleArray));
-	//aDuration = max(aTimer.GetDuration(), 0.0);
 	aTimer.Start();
 
 	PreloadForUser();
 	if (mLoadingFailed || mShutdown || mCloseRequest)
 		return;
 
-	//aDuration = max(aTimer.GetDuration(), 0.0);
 	aTimer.Start();
 
 	GetNumPreloadingTasks();
@@ -1798,42 +1767,6 @@ void LawnApp::LoadingCompleted()
 	mResourceManager->DeleteImage("IMAGE_TITLESCREEN");
 
 	ShowGameSelector();
-}
-
-void LawnApp::URLOpenFailed(const std::string& theURL)
-{
-	SexyAppBase::URLOpenFailed(theURL);
-	KillDialog(Dialogs::DIALOG_OPENURL_WAIT);
-	CopyToClipboard(theURL);
-
-	std::string aString =
-		StrFormat(
-			GetString("OPEN_URL", "Please open the following URL in your browser\n\n%s\n\nFor your convenience, this URL has already been copied to your clipboard.").c_str(),
-			theURL.c_str());
-
-	DoDialog(Dialogs::DIALOG_OPENURL_WAIT, true, GetString("OPEN_BROWSER", "Open Browser"), "[DIALOG_BUTTON_OK]", aString, Dialog::BUTTONS_FOOTER);
-}
-
-void LawnApp::URLOpenSucceeded(const std::string& theURL)
-{
-	SexyAppBase::URLOpenSucceeded(theURL);
-	KillDialog(Dialogs::DIALOG_OPENURL_WAIT);
-}
-
-bool LawnApp::OpenURL(const std::string& theURL, bool shutdownOnOpen)
-{
-	DoDialog(
-		Dialogs::DIALOG_OPENURL_WAIT,
-		true,
-		GetString("OPENING_BROWSER", "Opening Browser"),
-		GetString("OPENING_BROWSER", "Opening Browser"),
-		"",
-		Dialog::BUTTONS_NONE
-	);
-
-	DrawDirtyStuff();
-
-	return SexyAppBase::OpenURL(theURL, shutdownOnOpen);
 }
 
 void LawnApp::ConfirmQuit()
@@ -1872,16 +1805,7 @@ void LawnApp::ButtonDepress(int theId)
 			KillNewOptionsDialog();
 			return;
 
-		case Dialogs::DIALOG_PREGAME_NAG:
-			DoRegister();
-			return;
-
 		case Dialogs::DIALOG_LOAD_GAME:
-			return;
-
-		case Dialogs::DIALOG_CONFIRM_UPDATE_CHECK:
-			KillDialog(Dialogs::DIALOG_CONFIRM_UPDATE_CHECK);
-			CheckForUpdates();
 			return;
 
 		case Dialogs::DIALOG_QUIT:
@@ -1892,11 +1816,6 @@ void LawnApp::ButtonDepress(int theId)
 #elif !defined(__IPHONEOS__) // iOS apps must not quit or programmatically return to the Home screen.
 			CloseRequestAsync();
 #endif
-			return;
-
-		case Dialogs::DIALOG_NAG:
-			KillDialog(Dialogs::DIALOG_NAG);
-			DoRegister();
 			return;
 
 		case Dialogs::DIALOG_INFO:
@@ -1910,10 +1829,6 @@ void LawnApp::ButtonDepress(int theId)
 		case Dialogs::DIALOG_NO_MORE_MONEY:
 			KillDialog(Dialogs::DIALOG_NO_MORE_MONEY);
 			mBoard->AddSunMoney(100);
-			return;
-
-		case Dialogs::DIALOG_BONUS:
-			KillDialog(Dialogs::DIALOG_BONUS);
 			return;
 
 		case Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN:
@@ -1952,15 +1867,6 @@ void LawnApp::ButtonDepress(int theId)
 			FinishRestartConfirmDialog();
 			return;
 
-		case Dialogs::DIALOG_TIMESUP:
-			FinishTimesUpDialog();
-			return;
-
-		case 20008:
-			KillDialog(20008);
-			KillDialog(Dialogs::DIALOG_CHECKING_UPDATES);
-			return;
-
 		default:
 			KillDialog(theId - 2000);
 			return;
@@ -1971,11 +1877,6 @@ void LawnApp::ButtonDepress(int theId)
 	{
 		switch (theId - 3000)
 		{
-		case Dialogs::DIALOG_PREGAME_NAG:
-			KillDialog(Dialogs::DIALOG_PREGAME_NAG);
-			Shutdown();
-			return;
-
 		case Dialogs::DIALOG_LOAD_GAME:
 			KillDialog(Dialogs::DIALOG_LOAD_GAME);
 			return;
@@ -1998,15 +1899,6 @@ void LawnApp::ButtonDepress(int theId)
 
 		case Dialogs::DIALOG_CHEAT:
 			FinishCheatDialog(false);
-			return;
-
-		case Dialogs::DIALOG_TIMESUP:
-			FinishTimesUpDialog();
-			return;
-
-		case 10008:
-			KillDialog(10008);
-			KillDialog(Dialogs::DIALOG_CHECKING_UPDATES);
 			return;
 
 		default:
@@ -2281,17 +2173,7 @@ bool LawnApp::UpdateApp()
 		return false;
 	}
 
-	//if (mLoadingThreadCompleted)
-	//{
-	//	LoadingThreadCompleted();
-	//}
-
 	bool updated = SexyAppBase::UpdateApp();
-
-	//if (mLoadingThreadCompleted && !mExitToTop)
-	//{
-	//	CheckForUpdates();
-	//}
 
 	return updated;
 }
@@ -3297,31 +3179,6 @@ void LawnApp::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
 	}
 }
 
-void LawnApp::DoHighScoreDialog()
-{
-
-}
-
-void LawnApp::DoRegister()
-{
-
-}
-
-void LawnApp::DoRegisterError()
-{
-
-}
-
-bool LawnApp::CanDoRegisterDialog()
-{
-	return false;
-}
-
-void LawnApp::DoNeedRegisterDialog()
-{
-
-}
-
 void LawnApp::FinishModelessDialogs()
 {
 	// Kill dialogs bound to the board; a killed dialog counts as cancelled and deletion is deferred
@@ -3330,14 +3187,4 @@ void LawnApp::FinishModelessDialogs()
 	KillDialog(Dialogs::DIALOG_PAUSED);
 	KillDialog(Dialogs::DIALOG_ALMANAC);  // may be mid-WaitForResult with the options dialog parked under it
 	KillNewOptionsDialog();
-}
-
-bool LawnApp::NeedRegister()
-{
-	return false;
-}
-
-void LawnApp::UpdateRegisterInfo()
-{
-
 }

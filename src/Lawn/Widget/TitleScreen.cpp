@@ -45,9 +45,6 @@ TitleScreen::TitleScreen(LawnApp* theApp)
 	mPrevLoadingPercent = 0.0f;
 	mApp = theApp;
 	mTitleAge = 0;
-	mNeedRegister = false;
-	mRegisterClicked = false;
-	mNeedShowRegisterBox = false;
 	mLoadingThreadComplete = false;
 	mDrawnYet = false;
 	mNeedToInit = true;
@@ -182,7 +179,6 @@ void TitleScreen::Draw(Graphics* g)
 	int aGrassX = mStartButton->mX;
 	int aGrassY = mStartButton->mY - 17;
 
-	//Sexy::PrintF("%d %d\n", aGrassX, aGrassY);
 	g->DrawImage(IMAGE_LOADBAR_DIRT, aGrassX, aGrassY + 18);
 
 	if (mCurBarWidth >= mTotalBarWidth)
@@ -527,10 +523,6 @@ void TitleScreen::ButtonDepress(int theId)
 	{
 	case TitleScreen::TitleScreen_Start:
 		mApp->LoadingCompleted();
-		break;
-
-	case TitleScreen::TitleScreen_Register:
-		mRegisterClicked = true;
 		break;
 	}
 }
