@@ -164,13 +164,14 @@ jobs:
       with:
         path: ~/pvz-deps
         # Bump the -vN suffix when the dep build recipe changes
-        key: linux-static-deps-v2-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
+        key: linux-static-deps-v3-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
 
     - name: Build SDL2 (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
       run: |
         wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_TAG}/SDL2-${SDL2_TAG}.tar.gz"
         tar xf "SDL2-${SDL2_TAG}.tar.gz"
+        # Use SDL's built-in iconv for wider glibc compatibility, including glibc installs without iconv
         cmake -G Ninja -B build-sdl2 \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
@@ -184,6 +185,7 @@ jobs:
           -DSDL_IBUS=OFF \
           -DSDL_LIBUDEV=OFF \
           -DSDL_LIBSAMPLERATE=OFF \
+          -DSDL_SYSTEM_ICONV=OFF \
           "SDL2-${SDL2_TAG}"
         cmake --build build-sdl2 -j$(nproc)
         cmake --install build-sdl2
@@ -265,7 +267,7 @@ jobs:
       uses: actions/cache/save@v6
       with:
         path: ~/pvz-deps
-        key: linux-static-deps-v2-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
+        key: linux-static-deps-v3-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.MPG123_VERSION }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}-${{ env.OGG_VERSION }}-${{ env.VORBIS_VERSION }}
 
     - name: Build PvZ-Portable
       run: |
