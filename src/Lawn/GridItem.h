@@ -86,7 +86,6 @@ public:
 	void					DrawScaryPot(Sexy::Graphics* g);
 	void					UpdateScaryPot();
 	void					UpdatePortal();
-	void					DrawSquirrel(Sexy::Graphics* g);
 	void					UpdateRake();
 	Zombie*					RakeFindZombie();
 	void					DrawIZombieBrain(Sexy::Graphics* g);

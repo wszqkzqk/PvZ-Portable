@@ -105,7 +105,8 @@ void GridItem::DrawGridItem(Graphics* g)
 	case GridItemType::GRIDITEM_RAKE:                                                               break;
 	case GridItemType::GRIDITEM_BRAIN:              g->DrawImageF(IMAGE_BRAIN, mPosX, mPosY);       break;
 	case GridItemType::GRIDITEM_SCARY_POT:          DrawScaryPot(g);                                break;
-//  case GridItemType::GRIDITEM_SQUIRREL:           DrawSquirrel(g);                                break;
+	// squirrels are invisible in the original
+	case GridItemType::GRIDITEM_SQUIRREL:                                                           break;
 	case GridItemType::GRIDITEM_STINKY:             DrawStinky(g);                                  break;
 	case GridItemType::GRIDITEM_IZOMBIE_BRAIN:      DrawIZombieBrain(g);                            break;
 	default:                                        PVZP_ASSERT(false);                                   break;
@@ -404,37 +405,6 @@ void GridItem::DrawLadder(Graphics* g)
 	int aYPos = mBoard->GridToPixelY(mGridX, mGridY);
 	PvzpDrawImageScaledF(g, IMAGE_REANIM_ZOMBIE_LADDER_5, aXPos + 25.0f, aYPos - 4.0f, 0.8f, 0.8f);
 }
-
-/*
-void GridItem::DrawSquirrel(Graphics* g)
-{
-    int aXPos = mBoard->GridToPixelX(mGridX, mGridY);
-    int aYPos = mBoard->GridToPixelY(mGridX, mGridY);
-    switch (mGridItemState)
-    {
-    case GridItemState::GRIDITEM_STATE_SQUIRREL_PEEKING:
-        aYPos += PvzpAnimateCurve(50, 0, mGridItemCounter, 0, -40, PvzpCurves::CURVE_BOUNCE_SLOW_MIDDLE);
-        break;
-    case GridItemState::GRIDITEM_STATE_SQUIRREL_RUNNING_UP:
-        aYPos += PvzpAnimateCurve(50, 0, mGridItemCounter, 100, 0, PvzpCurves::CURVE_EASE_IN);
-        break;
-    case GridItemState::GRIDITEM_STATE_SQUIRREL_RUNNING_DOWN:
-        aYPos += PvzpAnimateCurve(50, 0, mGridItemCounter, -100, 0, PvzpCurves::CURVE_EASE_IN);
-        break;
-    case GridItemState::GRIDITEM_STATE_SQUIRREL_RUNNING_LEFT:
-        aXPos += PvzpAnimateCurve(50, 0, mGridItemCounter, 80, 0, PvzpCurves::CURVE_EASE_IN);
-        break;
-    case GridItemState::GRIDITEM_STATE_SQUIRREL_RUNNING_RIGHT:
-        aXPos += PvzpAnimateCurve(50, 0, mGridItemCounter, -80, 0, PvzpCurves::CURVE_EASE_IN);
-        break;
-    default:
-        break;
-    }
-
-    // squirrel assets were removed, perhaps add back?
-    //g->DrawImage(IMAGE_SQUIRREL, aXPos, aYPos);
-}
-*/
 
 void GridItem::AddGraveStoneParticles()
 {

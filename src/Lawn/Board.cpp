@@ -446,13 +446,6 @@ GridItem* Board::GetScaryPotAt(int theGridX, int theGridY)
 	return GetGridItemAt(GridItemType::GRIDITEM_SCARY_POT, theGridX, theGridY);
 }
 
-/*
-GridItem* Board::GetSquirrelAt(int theGridX, int theGridY)
-{
-	return GetGridItemAt(GridItemType::GRIDITEM_SQUIRREL, theGridX, theGridY);
-}
-*/
-
 GridItem* Board::GetZenToolAt(int theGridX, int theGridY)
 {
 	return GetGridItemAt(GridItemType::GRIDITEM_ZEN_TOOL, theGridX, theGridY);
