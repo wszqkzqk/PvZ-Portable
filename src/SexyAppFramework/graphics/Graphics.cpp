@@ -31,6 +31,7 @@
 #include "misc/Debug.h"
 #include "misc/SexyMatrix.h"
 #include <math.h>
+#include <vector>
 
 using namespace Sexy;
 
@@ -285,7 +286,7 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
 	int aSpanPos = 0;
 
 	int k, y0, y1, y, i, j, xl, xr;
-	int *ind;		/* list of vertex indices, sorted by mPFPoints[ind[j]].y */
+	std::vector<int> ind;	/* list of vertex indices, sorted by mPFPoints[ind[j]].y */
 
 	int aMinX = mClipRect.mX;
 	int aMaxX = mClipRect.mX + mClipRect.mWidth - 1;
@@ -297,13 +298,14 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
 
 	if (mPFNumVertices<=0) return;
 
-	ind = new int[mPFNumVertices];
-	mPFActiveEdgeList = new Edge[mPFNumVertices];
+	ind.resize(mPFNumVertices);
+	std::vector<Edge> aEdgeList(mPFNumVertices);
+	mPFActiveEdgeList = aEdgeList.data();
 
 	/* create y-sorted array of indices ind[k] into vertex list */
 	for (k=0; k<mPFNumVertices; k++)
 		ind[k] = k;
-	qsort(ind, mPFNumVertices, sizeof ind[0], PFCompareInd);	/* sort ind by mPFPoints[ind[k]].y */
+	qsort(ind.data(), mPFNumVertices, sizeof ind[0], PFCompareInd);	/* sort ind by mPFPoints[ind[k]].y */
 
 	mPFNumActiveEdges = 0;				/* start with empty active list */
 	k = 0;				/* ind[k] is next vertex to process */
@@ -363,9 +365,6 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
 	}
 
 	mDestImage->FillScanLines(aSpans, aSpanPos, mColor, mDrawMode);
-
-	delete[] ind;
-	delete[] mPFActiveEdgeList;
 }
 
 void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool convex)
@@ -398,17 +397,19 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
 			aCoverBottom = std::max(aCoverBottom, aPt->mY);
 		}
 	}
+	std::vector<uint8_t> aCoverage;
 	uint8_t* coverPtr = aCoverageBuffer;
 	if ((aCoverRight-aCoverLeft+1) > aCoverWidth || (aCoverBottom-aCoverTop+1) > aCoverHeight)
 	{
 		aCoverWidth = aCoverRight-aCoverLeft+1;
 		aCoverHeight = aCoverBottom-aCoverTop+1;
-		coverPtr = new uint8_t[aCoverWidth*aCoverHeight];
+		aCoverage.resize(aCoverWidth*aCoverHeight);
+		coverPtr = aCoverage.data();
 	}
 	memset(coverPtr, 0, aCoverWidth*aCoverHeight);
 
 	int k, y0, y1, y, j, xl, xr;
-	int *ind;		/* list of vertex indices, sorted by mPFPoints[ind[j]].y */
+	std::vector<int> ind;	/* list of vertex indices, sorted by mPFPoints[ind[j]].y */
 
 	int aMinX = mClipRect.mX;
 	int aMaxX = mClipRect.mX + mClipRect.mWidth - 1;
@@ -420,13 +421,14 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
 
 	if (mPFNumVertices<=0) return;
 
-	ind = new int[mPFNumVertices];
-	mPFActiveEdgeList = new Edge[mPFNumVertices];
+	ind.resize(mPFNumVertices);
+	std::vector<Edge> aEdgeList(mPFNumVertices);
+	mPFActiveEdgeList = aEdgeList.data();
 
 	/* create y-sorted array of indices ind[k] into vertex list */
 	for (k=0; k<mPFNumVertices; k++)
 		ind[k] = k;
-	qsort(ind, mPFNumVertices, sizeof ind[0], PFCompareInd);	/* sort ind by mPFPoints[ind[k]].y */
+	qsort(ind.data(), mPFNumVertices, sizeof ind[0], PFCompareInd);	/* sort ind by mPFPoints[ind[k]].y */
 
 	mPFNumActiveEdges = 0;				/* start with empty active list */
 	k = 0;				/* ind[k] is next vertex to process */
@@ -547,10 +549,6 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
 	}
 
 	mDestImage->FillScanLinesWithCoverage(aSpans, aSpanPos, mColor, mDrawMode, coverPtr, aCoverLeft, aCoverTop, aCoverWidth, aCoverHeight);
-
-	if (coverPtr != aCoverageBuffer) delete[] coverPtr;
-	delete[] ind;
-	delete[] mPFActiveEdgeList;
 }
 
 
