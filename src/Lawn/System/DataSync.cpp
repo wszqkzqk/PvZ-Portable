@@ -59,6 +59,7 @@ DataReader::~DataReader()
 
 bool DataReader::OpenFile(const std::string& theFileName)
 {
+	mDataPos = 0;
 	mFile = fcaseopen(theFileName.c_str(), "rb");
 	return mFile;
 }
@@ -77,6 +78,7 @@ void DataReader::OpenMemory(const void* theData, uint32_t theDataLen, bool takeO
 
 	mData = (char*)theData;
 	mDataLen = theDataLen;
+	mDataPos = 0;
 	mOwnData = takeOwnership;
 }
 
@@ -99,8 +101,7 @@ void DataReader::ReadBytes(void* theMem, uint32_t theNumBytes)
 			throw DataReaderException();
 		}
 
-		memcpy(theMem, mData, theNumBytes);
-		mData += theNumBytes;
+		memcpy(theMem, mData + mDataPos - theNumBytes, theNumBytes);
 	}
 	else if (!mFile || fread(theMem, sizeof(char), theNumBytes, mFile) != theNumBytes)
 	{
@@ -112,7 +113,6 @@ void DataReader::Rewind(uint32_t theNumBytes)
 {
 	theNumBytes = std::min(theNumBytes, mDataPos);
 	mDataPos -= theNumBytes;
-	mData -= theNumBytes;
 }
 
 uint16_t DataReader::ReadUInt16()
@@ -454,9 +454,6 @@ void DataSync::SyncString(std::string& theStr)
 DataWriter::DataWriter()
 {
 	mFile = nullptr;
-	mData = nullptr;
-	mDataLen = 0;
-	mCapacity = 0;
 }
 
 DataWriter::~DataWriter()
@@ -466,11 +463,6 @@ DataWriter::~DataWriter()
 		fclose(mFile);
 		mFile = nullptr;
 	}
-
-	delete[] mData;
-	mData = nullptr;
-	mDataLen = 0;
-	mCapacity = 0;
 }
 
 bool DataWriter::OpenFile(const std::string& theFileName)
@@ -488,19 +480,6 @@ void DataWriter::Close()
 	}
 }
 
-void DataWriter::EnsureCapacity(uint32_t theNumBytes)
-{
-	if (mCapacity < theNumBytes)
-	{
-		do { mCapacity <<= 1; } while (mCapacity < theNumBytes);
-
-		char* aData = new char[mCapacity];
-		memcpy(aData, mData, mDataLen);
-		delete[] mData;
-		mData = aData;
-	}
-}
-
 void DataWriter::OpenMemory(uint32_t theReserveAmount)
 {
 	if (mFile)
@@ -508,27 +487,20 @@ void DataWriter::OpenMemory(uint32_t theReserveAmount)
 		fclose(mFile);
 		mFile = nullptr;
 	}
-	delete[] mData;
-	mData = 0;
-	mDataLen = 0;
-	mCapacity = 0;
-
-	theReserveAmount = std::max<uint32_t>(theReserveAmount, 32);
-	mData = new char[theReserveAmount];
-	mCapacity = theReserveAmount;
+	mData.clear();
+	mData.reserve(std::max<uint32_t>(theReserveAmount, 32));
 }
 
 void DataWriter::WriteBytes(const void* theData, uint32_t theDataLen)
 {
-	if (mData)
-	{
-		EnsureCapacity(mDataLen + theDataLen);
-		memcpy(mData + mDataLen, theData, theDataLen);
-		mDataLen += theDataLen;
-	}
-	else if (mFile)
+	if (mFile)
 	{
 		fwrite(theData, sizeof(unsigned char), theDataLen, mFile);
+	}
+	else
+	{
+		const char* aData = static_cast<const char*>(theData);
+		mData.insert(mData.end(), aData, aData + theDataLen);
 	}
 }
 

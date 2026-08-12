@@ -60,8 +60,9 @@ void DialogButton::Draw(Graphics* g)
 		return;
 	}
 
-	if ((mFont == nullptr) && (mLabel.length() > 0) && (mWidgetManager->mApp->mDefaultFont != nullptr))
-		mFont = mWidgetManager->mApp->mDefaultFont->Duplicate();
+	_Font* aDefaultFont = mWidgetManager->mApp->mDefaultFont.load();
+	if ((mFont == nullptr) && (mLabel.length() > 0) && (aDefaultFont != nullptr))
+		mFont = aDefaultFont->Duplicate();
 
 	bool doTranslate = IsButtonDown();
 

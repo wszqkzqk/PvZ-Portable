@@ -105,7 +105,7 @@ public:
 	ProfileMgr*						mProfileMgr;
 	PlayerInfo*						mPlayerInfo;
 	LevelStats*						mLastLevelStats;
-	bool							mCloseRequest;
+	std::atomic<bool>					mCloseRequest;
 	uint32_t						mAppCounter;
 	Music*							mMusic;
 	ReanimationID					mCrazyDaveReanimID;

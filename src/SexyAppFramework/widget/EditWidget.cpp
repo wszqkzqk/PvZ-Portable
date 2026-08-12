@@ -123,8 +123,9 @@ void EditWidget::SetFont(_Font* theFont, _Font* theWidthCheckFont)
 
 void EditWidget::Draw(Graphics* g) // Already translated
 {
-	if ((mFont == nullptr) && (mWidgetManager->mApp->mDefaultFont != nullptr))
-		mFont = mWidgetManager->mApp->mDefaultFont->Duplicate();
+	_Font* aDefaultFont = mWidgetManager->mApp->mDefaultFont.load();
+	if ((mFont == nullptr) && (aDefaultFont != nullptr))
+		mFont = aDefaultFont->Duplicate();
 	if (mFont == nullptr)
 		return;
 

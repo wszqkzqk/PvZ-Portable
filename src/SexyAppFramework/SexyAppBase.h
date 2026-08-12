@@ -190,7 +190,7 @@ public:
 	std::thread::id			mPrimaryThreadId;
 	std::thread				mLoadingThread;
 	bool					mSEHOccured;
-	bool					mShutdown;
+	std::atomic<bool>		mShutdown;
 	bool					mExitToTop;
 	bool					mIsWindowed;
 	bool					mIsPhysWindowed;
@@ -260,7 +260,7 @@ public:
 	Image*					mCustomCursorImage;
 	int						mCustomCursorImageNum;
 	SoundManager*			mSoundManager;
-	_Font*					mDefaultFont = nullptr; // app-injected fallback for widgets without an explicit font
+	std::atomic<_Font*>		mDefaultFont = nullptr; // app-injected fallback for widgets without an explicit font
 	WidgetSafeDeleteList	mSafeDeleteList;
 	bool					mMouseIn;
 	bool					mRunning;
@@ -274,11 +274,11 @@ public:
 	int						mShowFPSMode;
 	uint					mScreenBltTime;
 	bool					mAutoStartLoadingThread;
-	bool					mLoadingThreadStarted;
-	bool					mLoadingThreadCompleted;
+	std::atomic<bool>		mLoadingThreadStarted;
+	std::atomic<bool>		mLoadingThreadCompleted;
 	bool					mLoaded;
 	bool					mYieldMainThread;
-	bool					mLoadingFailed;
+	std::atomic<bool>		mLoadingFailed;
 	bool					mCursorThreadRunning;
 	bool					mSysCursor;
 	bool					mCustomCursorsEnabled;
@@ -288,8 +288,8 @@ public:
 	bool					mWriteToSexyCache;
 	bool					mSexyCacheBuffers;
 
-	int						mNumLoadingThreadTasks;
-	int						mCompletedLoadingThreadTasks;
+	std::atomic<int>		mNumLoadingThreadTasks;
+	std::atomic<int>		mCompletedLoadingThreadTasks;
 
 	// For recording/playback of program control
 	bool					mRecordingDemoBuffer;

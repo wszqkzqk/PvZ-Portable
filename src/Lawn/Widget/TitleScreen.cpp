@@ -389,7 +389,7 @@ void TitleScreen::Update()
 		mPrevLoadingPercent = aLoadingPercent;
 	}
 
-	if (!mLoadingThreadComplete && (mApp->IsInDemoMode() ? mApp->mLoaded : mApp->mLoadingThreadCompleted))
+	if (!mLoadingThreadComplete && (mApp->IsInDemoMode() ? mApp->mLoaded : mApp->mLoadingThreadCompleted.load()))
 	{
 		mLoadingThreadComplete = true;
 		mStartButton->SetDisabled(false);

@@ -25,6 +25,7 @@
 #include "SDLSoundManager.h"
 #include "SDLSoundInstance.h"
 #include "paklib/PakInterface.h"
+#include <memory>
 #include <vector>
 
 using namespace Sexy;
@@ -83,40 +84,38 @@ bool SDLSoundManager::Initialized()
 
 bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilename)
 {
-	PFILE* fp;
-
-	fp = p_fopen(theFilename.c_str(), "rb");
+	std::unique_ptr<PFILE, decltype(&p_fclose)> fp(p_fopen(theFilename.c_str(), "rb"), &p_fclose);
 
 	if (fp == nullptr)
 		return false;
 
 	char aHeaderId[5];
 	aHeaderId[4] = '\0';
-	p_fread(aHeaderId, 1, 4, fp);
+	p_fread(aHeaderId, 1, 4, fp.get());
 	if ((!strcmp(aHeaderId, ".snd")) == 0)
 		return false;
 
 	uint32_t aHeaderSize;
-	p_fread(&aHeaderSize, 4, 1, fp);
+	p_fread(&aHeaderSize, 4, 1, fp.get());
 	aHeaderSize = FromBE32(aHeaderSize);
 
 	uint32_t aDataSize;
-	p_fread(&aDataSize, 4, 1, fp);
+	p_fread(&aDataSize, 4, 1, fp.get());
 	aDataSize = FromBE32(aDataSize);
 
 	uint32_t anEncoding;
-	p_fread(&anEncoding, 4, 1, fp);
+	p_fread(&anEncoding, 4, 1, fp.get());
 	anEncoding = FromBE32(anEncoding);
 
 	uint32_t aSampleRate;
-	p_fread(&aSampleRate, 4, 1, fp);
+	p_fread(&aSampleRate, 4, 1, fp.get());
 	aSampleRate = FromBE32(aSampleRate);
 
 	uint32_t aChannelCount;
-	p_fread(&aChannelCount, 4, 1, fp);
+	p_fread(&aChannelCount, 4, 1, fp.get());
 	aChannelCount = FromBE32(aChannelCount);
 
-	p_fseek(fp, aHeaderSize, SEEK_SET);
+	p_fseek(fp.get(), aHeaderSize, SEEK_SET);
 
 	bool ulaw = false;
 
@@ -153,16 +152,15 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 
 	uint32_t aDestSize = aDataSize * aBitCount/aSrcBitCount;
 
-	Mix_Chunk* aMixChunk = (Mix_Chunk *)SDL_malloc(sizeof(Mix_Chunk));
-	uint8_t* aDest = (uint8_t*)SDL_malloc(aDestSize);
-	uint8_t* aSrcBuffer = (uint8_t*)malloc(aDataSize);
+	std::unique_ptr<Mix_Chunk, decltype(&SDL_free)> aMixChunk((Mix_Chunk*)SDL_malloc(sizeof(Mix_Chunk)), &SDL_free);
+	std::unique_ptr<uint8_t, decltype(&SDL_free)> aDest((uint8_t*)SDL_malloc(aDestSize), &SDL_free);
+	std::vector<uint8_t> aSrcBuffer(aDataSize);
 
-	uint32_t aReadSize = p_fread(aSrcBuffer, 1, aDataSize, fp);
-	p_fclose(fp);
+	uint32_t aReadSize = p_fread(aSrcBuffer.data(), 1, aDataSize, fp.get());
 
 	if (ulaw)
 	{
-		short* aDestBuffer = (short*)aDest;
+		short* aDestBuffer = (short*)aDest.get();
 
 		for (ulong i = 0; i < aDataSize; i++)
 		{
@@ -193,14 +191,10 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 		}
 	}
 	else
-		memcpy(aDest, aSrcBuffer, aDataSize);
-
-	free(aSrcBuffer);
+		memcpy(aDest.get(), aSrcBuffer.data(), aDataSize);
 
 	if (aReadSize != aDataSize)
 	{
-		SDL_free(aMixChunk);
-		SDL_free(aDest);
 		return false;
 	}
 
@@ -216,41 +210,37 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 			srcformat, srcchannels, srcfreq,
 			format, channels, freq) < 0)
 	{
-		SDL_free(aMixChunk);
-		SDL_free(aDest);
 		return false;
 	}
 	uint32_t samplesize = ((srcfreq & 0xFF)/8)*srcchannels;
 	wavecvt.len = aDestSize & ~(samplesize - 1);
 	wavecvt.buf = (uint8_t*)SDL_calloc(1, wavecvt.len*wavecvt.len_mult);
+	std::unique_ptr<uint8_t, decltype(&SDL_free)> aBufGuard(wavecvt.buf, &SDL_free);
 	if (wavecvt.buf == nullptr)
 	{
 		Mix_OutOfMemory();
-		SDL_free(aMixChunk);
-		SDL_free(aDest);
 		return false;
 	}
-	SDL_memcpy(wavecvt.buf, aDest, wavecvt.len);
-	SDL_free(aDest);
+	SDL_memcpy(wavecvt.buf, aDest.get(), wavecvt.len);
+	aDest.reset();
 
 	// Run the audio converter
 	if (SDL_ConvertAudio(&wavecvt) < 0) {
-		SDL_free(wavecvt.buf);
-		SDL_free(aMixChunk);
 		return false;
 	}
 
-	aDest = (uint8_t*)SDL_realloc(wavecvt.buf, wavecvt.len_cvt);
-	if (aDest == nullptr) {
-		aMixChunk->abuf = wavecvt.buf;
+	uint8_t* aResized = (uint8_t*)SDL_realloc(aBufGuard.get(), wavecvt.len_cvt);
+	if (aResized == nullptr) {
+		aMixChunk->abuf = aBufGuard.release();
 	} else {
-		aMixChunk->abuf = aDest;
+		aBufGuard.release();
+		aMixChunk->abuf = aResized;
 	}
 	aMixChunk->alen = wavecvt.len_cvt;
 	aMixChunk->allocated = 1;
 	aMixChunk->volume = 128;
 
-	mSourceSounds[theSfxID] = aMixChunk;
+	mSourceSounds[theSfxID] = aMixChunk.release();
 	return true;
 }
 

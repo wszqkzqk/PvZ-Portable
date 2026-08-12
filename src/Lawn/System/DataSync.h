@@ -36,6 +36,8 @@ protected:
 
 public:
 	DataReader();
+	DataReader(const DataReader& theDataReader) = delete;
+	DataReader& operator=(const DataReader& theDataReader) = delete;
 	virtual ~DataReader();
 
 	bool					OpenFile(const std::string& theFileName);
@@ -60,15 +62,12 @@ class DataWriter
 {
 protected:
 	FILE*					mFile;
-	char*					mData;
-	uint32_t				mDataLen;
-	uint32_t				mCapacity;
-
-protected:
-	void					EnsureCapacity(uint32_t theNumBytes);
+	std::vector<char>			mData;
 
 public:
 	DataWriter();
+	DataWriter(const DataWriter& theDataWriter) = delete;
+	DataWriter& operator=(const DataWriter& theDataWriter) = delete;
 	virtual ~DataWriter();
 
 	bool					OpenFile(const std::string& theFileName);
@@ -85,8 +84,8 @@ public:
 	void					WriteDouble(double theDouble);
 	void					WriteString(std::string_view theStr);
 	inline uint32_t			GetPos();
-	inline void*			GetDataPtr() { return mData; }
-	inline uint32_t			GetDataLen() { return mDataLen; }
+	inline void*			GetDataPtr() { return mData.data(); }
+	inline uint32_t			GetDataLen() { return static_cast<uint32_t>(mData.size()); }
 };
 
 class DataSync
