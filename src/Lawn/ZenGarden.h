@@ -25,6 +25,7 @@
 #include "../ConstEnums.h"
 #include <vector>
 #include <string>
+#include <span>
 #include <stdint.h>
 #include <time.h>
 
@@ -85,7 +86,7 @@ public:
 	void                    GotoNextGarden();
 	PottedPlant* GetPottedPlantInWheelbarrow();
 	void                    RemovePottedPlant(Plant* thePlant);
-	const SpecialGridPlacement*   GetSpecialGridPlacements(int& theCount);
+	std::span<const SpecialGridPlacement> GetSpecialGridPlacements();
 	int                     PixelToGridX(int theX, int theY);
 	int                     PixelToGridY(int theX, int theY);
 	int                     GridToPixelX(int theGridX, int theGridY);
