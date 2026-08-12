@@ -365,6 +365,9 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
 	}
 
 	mDestImage->FillScanLines(aSpans, aSpanPos, mColor, mDrawMode);
+
+	// aEdgeList is destroyed on return; don't leave the member dangling
+	mPFActiveEdgeList = nullptr;
 }
 
 void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool convex)
@@ -549,6 +552,9 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
 	}
 
 	mDestImage->FillScanLinesWithCoverage(aSpans, aSpanPos, mColor, mDrawMode, coverPtr, aCoverLeft, aCoverTop, aCoverWidth, aCoverHeight);
+
+	// aEdgeList is destroyed on return; don't leave the member dangling
+	mPFActiveEdgeList = nullptr;
 }
 
 
