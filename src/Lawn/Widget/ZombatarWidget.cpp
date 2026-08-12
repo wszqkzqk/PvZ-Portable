@@ -1064,21 +1064,22 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 
 		if (mPage == ZOMBATAR_PAGE_CLOTHES && IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN && IMAGE_ZOMBATAR_ZOMBIE_BLANK)
 		{
-			g->PushState();
-			g->ClipRect(Rect(aRect.mX + ZOMBATAR_CELL_INSET, aRect.mY + ZOMBATAR_CELL_INSET,
-				aRect.mWidth - ZOMBATAR_CELL_INSET, aRect.mHeight - ZOMBATAR_CELL_INSET));
-			Color aSkinColor = ZombatarGetColor(mColor[ZOMBATAR_PAGE_SKIN]);
-			aSkinColor.mAlpha = aDim ? 0x80 : 0xff;
-			g->SetColorizeImages(true);
-			g->SetColor(aSkinColor);
-			g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN,
-				Rect(aRect.mX - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mY - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mWidth, aRect.mHeight),
-				Rect(0, 0, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN->mWidth, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN->mHeight));
-			g->SetColorizeImages(false);
-			g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK,
-				Rect(aRect.mX - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mY - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mWidth, aRect.mHeight),
-				Rect(0, 0, IMAGE_ZOMBATAR_ZOMBIE_BLANK->mWidth, IMAGE_ZOMBATAR_ZOMBIE_BLANK->mHeight));
-			g->PopState();
+			{
+				GraphicsStateGuard aStateGuard(*g);
+				g->ClipRect(Rect(aRect.mX + ZOMBATAR_CELL_INSET, aRect.mY + ZOMBATAR_CELL_INSET,
+					aRect.mWidth - ZOMBATAR_CELL_INSET, aRect.mHeight - ZOMBATAR_CELL_INSET));
+				Color aSkinColor = ZombatarGetColor(mColor[ZOMBATAR_PAGE_SKIN]);
+				aSkinColor.mAlpha = aDim ? 0x80 : 0xff;
+				g->SetColorizeImages(true);
+				g->SetColor(aSkinColor);
+				g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN,
+					Rect(aRect.mX - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mY - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mWidth, aRect.mHeight),
+					Rect(0, 0, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN->mWidth, IMAGE_ZOMBATAR_ZOMBIE_BLANK_SKIN->mHeight));
+				g->SetColorizeImages(false);
+				g->DrawImage(IMAGE_ZOMBATAR_ZOMBIE_BLANK,
+					Rect(aRect.mX - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mY - ZOMBATAR_CELL_ZOMBIE_MARGIN, aRect.mWidth, aRect.mHeight),
+					Rect(0, 0, IMAGE_ZOMBATAR_ZOMBIE_BLANK->mWidth, IMAGE_ZOMBATAR_ZOMBIE_BLANK->mHeight));
+			}
 			if (aDim)
 			{
 				g->SetColorizeImages(true);

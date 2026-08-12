@@ -199,22 +199,25 @@ public:
 	bool					Is3D() { return mIs3D; }
 };
 
-class GraphicsAutoState
+class GraphicsStateGuard
 {
 public:
 	Graphics*				mG;
 
 public:
 
-	GraphicsAutoState(Graphics* theG) : mG(theG)
+	explicit GraphicsStateGuard(Graphics& theG) : mG(&theG)
 	{
 		mG->PushState();
 	}
 
-	~GraphicsAutoState()
+	~GraphicsStateGuard()
 	{
 		mG->PopState();
 	}
+
+	GraphicsStateGuard(const GraphicsStateGuard&) = delete;
+	GraphicsStateGuard& operator=(const GraphicsStateGuard&) = delete;
 };
 
 }

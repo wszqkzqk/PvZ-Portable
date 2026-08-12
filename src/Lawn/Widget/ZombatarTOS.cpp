@@ -136,10 +136,11 @@ void ZombatarTOS::Draw(Graphics* g)
 	int aMaxScroll = std::max(0, mTextHeight - TOS_CLIP_HEIGHT);
 	int aOffset = static_cast<int>(mTOSSlider->mVal * aMaxScroll);
 
-	g->PushState();
-	g->ClipRect(Rect(TOS_TEXT_X, TOS_TEXT_Y, TOS_TEXT_WIDTH, TOS_CLIP_HEIGHT));
-	PvzpDrawStringWrapped(g, mBodyText, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_WIDTH, mTextHeight), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT);
-	g->PopState();
+	{
+		GraphicsStateGuard aStateGuard(*g);
+		g->ClipRect(Rect(TOS_TEXT_X, TOS_TEXT_Y, TOS_TEXT_WIDTH, TOS_CLIP_HEIGHT));
+		PvzpDrawStringWrapped(g, mBodyText, Rect(TOS_TEXT_X, TOS_TEXT_Y - aOffset, TOS_TEXT_WIDTH, mTextHeight), FONT_PICO129, Color::White, DrawStringJustification::DS_ALIGN_LEFT);
+	}
 
 	if (mFlashArrow && IMAGE_ZOMBATAR_TOS_ARROW)
 	{
