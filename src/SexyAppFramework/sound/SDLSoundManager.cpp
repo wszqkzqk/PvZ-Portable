@@ -212,7 +212,7 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 	{
 		return false;
 	}
-	uint32_t samplesize = ((srcfreq & 0xFF)/8)*srcchannels;
+	uint32_t samplesize = ((srcformat & 0xFF)/8)*srcchannels;
 	wavecvt.len = aDestSize & ~(samplesize - 1);
 	wavecvt.buf = (uint8_t*)SDL_calloc(1, wavecvt.len*wavecvt.len_mult);
 	std::unique_ptr<uint8_t, decltype(&SDL_free)> aBufGuard(wavecvt.buf, &SDL_free);
