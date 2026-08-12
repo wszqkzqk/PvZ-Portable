@@ -26,6 +26,9 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
+#include <memory>
+#include <type_traits>
+
 #include "SexyAppBase.h"
 #include "graphics/GLInterface.h"
 #include "graphics/GLImage.h"
@@ -56,22 +59,28 @@ void SexyAppBase::MakeWindow()
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 
-		mWindow = (void*)SDL_CreateWindow(
+		using WindowPtr = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
+		using GLContextPtr = std::unique_ptr<std::remove_pointer_t<SDL_GLContext>, decltype(&SDL_GL_DeleteContext)>;
+
+		WindowPtr window(SDL_CreateWindow(
 			mTitle.c_str(),
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			mWidth, mHeight, winFlags);
+			mWidth, mHeight, winFlags), &SDL_DestroyWindow);
+		GLContextPtr context(nullptr, &SDL_GL_DeleteContext);
 
-		if (mWindow)
-			mContext = (void*)SDL_GL_CreateContext((SDL_Window*)mWindow);
+		if (window)
+			context.reset(SDL_GL_CreateContext(window.get()));
 
-		if (!mContext)
+		if (!context)
 		{
-			if (mWindow) { SDL_DestroyWindow((SDL_Window*)mWindow); mWindow = nullptr; }
 			Sexy::LogError("Failed to create WebGL context.");
 			return;
 		}
 
 		SDL_GL_SetSwapInterval(0);
+
+		mWindow = (void*)window.release();
+		mContext = (void*)context.release();
 	}
 
 	if (mGLInterface == nullptr)
