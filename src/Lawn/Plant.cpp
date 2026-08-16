@@ -4262,9 +4262,8 @@ void Plant::BlowAwayFliers()
 			continue;
 		if (!aZombie->IsDeadOrDying())
 		{
-			// Verified as a pure function, safe to remove
-			// Rect aZombieRect = aZombie->GetZombieRect();
-			if (aZombie->IsFlying())
+			// Blow away only flying balloons here; balloons mid-pop are excluded
+			if (aZombie->mZombiePhase == ZombiePhase::PHASE_BALLOON_FLYING)
 			{
 				aZombie->mBlowingAway = true;
 			}
