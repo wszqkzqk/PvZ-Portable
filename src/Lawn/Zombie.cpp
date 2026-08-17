@@ -8309,6 +8309,7 @@ Rect Zombie::GetZombieRect()
 	if (aDrawPos.mClipHeight > CLIP_HEIGHT_LIMIT)
 	{
 		aZombieRect.mHeight -= aDrawPos.mClipHeight;
+		aZombieRect.mHeight = std::max(aZombieRect.mHeight, 0);
 	}
 
 	return aZombieRect;
