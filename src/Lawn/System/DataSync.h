@@ -22,6 +22,7 @@
 #ifndef __DATASYNC_H__
 #define __DATASYNC_H__
 
+#include <memory>
 #include <type_traits>
 #include "../../SexyAppFramework/Common.h"
 
@@ -29,10 +30,10 @@ class DataReader
 {
 protected:
 	FILE*					mFile;
-	char*					mData;
+	const char*				mData;
 	uint32_t				mDataLen;
 	uint32_t				mDataPos;
-	bool					mOwnData;
+	std::unique_ptr<char[]>	mOwnedData;
 
 public:
 	DataReader();

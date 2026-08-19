@@ -35,7 +35,6 @@ DataReader::DataReader()
 	mData = nullptr;
 	mDataLen = 0;
 	mDataPos = 0;
-	mOwnData = false;
 }
 
 DataReader::~DataReader()
@@ -45,16 +44,6 @@ DataReader::~DataReader()
 		fclose(mFile);
 		mFile = nullptr;
 	}
-
-	if (mOwnData)
-	{
-		delete[] mData;
-	}
-
-	mData = nullptr;
-	mDataLen = 0;
-	mDataPos = 0;
-	mOwnData = false;
 }
 
 bool DataReader::OpenFile(const std::string& theFileName)
@@ -71,15 +60,15 @@ void DataReader::OpenMemory(const void* theData, uint32_t theDataLen, bool takeO
 		fclose(mFile);
 		mFile = nullptr;
 	}
-	if (mOwnData)
-	{
-		delete[] mData;
-	}
 
-	mData = (char*)theData;
+	if (takeOwnership)
+		mOwnedData.reset(const_cast<char*>(static_cast<const char*>(theData)));
+	else
+		mOwnedData.reset();
+
+	mData = static_cast<const char*>(theData);
 	mDataLen = theDataLen;
 	mDataPos = 0;
-	mOwnData = takeOwnership;
 }
 
 void DataReader::Close()
