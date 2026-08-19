@@ -183,14 +183,21 @@ std::string_view PvzpStringTranslate(std::string_view theString)
 	return theString;
 }
 
-bool PvzpStringListExists(std::string_view theString)
+std::optional<std::string_view> PvzpStringTryTranslate(std::string_view theString)
 {
 	if (theString.size() >= 3 && theString[0] == '[')
 	{
 		std::string_view aName = theString.substr(1, theString.size() - 2);
-		return gSexyAppBase->mStringProperties.find(aName) != gSexyAppBase->mStringProperties.end();
+		auto anItr = gSexyAppBase->mStringProperties.find(aName);
+		if (anItr != gSexyAppBase->mStringProperties.end())
+			return anItr->second;
 	}
-	return false;
+	return std::nullopt;
+}
+
+bool PvzpStringListExists(std::string_view theString)
+{
+	return PvzpStringTryTranslate(theString).has_value();
 }
 
 void PvzpWriteStringSetFormat(const char* theFormat, PvzpStringListFormat& theCurrentFormat)

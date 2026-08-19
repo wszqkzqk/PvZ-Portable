@@ -22,6 +22,7 @@
 #ifndef __PVZPSTRINGFILE_H__
 #define __PVZPSTRINGFILE_H__
 
+#include <optional>
 #include "graphics/Graphics.h"
 #include "../ConstEnums.h"
 using namespace Sexy;
@@ -65,6 +66,7 @@ inline std::string_view PvzpStringTranslate(const char* theString)
 {
 	return theString ? PvzpStringTranslate(std::string_view(theString)) : std::string_view();
 }
+std::optional<std::string_view> PvzpStringTryTranslate(std::string_view theString);
 bool                PvzpStringListExists(std::string_view theString);
 void                PvzpStringRemoveReturnChars(std::string& theString);
 bool                CharIsSpaceInFormat(char theChar, const PvzpStringListFormat& theCurrentFormat);
