@@ -162,7 +162,6 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 
 StoreScreen::~StoreScreen()
 {
-	mCoins.DataArrayDispose();
 	if (mBackButton) delete mBackButton;
 	if (mPrevButton) delete mPrevButton;
 	if (mNextButton) delete mNextButton;

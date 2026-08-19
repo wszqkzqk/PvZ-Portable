@@ -251,12 +251,6 @@ Board::~Board()
 	{
 		delete mStoreButton;
 	}
-	mZombies.DataArrayDispose();
-	mPlants.DataArrayDispose();
-	mProjectiles.DataArrayDispose();
-	mCoins.DataArrayDispose();
-	mLawnMowers.DataArrayDispose();
-	mGridItems.DataArrayDispose();
 	if (mToolTip)
 	{
 		delete mToolTip;
