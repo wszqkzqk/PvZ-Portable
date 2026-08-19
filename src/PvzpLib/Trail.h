@@ -23,6 +23,7 @@
 #define __TRAIL_H__
 
 #include <cstdint>
+#include <memory>
 #include "PvzpParticle.h"
 
 #define MAX_TRAIL_TRIANGLES 38
@@ -82,7 +83,7 @@ void						TrailLoadDefinitions(TrailParams* theTrailParamArray, int theTrailPara
 void						TrailFreeDefinitions();
 
 extern int gTrailDefCount;
-extern TrailDefinition* gTrailDefArray;
+extern std::unique_ptr<TrailDefinition[]> gTrailDefArray;
 
 class TrailPoint
 {

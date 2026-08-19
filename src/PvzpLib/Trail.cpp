@@ -26,7 +26,7 @@
 #include "graphics/TriVertex.h"
 
 int gTrailDefCount;
-TrailDefinition* gTrailDefArray;
+std::unique_ptr<TrailDefinition[]> gTrailDefArray;
 int gTrailParamArraySize;
 TrailParams* gTrailParamArray;
 
@@ -61,7 +61,7 @@ void TrailLoadDefinitions(TrailParams* theTrailParamArray, int theTrailParamArra
 	gTrailParamArraySize = theTrailParamArraySize;
 	gTrailParamArray = theTrailParamArray;
 	gTrailDefCount = theTrailParamArraySize;
-	gTrailDefArray = new TrailDefinition[theTrailParamArraySize]();
+	gTrailDefArray = std::make_unique<TrailDefinition[]>(theTrailParamArraySize);
 
 	for (int i = 0; i < gTrailParamArraySize; i++)
 	{
@@ -80,8 +80,7 @@ void TrailFreeDefinitions()
 {
 	for (int i = 0; i < gTrailDefCount; i++)
 		DefinitionFreeMap(&gTrailDefMap, &gTrailDefArray[i]);
-	delete[] gTrailDefArray;
-	gTrailDefArray = nullptr;
+	gTrailDefArray.reset();
 	gTrailDefCount = 0;
 	gTrailParamArray = nullptr;
 	gTrailParamArraySize = 0;

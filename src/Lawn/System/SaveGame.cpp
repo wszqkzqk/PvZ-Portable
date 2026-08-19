@@ -1146,8 +1146,8 @@ static void SyncReanimationPortable(Board* theBoard, Reanimation* theReanimation
 	}
 
 	ReanimatorDefinition* aDef = theReanimation->mDefinition;
-	ReanimatorDefinition* aDefStart = gReanimatorDefArray;
-	ReanimatorDefinition* aDefEnd = gReanimatorDefArray + static_cast<int>(ReanimationType::NUM_REANIMS);
+	ReanimatorDefinition* aDefStart = gReanimatorDefArray.get();
+	ReanimatorDefinition* aDefEnd = gReanimatorDefArray.get() + static_cast<int>(ReanimationType::NUM_REANIMS);
 	if (aDef == nullptr || aDef < aDefStart || aDef >= aDefEnd)
 	{
 		int aType = static_cast<int>(theReanimation->mReanimationType);

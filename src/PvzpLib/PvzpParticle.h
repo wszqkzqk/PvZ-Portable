@@ -23,6 +23,7 @@
 #define __PVZPPARTICLE_H__
 
 #include <cstdint>
+#include <memory>
 #include "PvzpList.h"
 #include "DataArray.h"
 #include "misc/SexyVector.h"
@@ -179,7 +180,7 @@ public:
 };
 
 extern int gParticleDefCount;
-extern PvzpParticleDefinition* gParticleDefArray;    // loaded and assigned in LawnApp::LoadingThreadProc()
+extern std::unique_ptr<PvzpParticleDefinition[]> gParticleDefArray;    // loaded and assigned in LawnApp::LoadingThreadProc()
 
 // Maps a particle system type to the file name of its data file
 class ParticleParams

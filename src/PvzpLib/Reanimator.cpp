@@ -37,7 +37,7 @@
 constexpr const int NO_BASE_POSE = -2;
 
 unsigned int gReanimatorDefCount;
-ReanimatorDefinition* gReanimatorDefArray;
+std::unique_ptr<ReanimatorDefinition[]> gReanimatorDefArray;
 unsigned int gReanimationParamArraySize;
 const ReanimationParams* gReanimationParamArray;
 
@@ -1201,7 +1201,7 @@ void ReanimatorLoadDefinitions(const ReanimationParams* theReanimationParamArray
 	gReanimationParamArraySize = theReanimationParamArraySize;
 	gReanimationParamArray = theReanimationParamArray;
 	gReanimatorDefCount = theReanimationParamArraySize;
-	gReanimatorDefArray = new ReanimatorDefinition[theReanimationParamArraySize];
+	gReanimatorDefArray = std::make_unique<ReanimatorDefinition[]>(theReanimationParamArraySize);
 
 #ifndef LOW_MEMORY
 	for (unsigned int i = 0; i < gReanimationParamArraySize; i++)
@@ -1219,8 +1219,7 @@ void ReanimatorFreeDefinitions()
 	for (unsigned int i = 0; i < gReanimatorDefCount; i++)
 		ReanimationFreeDefinition(&gReanimatorDefArray[i]);
 
-	delete[] gReanimatorDefArray;
-	gReanimatorDefArray = nullptr;
+	gReanimatorDefArray.reset();
 	gReanimatorDefCount = 0;
 	gReanimationParamArray = nullptr;
 	gReanimationParamArraySize = 0;
