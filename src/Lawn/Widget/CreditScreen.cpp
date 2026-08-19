@@ -756,7 +756,7 @@ static int DrawCreditsContent(Graphics* g, int theYPos, bool theDraw)
 		if (!PvzpStringListExists(aRolesKey))
 			continue;
 
-		std::string aRoles = PvzpStringTranslate(aRolesKey);
+		std::string aRoles(PvzpStringTranslate(aRolesKey));
 
 		// ^ prefix: spacer or centered header
 		if (!aRoles.empty() && aRoles[0] == '^')
@@ -771,7 +771,7 @@ static int DrawCreditsContent(Graphics* g, int theYPos, bool theDraw)
 		}
 
 		std::string aNamesKey = StrFormat("[CREDITS_NAMES%d]", aSection);
-		std::string aNames = PvzpStringListExists(aNamesKey) ? PvzpStringTranslate(aNamesKey) : "";
+		std::string aNames(PvzpStringListExists(aNamesKey) ? PvzpStringTranslate(aNamesKey) : std::string_view());
 
 		// Split roles and names by newline, draw side by side
 		size_t aRolePos = 0;

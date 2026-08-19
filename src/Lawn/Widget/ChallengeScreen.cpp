@@ -450,7 +450,7 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 
 			// draw the challenge name
 			Color aTextColor = aHighLight ? Color(250, 40, 40) : Color(42, 42, 90);
-			std::string aName = PvzpStringTranslate(aDef.mChallengeName);
+			std::string aName(PvzpStringTranslate(aDef.mChallengeName));
 			if (aChallengeButton->mDisabled || (theChallengeIndex == mUnlockChallengeIndex && mUnlockState == UNLOCK_SHAKING))
 			{
 				aName = "?";

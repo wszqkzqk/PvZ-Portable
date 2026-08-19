@@ -456,8 +456,8 @@ void ZenGarden::MouseDownWithMoneySign(Plant* thePlant)
 {
 	mBoard->ClearCursor();
 
-	std::string aHeader = PvzpStringTranslate("[ZEN_SELL_HEADER]");
-	std::string aLines = PvzpStringTranslate("[ZEN_SELL_LINES]");
+	std::string aHeader(PvzpStringTranslate("[ZEN_SELL_HEADER]"));
+	std::string aLines(PvzpStringTranslate("[ZEN_SELL_LINES]"));
 	int aPrice = GetPlantSellPrice(thePlant);
 	if (mApp->mCrazyDaveState == CrazyDaveState::CRAZY_DAVE_OFF)
 	{

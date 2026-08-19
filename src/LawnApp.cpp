@@ -796,9 +796,9 @@ int LawnApp::LawnMessageBox(int theDialogId, const char* theHeaderName, const ch
 
 Dialog* LawnApp::DoDialog(int theDialogId, bool isModal, const std::string& theDialogHeader, const std::string& theDialogLines, const std::string& theDialogFooter, int theButtonMode)
 {
-	std::string aHeader = PvzpStringTranslate(theDialogHeader);
-	std::string aLines = PvzpStringTranslate(theDialogLines);
-	std::string aFooter = PvzpStringTranslate(theDialogFooter);
+	std::string aHeader(PvzpStringTranslate(theDialogHeader));
+	std::string aLines(PvzpStringTranslate(theDialogLines));
+	std::string aFooter(PvzpStringTranslate(theDialogFooter));
 
 	Dialog* aDialog = SexyAppBase::DoDialog(theDialogId, isModal, aHeader, aLines, aFooter, theButtonMode);
 	if (mWidgetManager->mFocusWidget == nullptr)
@@ -1838,8 +1838,8 @@ bool LawnApp::OpenURL(const std::string& theURL, bool shutdownOnOpen)
 
 void LawnApp::ConfirmQuit()
 {
-	std::string aBody = PvzpStringTranslate("[QUIT_MESSAGE]");
-	std::string aHeader = PvzpStringTranslate("[QUIT_HEADER]");
+	std::string aBody(PvzpStringTranslate("[QUIT_MESSAGE]"));
+	std::string aHeader(PvzpStringTranslate("[QUIT_HEADER]"));
 	LawnDialog* aDialog = (LawnDialog*)DoDialog(Dialogs::DIALOG_QUIT, true, aHeader, aBody, "", Dialog::BUTTONS_OK_CANCEL);
 	aDialog->mLawnYesButton->mLabel = PvzpStringTranslate("[QUIT_BUTTON]");
 	CenterDialog(aDialog, aDialog->mWidth, aDialog->mHeight);

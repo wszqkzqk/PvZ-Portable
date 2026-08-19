@@ -158,7 +158,7 @@ void PvzpStringListLoad(const char* theFileName)
 		PvzpErrorMessageBox(Sexy::StrFormat("Failed to load string list file '%s'", theFileName).c_str(), "Error");
 }
 
-std::string PvzpStringListFind(std::string_view theName)
+std::string_view PvzpStringListFind(std::string_view theName)
 {
 	auto anItr = gSexyAppBase->mStringProperties.find(theName);
 	if (anItr != gSexyAppBase->mStringProperties.end())
@@ -167,35 +167,20 @@ std::string PvzpStringListFind(std::string_view theName)
 	}
 	else
 	{
-		return Sexy::StrFormat("<Missing %s>", std::string(theName).c_str());
+		thread_local std::string aMissing;
+		aMissing = "<Missing " + std::string(theName) + ">";
+		return aMissing;
 	}
 }
 
-std::string PvzpStringTranslate(std::string_view theString)
+std::string_view PvzpStringTranslate(std::string_view theString)
 {
 	if (theString.size() >= 3 && theString[0] == '[')
 	{
 		std::string_view aName = theString.substr(1, theString.size() - 2);
 		return PvzpStringListFind(aName);
 	}
-	return std::string(theString);
-}
-
-std::string PvzpStringTranslate(const char* theString)
-{
-	if (theString != nullptr)
-	{
-		int aLen = strlen(theString);
-		if (aLen >= 3 && theString[0] == '[')
-		{
-			std::string aName(theString, 1, aLen - 2);
-			return PvzpStringListFind(aName);
-		}
-		else
-			return theString;
-	}
-	else
-		return "";
+	return theString;
 }
 
 bool PvzpStringListExists(std::string_view theString)
@@ -495,7 +480,7 @@ int PvzpDrawStringWrappedHelper(Graphics* g, const std::string& theText, const R
 
 void PvzpDrawStringWrapped(Graphics* g, std::string_view theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification)
 {
-	std::string aTextFinal = PvzpStringTranslate(theText);
+	std::string aTextFinal(PvzpStringTranslate(theText));
 	Rect aRectPvzpUse = theRect;
 	if (theJustification == DrawStringJustification::DS_ALIGN_LEFT_VERTICAL_MIDDLE ||
 		theJustification == DrawStringJustification::DS_ALIGN_RIGHT_VERTICAL_MIDDLE ||

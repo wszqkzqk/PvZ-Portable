@@ -610,7 +610,7 @@ bool SeedChooserScreen::CheckSeedUpgrade(SeedType theSeedTypeTo, SeedType theSee
 	if (mApp->IsSurvivalMode() || !PickedPlantType(theSeedTypeTo) || PickedPlantType(theSeedTypeFrom))
 		return true;
 
-	std::string aWarning = PvzpStringTranslate("[SEED_CHOOSER_UPGRADE_WARNING]");
+	std::string aWarning(PvzpStringTranslate("[SEED_CHOOSER_UPGRADE_WARNING]"));
 	aWarning = PvzpReplaceString(aWarning, "{UPGRADE_TO}", Plant::GetNameString(theSeedTypeTo));
 	aWarning = PvzpReplaceString(aWarning, "{UPGRADE_FROM}", Plant::GetNameString(theSeedTypeFrom));
 	return DisplayRepickWarningDialog(aWarning.c_str());

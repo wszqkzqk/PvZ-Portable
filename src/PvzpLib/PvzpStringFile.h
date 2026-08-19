@@ -59,9 +59,12 @@ bool                PvzpStringListReadValue(const char*& thePtr, std::string& th
 bool                PvzpStringListReadItems(const char* theFileText);
 bool                PvzpStringListReadFile(const char* theFileName);
 void                PvzpStringListLoad(const char* theFileName);
-std::string         PvzpStringListFind(std::string_view theName);
-std::string			PvzpStringTranslate(std::string_view theString);
-std::string			PvzpStringTranslate(const char* theString);
+std::string_view    PvzpStringListFind(std::string_view theName);
+std::string_view    PvzpStringTranslate(std::string_view theString);
+inline std::string_view PvzpStringTranslate(const char* theString)
+{
+	return theString ? PvzpStringTranslate(std::string_view(theString)) : std::string_view();
+}
 bool                PvzpStringListExists(std::string_view theString);
 void                PvzpStringRemoveReturnChars(std::string& theString);
 bool                CharIsSpaceInFormat(char theChar, const PvzpStringListFormat& theCurrentFormat);

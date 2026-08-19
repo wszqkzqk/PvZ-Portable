@@ -6565,29 +6565,29 @@ void Board::DrawProgressMeter(Graphics* g)
 	Color aColor(224, 187, 98);
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED || mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST)
 	{
-		std::string aMatchStr = StrFormat("%d/%d %s", mChallenge->mChallengeScore, 75, PvzpStringTranslate("[MATCHES]").c_str());
+		std::string aMatchStr = StrFormat("%d/%d %s", mChallenge->mChallengeScore, 75, std::string(PvzpStringTranslate("[MATCHES]")).c_str());
 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
 	}
 	else if (mApp->IsSquirrelLevel())
 	{
-		std::string aMatchStr = StrFormat("%d/%d %s", mChallenge->mChallengeScore, 7, PvzpStringTranslate("[SQUIRRELS]").c_str());
+		std::string aMatchStr = StrFormat("%d/%d %s", mChallenge->mChallengeScore, 7, std::string(PvzpStringTranslate("[SQUIRRELS]")).c_str());
 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
 	}
 	else if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_SLOT_MACHINE)
 	{
 		int aSunMoney = std::clamp(mSunMoney, 0, 2000);
-		std::string aMatchStr = StrFormat("%d/%d %s", aSunMoney, 2000, PvzpStringTranslate("[SUN]").c_str());
+		std::string aMatchStr = StrFormat("%d/%d %s", aSunMoney, 2000, std::string(PvzpStringTranslate("[SUN]")).c_str());
 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
 	}
 	else if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
 	{
 		int aSunMoney = std::clamp(mSunMoney, 0, 1000);
-		std::string aMatchStr = StrFormat("%d/%d %s", aSunMoney, 1000, PvzpStringTranslate("[SUN]").c_str());
+		std::string aMatchStr = StrFormat("%d/%d %s", aSunMoney, 1000, std::string(PvzpStringTranslate("[SUN]")).c_str());
 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
 	}
 	else if (mApp->IsIZombieLevel())
 	{
-		std::string aMatchStr = StrFormat("%d/%d %s", mChallenge->mChallengeScore, 5, PvzpStringTranslate("[BRAINS]").c_str());
+		std::string aMatchStr = StrFormat("%d/%d %s", mChallenge->mChallengeScore, 5, std::string(PvzpStringTranslate("[BRAINS]")).c_str());
 		PvzpDrawString(g, aMatchStr, aPosX, 589, Sexy::FONT_DWARVENTODCRAFT12, aColor, DrawStringJustification::DS_ALIGN_CENTER);
 	}
 	else if (ProgressMeterHasFlags())
@@ -6657,7 +6657,7 @@ void Board::DrawLevel(Graphics* g)
 	std::string aLevelStr;
 	if (mApp->IsAdventureMode())
 	{
-		aLevelStr = PvzpStringTranslate("[LEVEL]") + " " + mApp->GetStageString(mLevel);
+		aLevelStr = std::string(PvzpStringTranslate("[LEVEL]")) + " " + mApp->GetStageString(mLevel);
 	}
 	else
 	{
@@ -6669,7 +6669,7 @@ void Board::DrawLevel(Graphics* g)
 			{
 				std::string aFlagStr = mApp->Pluralize(aFlags, "[ONE_FLAG]", "[COUNT_FLAGS]");
 				std::string aCompletedStr = PvzpReplaceString("[FLAGS_COMPLETED]", "{FLAGS}", aFlagStr);
-				aLevelStr = StrFormat("%s - %s", PvzpStringTranslate(aLevelStr).c_str(), aCompletedStr.c_str());
+				aLevelStr = StrFormat("%s - %s", std::string(PvzpStringTranslate(aLevelStr)).c_str(), aCompletedStr.c_str());
 			}
 		}
 		else if (mApp->IsEndlessIZombie(mApp->mGameMode) || mApp->IsEndlessScaryPotter(mApp->mGameMode))
@@ -6682,7 +6682,7 @@ void Board::DrawLevel(Graphics* g)
 			if (aStreak > 0)
 			{
 				std::string aStreakStr = PvzpReplaceNumberString("[ENDLESS_STREAK]", "{STREAK}", aStreak);
-				aLevelStr = StrFormat("%s - %s", PvzpStringTranslate(aLevelStr).c_str(), aStreakStr.c_str());
+				aLevelStr = StrFormat("%s - %s", std::string(PvzpStringTranslate(aLevelStr)).c_str(), aStreakStr.c_str());
 			}
 		}
 	}

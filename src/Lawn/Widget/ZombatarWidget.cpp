@@ -1215,7 +1215,7 @@ void ZombatarWidget::DrawConfirm(Graphics* g)
 
 	g->SetFont(FONT_HOUSEOFTERROR28);
 	g->SetColor(Color(254, 227, 0));
-	std::string aHeader = PvzpStringTranslate("[ZOMBATAR_FINISHED_WARNING_HEADER]");
+	std::string aHeader(PvzpStringTranslate("[ZOMBATAR_FINISHED_WARNING_HEADER]"));
 	g->DrawString(aHeader, ZOMBATAR_CONFIRM_HEADER_X - FONT_HOUSEOFTERROR28->StringWidth(aHeader) / 2, ZOMBATAR_CONFIRM_HEADER_Y);
 
 	PvzpDrawStringWrapped(g, "[ZOMBATAR_FINISHED_WARNING_TEXT]",
@@ -1224,9 +1224,9 @@ void ZombatarWidget::DrawConfirm(Graphics* g)
 
 	g->SetFont(FONT_BRIANNETOD12);
 	g->SetColor(Color(255, 255, 255));
-	std::string aAccept = PvzpStringTranslate("[ZOMBATAR_FINISHED_BUTTON_TEXT]");
+	std::string aAccept(PvzpStringTranslate("[ZOMBATAR_FINISHED_BUTTON_TEXT]"));
 	g->DrawString(aAccept, ZOMBATAR_CONFIRM_ACCEPT_LABEL_X - FONT_BRIANNETOD12->StringWidth(aAccept) / 2, ZOMBATAR_CONFIRM_LABEL_Y);
-	std::string aBack = PvzpStringTranslate("[ZOMBATAR_BACK_BUTTON_TEXT]");
+	std::string aBack(PvzpStringTranslate("[ZOMBATAR_BACK_BUTTON_TEXT]"));
 	g->DrawString(aBack, ZOMBATAR_CONFIRM_BACK_LABEL_X - FONT_BRIANNETOD12->StringWidth(aBack) / 2, ZOMBATAR_CONFIRM_LABEL_Y);
 }
 

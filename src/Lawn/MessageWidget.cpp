@@ -103,7 +103,7 @@ static void TruncateLabel(std::string& theLabel)
 
 void MessageWidget::SetLabel(std::string_view theNewLabel, MessageStyle theMessageStyle)
 {
-	std::string aLabel = PvzpStringTranslate(theNewLabel);
+	std::string aLabel(PvzpStringTranslate(theNewLabel));
 	TruncateLabel(aLabel);
 
 	if (mReanimType != ReanimationType::REANIM_NONE && mDuration > 0)

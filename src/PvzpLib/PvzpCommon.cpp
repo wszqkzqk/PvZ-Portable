@@ -415,7 +415,7 @@ float RandRangeFloat(float theMin, float theMax)
 
 void PvzpDrawString(Graphics* g, std::string_view theText, int thePosX, int thePosY, _Font* theFont, const Color& theColor, DrawStringJustification theJustification)
 {
-	std::string aFinalString = PvzpStringTranslate(theText);
+	std::string_view aFinalString = PvzpStringTranslate(theText);
 
 	int aPosX = thePosX;
 	if (theJustification == DrawStringJustification::DS_ALIGN_RIGHT || theJustification == DrawStringJustification::DS_ALIGN_RIGHT_VERTICAL_MIDDLE)
@@ -449,7 +449,7 @@ static RenderCommand* gRenderHead[256];
 
 void PvzpDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& theMatrix, std::string_view theString, const Color& theColor)
 {
-	std::string aFinalString = PvzpStringTranslate(theString);
+	std::string_view aFinalString = PvzpStringTranslate(theString);
 
 	memset(gRenderTail, 0, sizeof(gRenderTail));
 	memset(gRenderHead, 0, sizeof(gRenderHead));
@@ -1229,11 +1229,11 @@ void FreeGlobalAllocators()
 
 std::string PvzpReplaceString(std::string_view theText, const char* theStringToFind, std::string_view theStringToSubstitute)
 {
-	std::string aFinalString = PvzpStringTranslate(theText);
+	std::string aFinalString(PvzpStringTranslate(theText));
 	size_t aPos = aFinalString.find(theStringToFind);
 	if (aPos != std::string::npos)
 	{
-		std::string aFinalStringToSubstitute = PvzpStringTranslate(theStringToSubstitute);
+		std::string aFinalStringToSubstitute(PvzpStringTranslate(theStringToSubstitute));
 		aFinalString.replace(aPos, strlen(theStringToFind), aFinalStringToSubstitute);
 	}
 
@@ -1242,7 +1242,7 @@ std::string PvzpReplaceString(std::string_view theText, const char* theStringToF
 
 std::string PvzpReplaceNumberString(std::string_view theText, const char* theStringToFind, int theNumber)
 {
-	std::string aFinalString = PvzpStringTranslate(theText);
+	std::string aFinalString(PvzpStringTranslate(theText));
 	size_t aPos = aFinalString.find(theStringToFind);
 	if (aPos != std::string::npos)
 	{
