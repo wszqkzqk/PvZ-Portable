@@ -1960,7 +1960,7 @@ void SexyAppBase::Popup(const std::string& theString)
 		errorApplicationShow(&c);
 #elif !defined(__EMSCRIPTEN__)
 		if (std::this_thread::get_id() == mPrimaryThreadId)
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "FATAL ERROR", theString.c_str(), NULL);
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "FATAL ERROR", theString.c_str(), nullptr);
 #endif
 	}
 
