@@ -3051,11 +3051,11 @@ static void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 		}
 	}
 
-	theContext.SyncBytes(theBoard->mCursorObject, sizeof(CursorObject));
-	theContext.SyncBytes(theBoard->mCursorPreview, sizeof(CursorPreview));
-	theContext.SyncBytes(theBoard->mAdvice, sizeof(MessageWidget));
-	theContext.SyncBytes(theBoard->mSeedBank, sizeof(SeedBank));
-	theContext.SyncBytes(theBoard->mChallenge, sizeof(Challenge));
+	theContext.SyncBytes(theBoard->mCursorObject.get(), sizeof(CursorObject));
+	theContext.SyncBytes(theBoard->mCursorPreview.get(), sizeof(CursorPreview));
+	theContext.SyncBytes(theBoard->mAdvice.get(), sizeof(MessageWidget));
+	theContext.SyncBytes(theBoard->mSeedBank.get(), sizeof(SeedBank));
+	theContext.SyncBytes(theBoard->mChallenge.get(), sizeof(Challenge));
 	theContext.SyncBytes(theBoard->mApp->mMusic, sizeof(Music));
 
 	if (theContext.mReading)

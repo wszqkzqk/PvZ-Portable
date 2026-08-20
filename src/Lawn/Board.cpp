@@ -91,10 +91,10 @@ Board::Board(LawnApp* theApp)
 	}
 	mCoinBankFadeCount = 0;
 	mLevel = 0;
-	mCursorObject = new CursorObject();
-	mCursorPreview = new CursorPreview();
-	mSeedBank = new SeedBank();
-	mCutScene = new CutScene();
+	mCursorObject = std::make_unique<CursorObject>();
+	mCursorPreview = std::make_unique<CursorPreview>();
+	mSeedBank = std::make_unique<SeedBank>();
+	mCutScene = std::make_unique<CutScene>();
 	mSpecialGraveStoneX = -1;
 	mSpecialGraveStoneY = -1;
 	for (int i = 0; i < MAX_GRID_SIZE_X; i++)
@@ -183,18 +183,18 @@ Board::Board(LawnApp* theApp)
 	mDaisyMode = mApp->mDaisyMode;
 	mSukhbirMode = mApp->mSukhbirMode;
 	mShowShovel = false;
-	mToolTip = new ToolTipWidget();
-	mAdvice = new MessageWidget(mApp);
+	mToolTip = std::make_unique<ToolTipWidget>();
+	mAdvice = std::make_unique<MessageWidget>(mApp);
 	mBackground = BackgroundType::BACKGROUND_1_DAY;
 	mMainCounter = 0;
 	mBoardUpdateCounter = 0;
 	mTutorialState = TutorialState::TUTORIAL_OFF;
 	mTutorialTimer = -1;
 	mTutorialParticleID = ParticleSystemID::PARTICLESYSTEMID_NULL;
-	mChallenge = new Challenge();
+	mChallenge = std::make_unique<Challenge>();
 	mClip = false;
 	mDebugTextMode = DebugTextMode::DEBUG_TEXT_NONE;
-	mMenuButton = new GameButton(0);
+	mMenuButton = std::make_unique<GameButton>(0);
 	mMenuButton->mDrawStoneButton = true;
 	mStoreButton = nullptr;
 	mIgnoreMouseUp = false;
@@ -204,7 +204,7 @@ Board::Board(LawnApp* theApp)
 		mMenuButton->SetLabel("[MAIN_MENU_BUTTON]");
 		mMenuButton->Resize(628, -10, 163, 46);
 
-		mStoreButton = new GameButton(1);
+		mStoreButton = std::make_unique<GameButton>(1);
 		mStoreButton->mButtonImage = IMAGE_ZENSHOPBUTTON;
 		mStoreButton->mOverImage = IMAGE_ZENSHOPBUTTON_HIGHLIGHT;
 		mStoreButton->mDownImage = IMAGE_ZENSHOPBUTTON_HIGHLIGHT;
@@ -219,7 +219,7 @@ Board::Board(LawnApp* theApp)
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND)
 	{
-		mStoreButton = new GameButton(1);
+		mStoreButton = std::make_unique<GameButton>(1);
 		mStoreButton->mDrawStoneButton = true;
 		mStoreButton->mBtnNoDraw = true;
 		mStoreButton->mDisabled = true;
@@ -230,34 +230,14 @@ Board::Board(LawnApp* theApp)
 		mMenuButton->SetLabel("[MAIN_MENU_BUTTON]");
 		mMenuButton->Resize(628, -10, 163, 46);
 
-		mStoreButton = new GameButton(1);
+		mStoreButton = std::make_unique<GameButton>(1);
 		mStoreButton->mDrawStoneButton = true;
 		mStoreButton->mBtnNoDraw = true;
 		mStoreButton->SetLabel("[GET_FULL_VERSION_BUTTON]");
 	}
 }
 
-Board::~Board()
-{
-	delete mAdvice;
-	delete mCursorObject;
-	delete mCursorPreview;
-	delete mSeedBank;
-	if (mMenuButton)
-	{
-		delete mMenuButton;
-	}
-	if (mStoreButton)
-	{
-		delete mStoreButton;
-	}
-	if (mToolTip)
-	{
-		delete mToolTip;
-	}
-	delete mCutScene;
-	delete mChallenge;
-}
+Board::~Board() = default;
 
 void BoardInitForPlayer()
 {
@@ -6300,7 +6280,7 @@ void Board::DrawGameObjects(Graphics* g)
 	{
 		AddUIRenderItem(aRenderList, aRenderItemCount, RenderObjectType::RENDER_ITEM_STORM, MakeRenderOrder(RenderLayer::RENDER_LAYER_FOG, 0, 3));
 	}
-	AddGameObjectRenderItemCursorPreview(aRenderList, aRenderItemCount, RenderObjectType::RENDER_ITEM_CURSOR_PREVIEW, mCursorPreview);
+	AddGameObjectRenderItemCursorPreview(aRenderList, aRenderItemCount, RenderObjectType::RENDER_ITEM_CURSOR_PREVIEW, mCursorPreview.get());
 
 	PvzpHesitationTrace("start sort");
 	std::sort(aRenderList, aRenderList + aRenderItemCount, RenderItemSortFunc);

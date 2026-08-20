@@ -5109,7 +5109,7 @@ void Challenge::LastStandUpdate()
 {
 	if (mBoard->mNextSurvivalStageCounter == 0 && mChallengeState == STATECHALLENGE_NORMAL && mBoard->mStoreButton->mBtnNoDraw)
 	{
-		GameButton* aButton = mBoard->mStoreButton;
+		GameButton* aButton = mBoard->mStoreButton.get();
 		aButton->mBtnNoDraw = false;
 		aButton->mDisabled = false;
 

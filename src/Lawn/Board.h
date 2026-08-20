@@ -23,6 +23,7 @@
 #define __BOARD_H__
 
 #include <cstdint>
+#include <memory>
 
 #include "../ConstEnums.h"
 #include "../PvzpLib/DataArray.h"
@@ -133,16 +134,16 @@ public:
 	DataArray<Coin>					mCoins;
 	DataArray<LawnMower>			mLawnMowers;
 	DataArray<GridItem>				mGridItems;
-	CursorObject*					mCursorObject;
-	CursorPreview*					mCursorPreview;
-	MessageWidget*					mAdvice;
-	SeedBank*						mSeedBank;
-	GameButton*						mMenuButton;
-	GameButton*						mStoreButton;
+	std::unique_ptr<CursorObject>		mCursorObject;
+	std::unique_ptr<CursorPreview>		mCursorPreview;
+	std::unique_ptr<MessageWidget>		mAdvice;
+	std::unique_ptr<SeedBank>			mSeedBank;
+	std::unique_ptr<GameButton>			mMenuButton;
+	std::unique_ptr<GameButton>			mStoreButton;
 	bool							mIgnoreMouseUp;
-	ToolTipWidget*					mToolTip;
-	CutScene*						mCutScene;
-	Challenge*						mChallenge;
+	std::unique_ptr<ToolTipWidget>		mToolTip;
+	std::unique_ptr<CutScene>			mCutScene;
+	std::unique_ptr<Challenge>			mChallenge;
 	bool							mPaused;
 	GridSquareType					mGridSquareType[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y];
 	int32_t							mGridCelLook[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y];
