@@ -347,11 +347,11 @@ CreditScreen::CreditScreen(LawnApp* theApp)
 	mCreditsPhaseCounter = 0;
 	mDrawBrain = false;
 
-	mMainMenuButton.reset(MakeButton(CreditScreen::Credits_Button_MainMenu, this, "[CREDITS_MAIN_MENU_BUTTON]"));
+	mMainMenuButton = MakeButton(CreditScreen::Credits_Button_MainMenu, this, "[CREDITS_MAIN_MENU_BUTTON]");
 	mMainMenuButton->Resize(298, 554, 209, 46);
 	mMainMenuButton->SetVisible(false);
 
-	mReplayButton.reset(MakeNewButton(CreditScreen::Credits_Button_Replay, this, "[CREDITS_REPLAY_BUTTON]", FONT_HOUSEOFTERROR16, IMAGE_CREDITS_PLAYBUTTON, nullptr, nullptr));
+	mReplayButton = MakeNewButton(CreditScreen::Credits_Button_Replay, this, "[CREDITS_REPLAY_BUTTON]", FONT_HOUSEOFTERROR16, IMAGE_CREDITS_PLAYBUTTON, nullptr, nullptr);
 	mReplayButton->mTextDownOffsetX = 1;
 	mReplayButton->mTextDownOffsetY = 1;
 	mReplayButton->mColors[ButtonWidget::COLOR_LABEL] = Color(255, 255, 255);

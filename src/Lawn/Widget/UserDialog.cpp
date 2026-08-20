@@ -46,8 +46,8 @@ UserDialog::UserDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_USE
 	mUserList->mJustify = ListWidget::JUSTIFY_CENTER;
 	mUserList->mItemHeight = 24;
 
-	mRenameButton.reset(MakeButton(UserDialog::UserDialog_RenameUser, this, mApp->GetString("RENAME_BUTTON", "Rename")));
-	mDeleteButton.reset(MakeButton(UserDialog::UserDialog_DeleteUser, this, mApp->GetString("DELETE_BUTTON", "Delete")));
+	mRenameButton = MakeButton(UserDialog::UserDialog_RenameUser, this, mApp->GetString("RENAME_BUTTON", "Rename"));
+	mDeleteButton = MakeButton(UserDialog::UserDialog_DeleteUser, this, mApp->GetString("DELETE_BUTTON", "Delete"));
 
 	mNumUsers = 0;
 	if (theApp->mPlayerInfo)

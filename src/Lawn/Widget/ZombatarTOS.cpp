@@ -72,13 +72,13 @@ ZombatarTOS::ZombatarTOS(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_Z
 	mTOSSlider->mHorizontal = false;
 	mTOSSlider->SetValue(0);
 
-	mBackButton.reset(MakeNewButton(ZombatarTOS::ZombatarTOS_Back, this, "", nullptr,
-		IMAGE_ZOMBATAR_BACK_BUTTON, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT, nullptr));
+	mBackButton = MakeNewButton(ZombatarTOS::ZombatarTOS_Back, this, "", nullptr,
+		IMAGE_ZOMBATAR_BACK_BUTTON, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT, nullptr);
 
-	mAcceptButton.reset(MakeNewButton(ZombatarTOS::ZombatarTOS_Accept, this, "", nullptr,
-		IMAGE_ZOMBATAR_ACCEPT_BUTTON, IMAGE_ZOMBATAR_ACCEPT_BUTTON_HIGHLIGHT, nullptr));
+	mAcceptButton = MakeNewButton(ZombatarTOS::ZombatarTOS_Accept, this, "", nullptr,
+		IMAGE_ZOMBATAR_ACCEPT_BUTTON, IMAGE_ZOMBATAR_ACCEPT_BUTTON_HIGHLIGHT, nullptr);
 
-	mTOSCheckbox.reset(MakeNewCheckbox(ZombatarTOS::ZombatarTOS_Checkbox, this, false));
+	mTOSCheckbox = MakeNewCheckbox(ZombatarTOS::ZombatarTOS_Checkbox, this, false);
 
 	Resize(0, 0, TOS_DIALOG_WIDTH, TOS_DIALOG_HEIGHT);
 }

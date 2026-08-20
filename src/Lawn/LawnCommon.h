@@ -25,6 +25,7 @@
 #include "../ConstEnums.h"
 #include "graphics/Graphics.h"
 #include "widget/EditWidget.h"
+#include <memory>
 #include <time.h>
 
 using namespace Sexy;
@@ -65,7 +66,7 @@ void				TileImageHorizontally(Graphics* g, Image* theImage, int theX, int theY, 
 void				TileImageVertically(Graphics* g, Image* theImage, int theX, int theY, int theHeight);
 
 // Widgets
-Checkbox*					MakeNewCheckbox(int theId, CheckboxListener* theListener, bool theDefault);
+std::unique_ptr<Checkbox>	MakeNewCheckbox(int theId, CheckboxListener* theListener, bool theDefault);
 LawnEditWidget*				CreateEditWidget(int theId, EditListener* theListener, Dialog* theDialog);
 void						DrawEditBox(Graphics* g, EditWidget* theWidget);
 

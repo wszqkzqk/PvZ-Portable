@@ -288,7 +288,7 @@ void LawnStoneButton::Draw(Graphics* g)
 	DrawStoneButton(g, 0, 0, mWidth, mHeight, isDown, mIsOver, mLabel);
 }
 
-LawnStoneButton* MakeButton(int theId, ButtonListener* theListener, std::string_view theText)
+std::unique_ptr<LawnStoneButton> MakeButton(int theId, ButtonListener* theListener, std::string_view theText)
 {
 	LawnStoneButton* aButton = new LawnStoneButton(nullptr, theId, theListener);
 	aButton->SetLabel(theText);
@@ -298,7 +298,7 @@ LawnStoneButton* MakeButton(int theId, ButtonListener* theListener, std::string_
 	aButton->mHasAlpha = true;
 	aButton->mHasTransparencies = true;
 	aButton->mHeight = 33;
-	return aButton;
+	return std::unique_ptr<LawnStoneButton>(aButton);
 }
 
 NewLawnButton::NewLawnButton(Image* theComponentImage, int theId, ButtonListener* theListener) : DialogButton(theComponentImage, theId, theListener)
@@ -393,7 +393,7 @@ bool NewLawnButton::IsPointVisible(int x, int y)
 	return PvzpIsPointInPolygon(mPolygonShape, 4, SexyVector2(x, y));
 }
 
-NewLawnButton* MakeNewButton(int theId, ButtonListener* theListener, std::string_view theText, _Font* theFont, Image* theImageNormal, Image* theImageOver, Image* theImageDown)
+std::unique_ptr<NewLawnButton> MakeNewButton(int theId, ButtonListener* theListener, std::string_view theText, _Font* theFont, Image* theImageNormal, Image* theImageOver, Image* theImageDown)
 {
 	NewLawnButton* aButton = new NewLawnButton(nullptr, theId, theListener);
 	aButton->SetFont(theFont == nullptr ? Sexy::FONT_BRIANNETOD12 : theFont);
@@ -409,5 +409,5 @@ NewLawnButton* MakeNewButton(int theId, ButtonListener* theListener, std::string
 	aButton->mTranslateX = 1;
 	aButton->mTranslateY = 1;
 
-	return aButton;
+	return std::unique_ptr<NewLawnButton>(aButton);
 }

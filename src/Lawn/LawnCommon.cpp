@@ -151,14 +151,14 @@ void DrawEditBox(Graphics* g, EditWidget* theWidget)
 	g->DrawImageBox(aDest, IMAGE_EDITBOX);
 }
 
-Checkbox* MakeNewCheckbox(int theId, CheckboxListener* theListener, bool theDefault)
+std::unique_ptr<Checkbox> MakeNewCheckbox(int theId, CheckboxListener* theListener, bool theDefault)
 {
 	Checkbox* aCheckbox = new Checkbox(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
 	aCheckbox->mChecked = theDefault;
 	aCheckbox->mHasAlpha = true;
 	aCheckbox->mHasTransparencies = true;
 
-	return aCheckbox;
+	return std::unique_ptr<Checkbox>(aCheckbox);
 }
 
 std::string GetSavedGameName(GameMode theGameMode, int theProfileId)

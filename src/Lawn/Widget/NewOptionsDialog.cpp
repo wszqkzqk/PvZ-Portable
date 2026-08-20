@@ -42,11 +42,11 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 	mApp = theApp;
 	mFromGameSelector = theFromGameSelector;
 	SetColor(Dialog::COLOR_BUTTON_TEXT, Color(255, 255, 100));
-	mAlmanacButton.reset(MakeButton(NewOptionsDialog::NewOptionsDialog_Almanac, this, "[VIEW_ALMANAC_BUTTON]"));
-	mRestartButton.reset(MakeButton(NewOptionsDialog::NewOptionsDialog_Restart, this, "[RESTART_LEVEL]"));
-	mBackToMainButton.reset(MakeButton(NewOptionsDialog::NewOptionsDialog_MainMenu, this, "[MAIN_MENU_BUTTON]"));
+	mAlmanacButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Almanac, this, "[VIEW_ALMANAC_BUTTON]");
+	mRestartButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Restart, this, "[RESTART_LEVEL]");
+	mBackToMainButton = MakeButton(NewOptionsDialog::NewOptionsDialog_MainMenu, this, "[MAIN_MENU_BUTTON]");
 
-	mBackToGameButton.reset(MakeNewButton(
+	mBackToGameButton = MakeNewButton(
 		Dialog::ID_OK,
 		this,
 		"[BACK_TO_GAME]",
@@ -54,7 +54,7 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 		IMAGE_OPTIONS_BACKTOGAMEBUTTON0,
 		IMAGE_OPTIONS_BACKTOGAMEBUTTON0,
 		IMAGE_OPTIONS_BACKTOGAMEBUTTON2
-	));
+	);
 	mBackToGameButton->mTranslateX = 0;
 	mBackToGameButton->mTranslateY = 0;
 	mBackToGameButton->mTextOffsetX = -2;
@@ -74,8 +74,8 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 	mSfxVolumeSlider = std::make_unique<Slider>(IMAGE_OPTIONS_SLIDERSLOT, IMAGE_OPTIONS_SLIDERKNOB2, NewOptionsDialog::NewOptionsDialog_SoundVolume, this);
 	mSfxVolumeSlider->SetValue(theApp->GetSfxVolume() / 0.65);
 
-	mFullscreenCheckbox.reset(MakeNewCheckbox(NewOptionsDialog::NewOptionsDialog_Fullscreen, this, !theApp->mIsWindowed));
-	mHardwareAccelerationCheckbox.reset(MakeNewCheckbox(NewOptionsDialog::NewOptionsDialog_HardwareAcceleration, this, theApp->Is3DAccelerated()));
+	mFullscreenCheckbox = MakeNewCheckbox(NewOptionsDialog::NewOptionsDialog_Fullscreen, this, !theApp->mIsWindowed);
+	mHardwareAccelerationCheckbox = MakeNewCheckbox(NewOptionsDialog::NewOptionsDialog_HardwareAcceleration, this, theApp->Is3DAccelerated());
 
 	if (mFromGameSelector)
 	{

@@ -41,15 +41,15 @@ ContinueDialog::ContinueDialog(LawnApp* theApp) : LawnDialog(
 	{
 		mDialogLines = mApp->GetString("CONTINUE_GAME_OR_RESTART",
 			"Do you want to continue your current game or restart the level?");
-		mContinueButton.reset(MakeButton(ContinueDialog::ContinueDialog_Continue, this, "[CONTINUE_BUTTON]"));
-		mNewGameButton.reset(MakeButton(ContinueDialog::ContinueDialog_NewGame, this, "[RESTART_LEVEL]"));
+		mContinueButton = MakeButton(ContinueDialog::ContinueDialog_Continue, this, "[CONTINUE_BUTTON]");
+		mNewGameButton = MakeButton(ContinueDialog::ContinueDialog_NewGame, this, "[RESTART_LEVEL]");
 	}
 	else
 	{
 		mDialogLines = mApp->GetString("CONTINUE_GAME",
 			"Do you want to continue your current game or start a new game?");
-		mContinueButton.reset(MakeButton(ContinueDialog::ContinueDialog_Continue, this, "[CONTINUE_BUTTON]"));
-		mNewGameButton.reset(MakeButton(ContinueDialog::ContinueDialog_NewGame, this, "[NEW_GAME_BUTTON]"));
+		mContinueButton = MakeButton(ContinueDialog::ContinueDialog_Continue, this, "[CONTINUE_BUTTON]");
+		mNewGameButton = MakeButton(ContinueDialog::ContinueDialog_NewGame, this, "[NEW_GAME_BUTTON]");
 	}
 
 	mTallBottom = true;

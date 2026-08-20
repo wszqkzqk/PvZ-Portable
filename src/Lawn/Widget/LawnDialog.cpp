@@ -55,17 +55,17 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::stri
 	// the localization key names for these dialogs are wrong
 	if (theButtonMode == 1)
 	{
-		mLawnYesButton.reset(MakeButton(1000, this, mApp->GetString("BUTTON_YES", "Yes")));
-		mLawnNoButton.reset(MakeButton(1001, this, mApp->GetString("BUTTON_NO", "No")));
+		mLawnYesButton = MakeButton(1000, this, mApp->GetString("BUTTON_YES", "Yes"));
+		mLawnNoButton = MakeButton(1001, this, mApp->GetString("BUTTON_NO", "No"));
 	}
 	else if (theButtonMode == 2)
 	{
-		mLawnYesButton.reset(MakeButton(1000, this, mApp->GetString("BUTTON_OK", "Ok")));
-		mLawnNoButton.reset(MakeButton(1001, this, mApp->GetString("BUTTON_CANCEL", "Cancel")));
+		mLawnYesButton = MakeButton(1000, this, mApp->GetString("BUTTON_OK", "Ok"));
+		mLawnNoButton = MakeButton(1001, this, mApp->GetString("BUTTON_CANCEL", "Cancel"));
 	}
 	else if (theButtonMode == 3)
 	{
-		mLawnYesButton.reset(MakeButton(1000, this, theDialogFooter));
+		mLawnYesButton = MakeButton(1000, this, theDialogFooter);
 		mLawnNoButton = nullptr;
 	}
 	else
@@ -467,7 +467,7 @@ GameOverDialog::GameOverDialog(const std::string& theMessage, bool theShowChalle
 	mApp->CenterDialog(this, mWidth, mHeight);
 	mClip = false;
 
-	mMenuButton.reset(MakeButton(1, this, "[MAIN_MENU_BUTTON]"));
+	mMenuButton = MakeButton(1, this, "[MAIN_MENU_BUTTON]");
 	mMenuButton->Resize(635 - mX, -10 - mY, 163, 46);
 
 	gLawnApp->mBoard->mShowShovel = false;
