@@ -112,9 +112,9 @@ void ReanimatorCache::DrawReanimatorFrame(Graphics* g, float thePosX, float theP
 	aReanim.Draw(g);
 }
 
-MemoryImage* ReanimatorCache::MakeBlankMemoryImage(int theWidth, int theHeight)
+std::unique_ptr<MemoryImage> ReanimatorCache::MakeBlankMemoryImage(int theWidth, int theHeight)
 {
-	MemoryImage* aImage = new MemoryImage();
+	auto aImage = std::make_unique<MemoryImage>();
 
 	int aBitsCount = theWidth * theHeight;
 	aImage->mBits = std::make_unique<uint32_t[]>(aBitsCount + 1);
@@ -150,16 +150,16 @@ void ReanimatorCache::GetPlantImageSize(SeedType theSeedType, int& theOffsetX, i
 	}
 }
 
-MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
+std::unique_ptr<MemoryImage> ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 {
-	MemoryImage* aImage = nullptr;
+	std::unique_ptr<MemoryImage> aImage;
 
 	switch (theMowerType)
 	{
 	case LawnMowerType::LAWNMOWER_LAWN:
 	{
 		aImage = MakeBlankMemoryImage(90, 100);
-		Graphics aMemoryGraphics(aImage);
+		Graphics aMemoryGraphics(aImage.get());
 		aMemoryGraphics.SetLinearBlend(true);
 		aMemoryGraphics.mScaleX = 0.85f;
 		aMemoryGraphics.mScaleY = 0.85f;
@@ -169,7 +169,7 @@ MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 	case LawnMowerType::LAWNMOWER_POOL:
 	{
 		aImage = MakeBlankMemoryImage(90, 100);
-		Graphics aMemoryGraphics(aImage);
+		Graphics aMemoryGraphics(aImage.get());
 		aMemoryGraphics.SetLinearBlend(true);
 		aMemoryGraphics.mScaleX = 0.8f;
 		aMemoryGraphics.mScaleY = 0.8f;
@@ -179,7 +179,7 @@ MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 	case LawnMowerType::LAWNMOWER_ROOF:
 	{
 		aImage = MakeBlankMemoryImage(90, 100);
-		Graphics aMemoryGraphics(aImage);
+		Graphics aMemoryGraphics(aImage.get());
 		aMemoryGraphics.SetLinearBlend(true);
 		aMemoryGraphics.mScaleX = 0.85f;
 		aMemoryGraphics.mScaleY = 0.85f;
@@ -189,7 +189,7 @@ MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 	case LawnMowerType::LAWNMOWER_SUPER_MOWER:
 	{
 		aImage = MakeBlankMemoryImage(90, 100);
-		Graphics aMemoryGraphics(aImage);
+		Graphics aMemoryGraphics(aImage.get());
 		aMemoryGraphics.SetLinearBlend(true);
 		aMemoryGraphics.mScaleX = 0.85f;
 		aMemoryGraphics.mScaleY = 0.85f;
@@ -204,12 +204,12 @@ MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 	return aImage;
 }
 
-MemoryImage* ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVariation theDrawVariation)
+std::unique_ptr<MemoryImage> ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVariation theDrawVariation)
 {
 	int aOffsetX, aOffsetY, aWidth, aHeight;
 	GetPlantImageSize(theSeedType, aOffsetX, aOffsetY, aWidth, aHeight);
-	MemoryImage* aMemoryImage = MakeBlankMemoryImage(aWidth, aHeight);
-	Graphics aMemoryGraphics(aMemoryImage);
+	auto aMemoryImage = MakeBlankMemoryImage(aWidth, aHeight);
+	Graphics aMemoryGraphics(aMemoryImage.get());
 	aMemoryGraphics.SetLinearBlend(true);
 
 	const PlantDefinition& aPlantDef = GetPlantDefinition(theSeedType);
@@ -258,10 +258,10 @@ MemoryImage* ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVar
 	return aMemoryImage;
 }
 
-MemoryImage* ReanimatorCache::MakeCachedZombieFrame(ZombieType theZombieType)
+std::unique_ptr<MemoryImage> ReanimatorCache::MakeCachedZombieFrame(ZombieType theZombieType)
 {
-	MemoryImage* aMemoryImage = MakeBlankMemoryImage(200, 210);
-	Graphics aMemoryGraphics(aMemoryImage);
+	auto aMemoryImage = MakeBlankMemoryImage(200, 210);
+	Graphics aMemoryGraphics(aMemoryImage.get());
 	aMemoryGraphics.SetLinearBlend(true);
 
 	ZombieType aUseZombieType = theZombieType;
@@ -340,36 +340,15 @@ ReanimatorCache::~ReanimatorCache()
 void ReanimatorCache::ReanimatorCacheInitialize()
 {
 	mApp = (LawnApp*)gSexyAppBase;
-	for (int i = 0; i < SeedType::NUM_SEED_TYPES; i++)
-		mPlantImages[i] = nullptr;
-	for (int i = 0; i < LawnMowerType::NUM_MOWER_TYPES; i++)
-		mLawnMowers[i] = nullptr;
-	for (int i = 0; i < ZombieType::NUM_CACHED_ZOMBIE_TYPES; i++)
-		mZombieImages[i] = nullptr;
 }
 
 void ReanimatorCache::ReanimatorCacheDispose()
 {
-	for (int i = 0; i < SeedType::NUM_SEED_TYPES; i++)
-	{
-		delete mPlantImages[i];
-		mPlantImages[i] = nullptr;
-	}
 	while (mImageVariationList.mSize != 0)
 	{
 		ReanimCacheImageVariation aImageVariation = mImageVariationList.RemoveHead();
 		if (aImageVariation.mImage != nullptr)
 			delete aImageVariation.mImage;
-	}
-	for (int i = 0; i < LawnMowerType::NUM_MOWER_TYPES; i++)
-	{
-		delete mLawnMowers[i];
-		mLawnMowers[i] = nullptr;
-	}
-	for (int i = 0; i < ZombieType::NUM_CACHED_ZOMBIE_TYPES; i++)
-	{
-		delete mZombieImages[i];
-		mZombieImages[i] = nullptr;
 	}
 }
 
@@ -393,21 +372,21 @@ void ReanimatorCache::DrawCachedPlant(Graphics* g, float thePosX, float thePosY,
 
 		if (aImage == nullptr)
 		{
-			aImage = MakeCachedPlantFrame(theSeedType, theDrawVariation);
 			ReanimCacheImageVariation aNewImageVariation;
 			aNewImageVariation.mSeedType = theSeedType;
 			aNewImageVariation.mDrawVariation = theDrawVariation;
-			aNewImageVariation.mImage = aImage;
+			aNewImageVariation.mImage = MakeCachedPlantFrame(theSeedType, theDrawVariation).release();
+			aImage = aNewImageVariation.mImage;
 			mImageVariationList.AddHead(aNewImageVariation);
 		}
 	}
 	else
 	{
-		aImage = mPlantImages[theSeedType];
+		aImage = mPlantImages[theSeedType].get();
 		if (aImage == nullptr)
 		{
-			aImage = MakeCachedPlantFrame(theSeedType, DrawVariation::VARIATION_NORMAL);
-			mPlantImages[theSeedType] = aImage;
+			mPlantImages[theSeedType] = MakeCachedPlantFrame(theSeedType, DrawVariation::VARIATION_NORMAL);
+			aImage = mPlantImages[theSeedType].get();
 		}
 	}
 
@@ -425,7 +404,7 @@ void ReanimatorCache::DrawCachedMower(Graphics* g, float thePosX, float thePosY,
 
 	if (mLawnMowers[theMowerType] == nullptr)
 		mLawnMowers[theMowerType] = MakeCachedMowerFrame(theMowerType);
-	PvzpDrawImageScaledF(g, mLawnMowers[theMowerType], thePosX - 20.0f, thePosY, g->mScaleX, g->mScaleY);
+	PvzpDrawImageScaledF(g, mLawnMowers[theMowerType].get(), thePosX - 20.0f, thePosY, g->mScaleX, g->mScaleY);
 }
 
 void ReanimatorCache::DrawCachedZombie(Graphics* g, float thePosX, float thePosY, ZombieType theZombieType)
@@ -434,5 +413,5 @@ void ReanimatorCache::DrawCachedZombie(Graphics* g, float thePosX, float thePosY
 
 	if (mZombieImages[theZombieType] == nullptr)
 		mZombieImages[theZombieType] = MakeCachedZombieFrame(theZombieType);
-	PvzpDrawImageScaledF(g, mZombieImages[theZombieType], thePosX, thePosY, g->mScaleX, g->mScaleY);
+	PvzpDrawImageScaledF(g, mZombieImages[theZombieType].get(), thePosX, thePosY, g->mScaleX, g->mScaleY);
 }
