@@ -530,7 +530,6 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	aFile.seekg(aFilePos, std::ios::beg);
 	int aBytesLeft = static_cast<int>(aFileEnd - aFilePos);
 
-	uchar* aBuffer;
 	// read marker list
 	if (aVersion >= 2)
 	{
@@ -547,9 +546,9 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 
 		Buffer aMarkerBuffer;
 
-		aBuffer = new uchar[aSize];
-		if (!aFile.read(reinterpret_cast<char*>(aBuffer), aSize)) { delete [] aBuffer; return false; }
-		aMarkerBuffer.WriteBytes(aBuffer, aSize);
+		ByteVector aBuffer(aSize);
+		if (!aFile.read(reinterpret_cast<char*>(aBuffer.data()), aSize)) { return false; }
+		aMarkerBuffer.WriteBytes(aBuffer.data(), aSize);
 		aMarkerBuffer.SeekFront();
 
 		uint32_t aNumItems = aMarkerBuffer.ReadUInt32();
@@ -569,8 +568,6 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 		}
 
 		aBytesLeft -= aSize;
-
-		delete [] aBuffer;
 	}
 
 	// Read demo commands
@@ -585,13 +582,11 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	}
 
 
-	aBuffer = new uchar[aBytesLeft];
-	if (!aFile.read(reinterpret_cast<char*>(aBuffer), aBytesLeft)) { delete [] aBuffer; return false; }
+	ByteVector aBuffer(aBytesLeft);
+	if (!aFile.read(reinterpret_cast<char*>(aBuffer.data()), aBytesLeft)) { return false; }
 
-	mDemoBuffer.WriteBytes(aBuffer, aBytesLeft);
+	mDemoBuffer.WriteBytes(aBuffer.data(), aBytesLeft);
 	mDemoBuffer.SeekFront();
-
-	delete [] aBuffer;
 	return true;
 }
 
@@ -1476,13 +1471,13 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 		int aFileSize = p_ftell(aFP);
 		p_fseek(aFP, 0, SEEK_SET);
 
-		uchar* aData = new uchar[aFileSize];
+		ByteVector aData(aFileSize);
 
-		p_fread(aData, 1, aFileSize, aFP);
+		p_fread(aData.data(), 1, aFileSize, aFP);
 		p_fclose(aFP);
 
 		theBuffer->Clear();
-		theBuffer->SetData(aData, aFileSize);
+		theBuffer->SetData(aData.data(), aFileSize);
 
 		if ((mRecordingDemoBuffer) && (!dontWriteToDemo) && IsOnPrimaryThread())
 		{
@@ -1491,10 +1486,8 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 			mDemoBuffer.WriteNumBits(DEMO_FILE_READ, 5);
 			mDemoBuffer.WriteNumBits(1, 1); // success
 			mDemoBuffer.WriteUInt32(static_cast<uint32_t>(aFileSize));
-			mDemoBuffer.WriteBytes(aData, aFileSize);
+			mDemoBuffer.WriteBytes(aData.data(), aFileSize);
 		}
-
-		delete [] aData;
 
 		return true;
 	}
