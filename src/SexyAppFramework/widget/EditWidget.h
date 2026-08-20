@@ -53,8 +53,8 @@ public:
 
 	struct WidthCheck
 	{
-		_Font *mFont;
-		int mWidth;
+		std::unique_ptr<_Font>	mFont;
+		int						mWidth;
 	};
 	typedef std::list<WidthCheck> WidthCheckList;
 	WidthCheckList				mWidthCheckList;

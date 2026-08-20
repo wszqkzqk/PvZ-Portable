@@ -70,9 +70,6 @@ EditWidget::~EditWidget()
 
 void EditWidget::ClearWidthCheckFonts()
 {
-	for (WidthCheckList::iterator anItr = mWidthCheckList.begin(); anItr != mWidthCheckList.end(); ++anItr)
-		delete anItr->mFont;
-
 	mWidthCheckList.clear();
 }
 
@@ -81,7 +78,7 @@ void EditWidget::AddWidthCheckFont(_Font *theFont, int theMaxPixels)
 	mWidthCheckList.push_back(WidthCheck());
 	WidthCheck &aCheck = mWidthCheckList.back();
 	aCheck.mWidth = theMaxPixels;
-	aCheck.mFont = theFont->Duplicate();
+	aCheck.mFont.reset(theFont->Duplicate());
 }
 
 void EditWidget::SetText(const std::string& theText, bool leftPosToZero)
