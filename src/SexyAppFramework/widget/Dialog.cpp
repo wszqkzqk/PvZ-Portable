@@ -128,9 +128,6 @@ Dialog::~Dialog()
 {
 	delete mYesButton;
 	delete mNoButton;
-
-	delete mHeaderFont;
-	delete mLinesFont;
 }
 
 void Dialog::SetColor(int theIdx, const Color& theColor)
@@ -164,22 +161,20 @@ void Dialog::SetButtonFont(_Font* theFont)
 
 void Dialog::SetHeaderFont(_Font* theFont)
 {
-	delete mHeaderFont;
-	mHeaderFont = theFont->Duplicate();
+	mHeaderFont.reset(theFont->Duplicate());
 }
 
 void Dialog::SetLinesFont(_Font* theFont)
 {
-	delete mLinesFont;
-	mLinesFont = theFont->Duplicate();
+	mLinesFont.reset(theFont->Duplicate());
 }
 
 void Dialog::EnsureFonts()
 {
 	if (mHeaderFont == nullptr)
-		mHeaderFont = gSexyAppBase->mDefaultFont.load()->Duplicate();
+		mHeaderFont.reset(gSexyAppBase->mDefaultFont.load()->Duplicate());
 	if (mLinesFont == nullptr)
-		mLinesFont = gSexyAppBase->mDefaultFont.load()->Duplicate();
+		mLinesFont.reset(gSexyAppBase->mDefaultFont.load()->Duplicate());
 }
 
 int	Dialog::GetPreferredHeight(int theWidth)
@@ -200,7 +195,7 @@ int	Dialog::GetPreferredHeight(int theWidth)
 		if (needSpace)
 			aHeight += mSpaceAfterHeader;
 		Graphics g;
-		g.SetFont(mLinesFont);
+		g.SetFont(mLinesFont.get());
 		aHeight += GetWordWrappedHeight(&g, theWidth-mContentInsets.mLeft-mContentInsets.mRight-mBackgroundInsets.mLeft-mBackgroundInsets.mRight-4, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset);
 		needSpace = true;
 	}
@@ -250,7 +245,7 @@ void Dialog::Draw(Graphics* g)
 	{
 		aCurY += mHeaderFont->GetAscent() - mHeaderFont->GetAscentPadding();
 
-		g->SetFont(mHeaderFont);
+		g->SetFont(mHeaderFont.get());
 		g->SetColor(mColors[COLOR_HEADER]);
 		WriteCenteredLine(g, aCurY, mDialogHeader);
 
@@ -259,7 +254,7 @@ void Dialog::Draw(Graphics* g)
 		aCurY += mSpaceAfterHeader;
 	}
 
-	g->SetFont(mLinesFont);
+	g->SetFont(mLinesFont.get());
 	g->SetColor(mColors[COLOR_LINES]);
 
 	Rect aRect(mBackgroundInsets.mLeft+mContentInsets.mLeft+2, aCurY, mWidth-mContentInsets.mLeft-mContentInsets.mRight-mBackgroundInsets.mLeft-mBackgroundInsets.mRight-4, 0);
@@ -270,7 +265,7 @@ void Dialog::Draw(Graphics* g)
 		aCurY += 8;
 		aCurY += mHeaderFont->GetLineSpacing();
 
-		g->SetFont(mHeaderFont);
+		g->SetFont(mHeaderFont.get());
 		g->SetColor(mColors[COLOR_FOOTER]);
 		WriteCenteredLine(g, aCurY, mDialogFooter);
 	}

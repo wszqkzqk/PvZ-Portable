@@ -62,7 +62,7 @@ void DialogButton::Draw(Graphics* g)
 
 	_Font* aDefaultFont = mWidgetManager->mApp->mDefaultFont.load();
 	if ((mFont == nullptr) && (mLabel.length() > 0) && (aDefaultFont != nullptr))
-		mFont = aDefaultFont->Duplicate();
+		mFont.reset(aDefaultFont->Duplicate());
 
 	bool doTranslate = IsButtonDown();
 
@@ -100,7 +100,7 @@ void DialogButton::Draw(Graphics* g)
 
 	if (mFont != nullptr)
 	{
-		g->SetFont(mFont);
+		g->SetFont(mFont.get());
 
 		if (mIsOver)
 			g->SetColor(mColors[COLOR_LABEL_HILITE]);

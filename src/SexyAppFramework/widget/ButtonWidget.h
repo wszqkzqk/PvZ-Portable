@@ -26,6 +26,7 @@
 #define __BUTTONWIDGET_H__
 
 #include "Widget.h"
+#include <memory>
 
 namespace Sexy
 {
@@ -55,7 +56,7 @@ public:
 	int						mId;
 	std::string				mLabel;
 	int						mLabelJustify;
-	_Font*					mFont;
+	std::unique_ptr<_Font>		mFont;
 	Image*					mButtonImage;
 	Image*					mOverImage;
 	Image*					mDownImage;

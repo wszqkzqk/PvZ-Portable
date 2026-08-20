@@ -64,7 +64,6 @@ EditWidget::EditWidget(int theId, EditListener* theEditListener)
 
 EditWidget::~EditWidget()
 {
-	delete mFont;
 	ClearWidthCheckFonts();
 
 }
@@ -113,8 +112,7 @@ void EditWidget::Resize(int theX, int theY, int theWidth, int theHeight)
 
 void EditWidget::SetFont(_Font* theFont, _Font* theWidthCheckFont)
 {
-	delete mFont;
-	mFont = theFont->Duplicate();
+	mFont.reset(theFont->Duplicate());
 
 	ClearWidthCheckFonts();
 	if (theWidthCheckFont != nullptr)
@@ -125,7 +123,7 @@ void EditWidget::Draw(Graphics* g) // Already translated
 {
 	_Font* aDefaultFont = mWidgetManager->mApp->mDefaultFont.load();
 	if ((mFont == nullptr) && (aDefaultFont != nullptr))
-		mFont = aDefaultFont->Duplicate();
+		mFont.reset(aDefaultFont->Duplicate());
 	if (mFont == nullptr)
 		return;
 
@@ -137,7 +135,7 @@ void EditWidget::Draw(Graphics* g) // Already translated
 	for (int i = 0; i < 2; i++)
 	{
 		Graphics* aClipG = g->Create();
-		aClipG->SetFont(mFont);
+		aClipG->SetFont(mFont.get());
 
 		if (i == 1)
 		{

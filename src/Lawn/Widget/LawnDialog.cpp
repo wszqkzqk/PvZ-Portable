@@ -130,7 +130,7 @@ void LawnDialog::CalcSize(int theExtraX, int theExtraY)
 	{
 		aWidth += aTopMidWidth;
 		Graphics g;
-		g.SetFont(mLinesFont);
+		g.SetFont(mLinesFont.get());
 		int aBasicWidth = aWidth - mBackgroundInsets.mLeft - mBackgroundInsets.mRight - mContentInsets.mLeft - mContentInsets.mRight - 4;
 		aHeight += GetWordWrappedHeight(&g, aBasicWidth, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset) + 30;
 	}
@@ -364,13 +364,13 @@ void LawnDialog::Draw(Graphics* g)
 	if (mDialogHeader.size() > 0)
 	{
 		int aOffsetY = aFontY - mHeaderFont->GetAscentPadding() + mHeaderFont->GetAscent();
-		g->SetFont(mHeaderFont);
+		g->SetFont(mHeaderFont.get());
 		g->SetColor(mColors[Dialog::COLOR_HEADER]);
 		WriteCenteredLine(g, aOffsetY, mDialogHeader);
 		aFontY = aOffsetY - mHeaderFont->GetAscent() + mHeaderFont->GetHeight() + mSpaceAfterHeader;
 	}
 
-	g->SetFont(mLinesFont);
+	g->SetFont(mLinesFont.get());
 	g->SetColor(mColors[Dialog::COLOR_LINES]);
 	int aLinesAreaWidth = mWidth - mContentInsets.mLeft - mContentInsets.mRight - mBackgroundInsets.mLeft - mBackgroundInsets.mRight - 4;
 	Rect aRect(mBackgroundInsets.mLeft + mContentInsets.mLeft + 2, aFontY, aLinesAreaWidth, 0);

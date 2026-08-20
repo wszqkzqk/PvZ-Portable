@@ -358,12 +358,12 @@ void NewLawnButton::Draw(Graphics* g)
 		g->SetColorizeImages(false);
 		if (mIsOver)
 		{
-			g->SetFont(mHiliteFont ? mHiliteFont : mFont);
+			g->SetFont(mHiliteFont ? mHiliteFont : mFont.get());
 			g->SetColor(mColors[ButtonWidget::COLOR_LABEL_HILITE]);
 		}
 		else
 		{
-			g->SetFont(mFont);
+			g->SetFont(mFont.get());
 			g->SetColor(mColors[ButtonWidget::COLOR_LABEL]);
 		}
 		g->DrawString(mLabel, aFontX, aFontY);
@@ -379,7 +379,7 @@ void NewLawnButton::Draw(Graphics* g)
 			DrawButtonImage(g, mButtonImage, mNormalRect, mButtonOffsetX + mTranslateX, mButtonOffsetY + mTranslateY);
 
 		g->SetColorizeImages(false);
-		g->SetFont(mHiliteFont ? mHiliteFont : mFont);
+		g->SetFont(mHiliteFont ? mHiliteFont : mFont.get());
 		g->SetColor(mColors[ButtonWidget::COLOR_LABEL_HILITE]);
 		g->DrawString(mLabel, aFontX + mTextDownOffsetX, aFontY + mTextDownOffsetY);
 	}

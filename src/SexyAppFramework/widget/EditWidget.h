@@ -26,6 +26,7 @@
 #define __EDITWIDGET_H__
 
 #include "Widget.h"
+#include <memory>
 
 namespace Sexy
 {
@@ -48,7 +49,7 @@ public:
 
 	int						mId;
 	std::string				mString;
-	_Font*					mFont;
+	std::unique_ptr<_Font>		mFont;
 
 	struct WidthCheck
 	{
