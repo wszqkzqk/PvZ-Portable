@@ -70,8 +70,8 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 
 	if ((mButtonMode == BUTTONS_YES_NO) || (mButtonMode == BUTTONS_OK_CANCEL))
 	{
-		mYesButton = new DialogButton(theButtonComponentImage, ID_YES, this);
-		mNoButton = new DialogButton(theButtonComponentImage, ID_NO, this);
+		mYesButton = std::make_unique<DialogButton>(theButtonComponentImage, ID_YES, this);
+		mNoButton = std::make_unique<DialogButton>(theButtonComponentImage, ID_NO, this);
 
 		if (mButtonMode == BUTTONS_YES_NO)
 		{
@@ -86,14 +86,11 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 	}
 	else if (mButtonMode == BUTTONS_FOOTER)
 	{
-		mYesButton = new DialogButton(theButtonComponentImage, ID_FOOTER, this);
+		mYesButton = std::make_unique<DialogButton>(theButtonComponentImage, ID_FOOTER, this);
 		mYesButton->mLabel = mDialogFooter;
-		mNoButton = nullptr;
 	}
 	else
 	{
-		mYesButton = nullptr;
-		mNoButton = nullptr;
 		mNumButtons = 0;
 	}
 
@@ -103,9 +100,6 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 
 	mHasTransparencies = true;
 	mHasAlpha = true;
-
-	mHeaderFont = nullptr;
-	mLinesFont = nullptr;
 
 	mDragging = false;
 	mPriority = 1;
@@ -124,11 +118,7 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 }
 
 
-Dialog::~Dialog()
-{
-	delete mYesButton;
-	delete mNoButton;
-}
+Dialog::~Dialog() = default;
 
 void Dialog::SetColor(int theIdx, const Color& theColor)
 {
@@ -276,9 +266,9 @@ void Dialog::AddedToManager(WidgetManager* theWidgetManager)
 	Widget::AddedToManager(theWidgetManager);
 
 	if (mYesButton != nullptr)
-		theWidgetManager->AddWidget(mYesButton);
+		theWidgetManager->AddWidget(mYesButton.get());
 	if (mNoButton != nullptr)
-		theWidgetManager->AddWidget(mNoButton);
+		theWidgetManager->AddWidget(mNoButton.get());
 }
 
 void Dialog::RemovedFromManager(WidgetManager* theWidgetManager)
@@ -286,18 +276,18 @@ void Dialog::RemovedFromManager(WidgetManager* theWidgetManager)
 	Widget::RemovedFromManager(theWidgetManager);
 
 	if (mYesButton != nullptr)
-		theWidgetManager->RemoveWidget(mYesButton);
+		theWidgetManager->RemoveWidget(mYesButton.get());
 	if (mNoButton != nullptr)
-		theWidgetManager->RemoveWidget(mNoButton);
+		theWidgetManager->RemoveWidget(mNoButton.get());
 }
 
 void Dialog::OrderInManagerChanged()
 {
 	Widget::OrderInManagerChanged();
 	if (mYesButton != nullptr)
-		mWidgetManager->PutInfront(mYesButton,this);
+		mWidgetManager->PutInfront(mYesButton.get(),this);
 	if (mNoButton != nullptr)
-		mWidgetManager->PutInfront(mNoButton,this);
+		mWidgetManager->PutInfront(mNoButton.get(),this);
 }
 
 void Dialog::Resize(int theX, int theY, int theWidth, int theHeight)

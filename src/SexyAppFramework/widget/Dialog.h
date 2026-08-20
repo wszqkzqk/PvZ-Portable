@@ -76,8 +76,8 @@ public:
 
 	DialogListener*			mDialogListener;
 	Image*					mComponentImage;
-	DialogButton*			mYesButton;
-	DialogButton*			mNoButton;
+	std::unique_ptr<DialogButton>	mYesButton;
+	std::unique_ptr<DialogButton>	mNoButton;
 	int						mNumButtons;
 
 	std::string				mDialogHeader;

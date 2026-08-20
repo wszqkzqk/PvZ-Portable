@@ -33,7 +33,7 @@ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_C
 {
 	mApp = theApp;
 	mVerticalCenterText = false;
-	mLevelEditWidget.reset(CreateEditWidget(0, this, this));
+	mLevelEditWidget = CreateEditWidget(0, this, this);
 	mLevelEditWidget->mMaxChars = 12;
 	mLevelEditWidget->AddWidthCheckFont(FONT_BRIANNETOD12, 220);
 
