@@ -24,6 +24,7 @@
 
 #include "EditWidget.h"
 #include <algorithm>
+#include <memory>
 #include "graphics/Font.h"
 #include "WidgetManager.h"
 #include "SexyAppBase.h"
@@ -131,7 +132,7 @@ void EditWidget::Draw(Graphics* g) // Already translated
 
 	for (int i = 0; i < 2; i++)
 	{
-		Graphics* aClipG = g->Create();
+		std::unique_ptr<Graphics> aClipG(g->Create());
 		aClipG->SetFont(mFont.get());
 
 		if (i == 1)
@@ -165,7 +166,6 @@ void EditWidget::Draw(Graphics* g) // Already translated
 			aClipG->SetColor(mColors[COLOR_HILITE_TEXT]);
 		aClipG->DrawString(aString.substr(mLeftPos), 4, (mHeight - mFont->GetHeight())/2 + mFont->GetAscent());
 
-		delete aClipG;
 	}
 
 	g->SetColor(mColors[COLOR_OUTLINE]);

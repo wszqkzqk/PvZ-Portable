@@ -30,6 +30,7 @@
 #include "SexyAppBase.h"
 #include "misc/Debug.h"
 #include "misc/ResourceManager.h"
+#include <memory>
 
 using namespace Sexy;
 
@@ -409,10 +410,9 @@ void Widget::WriteNumberFromStrip(Graphics* g, int theNumber, int theX, int theY
 		aDivisor /= 10;
 		int aDigit = (theNumber / aDivisor) % 10;
 
-		Graphics* aClipG = g->Create();
+		std::unique_ptr<Graphics> aClipG(g->Create());
 		aClipG->ClipRect(theX + aDigitIdx*(aDigitLen + aSpacing), theY, aDigitLen, theNumberStrip->GetHeight());
 		aClipG->DrawImage(theNumberStrip, theX + aDigitIdx*(aDigitLen + aSpacing) - aDigit*aDigitLen, theY);
-		delete aClipG;
 	}
 }
 
