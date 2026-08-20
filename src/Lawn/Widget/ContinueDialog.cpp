@@ -41,15 +41,15 @@ ContinueDialog::ContinueDialog(LawnApp* theApp) : LawnDialog(
 	{
 		mDialogLines = mApp->GetString("CONTINUE_GAME_OR_RESTART",
 			"Do you want to continue your current game or restart the level?");
-		mContinueButton = MakeButton(ContinueDialog::ContinueDialog_Continue, this, "[CONTINUE_BUTTON]");
-		mNewGameButton = MakeButton(ContinueDialog::ContinueDialog_NewGame, this, "[RESTART_LEVEL]");
+		mContinueButton.reset(MakeButton(ContinueDialog::ContinueDialog_Continue, this, "[CONTINUE_BUTTON]"));
+		mNewGameButton.reset(MakeButton(ContinueDialog::ContinueDialog_NewGame, this, "[RESTART_LEVEL]"));
 	}
 	else
 	{
 		mDialogLines = mApp->GetString("CONTINUE_GAME",
 			"Do you want to continue your current game or start a new game?");
-		mContinueButton = MakeButton(ContinueDialog::ContinueDialog_Continue, this, "[CONTINUE_BUTTON]");
-		mNewGameButton = MakeButton(ContinueDialog::ContinueDialog_NewGame, this, "[NEW_GAME_BUTTON]");
+		mContinueButton.reset(MakeButton(ContinueDialog::ContinueDialog_Continue, this, "[CONTINUE_BUTTON]"));
+		mNewGameButton.reset(MakeButton(ContinueDialog::ContinueDialog_NewGame, this, "[NEW_GAME_BUTTON]"));
 	}
 
 	mTallBottom = true;
@@ -85,11 +85,7 @@ ContinueDialog::ContinueDialog(LawnApp* theApp) : LawnDialog(
 	}
 }
 
-ContinueDialog::~ContinueDialog()
-{
-	delete mContinueButton;
-	delete mNewGameButton;
-}
+ContinueDialog::~ContinueDialog() = default;
 
 int ContinueDialog::GetPreferredHeight(int theWidth)
 {
@@ -110,15 +106,15 @@ void ContinueDialog::Resize(int theX, int theY, int theWidth, int theHeight)
 void ContinueDialog::AddedToManager(WidgetManager* theWidgetManager)
 {
 	LawnDialog::AddedToManager(theWidgetManager);
-	AddWidget(mContinueButton);
-	AddWidget(mNewGameButton);
+	AddWidget(mContinueButton.get());
+	AddWidget(mNewGameButton.get());
 }
 
 void ContinueDialog::RemovedFromManager(WidgetManager* theWidgetManager)
 {
 	LawnDialog::RemovedFromManager(theWidgetManager);
-	RemoveWidget(mContinueButton);
-	RemoveWidget(mNewGameButton);
+	RemoveWidget(mContinueButton.get());
+	RemoveWidget(mNewGameButton.get());
 }
 
 void ContinueDialog::KeyDown(KeyCode theKey)

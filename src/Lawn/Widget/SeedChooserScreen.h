@@ -25,6 +25,7 @@
 #include "../../ConstEnums.h"
 #include "../../PvzpLib/PvzpCommon.h"
 #include "widget/Widget.h"
+#include <memory>
 using namespace Sexy;
 
 class Board;
@@ -71,13 +72,13 @@ private:
 	};
 
 public:
-	GameButton*             mStartButton;
-	GameButton*             mRandomButton;
-	GameButton*             mViewLawnButton;
-	GameButton*             mStoreButton;
-	GameButton*             mAlmanacButton;
-	GameButton*             mMenuButton;
-	GameButton*             mImitaterButton;
+	std::unique_ptr<GameButton> mStartButton;
+	std::unique_ptr<GameButton> mRandomButton;
+	std::unique_ptr<GameButton> mViewLawnButton;
+	std::unique_ptr<GameButton> mStoreButton;
+	std::unique_ptr<GameButton> mAlmanacButton;
+	std::unique_ptr<GameButton> mMenuButton;
+	std::unique_ptr<GameButton> mImitaterButton;
 	ChosenSeed              mChosenSeeds[NUM_SEED_TYPES];
 	LawnApp*                mApp;
 	Board*                  mBoard;
@@ -85,7 +86,7 @@ public:
 	int                     mSeedChooserAge;
 	int                     mSeedsInFlight;
 	int                     mSeedsInBank;
-	ToolTipWidget*          mToolTip;
+	std::unique_ptr<ToolTipWidget> mToolTip;
 	int                     mToolTipSeed;
 	int                     mLastMouseX;
 	int                     mLastMouseY;

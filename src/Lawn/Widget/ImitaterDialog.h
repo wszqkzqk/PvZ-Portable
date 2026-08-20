@@ -23,12 +23,13 @@
 #define __IMITATERDIALOG_H__
 
 #include "LawnDialog.h"
+#include <memory>
 
 class ToolTipWidget;
 class ImitaterDialog : public LawnDialog
 {
 public:
-	ToolTipWidget*          mToolTip;
+	std::unique_ptr<ToolTipWidget> mToolTip;
 	SeedType                mToolTipSeed;
 
 public:

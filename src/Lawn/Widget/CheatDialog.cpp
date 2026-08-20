@@ -33,7 +33,7 @@ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_C
 {
 	mApp = theApp;
 	mVerticalCenterText = false;
-	mLevelEditWidget = CreateEditWidget(0, this, this);
+	mLevelEditWidget.reset(CreateEditWidget(0, this, this));
 	mLevelEditWidget->mMaxChars = 12;
 	mLevelEditWidget->AddWidthCheckFont(FONT_BRIANNETOD12, 220);
 
@@ -55,10 +55,7 @@ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_C
 	CalcSize(110, 40);
 }
 
-CheatDialog::~CheatDialog()
-{
-	delete mLevelEditWidget;
-}
+CheatDialog::~CheatDialog() = default;
 
 int CheatDialog::GetPreferredHeight(int theWidth)
 {
@@ -74,20 +71,20 @@ void CheatDialog::Resize(int theX, int theY, int theWidth, int theHeight)
 void CheatDialog::AddedToManager(WidgetManager* theWidgetManager)
 {
 	LawnDialog::AddedToManager(theWidgetManager);
-	AddWidget(mLevelEditWidget);
-	theWidgetManager->SetFocus(mLevelEditWidget);
+	AddWidget(mLevelEditWidget.get());
+	theWidgetManager->SetFocus(mLevelEditWidget.get());
 }
 
 void CheatDialog::RemovedFromManager(WidgetManager* theWidgetManager)
 {
 	LawnDialog::RemovedFromManager(theWidgetManager);
-	RemoveWidget(mLevelEditWidget);
+	RemoveWidget(mLevelEditWidget.get());
 }
 
 void CheatDialog::Draw(Graphics* g)
 {
 	LawnDialog::Draw(g);
-	DrawEditBox(g, mLevelEditWidget);
+	DrawEditBox(g, mLevelEditWidget.get());
 }
 
 void CheatDialog::EditWidgetText(int theId, const std::string& theString)

@@ -25,6 +25,7 @@
 #include "LawnDialog.h"
 #include "widget/ListListener.h"
 #include "widget/EditListener.h"
+#include <memory>
 
 namespace Sexy
 {
@@ -41,9 +42,9 @@ protected:
 	};
 
 public:
-	ListWidget*			mUserList;
-	DialogButton*		mRenameButton;
-	DialogButton*		mDeleteButton;
+	std::unique_ptr<ListWidget>	mUserList;
+	std::unique_ptr<DialogButton>	mRenameButton;
+	std::unique_ptr<DialogButton>	mDeleteButton;
 	int					mNumUsers;
 
 public:

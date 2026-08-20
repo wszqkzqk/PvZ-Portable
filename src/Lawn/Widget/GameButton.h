@@ -24,6 +24,7 @@
 
 #include "misc/SexyVector.h"
 #include "widget/DialogButton.h"
+#include <memory>
 
 //using namespace std;
 using namespace Sexy;
@@ -63,7 +64,7 @@ public:
 	int						mId;
 	std::string				mLabel;
 	int						mLabelJustify;
-	_Font*					mFont;
+	std::unique_ptr<_Font>		mFont;
 	Image*					mButtonImage;
 	Image*					mOverImage;
 	Image*					mDownImage;

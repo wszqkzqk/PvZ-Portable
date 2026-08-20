@@ -36,7 +36,7 @@ ImitaterDialog::ImitaterDialog() :
 	LawnDialog(gLawnApp, Dialogs::DIALOG_IMITATER, true, "[CHOOSE_SEED_TO_COPY]", "", "[DIALOG_BUTTON_OK]", Dialog::BUTTONS_YES_NO)
 {
 	CalcSize(IMITATER_DIALOG_WIDTH - mWidth, IMITATER_DIALOG_HEIGHT - mHeight);
-	mToolTip = new ToolTipWidget();
+	mToolTip = std::make_unique<ToolTipWidget>();
 	mClip = false;
 	mToolTipSeed = SeedType::SEED_NONE;
 	mLawnYesButton->mBtnNoDraw = true;
@@ -45,10 +45,7 @@ ImitaterDialog::ImitaterDialog() :
 	mLawnNoButton->mMouseVisible = false;
 }
 
-ImitaterDialog::~ImitaterDialog()
-{
-	delete mToolTip;
-}
+ImitaterDialog::~ImitaterDialog() = default;
 
 SeedType ImitaterDialog::SeedHitTest(int x, int y)
 {

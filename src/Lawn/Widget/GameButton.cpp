@@ -86,11 +86,7 @@ GameButton::GameButton(int theId)
 	for (int i = 0; i < 6; i++) mColors[i] = gGameButtonColors[i];
 }
 
-GameButton::~GameButton()
-{
-	if (mFont)
-		delete mFont;
-}
+GameButton::~GameButton() = default;
 
 bool GameButton::HaveButtonImage(Image* theImage, Rect& theRect)
 {
@@ -114,10 +110,7 @@ void GameButton::SetDisabled(bool theDisabled)
 
 void GameButton::SetFont(_Font* theFont)
 {
-	if (mFont)
-		delete mFont;
-
-	mFont = theFont->Duplicate();
+	mFont.reset(theFont->Duplicate());
 }
 
 bool GameButton::IsButtonDown()
@@ -141,7 +134,7 @@ void GameButton::Draw(Graphics* g)
 	g->mTransX += mX;
 	g->mTransY += mY;
 	if (!mFont && mLabel.size() > 0)
-		mFont = FONT_PICO129->Duplicate();
+		mFont.reset(FONT_PICO129->Duplicate());
 
 	int aFontX = mTextOffsetX;
 	int aFontY = mTextOffsetY;
@@ -154,7 +147,7 @@ void GameButton::Draw(Graphics* g)
 
 		aFontY += (mHeight - mFont->GetAscent() / 6 + mFont->GetAscent() - 1) / 2;
 	}
-	g->SetFont(mFont);
+	g->SetFont(mFont.get());
 
 	if (!isDown)
 	{

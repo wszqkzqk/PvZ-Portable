@@ -23,6 +23,8 @@
 #define __ALMANACDIALOG_H__
 
 #include "LawnDialog.h"
+#include <array>
+#include <memory>
 
 #define NUM_ALMANAC_SEEDS 49
 #define NUM_ALMANAC_ZOMBIES 26
@@ -54,17 +56,17 @@ private:
 
 public:
 	LawnApp*					mApp;
-	GameButton*					mCloseButton;
-	GameButton*					mIndexButton;
-	GameButton*					mPlantButton;
-	GameButton*					mZombieButton;
+	std::unique_ptr<GameButton>	mCloseButton;
+	std::unique_ptr<GameButton>	mIndexButton;
+	std::unique_ptr<GameButton>	mPlantButton;
+	std::unique_ptr<GameButton>	mZombieButton;
 	AlmanacPage					mOpenPage;
 	Reanimation*				mReanim[4];
 	SeedType					mSelectedSeed;
 	ZombieType					mSelectedZombie;
-	Plant*						mPlant;
-	Zombie*						mZombie;
-	Zombie*						mZombiePerfTest[400];
+	std::unique_ptr<Plant>		mPlant;
+	std::unique_ptr<Zombie>		mZombie;
+	std::array<std::unique_ptr<Zombie>, 400>	mZombiePerfTest;
 
 public:
 	AlmanacDialog(LawnApp* theApp);

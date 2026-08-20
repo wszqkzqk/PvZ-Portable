@@ -72,7 +72,7 @@ GameSelector::GameSelector(LawnApp* theApp)
 	mLevel = 1;
 	mLoading = false;
 	mHasTrophy = false;
-	mToolTip = new ToolTipWidget();
+	mToolTip = std::make_unique<ToolTipWidget>();
 
 	mAdventureButton = MakeNewButton(
 		GameSelector::GameSelector_Adventure,
@@ -344,8 +344,8 @@ GameSelector::GameSelector(LawnApp* theApp)
 	mStartY = 0;
 	mDestX = 0;
 	mDestY = 0;
-	mZombatarWidget = new ZombatarWidget(this);
-	mAchievementsWidget = new AchievementsWidget(this->mApp);
+	mZombatarWidget = std::make_unique<ZombatarWidget>(this);
+	mAchievementsWidget = std::make_unique<AchievementsWidget>(this->mApp);
 	mAchievementsWidget->Move(0, mApp->mHeight);
 
 	// Add as children in z-order (bottom to top).
@@ -370,13 +370,6 @@ GameSelector::GameSelector(LawnApp* theApp)
 GameSelector::~GameSelector()
 {
 	RemoveAllWidgets(true);
-
-	if (mZombatarWidget)
-		delete mZombatarWidget; // top-level widget, not covered by RemoveAllWidgets
-	if (mAchievementsWidget)
-		delete mAchievementsWidget; // top-level widget, not covered by RemoveAllWidgets
-
-	delete mToolTip;
 }
 
 void GameSelector::SyncButtons()
@@ -957,22 +950,22 @@ void GameSelector::AddedToManager(WidgetManager* theWidgetManager)
 {
 	Widget::AddedToManager(theWidgetManager);
 
-	theWidgetManager->AddWidget(mZombatarWidget);
-	theWidgetManager->AddWidget(mAchievementsWidget);
+	theWidgetManager->AddWidget(mZombatarWidget.get());
+	theWidgetManager->AddWidget(mAchievementsWidget.get());
 }
 
 void GameSelector::RemovedFromManager(WidgetManager* theWidgetManager)
 {
 	Widget::RemovedFromManager(theWidgetManager);
 
-	theWidgetManager->RemoveWidget(mZombatarWidget);
-	theWidgetManager->RemoveWidget(mAchievementsWidget);
+	theWidgetManager->RemoveWidget(mZombatarWidget.get());
+	theWidgetManager->RemoveWidget(mAchievementsWidget.get());
 }
 
 void GameSelector::OrderInManagerChanged()
 {
-	mWidgetManager->PutInfront(mAchievementsWidget, this);
-	mWidgetManager->BringToFront(mZombatarWidget);
+	mWidgetManager->PutInfront(mAchievementsWidget.get(), this);
+	mWidgetManager->BringToFront(mZombatarWidget.get());
 }
 
 void GameSelector::KeyDown(KeyCode theKey)
@@ -1394,5 +1387,5 @@ void GameSelector::ShowZombatarScreen()
 void GameSelector::ShowAchievementsScreen()
 {
 	SlideTo(0, -mApp->mHeight);
-	mWidgetManager->SetFocus(mAchievementsWidget);
+	mWidgetManager->SetFocus(mAchievementsWidget.get());
 }

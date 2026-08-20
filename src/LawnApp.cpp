@@ -1048,7 +1048,7 @@ void LawnApp::FinishNameError(int theId)
 	NewUserDialog* aNewUserDialog = (NewUserDialog*)GetDialog(theId == Dialogs::DIALOG_CREATEUSERERROR ? Dialogs::DIALOG_CREATEUSER : Dialogs::DIALOG_RENAMEUSER);
 	if (aNewUserDialog)
 	{
-		mWidgetManager->SetFocus(aNewUserDialog->mNameEditWidget);
+		mWidgetManager->SetFocus(aNewUserDialog->mNameEditWidget.get());
 	}
 }
 

@@ -25,6 +25,7 @@
 #include "widget/Widget.h"
 #include "widget/ButtonListener.h"
 #include "../System/Zombatar.h"
+#include <memory>
 
 class GameSelector;
 class LawnApp;
@@ -77,17 +78,17 @@ public:
 	int							mPart[NUM_ZOMBATAR_PAGES];
 	int							mColor[NUM_ZOMBATAR_PAGES];
 
-	NewLawnButton*				mBackButton;
-	NewLawnButton*				mViewButton;
-	NewLawnButton*				mFinishedButton;
-	NewLawnButton*				mNewButton;
-	NewLawnButton*				mConfirmBackButton;
-	NewLawnButton*				mPrevPortraitButton;
-	NewLawnButton*				mNextPortraitButton;
-	NewLawnButton*				mPrevPageButton;
-	NewLawnButton*				mNextPageButton;
+	std::unique_ptr<NewLawnButton>	mBackButton;
+	std::unique_ptr<NewLawnButton>	mViewButton;
+	std::unique_ptr<NewLawnButton>	mFinishedButton;
+	std::unique_ptr<NewLawnButton>	mNewButton;
+	std::unique_ptr<NewLawnButton>	mConfirmBackButton;
+	std::unique_ptr<NewLawnButton>	mPrevPortraitButton;
+	std::unique_ptr<NewLawnButton>	mNextPortraitButton;
+	std::unique_ptr<NewLawnButton>	mPrevPageButton;
+	std::unique_ptr<NewLawnButton>	mNextPageButton;
 
-	Zombie*						mPreviewZombie;
+	std::unique_ptr<Zombie>			mPreviewZombie;
 
 public:
 	ZombatarWidget(GameSelector* theGameSelector);

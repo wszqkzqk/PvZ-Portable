@@ -24,6 +24,7 @@
 
 #include "../../PvzpLib/PvzpCommon.h"
 #include "widget/Dialog.h"
+#include <memory>
 
 class LawnApp;
 class LawnDialog;
@@ -64,10 +65,10 @@ class LawnDialog : public Dialog
 public:
 	LawnApp*				mApp;
 	int						mButtonDelay;
-	ReanimationWidget*		mReanimation;
+	std::unique_ptr<ReanimationWidget>	mReanimation;
 	bool					mDrawStandardBack;
-	LawnStoneButton*		mLawnYesButton;
-	LawnStoneButton*		mLawnNoButton;
+	std::unique_ptr<LawnStoneButton>	mLawnYesButton;
+	std::unique_ptr<LawnStoneButton>	mLawnNoButton;
 	bool					mTallBottom;
 	bool					mVerticalCenterText;
 
@@ -94,7 +95,7 @@ public:
 class GameOverDialog : public LawnDialog
 {
 public:
-	DialogButton*			mMenuButton;
+	std::unique_ptr<DialogButton>	mMenuButton;
 
 public:
 	GameOverDialog(const std::string& theMessage, bool theShowChallengeName);

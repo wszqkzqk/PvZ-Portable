@@ -288,44 +288,44 @@ ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 	mTransitionTimer = 0;
 	mPreviewZombie = nullptr;
 
-	mBackButton = MakeNewButton(ZOMBATAR_BTN_BACK, this, "", nullptr,
-		IMAGE_BLANK, IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT, IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT);
+	mBackButton.reset(MakeNewButton(ZOMBATAR_BTN_BACK, this, "", nullptr,
+		IMAGE_BLANK, IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT, IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT));
 	{
 		int aBackW = IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT ? IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT->mWidth : 98;
 		int aBackH = IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT ? IMAGE_ZOMBATAR_MAINMENUBACK_HIGHLIGHT->mHeight : 26;
 		mBackButton->Resize(ZOMBATAR_BACK_X, ZOMBATAR_BACK_Y, aBackW, aBackH);
 	}
 
-	mViewButton = MakeNewButton(ZOMBATAR_BTN_VIEW, this, "", nullptr,
-		IMAGE_ZOMBATAR_VIEW_BUTTON, IMAGE_ZOMBATAR_VIEW_BUTTON_HIGHLIGHT, nullptr);
+	mViewButton.reset(MakeNewButton(ZOMBATAR_BTN_VIEW, this, "", nullptr,
+		IMAGE_ZOMBATAR_VIEW_BUTTON, IMAGE_ZOMBATAR_VIEW_BUTTON_HIGHLIGHT, nullptr));
 	mViewButton->Resize(ZOMBATAR_VIEW_X, ZOMBATAR_VIEW_Y, 115, 26);
 
-	mFinishedButton = MakeNewButton(ZOMBATAR_BTN_FINISHED, this, "", nullptr,
-		IMAGE_ZOMBATAR_FINISHED_BUTTON, IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT, nullptr);
+	mFinishedButton.reset(MakeNewButton(ZOMBATAR_BTN_FINISHED, this, "", nullptr,
+		IMAGE_ZOMBATAR_FINISHED_BUTTON, IMAGE_ZOMBATAR_FINISHED_BUTTON_HIGHLIGHT, nullptr));
 	mFinishedButton->Resize(ZOMBATAR_FINISHED_X, ZOMBATAR_FINISHED_Y, 103, 26);
 
-	mNewButton = MakeNewButton(ZOMBATAR_BTN_NEW, this, "", nullptr,
-		IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON, IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON_HIGHLIGHT, nullptr);
+	mNewButton.reset(MakeNewButton(ZOMBATAR_BTN_NEW, this, "", nullptr,
+		IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON, IMAGE_ZOMBATAR_NEWZOMBIE_BUTTON_HIGHLIGHT, nullptr));
 	mNewButton->Resize(ZOMBATAR_NEW_X, ZOMBATAR_NEW_Y, 234, 39);
 
-	mConfirmBackButton = MakeNewButton(ZOMBATAR_BTN_CONFIRM_BACK, this, "", nullptr,
-		IMAGE_ZOMBATAR_BACK_BUTTON, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT, nullptr);
+	mConfirmBackButton.reset(MakeNewButton(ZOMBATAR_BTN_CONFIRM_BACK, this, "", nullptr,
+		IMAGE_ZOMBATAR_BACK_BUTTON, IMAGE_ZOMBATAR_BACK_BUTTON_HIGHLIGHT, nullptr));
 	mConfirmBackButton->Resize(ZOMBATAR_CONFIRM_BACK_X, ZOMBATAR_CONFIRM_BTN_Y, 98, 26);
 
-	mPrevPortraitButton = MakeNewButton(ZOMBATAR_BTN_PREV_PORTRAIT, this, "", nullptr,
-		IMAGE_ZOMBATAR_PREV_BUTTON, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT, nullptr);
+	mPrevPortraitButton.reset(MakeNewButton(ZOMBATAR_BTN_PREV_PORTRAIT, this, "", nullptr,
+		IMAGE_ZOMBATAR_PREV_BUTTON, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT, nullptr));
 	mPrevPortraitButton->Resize(ZOMBATAR_PREV_PORTRAIT_X, ZOMBATAR_PORTRAIT_BTN_Y, 33, 38);
 
-	mNextPortraitButton = MakeNewButton(ZOMBATAR_BTN_NEXT_PORTRAIT, this, "", nullptr,
-		IMAGE_ZOMBATAR_NEXT_BUTTON, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT, nullptr);
+	mNextPortraitButton.reset(MakeNewButton(ZOMBATAR_BTN_NEXT_PORTRAIT, this, "", nullptr,
+		IMAGE_ZOMBATAR_NEXT_BUTTON, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT, nullptr));
 	mNextPortraitButton->Resize(ZOMBATAR_NEXT_PORTRAIT_X, ZOMBATAR_PORTRAIT_BTN_Y, 33, 38);
 
-	mPrevPageButton = MakeNewButton(ZOMBATAR_BTN_PREV_PAGE, this, "", nullptr,
-		IMAGE_ZOMBATAR_PREV_BUTTON, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT, nullptr);
+	mPrevPageButton.reset(MakeNewButton(ZOMBATAR_BTN_PREV_PAGE, this, "", nullptr,
+		IMAGE_ZOMBATAR_PREV_BUTTON, IMAGE_ZOMBATAR_PREV_BUTTON_HIGHLIGHT, nullptr));
 	mPrevPageButton->Resize(ZOMBATAR_PREV_PAGE_X, ZOMBATAR_PAGE_BTN_Y, 33, 38);
 
-	mNextPageButton = MakeNewButton(ZOMBATAR_BTN_NEXT_PAGE, this, "", nullptr,
-		IMAGE_ZOMBATAR_NEXT_BUTTON, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT, nullptr);
+	mNextPageButton.reset(MakeNewButton(ZOMBATAR_BTN_NEXT_PAGE, this, "", nullptr,
+		IMAGE_ZOMBATAR_NEXT_BUTTON, IMAGE_ZOMBATAR_NEXT_BUTTON_HIGHLIGHT, nullptr));
 	mNextPageButton->Resize(ZOMBATAR_NEXT_PAGE_X, ZOMBATAR_PAGE_BTN_Y, 33, 38);
 
 	Resize(800, 0, BOARD_WIDTH, BOARD_HEIGHT);
@@ -336,44 +336,35 @@ ZombatarWidget::ZombatarWidget(GameSelector* theGameSelector)
 ZombatarWidget::~ZombatarWidget()
 {
 	DestroyPreviewZombie();
-	delete mBackButton;
-	delete mViewButton;
-	delete mFinishedButton;
-	delete mNewButton;
-	delete mConfirmBackButton;
-	delete mPrevPortraitButton;
-	delete mNextPortraitButton;
-	delete mPrevPageButton;
-	delete mNextPageButton;
 }
 
 void ZombatarWidget::AddedToManager(WidgetManager* theWidgetManager)
 {
 	Widget::AddedToManager(theWidgetManager);
-	AddWidget(mBackButton);
-	AddWidget(mViewButton);
-	AddWidget(mFinishedButton);
-	AddWidget(mNewButton);
-	AddWidget(mConfirmBackButton);
-	AddWidget(mPrevPortraitButton);
-	AddWidget(mNextPortraitButton);
-	AddWidget(mPrevPageButton);
-	AddWidget(mNextPageButton);
+	AddWidget(mBackButton.get());
+	AddWidget(mViewButton.get());
+	AddWidget(mFinishedButton.get());
+	AddWidget(mNewButton.get());
+	AddWidget(mConfirmBackButton.get());
+	AddWidget(mPrevPortraitButton.get());
+	AddWidget(mNextPortraitButton.get());
+	AddWidget(mPrevPageButton.get());
+	AddWidget(mNextPageButton.get());
 }
 
 void ZombatarWidget::RemovedFromManager(WidgetManager* theWidgetManager)
 {
 	Widget::RemovedFromManager(theWidgetManager);
 	DestroyPreviewZombie();
-	RemoveWidget(mBackButton);
-	RemoveWidget(mViewButton);
-	RemoveWidget(mFinishedButton);
-	RemoveWidget(mNewButton);
-	RemoveWidget(mConfirmBackButton);
-	RemoveWidget(mPrevPortraitButton);
-	RemoveWidget(mNextPortraitButton);
-	RemoveWidget(mPrevPageButton);
-	RemoveWidget(mNextPageButton);
+	RemoveWidget(mBackButton.get());
+	RemoveWidget(mViewButton.get());
+	RemoveWidget(mFinishedButton.get());
+	RemoveWidget(mNewButton.get());
+	RemoveWidget(mConfirmBackButton.get());
+	RemoveWidget(mPrevPortraitButton.get());
+	RemoveWidget(mNextPortraitButton.get());
+	RemoveWidget(mPrevPageButton.get());
+	RemoveWidget(mNextPageButton.get());
 }
 
 void ZombatarWidget::Update()
@@ -918,7 +909,7 @@ void ZombatarWidget::CreatePreviewZombie()
 	if (mPreviewZombie)
 		return;
 
-	mPreviewZombie = new Zombie();
+	mPreviewZombie = std::make_unique<Zombie>();
 	mPreviewZombie->mApp = mApp;
 	mPreviewZombie->mBoard = nullptr;
 	mPreviewZombie->ZombieInitialize(0, ZombieType::ZOMBIE_FLAG, false, nullptr, Zombie::ZOMBIE_WAVE_UI);
@@ -934,8 +925,7 @@ void ZombatarWidget::DestroyPreviewZombie()
 		return;
 
 	mPreviewZombie->DieNoLoot();
-	delete mPreviewZombie;
-	mPreviewZombie = nullptr;
+	mPreviewZombie.reset();
 }
 
 void ZombatarWidget::DrawAvatarBox(Graphics* g)

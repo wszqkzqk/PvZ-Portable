@@ -24,6 +24,7 @@
 
 #include "../../ConstEnums.h"
 #include "widget/Widget.h"
+#include <memory>
 using namespace Sexy;
 
 class LawnApp;
@@ -49,12 +50,12 @@ private:
 	};
 
 public:
-	GameButton*							mStartButton;
-	GameButton*							mMenuButton;
+	std::unique_ptr<GameButton>		mStartButton;
+	std::unique_ptr<GameButton>		mMenuButton;
 	LawnApp*							mApp;
 	int									mFadeInCounter;
 	AwardType							mAwardType;				//+0xB8
-	GameButton*							mContinueButton;		//+0xA8
+	std::unique_ptr<GameButton>		mContinueButton;		//+0xA8
 	bool								mShowStartButtonAfterAchievements;	//+0xAC
 	bool								mShowMenuButtonAfterAchievements;	//+0xAD
 	int									mAchievementAnimTime;	//+0xBC

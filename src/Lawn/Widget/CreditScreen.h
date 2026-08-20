@@ -26,6 +26,7 @@
 #include "widget/Widget.h"
 #include "misc/PerfTimer.h"
 #include "widget/ButtonListener.h"
+#include <memory>
 
 using namespace Sexy;
 
@@ -95,9 +96,9 @@ public:
 	ReanimationID			mCreditsReanimID;
 	ParticleSystemID		mFogParticleID;
 	int						mBlinkCountdown;
-	LawnStoneButton*		mMainMenuButton;
-	NewLawnButton*			mReplayButton;
-	Widget*					mOverlayWidget;
+	std::unique_ptr<LawnStoneButton>	mMainMenuButton;
+	std::unique_ptr<NewLawnButton>	mReplayButton;
+	std::unique_ptr<Widget>			mOverlayWidget;
 	bool					mDrawBrain;
 	float					mBrainPosX;
 	float					mBrainPosY;

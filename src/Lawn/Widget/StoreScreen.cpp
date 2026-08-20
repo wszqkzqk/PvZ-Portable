@@ -105,7 +105,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mPottedPlantSpecs.InitializePottedPlant(SEED_MARIGOLD);
 	mPottedPlantSpecs.mDrawVariation = (DrawVariation)RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN);
 
-	mBackButton = new NewLawnButton(nullptr, StoreScreen::StoreScreen_Back, this);
+	mBackButton = std::make_unique<NewLawnButton>(nullptr, StoreScreen::StoreScreen_Back, this);
 	mBackButton->mDoFinger = true;
 	mBackButton->SetLabel("[STORE_MAIN_MENU_BUTTON]");
 	Image* aMenuImage = Sexy::IMAGE_STORE_MAINMENUBUTTON;
@@ -121,7 +121,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mBackButton->mTextDownOffsetX = 2;
 	mBackButton->mTextDownOffsetY = 1;
 
-	mPrevButton = new NewLawnButton(nullptr, StoreScreen::StoreScreen_Prev, this);
+	mPrevButton = std::make_unique<NewLawnButton>(nullptr, StoreScreen::StoreScreen_Prev, this);
 	mPrevButton->mDoFinger = true;
 	mPrevButton->SetLabel("");
 	Image* aPrevImage = Sexy::IMAGE_STORE_PREVBUTTON;
@@ -132,7 +132,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mPrevButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(200, 200, 255);
 	mPrevButton->Resize(252, 402, aPrevImage->mWidth, aPrevImage->mHeight);
 
-	mNextButton = new NewLawnButton(nullptr, StoreScreen::StoreScreen_Next, this);
+	mNextButton = std::make_unique<NewLawnButton>(nullptr, StoreScreen::StoreScreen_Next, this);
 	mNextButton->mDoFinger = true;
 	mNextButton->SetLabel("");
 	Image* aNextImage = Sexy::IMAGE_STORE_NEXTBUTTON;
@@ -143,7 +143,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mNextButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(200, 200, 255);
 	mNextButton->Resize(596, 402, aNextImage->mWidth, aNextImage->mHeight);
 
-	mOverlayWidget = new StoreScreenOverlay(this);
+	mOverlayWidget = std::make_unique<StoreScreenOverlay>(this);
 	mOverlayWidget->Resize(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 
 	if (!IsPageShown(STORE_PAGE_PLANT_UPGRADES))
@@ -160,13 +160,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mTrialLockedWhenStoreOpened = mApp->IsTrialStageLocked();
 }
 
-StoreScreen::~StoreScreen()
-{
-	if (mBackButton) delete mBackButton;
-	if (mPrevButton) delete mPrevButton;
-	if (mNextButton) delete mNextButton;
-	if (mOverlayWidget) delete mOverlayWidget;
-}
+StoreScreen::~StoreScreen() = default;
 
 StoreItem StoreScreen::GetStoreItemType(int theSpotIndex)
 {
@@ -799,19 +793,19 @@ void StoreScreen::Update()
 void StoreScreen::AddedToManager(WidgetManager* theWidgetManager)
 {
 	WidgetContainer::AddedToManager(theWidgetManager);
-	AddWidget(mBackButton);
-	AddWidget(mPrevButton);
-	AddWidget(mNextButton);
-	AddWidget(mOverlayWidget);
+	AddWidget(mBackButton.get());
+	AddWidget(mPrevButton.get());
+	AddWidget(mNextButton.get());
+	AddWidget(mOverlayWidget.get());
 }
 
 void StoreScreen::RemovedFromManager(WidgetManager* theWidgetManager)
 {
 	WidgetContainer::RemovedFromManager(theWidgetManager);
-	RemoveWidget(mBackButton);
-	RemoveWidget(mPrevButton);
-	RemoveWidget(mNextButton);
-	RemoveWidget(mOverlayWidget);
+	RemoveWidget(mBackButton.get());
+	RemoveWidget(mPrevButton.get());
+	RemoveWidget(mNextButton.get());
+	RemoveWidget(mOverlayWidget.get());
 	mApp->CrazyDaveDie();
 }
 

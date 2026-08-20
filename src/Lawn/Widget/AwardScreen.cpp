@@ -134,7 +134,7 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 	for (std::string& resource : mLoadedResourceNames)
 		PvzpLoadResources(resource.c_str());
 
-	mStartButton = new GameButton(AwardScreen::AwardScreen_Start);
+	mStartButton = std::make_unique<GameButton>(AwardScreen::AwardScreen_Start);
 	mStartButton->mButtonImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON;
 	mStartButton->mOverImage = nullptr;
 	mStartButton->mDownImage = nullptr;
@@ -146,7 +146,7 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 	mStartButton->Resize(324, 500, 156, 42);
 	mStartButton->mTextOffsetY = -1;
 
-	mContinueButton = new GameButton(AwardScreen::AwardScreen_Start);
+	mContinueButton = std::make_unique<GameButton>(AwardScreen::AwardScreen_Start);
 	mContinueButton->mButtonImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON;
 	mContinueButton->mOverImage = nullptr;
 	mContinueButton->mDownImage = nullptr;
@@ -161,7 +161,7 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 	mContinueButton->mBtnNoDraw = true;
 	mContinueButton->mDisabled = true;
 
-	mMenuButton = new GameButton(AwardScreen::AwardScreen_Menu);
+	mMenuButton = std::make_unique<GameButton>(AwardScreen::AwardScreen_Menu);
 	mMenuButton->SetLabel("[AWARD_MAIN_MENU_BUTTON]");
 	mMenuButton->mButtonImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON2;
 	mMenuButton->mOverImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW;
@@ -252,12 +252,7 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 		mApp->mMusic->MakeSureMusicIsPlaying(MUSIC_TUNE_ZEN_GARDEN);
 }
 
-AwardScreen::~AwardScreen()
-{
-	if (mStartButton) delete mStartButton;
-	if (mContinueButton) delete mContinueButton;
-	if (mMenuButton) delete mMenuButton;
-}
+AwardScreen::~AwardScreen() = default;
 
 bool AwardScreen::IsPaperNote()
 {

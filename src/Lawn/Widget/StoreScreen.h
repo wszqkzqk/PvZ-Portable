@@ -26,6 +26,7 @@
 #include "../System/PlayerInfo.h"
 #include "../../PvzpLib/DataArray.h"
 #include "widget/Dialog.h"
+#include <memory>
 //using namespace std;
 using namespace Sexy;
 
@@ -48,10 +49,10 @@ private:
 
 public:
 	LawnApp*                    mApp;
-	NewLawnButton*              mBackButton;
-	NewLawnButton*              mPrevButton;
-	NewLawnButton*              mNextButton;
-	Widget*                     mOverlayWidget;
+	std::unique_ptr<NewLawnButton>  mBackButton;
+	std::unique_ptr<NewLawnButton>  mPrevButton;
+	std::unique_ptr<NewLawnButton>  mNextButton;
+	std::unique_ptr<Widget>         mOverlayWidget;
 	int                         mStoreTime;
 	std::string                 mBubbleText;
 	int                         mBubbleCountDown;

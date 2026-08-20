@@ -24,6 +24,7 @@
 
 #include "LawnDialog.h"
 #include "widget/EditListener.h"
+#include <memory>
 
 namespace Sexy
 {
@@ -34,7 +35,7 @@ class NewUserDialog : public LawnDialog, public EditListener
 {
 public:
 	LawnApp*			mApp;
-	EditWidget*			mNameEditWidget;
+	std::unique_ptr<EditWidget>	mNameEditWidget;
 
 public:
 	NewUserDialog(LawnApp* theApp, bool isRename);

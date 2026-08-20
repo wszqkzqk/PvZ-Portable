@@ -58,7 +58,7 @@ TitleScreen::TitleScreen(LawnApp* theApp)
 	mTitleStateCounter = 0;
 	mLoaderScreenIsLoaded = false;
 
-	mStartButton = new Sexy::HyperlinkWidget(0, this);
+	mStartButton = std::make_unique<Sexy::HyperlinkWidget>(0, this);
 	mStartButton->mColor = Sexy::Color(218, 184, 33);
 	mStartButton->mOverColor = Sexy::Color(250, 90, 15);
 	mStartButton->mUnderlineSize = 0;
@@ -68,11 +68,6 @@ TitleScreen::TitleScreen(LawnApp* theApp)
 
 TitleScreen::~TitleScreen()
 {
-	if (mStartButton)
-	{
-		delete mStartButton;
-	}
-
 #ifdef LOW_MEMORY
 	// Selectively delete only title-screen-specific resources from LoaderBar group.
 	mApp->mResourceManager->DeleteImage("IMAGE_LOADBAR_DIRT");
@@ -506,13 +501,13 @@ void TitleScreen::Resize(int theX, int theY, int theWidth, int theHeight)
 void TitleScreen::AddedToManager(Sexy::WidgetManager* theWidgetManager)
 {
 	Widget::AddedToManager(theWidgetManager);
-	theWidgetManager->AddWidget(mStartButton);
+	theWidgetManager->AddWidget(mStartButton.get());
 }
 
 void TitleScreen::RemovedFromManager(Sexy::WidgetManager* theWidgetManager)
 {
 	Widget::RemovedFromManager(theWidgetManager);
-	theWidgetManager->RemoveWidget(mStartButton);
+	theWidgetManager->RemoveWidget(mStartButton.get());
 }
 
 void TitleScreen::ButtonPress(int theId)

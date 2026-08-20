@@ -39,7 +39,7 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::stri
 {
 	mApp = theApp;
 	mButtonDelay = -1;
-	mReanimation = new ReanimationWidget();
+	mReanimation = std::make_unique<ReanimationWidget>();
 	mReanimation->mLawnDialog = this;
 	mDrawStandardBack = true;
 	mTallBottom = false;
@@ -55,17 +55,17 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::stri
 	// the localization key names for these dialogs are wrong
 	if (theButtonMode == 1)
 	{
-		mLawnYesButton = MakeButton(1000, this, mApp->GetString("BUTTON_YES", "Yes"));
-		mLawnNoButton = MakeButton(1001, this, mApp->GetString("BUTTON_NO", "No"));
+		mLawnYesButton.reset(MakeButton(1000, this, mApp->GetString("BUTTON_YES", "Yes")));
+		mLawnNoButton.reset(MakeButton(1001, this, mApp->GetString("BUTTON_NO", "No")));
 	}
 	else if (theButtonMode == 2)
 	{
-		mLawnYesButton = MakeButton(1000, this, mApp->GetString("BUTTON_OK", "Ok"));
-		mLawnNoButton = MakeButton(1001, this, mApp->GetString("BUTTON_CANCEL", "Cancel"));
+		mLawnYesButton.reset(MakeButton(1000, this, mApp->GetString("BUTTON_OK", "Ok")));
+		mLawnNoButton.reset(MakeButton(1001, this, mApp->GetString("BUTTON_CANCEL", "Cancel")));
 	}
 	else if (theButtonMode == 3)
 	{
-		mLawnYesButton = MakeButton(1000, this, theDialogFooter);
+		mLawnYesButton.reset(MakeButton(1000, this, theDialogFooter));
 		mLawnNoButton = nullptr;
 	}
 	else
@@ -78,12 +78,7 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::stri
 	CalcSize(0, 0);
 }
 
-LawnDialog::~LawnDialog()
-{
-	if (mReanimation) delete mReanimation;
-	if (mLawnYesButton) delete mLawnYesButton;
-	if (mLawnNoButton) delete mLawnNoButton;
-}
+LawnDialog::~LawnDialog() = default;
 
 int LawnDialog::GetLeft()
 {
@@ -161,17 +156,17 @@ void LawnDialog::CalcSize(int theExtraX, int theExtraY)
 void LawnDialog::AddedToManager(WidgetManager* theWidgetManager)
 {
 	Dialog::AddedToManager(theWidgetManager);
-	AddWidget(mReanimation);
-	if (mLawnYesButton) AddWidget(mLawnYesButton);
-	if (mLawnNoButton) AddWidget(mLawnNoButton);
+	AddWidget(mReanimation.get());
+	if (mLawnYesButton) AddWidget(mLawnYesButton.get());
+	if (mLawnNoButton) AddWidget(mLawnNoButton.get());
 }
 
 void LawnDialog::RemovedFromManager(WidgetManager* theWidgetManager)
 {
 	Dialog::RemovedFromManager(theWidgetManager);
-	if (mLawnYesButton) RemoveWidget(mLawnYesButton);
-	if (mLawnNoButton) RemoveWidget(mLawnNoButton);
-	RemoveWidget(mReanimation);
+	if (mLawnYesButton) RemoveWidget(mLawnYesButton.get());
+	if (mLawnNoButton) RemoveWidget(mLawnNoButton.get());
+	RemoveWidget(mReanimation.get());
 
 	if (mReanimation->mReanim)
 	{
@@ -472,17 +467,14 @@ GameOverDialog::GameOverDialog(const std::string& theMessage, bool theShowChalle
 	mApp->CenterDialog(this, mWidth, mHeight);
 	mClip = false;
 
-	mMenuButton = MakeButton(1, this, "[MAIN_MENU_BUTTON]");
+	mMenuButton.reset(MakeButton(1, this, "[MAIN_MENU_BUTTON]"));
 	mMenuButton->Resize(635 - mX, -10 - mY, 163, 46);
 
 	gLawnApp->mBoard->mShowShovel = false;
 	gLawnApp->mBoard->mMenuButton->mBtnNoDraw = true;
 }
 
-GameOverDialog::~GameOverDialog()
-{
-	delete mMenuButton;
-}
+GameOverDialog::~GameOverDialog() = default;
 
 void GameOverDialog::KeyDown(KeyCode theKey)
 {
@@ -530,7 +522,7 @@ void GameOverDialog::AddedToManager(WidgetManager* theWidgetManager)
 	LawnDialog::AddedToManager(theWidgetManager);
 	if (mMenuButton)
 	{
-		AddWidget(mMenuButton);
+		AddWidget(mMenuButton.get());
 	}
 }
 
@@ -539,7 +531,7 @@ void GameOverDialog::RemovedFromManager(WidgetManager* theWidgetManager)
 	LawnDialog::RemovedFromManager(theWidgetManager);
 	if (mMenuButton)
 	{
-		RemoveWidget(mMenuButton);
+		RemoveWidget(mMenuButton.get());
 	}
 }
 

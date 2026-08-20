@@ -23,6 +23,7 @@
 #define __TITLESCREEN_H__
 
 #include <atomic>
+#include <memory>
 
 #include "widget/Widget.h"
 #include "widget/ButtonListener.h"
@@ -54,7 +55,7 @@ public:
 	};
 
 public:
-	HyperlinkWidget*		mStartButton;
+	std::unique_ptr<HyperlinkWidget>		mStartButton;
 	float					mCurBarWidth;
 	float					mTotalBarWidth;
 	float					mBarVel;

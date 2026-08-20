@@ -25,6 +25,7 @@
 #include "LawnDialog.h"
 #include "widget/SliderListener.h"
 #include "widget/CheckboxListener.h"
+#include <memory>
 
 class LawnApp;
 class NewLawnButton;
@@ -47,10 +48,10 @@ protected:
 	};
 
 public:
-	Sexy::Slider*				mTOSSlider;
-	NewLawnButton*				mBackButton;
-	NewLawnButton*				mAcceptButton;
-	Sexy::Checkbox*				mTOSCheckbox;
+	std::unique_ptr<Sexy::Slider>	mTOSSlider;
+	std::unique_ptr<NewLawnButton>	mBackButton;
+	std::unique_ptr<NewLawnButton>	mAcceptButton;
+	std::unique_ptr<Sexy::Checkbox>	mTOSCheckbox;
 	int							mTextHeight;
 	bool						mFlashArrow;
 	int							mArrowAlpha;

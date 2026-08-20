@@ -23,6 +23,7 @@
 #define __CONTINUEDIALOG_H__
 
 #include "LawnDialog.h"
+#include <memory>
 
 class ContinueDialog : public LawnDialog
 {
@@ -34,8 +35,8 @@ public:
 	};
 
 public:
-	DialogButton*		mContinueButton;
-	DialogButton*		mNewGameButton;
+	std::unique_ptr<DialogButton>	mContinueButton;
+	std::unique_ptr<DialogButton>	mNewGameButton;
 
 public:
 	ContinueDialog(LawnApp* theApp);
