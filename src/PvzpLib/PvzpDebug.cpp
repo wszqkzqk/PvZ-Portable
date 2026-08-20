@@ -69,6 +69,11 @@ void PvzpFree(void* theBlock)
 	}
 }
 
+void PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine)
+{
+	PvzpAssertFailed(theCondition, theFile, theLine, "%s", "");
+}
+
 void PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine, const char* theMsg, ...)
 {
 	va_list argList;

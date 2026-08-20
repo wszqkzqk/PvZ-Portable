@@ -22,6 +22,8 @@
 #ifndef __PVZPDEBUG_H__
 #define __PVZPDEBUG_H__
 
+#include "../SexyAppFramework/Common.h"
+
 class PvzpHesitationBracket
 {
 public:
@@ -35,14 +37,15 @@ public:
 	inline void		EndBracket() { ; }
 };
 
-void				PvzpLogLn(const char* theFormat, ...);
+void				PvzpLogLn(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
 void				PvzpLogStringLn(const char* theMsg);
-void				PvzpTrace(const char* theFormat, ...);
+void				PvzpTrace(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
 void				PvzpTraceMemory();
-void				PvzpTraceAndLogLn(const char* theFormat, ...);
-void				PvzpTraceWithoutSpamming(const char* theFormat, ...);
+void				PvzpTraceAndLogLn(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
+void				PvzpTraceWithoutSpamming(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
 void				PvzpHesitationTrace(...);
-void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine, const char* theMsg = "", ...);
+void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine);
+void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine, const char* theMsg, ...) SEXY_FORMAT_ATTRIBUTE(4, 5);
 void		PvzpErrorMessageBox(const char* theMessage, const char* theTitle);
 
 void*	PvzpMalloc(int theSize);

@@ -126,15 +126,21 @@ const ulong SEXY_RAND_MAX = 0x7FFFFFFF;
 
 extern bool			gDebug;
 
-void				PrintF(const char *text, ...);
-void				LogError(const char* theFormat, ...);
+#if defined(__GNUC__) || defined(__clang__)
+#define SEXY_FORMAT_ATTRIBUTE(theFormatIndex, theFirstArgIndex) __attribute__((format(printf, theFormatIndex, theFirstArgIndex)))
+#else
+#define SEXY_FORMAT_ATTRIBUTE(theFormatIndex, theFirstArgIndex)
+#endif
+
+void				PrintF(const char *text, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
+void				LogError(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
 
 int					Rand();
 int					Rand(int range);
 float				Rand(float range);
 void				SRand(ulong theSeed);
-extern std::string	VFormat(const char* fmt, va_list argPtr);
-extern std::string	StrFormat(const char* fmt ...);
+extern std::string	VFormat(const char* fmt, va_list argPtr) SEXY_FORMAT_ATTRIBUTE(1, 0);
+extern std::string	StrFormat(const char* fmt ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
 std::string			GetAppDataFolder();
 void				SetAppDataFolder(std::string_view thePath);
 std::string			GetAppDataPath(std::string_view theRelativePath);

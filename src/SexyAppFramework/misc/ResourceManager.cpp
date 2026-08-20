@@ -973,7 +973,7 @@ void ResourceManager::DumpCurResGroup(std::string& theDestStr)
 {
 	const ResList* rl = &mResGroupMap.find(mCurResGroup)->second;
 	ResList::const_iterator it = rl->begin();
-	theDestStr = StrFormat("About to dump %d elements from current res group name %s\r\n", rl->size(), mCurResGroup.c_str());
+	theDestStr = StrFormat("About to dump %zu elements from current res group name %s\r\n", rl->size(), mCurResGroup.c_str());
 
 	ResList::const_iterator rl_end = rl->end();
 	while (it != rl_end)
