@@ -3773,11 +3773,11 @@ GLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
 	else
 	{
 		aSrcBits = aSrcMemoryImage->mColorTable.get();
-		anImage->mColorTable.reset(new uint32_t[256]);
+		anImage->mColorTable = std::make_unique<uint32_t[]>(256);
 		aDestBits = anImage->mColorTable.get();
 		aNumColors = 256;
 
-		anImage->mColorIndices.reset(new uchar[anImage->mWidth*theImage->mHeight]);
+		anImage->mColorIndices = std::make_unique<uchar[]>(anImage->mWidth*theImage->mHeight);
 		memcpy(anImage->mColorIndices.get(), aSrcMemoryImage->mColorIndices.get(), anImage->mWidth*theImage->mHeight);
 	}
 

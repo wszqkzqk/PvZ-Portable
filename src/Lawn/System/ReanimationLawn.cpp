@@ -117,7 +117,7 @@ MemoryImage* ReanimatorCache::MakeBlankMemoryImage(int theWidth, int theHeight)
 	MemoryImage* aImage = new MemoryImage();
 
 	int aBitsCount = theWidth * theHeight;
-	aImage->mBits.reset(new uint32_t[aBitsCount + 1]);
+	aImage->mBits = std::make_unique<uint32_t[]>(aBitsCount + 1);
 	aImage->mWidth = theWidth;
 	aImage->mHeight = theHeight;
 	aImage->mHasTrans = true;

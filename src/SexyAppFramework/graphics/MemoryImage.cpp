@@ -852,7 +852,7 @@ uchar* MemoryImage::GetRLAlphaData()
 
 	if (mRLAlphaData == nullptr)
 	{
-		mRLAlphaData.reset(new uchar[mWidth*mHeight]);
+		mRLAlphaData = std::make_unique<uchar[]>(mWidth*mHeight);
 
 		if (mColorTable == nullptr)
 		{
@@ -892,7 +892,7 @@ uchar* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
 		{
 			uint32_t* aBits = (uint32_t*) GetNativeAlphaData(theNative);
 
-			mRLAdditiveData.reset(new uchar[mWidth*mHeight]);
+			mRLAdditiveData = std::make_unique<uchar[]>(mWidth*mHeight);
 
 			uchar* aWPtr = mRLAdditiveData.get();
 			uint32_t* aRPtr = aBits;
@@ -944,7 +944,7 @@ uchar* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
 		{
 			uint32_t* aNativeColorTable = (uint32_t*) GetNativeAlphaData(theNative);
 
-			mRLAdditiveData.reset(new uchar[mWidth*mHeight]);
+			mRLAdditiveData = std::make_unique<uchar[]>(mWidth*mHeight);
 
 			uchar* aWPtr = mRLAdditiveData.get();
 			uchar* aRPtr = mColorIndices.get();
@@ -1074,7 +1074,7 @@ void MemoryImage::SetBits(uint32_t* theBits, int theWidth, int theHeight, bool c
 
 		if (theWidth != mWidth || theHeight != mHeight)
 		{
-			mBits.reset(new uint32_t[theWidth*theHeight + 1]);
+			mBits = std::make_unique<uint32_t[]>(theWidth*theHeight + 1);
 			mWidth = theWidth;
 			mHeight = theHeight;
 		}
@@ -1107,7 +1107,7 @@ uint32_t* MemoryImage::GetBits()
 	{
 		int aSize = mWidth*mHeight;
 
-		mBits.reset(new uint32_t[aSize+1]);
+		mBits = std::make_unique<uint32_t[]>(aSize+1);
 		mBits[aSize] = MEMORYCHECK_ID;
 
 		if (mColorTable != nullptr)
@@ -1751,8 +1751,8 @@ bool MemoryImage::Palletize()
 	if (mBits == nullptr)
 		return false;
 
-	mColorIndices.reset(new uchar[mWidth*mHeight]);
-	mColorTable.reset(new uint32_t[256]);
+	mColorIndices = std::make_unique<uchar[]>(mWidth*mHeight);
+	mColorTable = std::make_unique<uint32_t[]>(256);
 
 	if (!Quantize8Bit(mBits.get(), mWidth, mHeight, mColorIndices.get(), mColorTable.get()))
 	{

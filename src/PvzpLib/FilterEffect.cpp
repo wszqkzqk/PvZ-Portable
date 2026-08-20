@@ -158,7 +158,7 @@ MemoryImage* FilterEffectCreateImage(Image* theImage, FilterEffect theFilterEffe
 	aImage->mWidth = theImage->mWidth;
 	aImage->mHeight = theImage->mHeight;
 	int aNumBits = theImage->mWidth * theImage->mHeight;
-	aImage->mBits.reset(new uint32_t[aNumBits + 1]);
+	aImage->mBits = std::make_unique<uint32_t[]>(aNumBits + 1);
 	aImage->mHasTrans = true;
 	aImage->mHasAlpha = true;
 	memset(aImage->mBits.get(), 0, aNumBits * 4);
