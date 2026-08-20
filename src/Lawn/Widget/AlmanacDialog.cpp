@@ -43,11 +43,8 @@ AlmanacDialog::AlmanacDialog(LawnApp* theApp) : LawnDialog(theApp, DIALOG_ALMANA
 	mOpenPage = ALMANAC_PAGE_INDEX;
 	mSelectedSeed = SEED_PEASHOOTER;
 	mSelectedZombie = ZOMBIE_NORMAL;
-	mZombie = nullptr;
-	mPlant = nullptr;
 	mDrawStandardBack = false;
 	mLoadedResourceNames.push_back("DelayLoad_Almanac");
-	for (size_t i = 0; i < LENGTH(mZombiePerfTest); i++) mZombiePerfTest[i] = nullptr;
 	LawnDialog::Resize(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 
 	for (std::string& resource : mLoadedResourceNames)
