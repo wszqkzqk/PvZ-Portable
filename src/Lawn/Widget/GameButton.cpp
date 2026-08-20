@@ -214,7 +214,7 @@ bool GameButton::IsMouseOver()
 	if (mDisabled || mBtnNoDraw)
 		return false;
 
-	WidgetManager* aManager = mApp->mWidgetManager;
+	WidgetManager* aManager = mApp->mWidgetManager.get();
 	bool aFocusMatches = aManager->mFocusWidget && aManager->mFocusWidget == mParentWidget;
 	if (!aFocusMatches && mApp->GetDialogCount() > 0)
 		return false;
@@ -231,7 +231,7 @@ bool GameButton::IsMouseOver()
 
 void GameButton::Update()
 {
-	WidgetManager* aManager = mApp->mWidgetManager;
+	WidgetManager* aManager = mApp->mWidgetManager.get();
 	mIsOver = IsMouseOver();
 
 	bool aFocusMatches = aManager->mFocusWidget && aManager->mFocusWidget == mParentWidget;

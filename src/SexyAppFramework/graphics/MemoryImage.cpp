@@ -1013,7 +1013,7 @@ void MemoryImage::PurgeBits()
 		if ((mBits == nullptr) && (mColorIndices == nullptr))
 			return;
 
-		GetNativeAlphaData(gSexyAppBase->mGLInterface);
+		GetNativeAlphaData(gSexyAppBase->mGLInterface.get());
 	}
 
 	mBits.reset();
@@ -1121,7 +1121,7 @@ uint32_t* MemoryImage::GetBits()
 		}
 		else if (mNativeAlphaData != nullptr)
 		{
-			NativeDisplay* aDisplay = gSexyAppBase->mGLInterface;
+			NativeDisplay* aDisplay = gSexyAppBase->mGLInterface.get();
 
 			const int rMask = aDisplay->mRedMask;
 			const int gMask = aDisplay->mGreenMask;

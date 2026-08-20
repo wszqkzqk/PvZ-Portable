@@ -33,7 +33,7 @@ using namespace Sexy;
 Music::Music()
 {
 	mApp = (LawnApp*)gSexyAppBase;
-	mMusicInterface = gSexyAppBase->mMusicInterface;
+	mMusicInterface = gSexyAppBase->mMusicInterface.get();
 	mCurMusicTune = MusicTune::MUSIC_TUNE_NONE;
 	mCurMusicFileMain = MusicFile::MUSIC_FILE_NONE;
 	mCurMusicFileDrums = MusicFile::MUSIC_FILE_NONE;
@@ -71,7 +71,7 @@ const int Music::MUSIC_LOADING_TASKS = MUSIC_LOADING_TASK_WEIGHT * static_cast<i
 bool Music::PvzpLoadMusic(MusicFile theMusicFile, std::string_view theFileName)
 {
 	Mix_Music* aHMusic = 0;
-	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface;
+	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
 	std::string aFileName(theFileName);
 	std::string anExt;
 
@@ -197,7 +197,7 @@ void Music::MusicInit()
 
 void Music::MusicCreditScreenInit()
 {
-	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface;
+	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
 	if (anSDL->mMusicMap.find((int)MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN) == anSDL->mMusicMap.end())
 		LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
 }
@@ -227,7 +227,7 @@ void Music::StopAllMusic()
 
 Mix_Music* Music::GetMusicHandle(MusicFile theMusicFile)
 {
-	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface;
+	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
 	auto anItr = anSDL->mMusicMap.find((int)theMusicFile);
 	PVZP_ASSERT(anItr != anSDL->mMusicMap.end());
 	return anItr->second.mHMusic;
@@ -235,7 +235,7 @@ Mix_Music* Music::GetMusicHandle(MusicFile theMusicFile)
 
 void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolume)
 {
-	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface;
+	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
 	auto anItr = anSDL->mMusicMap.find((int)theMusicFile);
 	PVZP_ASSERT(anItr != anSDL->mMusicMap.end());
 	SDLMusicInfo* aMusicInfo = &anItr->second;
@@ -375,7 +375,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 unsigned long Music::GetMusicOrder(MusicFile theMusicFile)
 {
 	PVZP_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
-	return ((SDLMusicInterface*)mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
+	return ((SDLMusicInterface*)mApp->mMusicInterface.get())->GetMusicOrder((int)theMusicFile);
 }
 
 void Music::StartBurst()

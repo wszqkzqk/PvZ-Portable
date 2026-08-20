@@ -27,6 +27,7 @@
 #define __PROPERTIESPARSER_H__
 
 #include "SexyAppBase.h"
+#include <memory>
 
 namespace Sexy
 {
@@ -37,7 +38,7 @@ class PropertiesParser
 {
 public:
 	SexyAppBase*			mApp;
-	XMLParser*				mXMLParser;
+	std::unique_ptr<XMLParser>	mXMLParser;
 	std::string				mError;
 	bool					mHasFailed;
 

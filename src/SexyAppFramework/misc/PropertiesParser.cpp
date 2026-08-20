@@ -32,7 +32,6 @@ PropertiesParser::PropertiesParser(SexyAppBase* theApp)
 {
 	mApp = theApp;
 	mHasFailed = false;
-	mXMLParser = nullptr;
 }
 
 void PropertiesParser::Fail(const std::string& theErrorText)
@@ -262,15 +261,14 @@ bool PropertiesParser::DoParseProperties()
 	if (mXMLParser->HasFailed())
 		Fail(mXMLParser->GetErrorText());
 
-	delete mXMLParser;
-	mXMLParser = nullptr;
+	mXMLParser.reset();
 
 	return !mHasFailed;
 }
 
 bool PropertiesParser::ParsePropertiesBuffer(const Buffer& theBuffer)
 {
-	mXMLParser = new XMLParser();
+	mXMLParser = std::make_unique<XMLParser>();
 
 	std::string aString;
 	if (!theBuffer.ToUTF8String(&aString))
@@ -285,7 +283,7 @@ bool PropertiesParser::ParsePropertiesBuffer(const Buffer& theBuffer)
 
 bool PropertiesParser::ParsePropertiesFile(const std::string& theFilename)
 {
-	mXMLParser = new XMLParser();
+	mXMLParser = std::make_unique<XMLParser>();
 	mXMLParser->OpenFile(theFilename);
 	return DoParseProperties();
 }

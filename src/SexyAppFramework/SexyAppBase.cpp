@@ -39,6 +39,7 @@
 #include <chrono>
 #include <charconv>
 #include <filesystem>
+#include <memory>
 #include <system_error>
 #include <tuple>
 
@@ -234,8 +235,6 @@ SexyAppBase::SexyAppBase()
 	mPreferredY = -1;
 	mIsScreenSaver = false;
 	mAllowMonitorPowersave = true;
-	mGLInterface = nullptr;
-	mMusicInterface = nullptr;
 	mFrameTime = 10;
 	mNonDrawCount = 0;
 	mDrawCount = 0;
@@ -257,7 +256,6 @@ SexyAppBase::SexyAppBase()
 	mCustomCursor = nullptr;
 	mCustomCursorImage = nullptr;
 	mCustomCursorImageNum = -1;
-	mSoundManager = nullptr;
 	mCursorNum = CURSOR_POINTER;
 	mMouseIn = false;
 	mRunning = false;
@@ -392,8 +390,8 @@ SexyAppBase::SexyAppBase()
 	mDemoQueuedSince = 0;
 	mDemoCommandQueued = false;
 
-	mWidgetManager = new WidgetManager(this);
-	mResourceManager = new ResourceManager(this);
+	mWidgetManager = std::make_unique<WidgetManager>(this);
+	mResourceManager = std::make_unique<ResourceManager>(this);
 
 	mPrimaryThreadId = std::this_thread::get_id();
 
@@ -416,8 +414,6 @@ SexyAppBase::~SexyAppBase()
 	mDialogMap.clear();
 	mDialogList.clear();
 
-	delete mWidgetManager;
-	delete mResourceManager;
 	delete gFPSImage;
 	gFPSImage = nullptr;
 
@@ -429,10 +425,6 @@ SexyAppBase::~SexyAppBase()
 		delete aSharedImage->mImage;
 		mSharedImageMap.erase(aSharedImageItr++);
 	}
-
-	delete mGLInterface;
-	delete mMusicInterface;
-	delete mSoundManager;
 
 	ResetCustomCursorCache();
 
@@ -3533,11 +3525,11 @@ void SexyAppBase::Init()
 	}
 
 	if (mSoundManager == nullptr)
-		mSoundManager = new SDLSoundManager();
+		mSoundManager = std::make_unique<SDLSoundManager>();
 
 	SetSfxVolume(mSfxVolume);
 
-	mMusicInterface = CreateMusicInterface();
+	mMusicInterface.reset(CreateMusicInterface());
 
 	SetMusicVolume(mMusicVolume);
 
@@ -3611,16 +3603,15 @@ void SexyAppBase::EnableCustomCursors(bool enabled)
 
 Sexy::GLImage* SexyAppBase::GetImage(const std::string& theFileName, bool commitBits)
 {
-	ImageLib::Image* aLoadedImage = ImageLib::GetImage(theFileName, true);
+	std::unique_ptr<ImageLib::Image> aLoadedImage(ImageLib::GetImage(theFileName, true));
 
 	if (aLoadedImage == nullptr)
 		return nullptr;
 
-	GLImage* anImage = new GLImage(mGLInterface);
+	GLImage* anImage = new GLImage(mGLInterface.get());
 	anImage->mFilePath = theFileName;
 	anImage->SetBits(aLoadedImage->GetBits(), aLoadedImage->GetWidth(), aLoadedImage->GetHeight(), commitBits);
 	anImage->mFilePath = theFileName;
-	delete aLoadedImage;
 
 	return anImage;
 }
@@ -3652,7 +3643,7 @@ Sexy::GLImage* SexyAppBase::CreateCrossfadeImage(Sexy::Image* theImage1, const R
 	int aWidth = theRect1.mWidth;
 	int aHeight = theRect1.mHeight;
 
-	GLImage* anImage = new GLImage(mGLInterface);
+	GLImage* anImage = new GLImage(mGLInterface.get());
 	anImage->Create(aWidth, aHeight);
 
 	uint32_t* aDestBits = anImage->GetBits();
@@ -3756,7 +3747,7 @@ GLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
 	if (aSrcMemoryImage == nullptr)
 		return nullptr;
 
-	GLImage* anImage = new GLImage(mGLInterface);
+	GLImage* anImage = new GLImage(mGLInterface.get());
 
 	anImage->Create(theImage->GetWidth(), theImage->GetHeight());
 
@@ -3822,7 +3813,7 @@ GLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
 
 GLImage* SexyAppBase::CopyImage(Image* theImage, const Rect& theRect)
 {
-	GLImage* anImage = new GLImage(mGLInterface);
+	GLImage* anImage = new GLImage(mGLInterface.get());
 
 	anImage->Create(theRect.mWidth, theRect.mHeight);
 
@@ -4038,7 +4029,7 @@ void SexyAppBase::RGBToHSL(const uint32_t* theSource, uint32_t* theDest, int the
 
 void SexyAppBase::PrecacheAdditive(MemoryImage* theImage)
 {
-	theImage->GetRLAdditiveData(mGLInterface);
+	theImage->GetRLAdditiveData(mGLInterface.get());
 }
 
 void SexyAppBase::PrecacheAlpha(MemoryImage* theImage)
@@ -4048,7 +4039,7 @@ void SexyAppBase::PrecacheAlpha(MemoryImage* theImage)
 
 void SexyAppBase::PrecacheNative(MemoryImage* theImage)
 {
-	theImage->GetNativeAlphaData(mGLInterface);
+	theImage->GetNativeAlphaData(mGLInterface.get());
 }
 
 
@@ -4258,7 +4249,7 @@ SharedImageRef SexyAppBase::GetSharedImage(const std::string& theFileName, const
 	{
 		// Leading '!' means create a blank image rather than loading from file
 		if ((theFileName.length() > 0) && (theFileName[0] == '!'))
-			aSharedImageRef.mSharedImage->mImage = new GLImage(mGLInterface);
+			aSharedImageRef.mSharedImage->mImage = new GLImage(mGLInterface.get());
 		else
 			aSharedImageRef.mSharedImage->mImage = GetImage(theFileName,false);
 	}

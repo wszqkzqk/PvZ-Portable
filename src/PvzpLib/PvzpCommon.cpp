@@ -1026,7 +1026,7 @@ Color ColorsMultiply(const Color& theColor1, const Color& theColor2)
 
 bool PvzpLoadResources(const std::string& theGroup)
 {
-	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->PvzpLoadResources(theGroup);
+	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager.get())->PvzpLoadResources(theGroup);
 }
 
 bool PvzpResourceManager::PvzpLoadResources(const std::string& theGroup)
@@ -1067,7 +1067,7 @@ bool PvzpResourceManager::PvzpLoadResources(const std::string& theGroup)
 
 void PvzpAddImageToMap(SharedImageRef* theImage, const std::string& thePath)
 {
-	static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
+	static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager.get())->AddImageToMap(theImage, thePath);
 }
 
 void PvzpResourceManager::AddImageToMap(SharedImageRef* theImage, const std::string& thePath)
@@ -1082,7 +1082,7 @@ void PvzpResourceManager::AddImageToMap(SharedImageRef* theImage, const std::str
 
 bool PvzpLoadNextResource()
 {
-	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->PvzpLoadNextResource();
+	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager.get())->PvzpLoadNextResource();
 }
 
 bool PvzpResourceManager::PvzpLoadNextResource()
@@ -1160,11 +1160,11 @@ bool PvzpResourceManager::PvzpLoadNextResource()
 
 bool PvzpFindImagePath(Image* theImage, std::string* thePath)
 {
-	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->FindImagePath(theImage, thePath);
+	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager.get())->FindImagePath(theImage, thePath);
 }
 
 bool PvzpFindFontPath(_Font* theFont, std::string* thePath) {
-	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager)->FindFontPath(theFont, thePath);
+	return static_cast<PvzpResourceManager*>(gSexyAppBase->mResourceManager.get())->FindFontPath(theFont, thePath);
 }
 
 bool PvzpResourceManager::FindFontPath(_Font* theFont, std::string* thePath)
@@ -1172,7 +1172,7 @@ bool PvzpResourceManager::FindFontPath(_Font* theFont, std::string* thePath)
 	for (auto anItr = mFontMap.begin(); anItr != mFontMap.end(); anItr++)
 	{
 		FontRes* aFontRes = (FontRes*)anItr->second;
-		_Font* aFont = (_Font*)aFontRes->mFont;
+		_Font* aFont = (_Font*)aFontRes->mFont.get();
 		if (aFont == theFont)
 		{
 			*thePath = anItr->first;

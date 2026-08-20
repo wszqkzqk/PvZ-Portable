@@ -309,14 +309,11 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 
 					if (theParams.mElementVector[2]->mIsList)
 					{
-						ListDataElement* aValues = new ListDataElement();
-						if (!GetValues(((ListDataElement*)theParams.mElementVector[2]), aValues))
-						{
-							delete aValues;
+						auto aValues = std::make_unique<ListDataElement>();
+						if (!GetValues(((ListDataElement*)theParams.mElementVector[2]), aValues.get()))
 							return false;
-						}
 
-						mDefineMap.insert(DataElementMap::value_type(aDefineName, aValues));
+						mDefineMap.insert(DataElementMap::value_type(aDefineName, aValues.release()));
 					}
 					else
 					{

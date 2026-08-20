@@ -111,8 +111,7 @@ bool LawnHasUsedCheatKeys()
 LawnApp::LawnApp()
 {
 	// Replace the base-class resource manager with the PvZP-capable subclass.
-	delete mResourceManager;
-	mResourceManager = new PvzpResourceManager(this);
+	mResourceManager = std::make_unique<PvzpResourceManager>(this);
 
 	mBoard = nullptr;
 	mGameSelector = nullptr;
@@ -1687,7 +1686,7 @@ void LawnApp::LoadGroup(const char* theGroupName, int theGroupAveMsToLoad)
 	if (mShutdown || mCloseRequest)
 		return;
 
-	if (mResourceManager->HadError() || !ExtractResourcesByName(mResourceManager, theGroupName))
+	if (mResourceManager->HadError() || !ExtractResourcesByName(mResourceManager.get(), theGroupName))
 	{
 		ShowResourceError();
 		mLoadingFailed = true;

@@ -32,7 +32,7 @@ using namespace Sexy;
 
 GLImage::GLImage() : MemoryImage(gSexyAppBase)
 {
-	mGLInterface = gSexyAppBase->mGLInterface;
+	mGLInterface = gSexyAppBase->mGLInterface.get();
 	if (mGLInterface)
 		mGLInterface->AddGLImage(this);
 }
