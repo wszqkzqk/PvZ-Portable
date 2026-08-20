@@ -25,6 +25,8 @@
 #ifndef __MEMORYIMAGE_H__
 #define __MEMORYIMAGE_H__
 
+#include <memory>
+
 #include "Image.h"
 
 #define OPTIMIZE_SOFTWARE_DRAWING
@@ -43,13 +45,13 @@ class SexyAppBase;
 class MemoryImage : public Image
 {
 public:
-	uint32_t*				mBits;
+	std::unique_ptr<uint32_t[]>		mBits;
 	int						mBitsChangedCount;
 	void*					mRenderData;
 	uint32_t				mRenderFlags;	// see GLInterface.h for possible values
 
-	uint32_t*				mColorTable;
-	uchar*					mColorIndices;
+	std::unique_ptr<uint32_t[]>		mColorTable;
+	std::unique_ptr<uchar[]>		mColorIndices;
 
 	bool					mForcedMode;
 	bool					mHasTrans;
@@ -58,9 +60,9 @@ public:
 	bool					mPurgeBits;
 	bool					mWantPal;
 
-	uint32_t*				mNativeAlphaData;
-	uchar*					mRLAlphaData;
-	uchar*					mRLAdditiveData;
+	std::unique_ptr<uint32_t[]>		mNativeAlphaData;
+	std::unique_ptr<uchar[]>		mRLAlphaData;
+	std::unique_ptr<uchar[]>		mRLAdditiveData;
 
 	bool					mBitsChanged;
 	SexyAppBase*			mApp;

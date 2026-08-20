@@ -897,7 +897,7 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	PerfTimer aTimer;
 	aTimer.Start();
 
-	uint32_t* aBitsPtr = aImage->mBits;
+	uint32_t* aBitsPtr = aImage->mBits.get();
 	for (int y = 0; y < theImage->mHeight; y++)
 	{
 		for (int x = 0; x < theImage->mWidth; x++)

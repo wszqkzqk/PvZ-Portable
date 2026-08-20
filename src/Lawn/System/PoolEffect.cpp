@@ -45,11 +45,11 @@ void PoolEffect::PoolEffectInitialize()
 	mCausticImage = std::make_unique<MemoryImage>(gSexyAppBase);
 	mCausticImage->mWidth = CAUSTIC_IMAGE_WIDTH;
 	mCausticImage->mHeight = CAUSTIC_IMAGE_HEIGHT;
-	mCausticImage->mBits = new uint32_t[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT + 1];
+	mCausticImage->mBits.reset(new uint32_t[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT + 1]);
 	mCausticImage->mHasTrans = true;
 	mCausticImage->mHasAlpha = true;
 	mCausticImage->mRenderFlags |= RenderImageFlag_Repeat;
-	memset(mCausticImage->mBits, 0xFF, CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT * 4); //4
+	memset(mCausticImage->mBits.get(), 0xFF, CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT * 4); //4
 	mCausticImage->mBits[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT] = MEMORYCHECK_ID;
 
 	mCausticGrayscaleImage.resize(256 * 256);

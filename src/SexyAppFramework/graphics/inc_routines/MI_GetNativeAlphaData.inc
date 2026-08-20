@@ -40,5 +40,5 @@
 		}
 	}
 
-	mNativeAlphaData = anAlphaData;
+	mNativeAlphaData.reset(anAlphaData);
 }

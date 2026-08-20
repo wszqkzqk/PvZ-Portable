@@ -112,7 +112,7 @@ void FilterEffectDisposeForApp()
 
 void FilterEffectDoLumSat(MemoryImage* theImage, float theLum, float theSat)
 {
-	uint32_t* ptr = theImage->mBits;
+	uint32_t* ptr = theImage->mBits.get();
 	for (int y = 0; y < theImage->mHeight; y++)
 	{
 		for (int x = 0; x < theImage->mWidth; x++)
@@ -146,7 +146,7 @@ void FilterEffectDoLessWashedOut(MemoryImage* theImage)
 
 void FilterEffectDoWhite(MemoryImage* theImage)
 {
-	uint32_t* ptr = theImage->mBits;
+	uint32_t* ptr = theImage->mBits.get();
 	for (int y = 0; y < theImage->mHeight; y++)
 		for (int x = 0; x < theImage->mWidth; x++)
 			*ptr++ |= 0x00FFFFFF;
@@ -158,10 +158,10 @@ MemoryImage* FilterEffectCreateImage(Image* theImage, FilterEffect theFilterEffe
 	aImage->mWidth = theImage->mWidth;
 	aImage->mHeight = theImage->mHeight;
 	int aNumBits = theImage->mWidth * theImage->mHeight;
-	aImage->mBits = new uint32_t[aNumBits + 1];
+	aImage->mBits.reset(new uint32_t[aNumBits + 1]);
 	aImage->mHasTrans = true;
 	aImage->mHasAlpha = true;
-	memset(aImage->mBits, 0, aNumBits * 4);
+	memset(aImage->mBits.get(), 0, aNumBits * 4);
 	aImage->mBits[aNumBits] = Sexy::MEMORYCHECK_ID;
 
 	Graphics aMemoryGraphics(aImage);

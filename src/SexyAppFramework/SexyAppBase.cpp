@@ -135,7 +135,7 @@ static SDL_Cursor* CreateCursorFromMemoryImage(MemoryImage* theImage)
 		return nullptr;
 
 	SDL_Surface* aSurface = SDL_CreateRGBSurfaceWithFormatFrom(
-		theImage->mBits,
+		theImage->mBits.get(),
 		aWidth,
 		aHeight,
 		32,
@@ -3715,7 +3715,7 @@ void SexyAppBase::ColorizeImage(Image* theImage, const Color& theColor)
 	}
 	else
 	{
-		aBits = aSrcMemoryImage->mColorTable;
+		aBits = aSrcMemoryImage->mColorTable.get();
 		aNumColors = 256;
 	}
 
@@ -3779,12 +3779,13 @@ GLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
 	}
 	else
 	{
-		aSrcBits = aSrcMemoryImage->mColorTable;
-		aDestBits = anImage->mColorTable = new uint32_t[256];
+		aSrcBits = aSrcMemoryImage->mColorTable.get();
+		anImage->mColorTable.reset(new uint32_t[256]);
+		aDestBits = anImage->mColorTable.get();
 		aNumColors = 256;
 
-		anImage->mColorIndices = new uchar[anImage->mWidth*theImage->mHeight];
-		memcpy(anImage->mColorIndices, aSrcMemoryImage->mColorIndices, anImage->mWidth*theImage->mHeight);
+		anImage->mColorIndices.reset(new uchar[anImage->mWidth*theImage->mHeight]);
+		memcpy(anImage->mColorIndices.get(), aSrcMemoryImage->mColorIndices.get(), anImage->mWidth*theImage->mHeight);
 	}
 
 	if ((theColor.mAlpha <= 255) && (theColor.mRed <= 255) &&

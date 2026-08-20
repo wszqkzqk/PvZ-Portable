@@ -297,9 +297,9 @@ static void CopyImageToTexture8888(MemoryImage *img, int offx, int offy,
 	}
 	else
 	{
-		uint8_t  *srcRow = (uint8_t*)img->mColorIndices + offy * img->GetWidth() + offx;
+		uint8_t  *srcRow = (uint8_t*)img->mColorIndices.get() + offy * img->GetWidth() + offx;
 		uint32_t *dstRow = dst;
-		uint32_t *pal = (uint32_t*)img->mColorTable;
+		uint32_t *pal = (uint32_t*)img->mColorTable.get();
 		for (int y = 0; y < h; y++)
 		{
 			uint8_t *s = srcRow; uint32_t *d = dstRow;
@@ -352,9 +352,9 @@ static void CopyImageToTexture4444(MemoryImage *img, int offx, int offy,
 	}
 	else
 	{
-		uint8_t  *srcRow = (uint8_t*)img->mColorIndices + offy * img->GetWidth() + offx;
+		uint8_t  *srcRow = (uint8_t*)img->mColorIndices.get() + offy * img->GetWidth() + offx;
 		uint16_t *dstRow = dst;
-		uint32_t *pal = (uint32_t*)img->mColorTable;
+		uint32_t *pal = (uint32_t*)img->mColorTable.get();
 		for (int y = 0; y < h; y++)
 		{
 			uint8_t *s = srcRow; uint16_t *d = dstRow;
@@ -406,9 +406,9 @@ static void CopyImageToTexture565(MemoryImage *img, int offx, int offy,
 	}
 	else
 	{
-		uint8_t  *srcRow = (uint8_t*)img->mColorIndices + offy * img->GetWidth() + offx;
+		uint8_t  *srcRow = (uint8_t*)img->mColorIndices.get() + offy * img->GetWidth() + offx;
 		uint16_t *dstRow = dst;
-		uint32_t *pal = (uint32_t*)img->mColorTable;
+		uint32_t *pal = (uint32_t*)img->mColorTable.get();
 		for (int y = 0; y < h; y++)
 		{
 			uint8_t *s = srcRow; uint16_t *d = dstRow;
@@ -438,9 +438,9 @@ static void CopyImageToTexturePalette8(MemoryImage *img, int offx, int offy,
 {
 	std::vector<uint32_t> aDst(pitch * dstH);
 	uint32_t *dst = aDst.data();
-	uint8_t  *srcRow = (uint8_t*)img->mColorIndices + offy * img->GetWidth() + offx;
+	uint8_t  *srcRow = (uint8_t*)img->mColorIndices.get() + offy * img->GetWidth() + offx;
 	uint32_t *dstRow = dst;
-	uint32_t *pal = (uint32_t*)img->mColorTable;
+	uint32_t *pal = (uint32_t*)img->mColorTable.get();
 
 	for (int y = 0; y < h; y++)
 	{

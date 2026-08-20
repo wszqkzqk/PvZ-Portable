@@ -1,6 +1,6 @@
 {
 
-	uchar* aWPtr = mRLAlphaData;
+	uchar* aWPtr = mRLAlphaData.get();
 
 	if (mWidth==1)
 	{
