@@ -1233,7 +1233,7 @@ void LawnApp::Init()
 	// these debug checks break the whole exe in release mode
 //#ifdef PVZ_DEBUG
 	PvzpAssertInitForApp();
-	PvzpLogLn("session id: %u", mSessionID);
+	PvzpLogLn("session id: %lld", static_cast<long long>(mSessionID));
 //#endif
 
 	if (!mResourceManager->ParseResourcesFile("properties/resources.xml"))

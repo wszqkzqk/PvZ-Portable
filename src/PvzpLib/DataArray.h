@@ -86,7 +86,7 @@ public:
 	void DataArrayFree(T* theItem)
 	{
 		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
-		PVZP_ASSERT(DataArrayGet(mItemIds[anIndex]) == theItem, "Failed: DataArrayFree(0x%x) in %s", theItem, mName);
+		PVZP_ASSERT(DataArrayGet(mItemIds[anIndex]) == theItem, "Failed: DataArrayFree(%p) in %s", (void*)theItem, mName);
 		DataArrayResetItemAt(anIndex);
 		mItemIds[anIndex] = mFreeListHead;
 		mFreeListHead = anIndex;
@@ -106,7 +106,7 @@ public:
 	{
 		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
 		unsigned int anId = mItemIds[anIndex];
-		PVZP_ASSERT(DataArrayGet(anId) == theItem, "Failed: DataArrayGetID(0x%x) for %s", theItem, mName);
+		PVZP_ASSERT(DataArrayGet(anId) == theItem, "Failed: DataArrayGetID(%p) for %s", (void*)theItem, mName);
 		return anId;
 	}
 
