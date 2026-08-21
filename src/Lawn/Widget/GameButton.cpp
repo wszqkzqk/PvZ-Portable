@@ -395,7 +395,7 @@ bool NewLawnButton::IsPointVisible(int x, int y)
 
 std::unique_ptr<NewLawnButton> MakeNewButton(int theId, ButtonListener* theListener, std::string_view theText, _Font* theFont, Image* theImageNormal, Image* theImageOver, Image* theImageDown)
 {
-	NewLawnButton* aButton = new NewLawnButton(nullptr, theId, theListener);
+	auto aButton = std::make_unique<NewLawnButton>(nullptr, theId, theListener);
 	aButton->SetFont(theFont == nullptr ? Sexy::FONT_BRIANNETOD12 : theFont);
 	aButton->SetLabel(theText);
 
@@ -409,5 +409,5 @@ std::unique_ptr<NewLawnButton> MakeNewButton(int theId, ButtonListener* theListe
 	aButton->mTranslateX = 1;
 	aButton->mTranslateY = 1;
 
-	return std::unique_ptr<NewLawnButton>(aButton);
+	return aButton;
 }

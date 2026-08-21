@@ -42,7 +42,6 @@ static int gButtonWidgetColors[][3] = {
 ButtonWidget::ButtonWidget(int theId, ButtonListener* theButtonListener)
 {
 	mId = theId;
-	mFont = nullptr;
 	mLabelJustify = BUTTON_LABEL_CENTER;
 	mButtonImage = nullptr;
 	mOverImage = nullptr;

@@ -137,12 +137,12 @@ void LawnEditWidget::KeyText(std::string_view theText)
 
 std::unique_ptr<LawnEditWidget> CreateEditWidget(int theId, EditListener* theListener, Dialog* theDialog)
 {
-	LawnEditWidget* aEditWidget = new LawnEditWidget(theId, theListener, theDialog);
+	auto aEditWidget = std::make_unique<LawnEditWidget>(theId, theListener, theDialog);
 	aEditWidget->SetFont(Sexy::FONT_BRIANNETOD16);
 	aEditWidget->SetColors(gLawnEditWidgetColors, EditWidget::NUM_COLORS);
 	aEditWidget->mBlinkDelay = 14;
 
-	return std::unique_ptr<LawnEditWidget>(aEditWidget);
+	return aEditWidget;
 }
 
 void DrawEditBox(Graphics* g, EditWidget* theWidget)
@@ -153,12 +153,12 @@ void DrawEditBox(Graphics* g, EditWidget* theWidget)
 
 std::unique_ptr<Checkbox> MakeNewCheckbox(int theId, CheckboxListener* theListener, bool theDefault)
 {
-	Checkbox* aCheckbox = new Checkbox(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
+	auto aCheckbox = std::make_unique<Checkbox>(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
 	aCheckbox->mChecked = theDefault;
 	aCheckbox->mHasAlpha = true;
 	aCheckbox->mHasTransparencies = true;
 
-	return std::unique_ptr<Checkbox>(aCheckbox);
+	return aCheckbox;
 }
 
 std::string GetSavedGameName(GameMode theGameMode, int theProfileId)

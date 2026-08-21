@@ -43,7 +43,6 @@ EditWidget::EditWidget(int theId, EditListener* theEditListener)
 {
 	mId = theId;
 	mEditListener = theEditListener;
-	mFont = nullptr;
 
 	mHadDoubleClick = false;
 	mHadFocusBeforePress = false;
