@@ -1457,6 +1457,33 @@ static void SyncDataArrayPortableTLV(PortableSaveContext& theContext, DataArray<
 	}
 }
 
+// Syncs a DataArray of entities: GameObject field (1U) only when T derives from GameObject, plus the tail field.
+template <typename T, typename TTailSync>
+static void SyncDataArrayObjectsTLV(PortableSaveContext& theContext, DataArray<T>& theDataArray, TTailSync theTailSync)
+{
+	SyncDataArrayPortableTLV(theContext, theDataArray,
+		[&](std::vector<unsigned char>& aOut, T& anItem)
+		{
+			if constexpr (std::is_base_of_v<GameObject, T>)
+				WriteGameObjectField(aOut, 1U, anItem);
+			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ theTailSync(c, anItem); });
+		},
+		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, T& anItem)
+		{
+			switch (aFieldId)
+			{
+			case 1U:
+				if constexpr (std::is_base_of_v<GameObject, T>)
+					ReadGameObjectField(aData, aSize, anItem);
+				break;
+			case PORTABLE_FIELD_TAIL:
+				ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ theTailSync(c, anItem); });
+				break;
+			default: break;
+			}
+		});
+}
+
 // Field IDs for Board base: These IDs are part of the on-disk format and must NOT be renumbered.
 enum BoardBaseFieldId : uint32_t
 {
@@ -1804,112 +1831,32 @@ static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoa
 
 static void SyncZombiesPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	SyncDataArrayPortableTLV(theContext, theBoard->mZombies,
-		[&](std::vector<unsigned char>& aOut, Zombie& theZombie)
-		{
-			WriteGameObjectField(aOut, 1U, theZombie);
-			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncZombieTailPortable(c, theZombie); });
-		},
-		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, Zombie& theZombie)
-		{
-			switch (aFieldId)
-			{
-			case 1U: ReadGameObjectField(aData, aSize, theZombie); break;
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncZombieTailPortable(c, theZombie); }); break;
-			default: break;
-			}
-		});
+	SyncDataArrayObjectsTLV(theContext, theBoard->mZombies, SyncZombieTailPortable);
 }
 
 static void SyncPlantsPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	SyncDataArrayPortableTLV(theContext, theBoard->mPlants,
-		[&](std::vector<unsigned char>& aOut, Plant& thePlant)
-		{
-			WriteGameObjectField(aOut, 1U, thePlant);
-			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncPlantTailPortable(c, thePlant); });
-		},
-		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, Plant& thePlant)
-		{
-			switch (aFieldId)
-			{
-			case 1U: ReadGameObjectField(aData, aSize, thePlant); break;
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncPlantTailPortable(c, thePlant); }); break;
-			default: break;
-			}
-		});
+	SyncDataArrayObjectsTLV(theContext, theBoard->mPlants, SyncPlantTailPortable);
 }
 
 static void SyncProjectilesPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	SyncDataArrayPortableTLV(theContext, theBoard->mProjectiles,
-		[&](std::vector<unsigned char>& aOut, Projectile& theProjectile)
-		{
-			WriteGameObjectField(aOut, 1U, theProjectile);
-			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncProjectileTailPortable(c, theProjectile); });
-		},
-		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, Projectile& theProjectile)
-		{
-			switch (aFieldId)
-			{
-			case 1U: ReadGameObjectField(aData, aSize, theProjectile); break;
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncProjectileTailPortable(c, theProjectile); }); break;
-			default: break;
-			}
-		});
+	SyncDataArrayObjectsTLV(theContext, theBoard->mProjectiles, SyncProjectileTailPortable);
 }
 
 static void SyncCoinsPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	SyncDataArrayPortableTLV(theContext, theBoard->mCoins,
-		[&](std::vector<unsigned char>& aOut, Coin& theCoin)
-		{
-			WriteGameObjectField(aOut, 1U, theCoin);
-			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncCoinTailPortable(c, theCoin); });
-		},
-		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, Coin& theCoin)
-		{
-			switch (aFieldId)
-			{
-			case 1U: ReadGameObjectField(aData, aSize, theCoin); break;
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncCoinTailPortable(c, theCoin); }); break;
-			default: break;
-			}
-		});
+	SyncDataArrayObjectsTLV(theContext, theBoard->mCoins, SyncCoinTailPortable);
 }
 
 static void SyncMowersPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	SyncDataArrayPortableTLV(theContext, theBoard->mLawnMowers,
-		[&](std::vector<unsigned char>& aOut, LawnMower& theMower)
-		{
-			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncLawnMowerTailPortable(c, theMower); });
-		},
-		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, LawnMower& theMower)
-		{
-			switch (aFieldId)
-			{
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncLawnMowerTailPortable(c, theMower); }); break;
-			default: break;
-			}
-		});
+	SyncDataArrayObjectsTLV(theContext, theBoard->mLawnMowers, SyncLawnMowerTailPortable);
 }
 
 static void SyncGridItemsPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	SyncDataArrayPortableTLV(theContext, theBoard->mGridItems,
-		[&](std::vector<unsigned char>& aOut, GridItem& theItem)
-		{
-			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncGridItemTailPortable(c, theItem); });
-		},
-		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, GridItem& theItem)
-		{
-			switch (aFieldId)
-			{
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncGridItemTailPortable(c, theItem); }); break;
-			default: break;
-			}
-		});
+	SyncDataArrayObjectsTLV(theContext, theBoard->mGridItems, SyncGridItemTailPortable);
 }
 
 static void SyncParticleEmittersPortable(PortableSaveContext& theContext, Board* theBoard)
@@ -1990,19 +1937,7 @@ static void SyncTrailsPortable(PortableSaveContext& theContext, Board* theBoard)
 
 static void SyncAttachmentsPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	SyncDataArrayPortableTLV(theContext, theBoard->mApp->mEffectSystem->mAttachmentHolder->mAttachments,
-		[&](std::vector<unsigned char>& aOut, Attachment& theAttachment)
-		{
-			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncAttachmentTailPortable(c, theAttachment); });
-		},
-		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, Attachment& theAttachment)
-		{
-			switch (aFieldId)
-			{
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncAttachmentTailPortable(c, theAttachment); }); break;
-			default: break;
-			}
-		});
+	SyncDataArrayObjectsTLV(theContext, theBoard->mApp->mEffectSystem->mAttachmentHolder->mAttachments, SyncAttachmentTailPortable);
 }
 
 static void SyncCursorPortable(PortableSaveContext& theContext, Board* theBoard)
