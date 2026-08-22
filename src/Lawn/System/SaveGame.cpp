@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 static constexpr const char* FILE_COMPILE_TIME_STRING = "Jul  2 201011:47:03"; // save files are tied to this exact timestamp string
@@ -319,19 +320,6 @@ public:
 			theEnum = static_cast<TEnum>(aValue);
 	}
 };
-
-
-template <typename TObject, typename TField>
-static void SyncPodTail(PortableSaveContext& theContext, TObject& theObject, TField TObject::* theFirstField)
-{
-	unsigned char* aStart = reinterpret_cast<unsigned char*>(&theObject);
-	unsigned char* aField = reinterpret_cast<unsigned char*>(&(theObject.*theFirstField));
-	size_t aOffset = static_cast<size_t>(aField - aStart);
-	if (aOffset < sizeof(TObject))
-	{
-		theContext.SyncBytes(aStart + aOffset, static_cast<uint32_t>(sizeof(TObject) - aOffset));
-	}
-}
 
 static void SyncColorPortable(PortableSaveContext& theContext, Color& theColor)
 {
@@ -1063,24 +1051,6 @@ static bool ReadGameObjectField(const unsigned char* theData, size_t theSize, Ga
 	});
 }
 
-template <typename TObject, typename TField>
-static void WritePodTailField(std::vector<unsigned char>& theOut, uint32_t theFieldId, TObject& theObject, TField TObject::* theFirstField)
-{
-	AppendFieldWithSync(theOut, theFieldId, [&](PortableSaveContext& aContext)
-	{
-		SyncPodTail(aContext, theObject, theFirstField);
-	});
-}
-
-template <typename TObject, typename TField>
-static bool ReadPodTailField(const unsigned char* theData, size_t theSize, TObject& theObject, TField TObject::* theFirstField)
-{
-	return ApplyFieldWithSync(theData, theSize, [&](PortableSaveContext& aContext)
-	{
-		SyncPodTail(aContext, theObject, theFirstField);
-	});
-}
-
 static void WriteTLVBlob(PortableSaveContext& theContext, const std::vector<unsigned char>& theBlob)
 {
 	uint32_t aSize = static_cast<uint32_t>(theBlob.size());
@@ -1099,6 +1069,49 @@ static bool ReadTLVBlob(PortableSaveContext& theContext, std::vector<unsigned ch
 	if (aSize > 0)
 		theContext.SyncBytes(theBlob.data(), aSize);
 	return !theContext.mFailed;
+}
+
+// Syncs a single object as a TLV blob: GameObject field (1U) only when TObject derives from GameObject, plus the tail field.
+template <typename TObject, typename TTailSync>
+static void SyncSingleObjectTLV(PortableSaveContext& theContext, TObject& theObject, TTailSync theTailSync)
+{
+	static constexpr bool HAS_GAME_OBJECT_FIELD = std::is_base_of_v<GameObject, TObject>;
+	if (theContext.mReading)
+	{
+		std::vector<unsigned char> aBlob;
+		if (!ReadTLVBlob(theContext, aBlob))
+			return;
+		TLVReader aReader(aBlob.data(), aBlob.size());
+		while (aReader.mOk && aReader.mPos < aReader.mSize)
+		{
+			uint32_t aFieldId = 0;
+			uint32_t aFieldSize = 0;
+			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
+				break;
+			const unsigned char* aFieldData = nullptr;
+			if (!aReader.ReadBytes(aFieldData, aFieldSize))
+				break;
+			switch (aFieldId)
+			{
+			case 1U:
+				if constexpr (HAS_GAME_OBJECT_FIELD)
+					ReadGameObjectField(aFieldData, aFieldSize, theObject);
+				break;
+			case PORTABLE_FIELD_TAIL:
+				ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ theTailSync(c, theObject); });
+				break;
+			default: break;
+			}
+		}
+	}
+	else
+	{
+		std::vector<unsigned char> aBlob;
+		if constexpr (HAS_GAME_OBJECT_FIELD)
+			WriteGameObjectField(aBlob, 1U, theObject);
+		AppendFieldWithSync(aBlob, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ theTailSync(c, theObject); });
+		WriteTLVBlob(theContext, aBlob);
+	}
 }
 
 static void SyncReanimTransformPortable(PortableSaveContext& theContext, ReanimatorTransform& theTransform)
@@ -1802,7 +1815,6 @@ static void SyncZombiesPortable(PortableSaveContext& theContext, Board* theBoard
 			switch (aFieldId)
 			{
 			case 1U: ReadGameObjectField(aData, aSize, theZombie); break;
-			case 2U: ReadPodTailField(aData, aSize, theZombie, &Zombie::mZombieType); break; // legacy
 			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncZombieTailPortable(c, theZombie); }); break;
 			default: break;
 			}
@@ -1822,10 +1834,6 @@ static void SyncPlantsPortable(PortableSaveContext& theContext, Board* theBoard)
 			switch (aFieldId)
 			{
 			case 1U: ReadGameObjectField(aData, aSize, thePlant); break;
-			case 2U: ReadPodTailField(aData, aSize, thePlant, &Plant::mSeedType); break; // legacy
-			case 3U: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ c.SyncEnum(thePlant.mSeedType); }); break; // legacy
-			case 4U: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ c.SyncEnum(thePlant.mImitaterType); }); break; // legacy
-			case 5U: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ c.SyncInt32(thePlant.mPottedPlantIndex); }); break; // legacy
 			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncPlantTailPortable(c, thePlant); }); break;
 			default: break;
 			}
@@ -1845,8 +1853,6 @@ static void SyncProjectilesPortable(PortableSaveContext& theContext, Board* theB
 			switch (aFieldId)
 			{
 			case 1U: ReadGameObjectField(aData, aSize, theProjectile); break;
-			case 2U: ReadPodTailField(aData, aSize, theProjectile, &Projectile::mMotionType); break; // legacy
-			case 3U: ReadPodTailField(aData, aSize, theProjectile, &Projectile::mFrame); break; // legacy
 			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncProjectileTailPortable(c, theProjectile); }); break;
 			default: break;
 			}
@@ -1866,8 +1872,6 @@ static void SyncCoinsPortable(PortableSaveContext& theContext, Board* theBoard)
 			switch (aFieldId)
 			{
 			case 1U: ReadGameObjectField(aData, aSize, theCoin); break;
-			case 2U: ReadPodTailField(aData, aSize, theCoin, &Coin::mType); break; // legacy
-			case 3U: ReadPodTailField(aData, aSize, theCoin, &Coin::mPosX); break; // legacy
 			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncCoinTailPortable(c, theCoin); }); break;
 			default: break;
 			}
@@ -1885,7 +1889,6 @@ static void SyncMowersPortable(PortableSaveContext& theContext, Board* theBoard)
 		{
 			switch (aFieldId)
 			{
-			case 1U: ReadPodTailField(aData, aSize, theMower, &LawnMower::mPosX); break; // legacy
 			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncLawnMowerTailPortable(c, theMower); }); break;
 			default: break;
 			}
@@ -1903,7 +1906,6 @@ static void SyncGridItemsPortable(PortableSaveContext& theContext, Board* theBoa
 		{
 			switch (aFieldId)
 			{
-			case 1U: ReadPodTailField(aData, aSize, theItem, &GridItem::mGridItemType); break; // legacy
 			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncGridItemTailPortable(c, theItem); }); break;
 			default: break;
 			}
@@ -1997,7 +1999,6 @@ static void SyncAttachmentsPortable(PortableSaveContext& theContext, Board* theB
 		{
 			switch (aFieldId)
 			{
-			case 1U: ReadPodTailField(aData, aSize, theAttachment, &Attachment::mEffectArray); break; // legacy
 			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aData, aSize, [&](PortableSaveContext& c){ SyncAttachmentTailPortable(c, theAttachment); }); break;
 			default: break;
 			}
@@ -2006,142 +2007,22 @@ static void SyncAttachmentsPortable(PortableSaveContext& theContext, Board* theB
 
 static void SyncCursorPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	if (theContext.mReading)
-	{
-		std::vector<unsigned char> aBlob;
-		if (!ReadTLVBlob(theContext, aBlob))
-			return;
-		TLVReader aReader(aBlob.data(), aBlob.size());
-		while (aReader.mOk && aReader.mPos < aReader.mSize)
-		{
-			uint32_t aFieldId = 0;
-			uint32_t aFieldSize = 0;
-			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
-				break;
-			const unsigned char* aFieldData = nullptr;
-			if (!aReader.ReadBytes(aFieldData, aFieldSize))
-				break;
-			switch (aFieldId)
-			{
-			case 1U: ReadGameObjectField(aFieldData, aFieldSize, *theBoard->mCursorObject); break;
-			case 2U: ReadPodTailField(aFieldData, aFieldSize, *theBoard->mCursorObject, &CursorObject::mSeedBankIndex); break; // legacy
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ SyncCursorObjectTailPortable(c, *theBoard->mCursorObject); }); break;
-			default: break;
-			}
-		}
-	}
-	else
-	{
-		std::vector<unsigned char> aBlob;
-		WriteGameObjectField(aBlob, 1U, *theBoard->mCursorObject);
-		AppendFieldWithSync(aBlob, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncCursorObjectTailPortable(c, *theBoard->mCursorObject); });
-		WriteTLVBlob(theContext, aBlob);
-	}
+	SyncSingleObjectTLV(theContext, *theBoard->mCursorObject, SyncCursorObjectTailPortable);
 }
 
 static void SyncCursorPreviewPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	if (theContext.mReading)
-	{
-		std::vector<unsigned char> aBlob;
-		if (!ReadTLVBlob(theContext, aBlob))
-			return;
-		TLVReader aReader(aBlob.data(), aBlob.size());
-		while (aReader.mOk && aReader.mPos < aReader.mSize)
-		{
-			uint32_t aFieldId = 0;
-			uint32_t aFieldSize = 0;
-			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
-				break;
-			const unsigned char* aFieldData = nullptr;
-			if (!aReader.ReadBytes(aFieldData, aFieldSize))
-				break;
-			switch (aFieldId)
-			{
-			case 1U: ReadGameObjectField(aFieldData, aFieldSize, *theBoard->mCursorPreview); break;
-			case 2U: ReadPodTailField(aFieldData, aFieldSize, *theBoard->mCursorPreview, &CursorPreview::mGridX); break; // legacy
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ SyncCursorPreviewTailPortable(c, *theBoard->mCursorPreview); }); break;
-			default: break;
-			}
-		}
-	}
-	else
-	{
-		std::vector<unsigned char> aBlob;
-		WriteGameObjectField(aBlob, 1U, *theBoard->mCursorPreview);
-		AppendFieldWithSync(aBlob, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncCursorPreviewTailPortable(c, *theBoard->mCursorPreview); });
-		WriteTLVBlob(theContext, aBlob);
-	}
+	SyncSingleObjectTLV(theContext, *theBoard->mCursorPreview, SyncCursorPreviewTailPortable);
 }
 
 static void SyncAdvicePortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	if (theContext.mReading)
-	{
-		std::vector<unsigned char> aBlob;
-		if (!ReadTLVBlob(theContext, aBlob))
-			return;
-		TLVReader aReader(aBlob.data(), aBlob.size());
-		while (aReader.mOk && aReader.mPos < aReader.mSize)
-		{
-			uint32_t aFieldId = 0;
-			uint32_t aFieldSize = 0;
-			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
-				break;
-			const unsigned char* aFieldData = nullptr;
-			if (!aReader.ReadBytes(aFieldData, aFieldSize))
-				break;
-			switch (aFieldId)
-			{
-			case 1U: ReadPodTailField(aFieldData, aFieldSize, *theBoard->mAdvice, &MessageWidget::mLabel); break; // legacy
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ SyncMessageWidgetTailPortable(c, *theBoard->mAdvice); }); break;
-			default: break;
-			}
-		}
-	}
-	else
-	{
-		std::vector<unsigned char> aBlob;
-		AppendFieldWithSync(aBlob, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncMessageWidgetTailPortable(c, *theBoard->mAdvice); });
-		WriteTLVBlob(theContext, aBlob);
-	}
+	SyncSingleObjectTLV(theContext, *theBoard->mAdvice, SyncMessageWidgetTailPortable);
 }
 
 static void SyncSeedBankPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	if (theContext.mReading)
-	{
-		std::vector<unsigned char> aBlob;
-		if (!ReadTLVBlob(theContext, aBlob))
-			return;
-		TLVReader aReader(aBlob.data(), aBlob.size());
-		while (aReader.mOk && aReader.mPos < aReader.mSize)
-		{
-			uint32_t aFieldId = 0;
-			uint32_t aFieldSize = 0;
-			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
-				break;
-			const unsigned char* aFieldData = nullptr;
-			if (!aReader.ReadBytes(aFieldData, aFieldSize))
-				break;
-			switch (aFieldId)
-			{
-			case 1U: ReadGameObjectField(aFieldData, aFieldSize, *theBoard->mSeedBank); break;
-			case 2U: ReadPodTailField(aFieldData, aFieldSize, *theBoard->mSeedBank, &SeedBank::mNumPackets); break; // legacy
-			case 3U: ReadPodTailField(aFieldData, aFieldSize, *theBoard->mSeedBank, &SeedBank::mCutSceneDarken); break; // legacy
-			case 4U: ReadPodTailField(aFieldData, aFieldSize, *theBoard->mSeedBank, &SeedBank::mConveyorBeltCounter); break; // legacy
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ SyncSeedBankTailPortable(c, *theBoard->mSeedBank); }); break;
-			default: break;
-			}
-		}
-	}
-	else
-	{
-		std::vector<unsigned char> aBlob;
-		WriteGameObjectField(aBlob, 1U, *theBoard->mSeedBank);
-		AppendFieldWithSync(aBlob, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncSeedBankTailPortable(c, *theBoard->mSeedBank); });
-		WriteTLVBlob(theContext, aBlob);
-	}
+	SyncSingleObjectTLV(theContext, *theBoard->mSeedBank, SyncSeedBankTailPortable);
 }
 
 static void SyncSeedPacketsPortable(PortableSaveContext& theContext, Board* theBoard)
@@ -2171,7 +2052,6 @@ static void SyncSeedPacketsPortable(PortableSaveContext& theContext, Board* theB
 				switch (aFieldId)
 				{
 				case 1U: ReadGameObjectField(aFieldData, aFieldSize, theBoard->mSeedBank->mSeedPackets[i]); break;
-				case 2U: ReadPodTailField(aFieldData, aFieldSize, theBoard->mSeedBank->mSeedPackets[i], &SeedPacket::mRefreshCounter); break; // legacy
 				case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ SyncSeedPacketTailPortable(c, theBoard->mSeedBank->mSeedPackets[i]); }); break;
 				default: break;
 				}
@@ -2192,68 +2072,12 @@ static void SyncSeedPacketsPortable(PortableSaveContext& theContext, Board* theB
 
 static void SyncChallengePortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	if (theContext.mReading)
-	{
-		std::vector<unsigned char> aBlob;
-		if (!ReadTLVBlob(theContext, aBlob))
-			return;
-		TLVReader aReader(aBlob.data(), aBlob.size());
-		while (aReader.mOk && aReader.mPos < aReader.mSize)
-		{
-			uint32_t aFieldId = 0;
-			uint32_t aFieldSize = 0;
-			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
-				break;
-			const unsigned char* aFieldData = nullptr;
-			if (!aReader.ReadBytes(aFieldData, aFieldSize))
-				break;
-			switch (aFieldId)
-			{
-			case 1U: ReadPodTailField(aFieldData, aFieldSize, *theBoard->mChallenge, &Challenge::mBeghouledMouseCapture); break; // legacy
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ SyncChallengeTailPortable(c, *theBoard->mChallenge); }); break;
-			default: break;
-			}
-		}
-	}
-	else
-	{
-		std::vector<unsigned char> aBlob;
-		AppendFieldWithSync(aBlob, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncChallengeTailPortable(c, *theBoard->mChallenge); });
-		WriteTLVBlob(theContext, aBlob);
-	}
+	SyncSingleObjectTLV(theContext, *theBoard->mChallenge, SyncChallengeTailPortable);
 }
 
 static void SyncMusicPortable(PortableSaveContext& theContext, Board* theBoard)
 {
-	if (theContext.mReading)
-	{
-		std::vector<unsigned char> aBlob;
-		if (!ReadTLVBlob(theContext, aBlob))
-			return;
-		TLVReader aReader(aBlob.data(), aBlob.size());
-		while (aReader.mOk && aReader.mPos < aReader.mSize)
-		{
-			uint32_t aFieldId = 0;
-			uint32_t aFieldSize = 0;
-			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
-				break;
-			const unsigned char* aFieldData = nullptr;
-			if (!aReader.ReadBytes(aFieldData, aFieldSize))
-				break;
-			switch (aFieldId)
-			{
-			case 1U: ReadPodTailField(aFieldData, aFieldSize, *theBoard->mApp->mMusic, &Music::mCurMusicTune); break; // legacy
-			case PORTABLE_FIELD_TAIL: ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ SyncMusicTailPortable(c, *theBoard->mApp->mMusic); }); break;
-			default: break;
-			}
-		}
-	}
-	else
-	{
-		std::vector<unsigned char> aBlob;
-		AppendFieldWithSync(aBlob, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncMusicTailPortable(c, *theBoard->mApp->mMusic); });
-		WriteTLVBlob(theContext, aBlob);
-	}
+	SyncSingleObjectTLV(theContext, *theBoard->mApp->mMusic, SyncMusicTailPortable);
 }
 
 static void SyncBoardPortable(PortableSaveContext& theContext, Board* theBoard)
