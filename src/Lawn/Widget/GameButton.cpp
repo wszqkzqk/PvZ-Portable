@@ -290,7 +290,7 @@ void LawnStoneButton::Draw(Graphics* g)
 
 std::unique_ptr<LawnStoneButton> MakeButton(int theId, ButtonListener* theListener, std::string_view theText)
 {
-	LawnStoneButton* aButton = new LawnStoneButton(nullptr, theId, theListener);
+	auto aButton = std::make_unique<LawnStoneButton>(nullptr, theId, theListener);
 	aButton->SetLabel(theText);
 
 	aButton->mTranslateX = 1;
@@ -298,7 +298,7 @@ std::unique_ptr<LawnStoneButton> MakeButton(int theId, ButtonListener* theListen
 	aButton->mHasAlpha = true;
 	aButton->mHasTransparencies = true;
 	aButton->mHeight = 33;
-	return std::unique_ptr<LawnStoneButton>(aButton);
+	return aButton;
 }
 
 NewLawnButton::NewLawnButton(Image* theComponentImage, int theId, ButtonListener* theListener) : DialogButton(theComponentImage, theId, theListener)

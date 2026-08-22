@@ -69,6 +69,7 @@ private:
 
 public:
 	LawnApp*                    mApp;
+	// Non-owning: owned by the widget container (RemoveAllWidgets(true)); do not delete or wrap in unique_ptr.
 	NewLawnButton*              mAdventureButton;
 	NewLawnButton*              mMinigameButton;
 	NewLawnButton*              mPuzzleButton;
