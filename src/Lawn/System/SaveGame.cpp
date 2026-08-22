@@ -1589,7 +1589,8 @@ enum BoardBaseFieldId : uint32_t
 	BOARD_FIELD_COINS_COLLECTED,
 	BOARD_FIELD_DIAMONDS_COLLECTED,
 	BOARD_FIELD_POTTED_PLANTS_COLLECTED,
-	BOARD_FIELD_CHOCOLATE_COLLECTED
+	BOARD_FIELD_CHOCOLATE_COLLECTED,
+	BOARD_FIELD_COUNT
 };
 
 struct BoardBaseFieldEntry
@@ -1705,6 +1706,16 @@ static constexpr BoardBaseFieldEntry gBoardBaseFields[] = {
 	{ BOARD_FIELD_CHOCOLATE_COLLECTED, [](PortableSaveContext& c, Board* theBoard){ c.SyncUInt32(theBoard->mChocolateCollected); } },
 };
 
+// The enum is contiguous starting at 1: the table must cover every id, in id order, so readers can index it directly.
+static_assert([]{
+	if (sizeof(gBoardBaseFields) / sizeof(gBoardBaseFields[0]) != BOARD_FIELD_COUNT - 1)
+		return false;
+	for (uint32_t i = 0; i < sizeof(gBoardBaseFields) / sizeof(gBoardBaseFields[0]); i++)
+		if (gBoardBaseFields[i].mFieldId != i + 1)
+			return false;
+	return true;
+}(), "gBoardBaseFields must cover every BoardBaseFieldId in id order");
+
 static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoard)
 {
 	if (theContext.mReading)
@@ -1722,13 +1733,10 @@ static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoa
 			const unsigned char* aFieldData = nullptr;
 			if (!aReader.ReadBytes(aFieldData, aFieldSize))
 				break;
-			for (const BoardBaseFieldEntry& aField : gBoardBaseFields)
+			if (aFieldId >= 1 && aFieldId <= sizeof(gBoardBaseFields) / sizeof(gBoardBaseFields[0]))
 			{
-				if (aField.mFieldId == aFieldId)
-				{
-					ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ aField.mSync(c, theBoard); });
-					break;
-				}
+				const BoardBaseFieldEntry& aField = gBoardBaseFields[aFieldId - 1];
+				ApplyFieldWithSync(aFieldData, aFieldSize, [&](PortableSaveContext& c){ aField.mSync(c, theBoard); });
 			}
 		}
 	}
