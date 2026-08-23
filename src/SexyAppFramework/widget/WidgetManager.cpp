@@ -720,7 +720,6 @@ bool WidgetManager::MouseDrag(int x, int y)
 
 bool WidgetManager::MouseExit([[maybe_unused]] int x, [[maybe_unused]] int y)
 {
-
 	mMouseIn = false;
 
 	if (mOverWidget != nullptr)

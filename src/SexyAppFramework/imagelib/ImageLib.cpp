@@ -390,7 +390,6 @@ Image* GetGIFImage(const std::string& theFileName)
 		if (c != ',')  // not an image descriptor
 			continue;
 
-
 		uint16_t pagex;
 		uint16_t pagey;
 		uint16_t width;

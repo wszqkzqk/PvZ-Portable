@@ -7,7 +7,7 @@
 		int aU = (int) ((aCos*(aBaseX) - aSin*(aBaseY) + theRotCenterX) * 0x10000);\
 		int aV = (int) ((aCos*(aBaseY) + aSin*(aBaseX) + theRotCenterY) * 0x10000);\
 		\
-		[[maybe_unused]] DEST_PIXEL_TYPE* aDestPixels = aDestPixelsRow; /* Unused only in this specific instance */\
+		[[maybe_unused]] DEST_PIXEL_TYPE* aDestPixels = aDestPixelsRow; /* Unused in some expansion instances */\
 		\
 		int aLeft = 0;\
 		int aRight = aDestRect.mWidth - 1;\

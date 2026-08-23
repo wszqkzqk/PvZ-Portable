@@ -24,7 +24,6 @@
 	[[maybe_unused]] uint32_t* aNewHorzPixelsEnd = aNewHorzPixels + (aTempDestWidth*aSrcHeightI*4);  // unused in Release mode
 	memset(aNewHorzPixels, 0, aTempDestWidth*aSrcHeightI*4*4);
 
-
 	if (theSrcRect.mWidth >= theDestRect.mWidth)
 	{
 		double aDestXFactor = theDestRect.mWidth / theSrcRect.mWidth;

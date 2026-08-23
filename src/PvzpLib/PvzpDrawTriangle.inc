@@ -100,14 +100,10 @@ void	funcname(SWHelper::SWVertex* pVerts, void* pFrameBuffer, const unsigned int
 #define  swap(a,b,type) {type tmp = a; a = b; b = tmp;}
 
 	const unsigned int* pTexture;
-	[[maybe_unused]] unsigned int		vShift, uMask, vMask;
 
 #if defined(TEXTURED)
 	{
 		pTexture = textureInfo->pTexture;
-		vShift = textureInfo->vShift;
-		vMask = textureInfo->vMask;
-		uMask = textureInfo->uMask;
 	}
 #endif
 

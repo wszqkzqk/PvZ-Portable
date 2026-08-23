@@ -91,14 +91,10 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 	#define  swap(a,b,type) {type tmp = a; a = b; b = tmp;}
 
 	[[maybe_unused]] const unsigned int *	pTexture;
-	[[maybe_unused]] unsigned int		vShift, uMask, vMask;
 
 	#if defined(TEXTURED)
 	{
 		pTexture = textureInfo->pTexture;
-		vShift = textureInfo->vShift;
-		vMask = textureInfo->vMask;
-		uMask = textureInfo->uMask;
 	}
 	#endif
 

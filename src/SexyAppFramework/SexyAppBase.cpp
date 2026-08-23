@@ -1903,7 +1903,6 @@ void SexyAppBase::EndPopup()
 
 int SexyAppBase::MsgBox(const std::string& theText, const std::string& theTitle, [[maybe_unused]] int theFlags)
 {
-
 	BeginPopup();
 	Sexy::PrintF("%s\n===\n%s\n", theTitle.c_str(), theText.c_str());
 
