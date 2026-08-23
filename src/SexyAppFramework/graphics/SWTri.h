@@ -53,10 +53,8 @@ public:
 	struct	SWTextureInfo
 	{
 		const unsigned int *	pTexture;
-		unsigned int		vShift, uMask, vMask;
 		int pitch;
 		unsigned int endpos;
-		int height;
 	};
 	struct	SWDiffuse
 	{

@@ -1152,7 +1152,7 @@ void StoreScreen::MouseDown(int x, int y, [[maybe_unused]] int theClickCount)
 			else if (aItemType == STORE_ITEM_PVZ)
 			{
 				mWaitForDialog = true;
-				int aResult = mApp->LawnMessageBox(
+				mApp->LawnMessageBox(
 					DIALOG_MESSAGE, "[BUY_PVZ_TITLE]", "[BUY_PVZ_BODY]", "[GET_FULL_VERSION_YES_BUTTON]", "[GET_FULL_VERSION_NO_BUTTON]", BUTTONS_YES_NO);
 				mWaitForDialog = false;
 			}

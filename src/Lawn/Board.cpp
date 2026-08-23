@@ -60,7 +60,6 @@ constexpr const int ZOMBIE_COUNTDOWN = 2500;
 constexpr const int ZOMBIE_COUNTDOWN_RANGE = 600;
 constexpr const int ZOMBIE_COUNTDOWN_BEFORE_FLAG = 4500;
 constexpr const int ZOMBIE_COUNTDOWN_BEFORE_REPICK = 5499;
-constexpr const int ZOMBIE_COUNTDOWN_MIN = 400;
 constexpr const int SUN_COUNTDOWN = 425;
 constexpr const int SUN_COUNTDOWN_RANGE = 275;
 constexpr const int SUN_COUNTDOWN_MAX = 950;

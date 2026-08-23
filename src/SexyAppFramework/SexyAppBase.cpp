@@ -968,7 +968,7 @@ bool SexyAppBase::OpenURL(const std::string& theURL, bool shutdownOnOpen)
 	return true;
 }
 
-std::string SexyAppBase::GetProductVersion(const std::string& thePath)
+std::string SexyAppBase::GetProductVersion([[maybe_unused]] const std::string& thePath)
 {
 	return "0";
 }
@@ -1951,40 +1951,6 @@ void SexyAppBase::SafeDeleteWidget(Widget* theWidget)
 	mSafeDeleteList.push_back(aWidgetSafeDeleteInfo);
 }
 
-static int ListDemoMarkers()
-{
-	gSexyAppBase->mLastTime = SDL_GetTicks();
-
-	return 0;
-}
-
-static int DemoJumpToTime()
-{
-	gSexyAppBase->mLastTime = SDL_GetTicks();
-
-	return 0;
-}
-
-static void ToggleDemoSoundVolume()
-{
-	if (gSexyAppBase->GetMusicVolume() == 0.0)
-		gSexyAppBase->SetMusicVolume(gSexyAppBase->mDemoMusicVolume);
-	else
-	{
-		gSexyAppBase->mDemoMusicVolume = gSexyAppBase->mMusicVolume;
-		gSexyAppBase->SetMusicVolume(0.0);
-	}
-
-	if (gSexyAppBase->GetSfxVolume() == 0.0)
-		gSexyAppBase->SetSfxVolume(gSexyAppBase->mDemoSfxVolume);
-	else
-	{
-		gSexyAppBase->mDemoSfxVolume = gSexyAppBase->mSfxVolume;
-		gSexyAppBase->SetSfxVolume(0.0);
-	}
-}
-
-static uint32_t gPowerSaveTick = 0;
 
 void SexyAppBase::HandleNotifyGameMessage([[maybe_unused]] int theType)
 {
@@ -2258,7 +2224,7 @@ void SexyAppBase::ShowMemoryUsage()
 	// Memory usage display not implemented
 }
 
-bool SexyAppBase::DebugKeyDown(int theKey)
+bool SexyAppBase::DebugKeyDown([[maybe_unused]] int theKey)
 {
 	return false;
 }
