@@ -124,7 +124,7 @@ public: // TODO: revert to protected
 		void         DeleteResource() override;
 	};
 
-	typedef std::map<std::string,BaseRes*> ResMap;
+	typedef std::map<std::string,std::unique_ptr<BaseRes>> ResMap;
 	typedef std::list<BaseRes*> ResList;
 	typedef std::map<std::string,ResList,StringLessNoCase> ResGroupMap;
 
@@ -152,7 +152,7 @@ public: // TODO: revert to protected
 
 	bool					Fail(const std::string& theErrorText);
 
-	virtual bool			ParseCommonResource(XMLElement &theElement, BaseRes *theRes, ResMap &theMap);
+	virtual bool			ParseCommonResource(XMLElement &theElement, std::unique_ptr<BaseRes> &theRes, ResMap &theMap);
 	virtual bool			ParseSoundResource(XMLElement &theElement);
 	virtual bool			ParseImageResource(XMLElement &theElement);
 	virtual bool			ParseFontResource(XMLElement &theElement);

@@ -134,7 +134,7 @@ public:
 	FontLayer*				mBaseFontLayer;
 
 	Image*					mScaledImage;
-	bool					mOwnsImage;
+	std::unique_ptr<Image>	mOwnedScaledImage;
 	CharRectMap				mScaledCharImageRects;
 
 public:

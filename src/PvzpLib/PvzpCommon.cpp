@@ -1074,10 +1074,10 @@ void PvzpResourceManager::AddImageToMap(SharedImageRef* theImage, const std::str
 {
 	PVZP_ASSERT(mImageMap.find(thePath) == mImageMap.end());
 
-	ImageRes* aImageRes = new ImageRes();
+	auto aImageRes = std::make_unique<ImageRes>();
 	aImageRes->mImage = *theImage;
 	aImageRes->mPath = thePath;
-	mImageMap.insert(ResMap::value_type(thePath, aImageRes));
+	mImageMap.insert(ResMap::value_type(thePath, std::move(aImageRes)));
 }
 
 bool PvzpLoadNextResource()
@@ -1171,7 +1171,7 @@ bool PvzpResourceManager::FindFontPath(_Font* theFont, std::string* thePath)
 {
 	for (auto anItr = mFontMap.begin(); anItr != mFontMap.end(); anItr++)
 	{
-		FontRes* aFontRes = (FontRes*)anItr->second;
+		FontRes* aFontRes = (FontRes*)anItr->second.get();
 		_Font* aFont = (_Font*)aFontRes->mFont.get();
 		if (aFont == theFont)
 		{
@@ -1186,7 +1186,7 @@ bool PvzpResourceManager::FindImagePath(Image* theImage, std::string* thePath)
 {
 	for (auto anItr = mImageMap.begin(); anItr != mImageMap.end(); anItr++)
 	{
-		ImageRes* aImageRes = (ImageRes*)anItr->second;
+		ImageRes* aImageRes = (ImageRes*)anItr->second.get();
 		Image* aImage = (Image*)aImageRes->mImage;
 		if (aImage == theImage)
 		{

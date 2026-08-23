@@ -48,7 +48,7 @@ DataElement* DescParser::Dereference(const std::string& theString)
 
 	DataElementMap::iterator anItr = mDefineMap.find(aDefineName);
 	if (anItr != mDefineMap.end())
-		return anItr->second;
+		return anItr->second.get();
 	else
 		return nullptr;
 }
@@ -98,25 +98,25 @@ bool DescParser::GetValues(ListDataElement* theSource, ListDataElement* theValue
 		if (theSource->mElementVector[aSourceNum]->mIsList)
 		{
 			ListDataElement* aChildList = new ListDataElement();
-			theValues->mElementVector.push_back(aChildList);
+			theValues->mElementVector.emplace_back(aChildList);
 
-			if (!GetValues((ListDataElement*) theSource->mElementVector[aSourceNum], aChildList))
+			if (!GetValues((ListDataElement*) theSource->mElementVector[aSourceNum].get(), aChildList))
 				return false;
 		}
 		else
 		{
-			std::string aString = ((SingleDataElement*) theSource->mElementVector[aSourceNum])->mString;
+			std::string aString = ((SingleDataElement*) theSource->mElementVector[aSourceNum].get())->mString;
 
 			if (aString.length() > 0)
 			{
 				if ((aString[0] == '\'') || (aString[0] == '"'))
 				{
 					SingleDataElement* aChildData = new SingleDataElement(Unquote(aString));
-					theValues->mElementVector.push_back(aChildData);
+					theValues->mElementVector.emplace_back(aChildData);
 				}
 				else if (IsImmediate(aString))
 				{
-					theValues->mElementVector.push_back(new SingleDataElement(aString));
+					theValues->mElementVector.push_back(std::make_unique<SingleDataElement>(aString));
 				}
 				else
 				{
@@ -130,7 +130,7 @@ bool DescParser::GetValues(ListDataElement* theSource, ListDataElement* theValue
 						return false;
 					}
 
-					theValues->mElementVector.push_back(anItr->second->Duplicate());
+					theValues->mElementVector.emplace_back(anItr->second->Duplicate());
 				}
 			}
 
@@ -154,7 +154,7 @@ std::string DescParser::DataElementToString(DataElement* theDataElement)
 			if (i != 0)
 				aString += ", ";
 
-			aString += DataElementToString(aListDataElement->mElementVector[i]);
+			aString += DataElementToString(aListDataElement->mElementVector[i].get());
 		}
 
 		aString += ")";
@@ -246,7 +246,7 @@ bool DescParser::DataToStringVector(DataElement* theSource, std::vector<std::str
 			return false;
 		}
 
-		SingleDataElement* aSingleDataElement = (SingleDataElement*) aValues->mElementVector[i];
+		SingleDataElement* aSingleDataElement = (SingleDataElement*) aValues->mElementVector[i].get();
 
 		theStringVector->push_back(aSingleDataElement->mString);
 	}
@@ -370,12 +370,12 @@ bool DescParser::ParseToList(const std::string& theString, ListDataElement* theL
 					}
 					else
 					{
-						ListDataElement* aChildList = new ListDataElement();
+						auto aChildList = std::make_unique<ListDataElement>();
 
-						if (!ParseToList(theString, aChildList, true, theStringPos))
+						if (!ParseToList(theString, aChildList.get(), true, theStringPos))
 							return false;
 
-						theList->mElementVector.push_back(aChildList);
+						theList->mElementVector.push_back(std::move(aChildList));
 					}
 				}
 				else if (isSeperator)
@@ -395,7 +395,7 @@ bool DescParser::ParseToList(const std::string& theString, ListDataElement* theL
 			if (aCurSingleDataElement == nullptr)
 			{
 				aCurSingleDataElement = new SingleDataElement();
-				theList->mElementVector.push_back(aCurSingleDataElement);
+				theList->mElementVector.emplace_back(aCurSingleDataElement);
 			}
 
 			aCurSingleDataElement->mString += aChar;

@@ -26,6 +26,7 @@
 #define __DESCPARSER_H__
 
 #include "Common.h"
+#include <memory>
 
 namespace Sexy
 {
@@ -55,7 +56,7 @@ public:
 	DataElement*			Duplicate() override;
 };
 
-typedef std::vector<DataElement*> ElementVector;
+typedef std::vector<std::unique_ptr<DataElement>> ElementVector;
 
 class ListDataElement : public DataElement
 {
@@ -72,7 +73,7 @@ public:
 	DataElement*			Duplicate() override;
 };
 
-typedef std::map<std::string, DataElement*> DataElementMap;
+typedef std::map<std::string, std::unique_ptr<DataElement>> DataElementMap;
 typedef std::vector<double> DoubleVector;
 
 class DescParser
