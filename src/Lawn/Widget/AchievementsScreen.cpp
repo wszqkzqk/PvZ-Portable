@@ -188,8 +188,7 @@ void AchievementsWidget::KeyDown(KeyCode theKey) {
 	}
 }
 
-void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
-	(void)theClickCount;
+void AchievementsWidget::MouseDown(int x, int y, [[maybe_unused]] int theClickCount) {
 	if (aBackButtonRect.Contains(x, y))
 		mApp->PlaySample(SOUND_GRAVEBUTTON);
 
@@ -197,7 +196,7 @@ void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
 		mApp->PlaySample(SOUND_GRAVEBUTTON);
 }
 
-void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
+void AchievementsWidget::MouseUp(int x, int y, [[maybe_unused]] int theClickCount) {
 	Point aPos = Point(x, y);
 	if (aBackButtonRect.Contains(aPos)) {
 		mApp->mGameSelector->SlideTo(0, 0);
@@ -209,8 +208,6 @@ void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
 		mScrollDirection = mDidPressMoreButton ? -1 : 1;
 		mScrollValue = 20;
 	}
-
-	(void)theClickCount;
 }
 
 void AchievementsWidget::MouseWheel(int theDelta) {

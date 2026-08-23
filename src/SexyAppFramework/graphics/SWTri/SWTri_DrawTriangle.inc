@@ -81,19 +81,18 @@
 #define funcname2(t0,t1,t2,t3,t4,t5) DrawTriangle_##t0##_##t1##_##t2##_##t3##_##t4##_##t5
 #define funcname1(t0,t1,t2,t3,t4,t5) funcname2(t0,t1,t2,t3,t4,t5)
 #define funcname funcname1(NAME0,NAME1,NAME2,NAME3,NAME4,NAME5)
-void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsigned int bytepitch, const SWHelper::SWTextureInfo * textureInfo, SWHelper::SWDiffuse & globalDiffuse)
+void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsigned int bytepitch, const SWHelper::SWTextureInfo * textureInfo, [[maybe_unused]] SWHelper::SWDiffuse & globalDiffuse)
 {
-	(void)globalDiffuse;
 	const int pitch = bytepitch/sizeof(PTYPE);
-	const int tex_pitch = textureInfo->pitch; (void)tex_pitch;
-	const int tex_height = textureInfo->height; (void)tex_height;
-	const unsigned int tex_endpos = textureInfo->endpos; (void)tex_endpos;
+	[[maybe_unused]] const int tex_pitch = textureInfo->pitch;
+	[[maybe_unused]] const int tex_height = textureInfo->height;
+	[[maybe_unused]] const unsigned int tex_endpos = textureInfo->endpos;
 
 	const SWHelper::signed64 bigOne = static_cast<SWHelper::signed64>(1) << 48;
 	#define  swap(a,b,type) {type tmp = a; a = b; b = tmp;}
 
-	const unsigned int *	pTexture; (void)pTexture;
-	unsigned int		vShift, uMask, vMask; (void)vShift;(void)uMask;(void)vMask;
+	[[maybe_unused]] const unsigned int *	pTexture;
+	[[maybe_unused]] unsigned int		vShift, uMask, vMask;
 
 	#if defined(TEXTURED)
 	{
@@ -141,8 +140,7 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 	// Calculate long-edge deltas
 
 	SWHelper::signed64	oneOverHeight = bigOne / (v2->y - v0->y);
-	int		ldx, ldr, ldg, ldb, lda, ldu, ldv;
-	(void)ldr;(void)ldg;(void)ldb;(void)lda;(void)ldu;(void)ldv;
+	[[maybe_unused]] int		ldx, ldr, ldg, ldb, lda, ldu, ldv;
 			ldx = static_cast<int>(((v2->x - v0->x) * oneOverHeight) >> 32);
 
 	#if defined(MOD_ARGB)
@@ -167,8 +165,7 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 	// Edge variables (long)
 
 	SWHelper::signed64	subPix = (y0<<16) - v0->y;
-	int		lx, lr, lg, lb, la, lu, lv;
-	(void)lr;(void)lg;(void)lb;(void)la;(void)lu;(void)lv;
+	[[maybe_unused]] int		lx, lr, lg, lb, la, lu, lv;
 			lx = v0->x + static_cast<int>((ldx * subPix)>>16);
 
 	#if defined(MOD_ARGB)
@@ -185,9 +182,8 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 
 	// Scanline deltas
 
-	SWHelper::signed64	oneOverWidth; (void)oneOverWidth;
-	int		dr, dg, db, da, du, dv;
-	(void)dr;(void)dg;(void)db;(void)da;(void)du;(void)dv;
+	[[maybe_unused]] SWHelper::signed64	oneOverWidth;
+	[[maybe_unused]] int		dr, dg, db, da, du, dv;
 	#if defined(TEXTURED) || defined(MOD_ARGB)
 		oneOverWidth = bigOne / (v1->x - mid);
 	#endif

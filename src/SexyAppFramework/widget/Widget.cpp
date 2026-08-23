@@ -93,9 +93,8 @@ void Widget::OrderInManagerChanged()
 {
 }
 
-bool Widget::IsPointVisible(int x, int y)
+bool Widget::IsPointVisible([[maybe_unused]] int x, [[maybe_unused]] int y)
 {
-	(void)x;(void)y;
 	return true;
 }
 
@@ -119,9 +118,8 @@ void Widget::SetVisible(bool isVisible)
 void Widget::Draw(Graphics*) {}
 void Widget::DrawOverlay(Graphics*){}
 
-void Widget::DrawOverlay(Graphics* g, int thePriority)
+void Widget::DrawOverlay(Graphics* g, [[maybe_unused]] int thePriority)
 {
-	(void)thePriority;
 	DrawOverlay(g);
 }
 

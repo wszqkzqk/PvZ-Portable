@@ -272,7 +272,7 @@ Image* GetGIFImage(const std::string& theFileName)
 	#define BitSet(byte,bit)  (((byte) & (bit)) == (bit))
 	#define LSBFirstOrder(x,y)  (((y) << 8) | (x))
 
-	int
+	[[maybe_unused]] int
 		opacity,
 		status;
 
@@ -289,7 +289,7 @@ Image* GetGIFImage(const std::string& theFileName)
 
 	std::unique_ptr<unsigned char[]> global_colormap;
 
-	unsigned int
+	[[maybe_unused]] unsigned int
 		delay,
 		dispose,
 		global_colors,
@@ -308,7 +308,6 @@ Image* GetGIFImage(const std::string& theFileName)
 	Determine if this is a GIF file.
 	*/
 	status = p_fread(magick, sizeof(char), 6, fp.get());
-	(void)status; // unused
 
 	// a valid GIF file starts with a "GIF87" or "GIF89" signature
 	if (((strncmp((char*)magick, "GIF87", 5) != 0) && (strncmp((char*)magick, "GIF89", 5) != 0)))
@@ -370,7 +369,6 @@ Image* GetGIFImage(const std::string& theFileName)
 
 				dispose = header[0] >> 2;
 				delay = (header[2] << 8) | header[1];
-				(void)delay; // Unused
 				if ((header[0] & 0x01) == 1)
 					opacity = header[3];
 				break;
@@ -436,9 +434,7 @@ Image* GetGIFImage(const std::string& theFileName)
 
 		delay = 0;
 		dispose = 0;
-		(void)dispose; // unused
 		iterations = 1;
-		(void)iterations; //unused
 		if ((width == 0) || (height == 0))
 			return nullptr;
 		if (!BitSet(flag, 0x80))
@@ -466,8 +462,7 @@ Image* GetGIFImage(const std::string& theFileName)
 			*/
 			colormap = new unsigned char[3 * colors];
 
-			int pos = p_ftell(fp.get());
-			(void)pos; // unused
+			[[maybe_unused]] int pos = p_ftell(fp.get());
 
 			p_fread(colormap, sizeof(char), 3 * colors, fp.get());
 
@@ -583,8 +578,7 @@ constexpr const int NullCode = -1;
 							/*
 							Read a new data block.
 							*/
-							int pos = p_ftell(fp.get());
-							(void)pos; // unused
+							[[maybe_unused]] int pos = p_ftell(fp.get());
 
 							count = ReadBlobBlock(fp.get(), (char*)packet.get());
 							if (count <= 0)

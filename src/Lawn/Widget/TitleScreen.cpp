@@ -510,9 +510,8 @@ void TitleScreen::RemovedFromManager(Sexy::WidgetManager* theWidgetManager)
 	theWidgetManager->RemoveWidget(mStartButton.get());
 }
 
-void TitleScreen::ButtonPress(int theId)
+void TitleScreen::ButtonPress([[maybe_unused]] int theId)
 {
-	(void)theId;
 	mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);
 }
 
@@ -530,9 +529,8 @@ void TitleScreen::ButtonDepress(int theId)
 	}
 }
 
-void TitleScreen::MouseDown(int x, int y, int theClickCount)
+void TitleScreen::MouseDown([[maybe_unused]] int x, [[maybe_unused]] int y, [[maybe_unused]] int theClickCount)
 {
-	(void)x;(void)y;(void)theClickCount;
 	if (mLoadingThreadComplete)
 	{
 		mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);

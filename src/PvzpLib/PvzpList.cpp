@@ -83,9 +83,8 @@ bool PvzpAllocator::IsPointerOnFreeList(void* theItem)
 	return false;
 }
 
-void* PvzpAllocator::Alloc(int theItemSize)
+void* PvzpAllocator::Alloc([[maybe_unused]] int theItemSize)
 {
-	(void)theItemSize;
 	mTotalItems++;
 	if (mFreeList == nullptr)
 		Grow();
@@ -102,9 +101,8 @@ void* PvzpAllocator::Calloc(int theItemSize)
 	return anItem;
 }
 
-void PvzpAllocator::Free(void* theItem, int theItemSize)
+void PvzpAllocator::Free(void* theItem, [[maybe_unused]] int theItemSize)
 {
-	(void)theItemSize;
 	mTotalItems--;
 	PVZP_ASSERT(IsPointerFromAllocator(theItem));
 	PVZP_ASSERT(!IsPointerOnFreeList(theItem));

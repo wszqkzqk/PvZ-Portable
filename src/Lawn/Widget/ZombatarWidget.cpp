@@ -1426,9 +1426,8 @@ void ZombatarWidget::MouseUp(int x, int y)
 	}
 }
 
-void ZombatarWidget::ButtonPress(int theId)
+void ZombatarWidget::ButtonPress([[maybe_unused]] int theId)
 {
-	(void)theId;
 }
 
 void ZombatarWidget::ButtonDepress(int theId)

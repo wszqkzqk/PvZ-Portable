@@ -1656,9 +1656,8 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping)
 	}
 }
 
-void CutScene::MouseDown(int theX, int theY)
+void CutScene::MouseDown([[maybe_unused]] int theX, [[maybe_unused]] int theY)
 {
-	(void)theX;(void)theY;
 	if (mApp->mCheatKeys && mApp->mGameMode == GameMode::GAMEMODE_UPSELL)
 	{
 		mCrazyDaveCountDown = std::min(mCrazyDaveCountDown, 1);

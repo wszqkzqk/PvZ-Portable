@@ -627,9 +627,8 @@ void EditWidget::KeyChar(char theChar)
 	Widget::KeyChar(theChar);
 }
 
-int EditWidget::GetCharAt(int x, int y)
+int EditWidget::GetCharAt(int x, [[maybe_unused]] int y)
 {
-	(void)y;
 	int aPos = 0;
 
 	std::string_view aString = mString;

@@ -84,9 +84,8 @@ void SexyAppBase::StopTextInput()
 
 }
 
-void SexyAppBase::SetTextInputRect(const Rect& theRect)
+void SexyAppBase::SetTextInputRect([[maybe_unused]] const Rect& theRect)
 {
-	(void)theRect;
 }
 
 bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)

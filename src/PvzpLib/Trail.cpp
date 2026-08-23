@@ -287,9 +287,8 @@ Trail* TrailHolder::AllocTrail(int theRenderOrder, TrailType theTrailType)
 	return AllocTrailFromDef(theRenderOrder, &gTrailDefArray[theTrailType]);
 }
 
-Trail* TrailHolder::AllocTrailFromDef(int theRenderOrder, TrailDefinition* theDefinition)
+Trail* TrailHolder::AllocTrailFromDef([[maybe_unused]] int theRenderOrder, TrailDefinition* theDefinition)
 {
-	(void)theRenderOrder;
 	if (mTrails.mSize == mTrails.mMaxSize)
 		return nullptr;
 

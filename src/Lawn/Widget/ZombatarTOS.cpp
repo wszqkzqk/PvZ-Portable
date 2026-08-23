@@ -166,9 +166,8 @@ void ZombatarTOS::Update()
 	}
 }
 
-void ZombatarTOS::ButtonPress(int theId)
+void ZombatarTOS::ButtonPress([[maybe_unused]] int theId)
 {
-	(void)theId;
 }
 
 void ZombatarTOS::ButtonDepress(int theId)
@@ -227,9 +226,7 @@ void ZombatarTOS::CheckboxChecked(int theId, bool checked)
 	}
 }
 
-void ZombatarTOS::SliderVal(int theId, double theVal)
+void ZombatarTOS::SliderVal([[maybe_unused]] int theId, [[maybe_unused]] double theVal)
 {
-	(void)theId;
-	(void)theVal;
 	MarkDirty();
 }

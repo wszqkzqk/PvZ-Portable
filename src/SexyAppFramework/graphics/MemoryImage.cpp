@@ -1157,9 +1157,8 @@ uint32_t* MemoryImage::GetBits()
 	return mBits.get();
 }
 
-void MemoryImage::FillRect(const Rect& theRect, const Color& theColor, int theDrawMode)
+void MemoryImage::FillRect(const Rect& theRect, const Color& theColor, [[maybe_unused]] int theDrawMode)
 {
-	(void)theDrawMode;
 	uint32_t src = theColor.ToInt();
 
 	uint32_t* aBits = GetBits();
@@ -1320,9 +1319,8 @@ void MemoryImage::NormalBlt(Image* theImage, int theX, int theY, const Rect& the
 	}
 }
 
-void MemoryImage::Blt(Image* theImage, int theX, int theY, const Rect& theSrcRect, const Color& theColor, int theDrawMode, bool linearFilter)
+void MemoryImage::Blt(Image* theImage, int theX, int theY, const Rect& theSrcRect, const Color& theColor, int theDrawMode, [[maybe_unused]] bool linearFilter)  // Software rendering does not use texture filtering
 {
-	(void)linearFilter;  // Software rendering does not use texture filtering
 	theImage->mDrawn = true;
 
 	DBG_ASSERTE((theColor.mRed >= 0) && (theColor.mRed <= 255));
@@ -1484,16 +1482,14 @@ void MemoryImage::BltRotated(Image* theImage, float theX, float theY, const Rect
 	}
 }
 
-void MemoryImage::SlowStretchBlt(Image* theImage, const Rect& theDestRect, const FRect& theSrcRect, const Color& theColor, int theDrawMode)
+void MemoryImage::SlowStretchBlt(Image* theImage, const Rect& theDestRect, const FRect& theSrcRect, [[maybe_unused]] const Color& theColor, [[maybe_unused]] int theDrawMode)
 {
-	(void)theColor;(void)theDrawMode;
 	theImage->mDrawn = true;
 
 	// This thing was a pain to write.  I bet i could have gotten something just as good
 	// from some Graphics Gems book.
 
-	uint32_t* aDestEnd = GetBits() + (mWidth * mHeight);
-	(void)aDestEnd; // Unused in Release mode
+	[[maybe_unused]] uint32_t* aDestEnd = GetBits() + (mWidth * mHeight);  // Unused in Release mode
 
 	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
 
@@ -1530,9 +1526,8 @@ void MemoryImage::SlowStretchBlt(Image* theImage, const Rect& theDestRect, const
 }
 
 //TODO: Make the special version
-void MemoryImage::FastStretchBlt(Image* theImage, const Rect& theDestRect, const FRect& theSrcRect, const Color& theColor, int theDrawMode)
+void MemoryImage::FastStretchBlt(Image* theImage, const Rect& theDestRect, const FRect& theSrcRect, const Color& theColor, [[maybe_unused]] int theDrawMode)
 {
-	(void)theDrawMode;
 	theImage->mDrawn = true;
 
 	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
@@ -1687,9 +1682,8 @@ void MemoryImage::BltTrianglesTexHelper(Image *theTexture, const TriVertex theVe
 
 }
 
-void MemoryImage::FillScanLinesWithCoverage(Span* theSpans, int theSpanCount, const Color& theColor, int theDrawMode, const uint8_t* theCoverage, int theCoverX, int theCoverY, int theCoverWidth, int theCoverHeight)
+void MemoryImage::FillScanLinesWithCoverage(Span* theSpans, int theSpanCount, const Color& theColor, [[maybe_unused]] int theDrawMode, const uint8_t* theCoverage, int theCoverX, int theCoverY, int theCoverWidth, [[maybe_unused]] int theCoverHeight)
 {
-	(void)theDrawMode;(void)theCoverHeight;
 	uint32_t* theBits = GetBits();
 	uint32_t src = theColor.ToInt();
 	for (int i = 0; i < theSpanCount; ++i)

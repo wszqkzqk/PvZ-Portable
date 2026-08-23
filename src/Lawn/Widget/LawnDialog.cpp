@@ -193,9 +193,8 @@ void LawnDialog::Update()
 	MarkDirty();
 }
 
-void LawnDialog::ButtonPress(int theId)
+void LawnDialog::ButtonPress([[maybe_unused]] int theId)
 {
-	(void)theId;
 	mApp->PlaySample(Sexy::SOUND_GRAVEBUTTON);
 }
 

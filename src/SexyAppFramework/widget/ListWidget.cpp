@@ -436,9 +436,8 @@ void ListWidget::SetHilite(int theHiliteIdx, bool notifyListener)
 }
 
 
-void ListWidget::MouseMove(int x, int y)
+void ListWidget::MouseMove([[maybe_unused]] int x, int y)
 {
-	(void)x;
 	int anItemHeight = (mItemHeight != -1) ? mItemHeight : mFont->GetHeight();
 
 	int aNewHilite = (int) (((y - 4) / (double) anItemHeight) + mPosition);
@@ -466,9 +465,8 @@ void ListWidget::MouseMove(int x, int y)
 	}
 }
 
-void ListWidget::MouseDown(int x, int y, int theBtnNum, int theClickCount)
+void ListWidget::MouseDown([[maybe_unused]] int x, [[maybe_unused]] int y, [[maybe_unused]] int theBtnNum, int theClickCount)
 {
-	(void)x;(void)y;(void)theBtnNum;
 	if ((mHiliteIdx != -1) && (mListListener != nullptr))
 		mListListener->ListClicked(mId, mHiliteIdx, theClickCount);
 }

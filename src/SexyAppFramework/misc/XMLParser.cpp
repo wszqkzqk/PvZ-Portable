@@ -116,9 +116,8 @@ bool XMLParser::AddAttribute(XMLElement* theElement, const std::string& theAttri
 	return aRet.second;
 }
 
-bool XMLParser::GetAsciiChar(char* theChar, bool* error)
+bool XMLParser::GetAsciiChar(char* theChar, [[maybe_unused]] bool* error)
 {
-	(void)error;
 	char aChar = 0;
 	if (p_fread(&aChar, 1, 1, mFile) != 1) return false;
 
@@ -126,9 +125,8 @@ bool XMLParser::GetAsciiChar(char* theChar, bool* error)
 	return true;
 }
 
-bool XMLParser::GetUTF8Char(char* theChar, bool* error)
+bool XMLParser::GetUTF8Char(char* theChar, [[maybe_unused]] bool* error)  // EOF is not an encoding error
 {
-	(void)error; // EOF is not an encoding error
 	unsigned char aChar = 0;
 	if (p_fread(&aChar, 1, 1, mFile) != 1) return false;
 

@@ -787,8 +787,7 @@ void SexyAppBase::DemoAssertIntEqual(int theInt)
 		DBG_ASSERTE(!mDemoIsShortCmd);
 		DBG_ASSERTE(mDemoCmdNum == DEMO_ASSERT_INT_EQUAL);
 
-		int anInt = mDemoBuffer.ReadInt32();
-		(void)anInt; // unused in Release mode
+		[[maybe_unused]] int anInt = mDemoBuffer.ReadInt32();  // unused in Release mode
 		DBG_ASSERTE(anInt == theInt);
 	}
 	else if (mRecordingDemoBuffer)
@@ -943,15 +942,13 @@ void SexyAppBase::LostFocus()
 {
 }
 
-void SexyAppBase::URLOpenFailed(const std::string& theURL)
+void SexyAppBase::URLOpenFailed([[maybe_unused]] const std::string& theURL)
 {
-	(void)theURL;
 	mIsOpeningURL = false;
 }
 
-void SexyAppBase::URLOpenSucceeded(const std::string& theURL)
+void SexyAppBase::URLOpenSucceeded([[maybe_unused]] const std::string& theURL)
 {
-	(void)theURL;
 	mIsOpeningURL = false;
 
 	if (mShutdownOnURLOpen)
@@ -1627,7 +1624,7 @@ void SexyAppBase::RestoreScreenResolution()
 	// Screen resolution restoration not needed
 }
 
-void SexyAppBase::DoExit(int theCode)
+void SexyAppBase::DoExit([[maybe_unused]] int theCode)
 {
 	RestoreScreenResolution();
 
@@ -1643,7 +1640,6 @@ void SexyAppBase::DoExit(int theCode)
 			if (typeof window.onGameExit === 'function') window.onGameExit();
 		);
 	}
-	(void)theCode;
 #elif (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__IPHONEOS__)
 	Shutdown();
 #else
@@ -1757,10 +1753,8 @@ static void CalculateFPS()
 }
 
 // FPS stuff to draw mouse coords
-static void FPSDrawCoords(int theX, int theY)
+static void FPSDrawCoords([[maybe_unused]] int theX, [[maybe_unused]] int theY)
 {
-	(void)theX;
-	(void)theY;
 	// FPS coordinate drawing not implemented
 }
 
@@ -1771,9 +1765,8 @@ static void CalculateDemoTimeLeft()
 	// Demo time left calculation not implemented
 }
 
-static void UpdateScreenSaverInfo(uint32_t theTick)
+static void UpdateScreenSaverInfo([[maybe_unused]] uint32_t theTick)
 {
-	(void)theTick;
 	// Screen saver info not needed
 }
 
@@ -1884,9 +1877,8 @@ bool SexyAppBase::DrawDirtyStuff()
 	}
 }
 
-void SexyAppBase::LogScreenSaverError(const std::string &theError)
+void SexyAppBase::LogScreenSaverError([[maybe_unused]] const std::string &theError)
 {
-	(void)theError;
 	// Screen saver error logging not implemented
 }
 
@@ -1909,9 +1901,8 @@ void SexyAppBase::EndPopup()
 	}
 }
 
-int SexyAppBase::MsgBox(const std::string& theText, const std::string& theTitle, int theFlags)
+int SexyAppBase::MsgBox(const std::string& theText, const std::string& theTitle, [[maybe_unused]] int theFlags)
 {
-	(void)theFlags;
 
 	BeginPopup();
 	Sexy::PrintF("%s\n===\n%s\n", theTitle.c_str(), theText.c_str());
@@ -1996,9 +1987,8 @@ static void ToggleDemoSoundVolume()
 
 static uint32_t gPowerSaveTick = 0;
 
-void SexyAppBase::HandleNotifyGameMessage(int theType)
+void SexyAppBase::HandleNotifyGameMessage([[maybe_unused]] int theType)
 {
-	(void)theType;
 	// Notify game message handling not implemented
 }
 
@@ -2377,9 +2367,8 @@ void SexyAppBase::CursorThreadProc()
 	// Cursor thread not implemented
 }
 
-void SexyAppBase::CursorThreadProcStub(void *theArg)
+void SexyAppBase::CursorThreadProcStub([[maybe_unused]] void *theArg)
 {
-	(void)theArg;
 }
 
 void SexyAppBase::StartCursorThread()
@@ -3367,9 +3356,8 @@ void SexyAppBase::PostGLInterfaceInitHook()
 {
 }
 
-bool SexyAppBase::ChangeDirHook(const char *theIntendedPath)
+bool SexyAppBase::ChangeDirHook([[maybe_unused]] const char *theIntendedPath)
 {
-	(void)theIntendedPath;
 	return false;
 }
 
@@ -4190,10 +4178,8 @@ void SexyAppBase::DemoSyncRefreshRate()
 	}
 }
 
-void SexyAppBase::Set3DAcclerated(bool is3D, bool reinit)
+void SexyAppBase::Set3DAcclerated([[maybe_unused]] bool is3D, [[maybe_unused]] bool reinit)
 {
-	(void)is3D;
-	(void)reinit;
 	// 3D acceleration toggle not implemented
 }
 

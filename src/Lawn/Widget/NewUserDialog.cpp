@@ -75,9 +75,8 @@ void NewUserDialog::Draw(Graphics* g)
 	DrawEditBox(g, mNameEditWidget.get());
 }
 
-void NewUserDialog::EditWidgetText(int theId, const std::string& theString)
+void NewUserDialog::EditWidgetText([[maybe_unused]] int theId, [[maybe_unused]] const std::string& theString)
 {
-	(void)theId;(void)theString;
 	mApp->ButtonDepress(mId + 2000);
 }
 

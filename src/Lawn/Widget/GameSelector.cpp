@@ -1089,9 +1089,8 @@ void GameSelector::KeyChar(char theChar)
 	}
 }
 
-void GameSelector::MouseDown(int x, int y, int theClickCount)
+void GameSelector::MouseDown(int x, int y, [[maybe_unused]] int theClickCount)
 {
-	(void)theClickCount;
 	for (int i = 0; i < 3; i++)
 	{
 		Reanimation* aFlowerReanim = mApp->ReanimationGet(mFlowerReanimID[i]);

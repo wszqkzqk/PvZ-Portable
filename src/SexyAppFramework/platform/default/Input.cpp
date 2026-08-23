@@ -489,9 +489,8 @@ static void RecordDemoEvent(SexyAppBase* theApp, const SDL_Event& theEvent)
 	}
 }
 
-bool SexyAppBase::StartTextInput(std::string& theInput)
+bool SexyAppBase::StartTextInput([[maybe_unused]] std::string& theInput)
 {
-	(void)theInput;
 	SDL_StartTextInput();
 
 #ifdef __EMSCRIPTEN__

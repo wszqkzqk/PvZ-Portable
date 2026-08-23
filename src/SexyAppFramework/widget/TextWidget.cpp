@@ -356,9 +356,8 @@ void TextWidget::Draw(Graphics* g)
 	}
 }
 
-void TextWidget::ScrollPosition(int theId, double thePosition)
+void TextWidget::ScrollPosition([[maybe_unused]] int theId, double thePosition)
 {
-	(void)theId;
 	mPosition = thePosition;
 	MarkDirty();
 }

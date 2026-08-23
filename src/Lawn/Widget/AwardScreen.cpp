@@ -572,18 +572,16 @@ void AwardScreen::StartButtonPressed()
 	}
 }
 
-void AwardScreen::MouseDown(int x, int y, int theClickCount)
+void AwardScreen::MouseDown([[maybe_unused]] int x, [[maybe_unused]] int y, int theClickCount)
 {
-	(void)x;(void)y;
 	if (theClickCount == 1) {
 		if (mStartButton->IsMouseOver() || mMenuButton->IsMouseOver() || mContinueButton->IsMouseOver())
 			mApp->PlaySample(Sexy::SOUND_TAP);
 	}
 }
 
-void AwardScreen::MouseUp(int x, int y, int theClickCount)
+void AwardScreen::MouseUp([[maybe_unused]] int x, [[maybe_unused]] int y, int theClickCount)
 {
-	(void)x;(void)y;
 	if (theClickCount == 1)
 	{
 		if (mStartButton->IsMouseOver())

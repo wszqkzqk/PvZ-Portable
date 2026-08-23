@@ -722,9 +722,8 @@ bool SeedPacket::CanPickUp()
 	return true;
 }
 
-void SeedPacket::MouseDown(int x, int y, int theClickCount)
+void SeedPacket::MouseDown([[maybe_unused]] int x, [[maybe_unused]] int y, [[maybe_unused]] int theClickCount)
 {
-	(void)x;(void)y;(void)theClickCount;
 	if (mBoard->mPaused || mApp->mGameScene != GameScenes::SCENE_PLAYING || mPacketType == SeedType::SEED_NONE)
 	{
 		return;

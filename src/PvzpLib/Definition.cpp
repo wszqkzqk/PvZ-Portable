@@ -550,8 +550,7 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
 	Bytef* aSrc = (Bytef*)((intptr_t)theCompressedBuffer + sizeof(CompressedDefinitionHeader));  // the compressed data starts right after the header
 	// BuGFIXX!!
 	ulong aUncompressedSizeResult = aHeader->mUncompressedSize;  // out-param receiving the actual uncompressed size
-	int aResult = uncompress(aUncompressedBuffer, &aUncompressedSizeResult, aSrc, theCompressedBufferSize - sizeof(CompressedDefinitionHeader));
-	(void)aResult; // Compiler can't work out that this is used in the Debug build
+	[[maybe_unused]] int aResult = uncompress(aUncompressedBuffer, &aUncompressedSizeResult, aSrc, theCompressedBufferSize - sizeof(CompressedDefinitionHeader));  // Compiler can't work out that this is used in the Debug build
 	PVZP_ASSERT(aResult == Z_OK);
 	PVZP_ASSERT(aUncompressedSizeResult == aHeader->mUncompressedSize);
 	theUncompressedSize = aHeader->mUncompressedSize;

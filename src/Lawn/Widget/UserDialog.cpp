@@ -149,9 +149,8 @@ void UserDialog::Draw(Graphics* g)
 	LawnDialog::Draw(g);
 }
 
-void UserDialog::ListClicked(int theId, int theIdx, int theClickCount)
+void UserDialog::ListClicked([[maybe_unused]] int theId, int theIdx, int theClickCount)
 {
-	(void)theId;
 	if (theIdx == mNumUsers)
 	{
 		mApp->DoCreateUserDialog();
@@ -185,14 +184,12 @@ void UserDialog::ButtonDepress(int theId)
 	}
 }
 
-void UserDialog::EditWidgetText(int theId, const std::string& theString)
+void UserDialog::EditWidgetText([[maybe_unused]] int theId, [[maybe_unused]] const std::string& theString)
 {
-	(void)theId;(void)theString;
 	mApp->ButtonDepress(mId + 2000);
 }
 
-bool UserDialog::AllowChar(int theId, char theChar)
+bool UserDialog::AllowChar([[maybe_unused]] int theId, char theChar)
 {
-	(void)theId;
 	return isdigit(theChar);
 }

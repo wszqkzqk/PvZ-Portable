@@ -215,8 +215,7 @@ const ChallengeDefinition& GetChallengeDefinition(int theChallengeMode)
 {
 	PVZP_ASSERT(theChallengeMode >= 0 && theChallengeMode < NUM_CHALLENGE_MODES);
 
-	const ChallengeDefinition& aDef = gChallengeDefs[theChallengeMode];
-	(void)aDef; // Unused in Release mode
+	[[maybe_unused]] const ChallengeDefinition& aDef = gChallengeDefs[theChallengeMode];  // Unused in Release mode
 	PVZP_ASSERT(aDef.mChallengeMode == theChallengeMode + GAMEMODE_SURVIVAL_NORMAL_STAGE_1);
 
 	return gChallengeDefs[theChallengeMode];
@@ -638,9 +637,8 @@ void ChallengeScreen::RemovedFromManager(WidgetManager* theWidgetManager)
 	for (const std::unique_ptr<ButtonWidget>& aButton : mChallengeButtons) RemoveWidget(aButton.get());
 }
 
-void ChallengeScreen::ButtonPress(int theId)
+void ChallengeScreen::ButtonPress([[maybe_unused]] int theId)
 {
-	(void)theId;
 	mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);
 }
 

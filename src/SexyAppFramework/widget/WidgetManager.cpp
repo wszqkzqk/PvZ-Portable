@@ -718,9 +718,8 @@ bool WidgetManager::MouseDrag(int x, int y)
 	return true;
 }
 
-bool WidgetManager::MouseExit(int x, int y)
+bool WidgetManager::MouseExit([[maybe_unused]] int x, [[maybe_unused]] int y)
 {
-	(void)x;(void)y;
 
 	mMouseIn = false;
 

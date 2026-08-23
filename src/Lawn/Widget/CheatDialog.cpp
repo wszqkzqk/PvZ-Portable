@@ -87,15 +87,13 @@ void CheatDialog::Draw(Graphics* g)
 	DrawEditBox(g, mLevelEditWidget.get());
 }
 
-void CheatDialog::EditWidgetText(int theId, const std::string& theString)
+void CheatDialog::EditWidgetText([[maybe_unused]] int theId, [[maybe_unused]] const std::string& theString)
 {
-	(void)theId;(void)theString;
 	mApp->ButtonDepress(mId + 2000);
 }
 
-bool CheatDialog::AllowChar(int theId, char theChar)
+bool CheatDialog::AllowChar([[maybe_unused]] int theId, char theChar)
 {
-	(void)theId;
 	return isdigit(theChar) || theChar == '-' || theChar == 'c' || theChar == 'C' || theChar == 'f' || theChar == 'F';
 }
 

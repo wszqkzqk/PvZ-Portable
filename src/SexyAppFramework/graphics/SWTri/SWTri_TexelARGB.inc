@@ -24,7 +24,7 @@
 
 // This file is included by SWTri.cpp and should not be built directly by the project.
 {
-	int premult; (void)premult;
+	[[maybe_unused]] int premult;
 	#if defined(MOD_ARGB) && defined(GLOBAL_ARGB)
 	{
 		premult = ((globalDiffuse.a*a)>>24);

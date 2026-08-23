@@ -632,9 +632,8 @@ void Reanimation::ReanimBltMatrix(Graphics* g, Image* theImage, SexyMatrix3& the
 		PvzpBltMatrix(g, theImage, theTransform, theClipRect, theColor, theDrawMode, theSrcRect);
 }
 
-bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, PvzpTriangleGroup* theTriangleGroup)
+bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, [[maybe_unused]] int theRenderGroup, PvzpTriangleGroup* theTriangleGroup)
 {
-	(void)theRenderGroup;
 	ReanimatorTransform aTransform;
 	ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[theTrackIndex];
 	GetCurrentTransform(theTrackIndex, &aTransform);
@@ -1358,9 +1357,8 @@ void Reanimation::ParseAttacherTrack(const ReanimatorTransform& theTransform, At
 	}
 }
 
-void Reanimation::AttacherSynchWalkSpeed(int theTrackIndex, Reanimation* theAttachReanim, AttacherInfo& theAttacherInfo)
+void Reanimation::AttacherSynchWalkSpeed(int theTrackIndex, Reanimation* theAttachReanim, [[maybe_unused]] AttacherInfo& theAttacherInfo)
 {
-	(void)theAttacherInfo;
 	ReanimatorTrack* aTrack = &mDefinition->mTracks.tracks[theTrackIndex];
 	ReanimatorFrameTime aFrameTime;
 	GetFrameTime(&aFrameTime);

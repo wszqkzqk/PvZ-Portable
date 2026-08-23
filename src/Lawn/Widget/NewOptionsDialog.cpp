@@ -113,9 +113,8 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 
 NewOptionsDialog::~NewOptionsDialog() = default;
 
-int NewOptionsDialog::GetPreferredHeight(int theWidth)
+int NewOptionsDialog::GetPreferredHeight([[maybe_unused]] int theWidth)
 {
-	(void)theWidth;
 	return IMAGE_OPTIONS_MENUBACK->mWidth;
 }
 
@@ -298,9 +297,8 @@ void NewOptionsDialog::KeyDown(Sexy::KeyCode theKey)
 	}
 }
 
-void NewOptionsDialog::ButtonPress(int theId)
+void NewOptionsDialog::ButtonPress([[maybe_unused]] int theId)
 {
-	(void)theId;
 	mApp->PlaySample(SOUND_GRAVEBUTTON);
 }
 

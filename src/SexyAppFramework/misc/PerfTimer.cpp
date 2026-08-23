@@ -29,16 +29,14 @@
 
 using namespace Sexy;
 
-inline int QueryCounters(int64_t *lpPerformanceCount)
+inline int QueryCounters([[maybe_unused]] int64_t *lpPerformanceCount)
 {
-	(void)lpPerformanceCount;
 	unreachable();
 	return 1;
 }
 
-inline int DeltaCounters(int64_t *lpPerformanceCount)
+inline int DeltaCounters([[maybe_unused]] int64_t *lpPerformanceCount)
 {
-	(void)lpPerformanceCount;
 	unreachable();
 	return 1;
 }

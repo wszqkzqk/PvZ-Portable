@@ -1611,9 +1611,8 @@ void ImageFont::DrawStringEx(Graphics* g, int theX, int theY, std::string_view t
 	g->SetColorizeImages(colorizeImages);
 }
 
-void ImageFont::DrawString(Graphics* g, int theX, int theY, std::string_view theString, const Color& theColor, const Rect& theClipRect)
+void ImageFont::DrawString(Graphics* g, int theX, int theY, std::string_view theString, const Color& theColor, [[maybe_unused]] const Rect& theClipRect)
 {
-	(void)theClipRect;
 	DrawStringEx(g, theX, theY, theString, theColor, nullptr, nullptr);
 }
 

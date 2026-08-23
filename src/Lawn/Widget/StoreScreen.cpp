@@ -1127,9 +1127,8 @@ void StoreScreen::AdvanceCrazyDaveDialog()
 	}
 }
 
-void StoreScreen::MouseDown(int x, int y, int theClickCount)
+void StoreScreen::MouseDown(int x, int y, [[maybe_unused]] int theClickCount)
 {
-	(void)theClickCount;
 	if (mBubbleClickToContinue)
 	{
 		AdvanceCrazyDaveDialog();
