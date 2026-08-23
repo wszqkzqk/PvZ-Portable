@@ -418,16 +418,7 @@ void SWHelper::SWDrawShape(XYZStruct *theVerts, int theNumVerts, MemoryImage *th
 
 				textureInfo.pTexture = reinterpret_cast<unsigned int *>(theImage->GetBits());
 				textureInfo.pitch = theImage->mWidth;
-				textureInfo.height = theImage->mHeight;
 				textureInfo.endpos = theImage->mWidth*theImage->mHeight;
-				unsigned int	temp = theImage->mWidth;
-				temp >>= 1;
-				textureInfo.vShift = 0;
-				while(temp) {textureInfo.vShift += 1; temp >>= 1;}
-				textureInfo.vShift = 16 - textureInfo.vShift;
-
-				textureInfo.uMask = static_cast<unsigned int>(theImage->mWidth - 1) << 16;
-				textureInfo.vMask = static_cast<unsigned int>(theImage->mHeight - 1) << 16;
 			}
 
 			if (vertexColor)
