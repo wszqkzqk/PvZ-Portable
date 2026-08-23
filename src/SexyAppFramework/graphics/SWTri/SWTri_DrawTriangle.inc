@@ -85,7 +85,6 @@ void	Sexy::funcname(SWHelper::SWVertex * pVerts, void * pFrameBuffer, const unsi
 {
 	const int pitch = bytepitch/sizeof(PTYPE);
 	[[maybe_unused]] const int tex_pitch = textureInfo->pitch;
-	[[maybe_unused]] const int tex_height = textureInfo->height;
 	[[maybe_unused]] const unsigned int tex_endpos = textureInfo->endpos;
 
 	const SWHelper::signed64 bigOne = static_cast<SWHelper::signed64>(1) << 48;

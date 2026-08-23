@@ -58,9 +58,6 @@ namespace Sexy
 
 using namespace Sexy;
 
-typedef std::list<ButtonWidget*> ButtonList;
-typedef std::list<Image*> ImageList;
-
 class LevelStats
 {
 public:
@@ -82,8 +79,6 @@ public:
 	CreditScreen*					mCreditScreen;
 	ChallengeScreen*				mChallengeScreen;
 	PvzpFoley*						mSoundSystem;
-	ButtonList						mControlButtonList;
-	ImageList						mCreatedImageList;
 	std::string						mReferId;
 	std::string						mRegisterLink;
 	std::string						mMod;

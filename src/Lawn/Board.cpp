@@ -513,7 +513,7 @@ void Board::AddGraveStones(int theGridX, int theCount, MTRand& theLevelRNG)
 		// re-check each time instead of a cached allowance array, which could go stale if AddAGraveStone() changes
 		if (CanAddGraveStoneAt(theGridX, aGridY))
 		{
-			[[maybe_unused]] GridItem* aGraveStone = AddAGraveStone(theGridX, aGridY);
+			AddAGraveStone(theGridX, aGridY);
 			++i;
 		}
 	}

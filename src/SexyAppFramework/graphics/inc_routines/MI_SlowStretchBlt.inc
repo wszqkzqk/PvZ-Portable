@@ -24,7 +24,6 @@
 	[[maybe_unused]] uint32_t* aNewHorzPixelsEnd = aNewHorzPixels + (aTempDestWidth*aSrcHeightI*4);  // unused in Release mode
 	memset(aNewHorzPixels, 0, aTempDestWidth*aSrcHeightI*4*4);
 
-	[[maybe_unused]] int aSrcImageWidth = theImage->GetWidth();  // unused, but not sure if no side-effects
 
 	if (theSrcRect.mWidth >= theDestRect.mWidth)
 	{

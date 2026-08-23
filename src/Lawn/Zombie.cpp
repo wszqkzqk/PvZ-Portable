@@ -3684,7 +3684,7 @@ void Zombie::DropHead(unsigned int theDamageFlags)
 	}
 	if (mBoard->mPinataMode && mZombiePhase != ZombiePhase::PHASE_ZOMBIE_MOWERED)
 	{
-		[[maybe_unused]] PvzpParticleSystem* aPinataParticle = mApp->AddPvzpParticle(aPosX, aPosY, aRenderOrder, ParticleEffect::PARTICLE_ZOMBIE_PINATA);
+		mApp->AddPvzpParticle(aPosX, aPosY, aRenderOrder, ParticleEffect::PARTICLE_ZOMBIE_PINATA);
 		OverrideParticleScale(aParticle); // Weird, TODO: test the Pinata Mode
 	}
 

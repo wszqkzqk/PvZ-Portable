@@ -272,9 +272,8 @@ Image* GetGIFImage(const std::string& theFileName)
 	#define BitSet(byte,bit)  (((byte) & (bit)) == (bit))
 	#define LSBFirstOrder(x,y)  (((y) << 8) | (x))
 
-	[[maybe_unused]] int
-		opacity,
-		status;
+	int
+		opacity;
 
 	int i;
 
@@ -289,12 +288,8 @@ Image* GetGIFImage(const std::string& theFileName)
 
 	std::unique_ptr<unsigned char[]> global_colormap;
 
-	[[maybe_unused]] unsigned int
-		delay,
-		dispose,
-		global_colors,
-		image_count,
-		iterations;
+	unsigned int
+		global_colors;
 
 	/*
 	Open image file.
@@ -307,7 +302,7 @@ Image* GetGIFImage(const std::string& theFileName)
 	/*
 	Determine if this is a GIF file.
 	*/
-	status = p_fread(magick, sizeof(char), 6, fp.get());
+	p_fread(magick, sizeof(char), 6, fp.get());
 
 	// a valid GIF file starts with a "GIF87" or "GIF89" signature
 	if (((strncmp((char*)magick, "GIF87", 5) != 0) && (strncmp((char*)magick, "GIF89", 5) != 0)))
@@ -338,11 +333,7 @@ Image* GetGIFImage(const std::string& theFileName)
 		p_fread(global_colormap.get(), sizeof(char), 3 * global_colors, fp.get());
 	}
 
-	delay = 0;
-	dispose = 0;
-	iterations = 1;
 	opacity = (-1);
-	image_count = 0;
 
 	for (; ; )
 	{
@@ -367,8 +358,6 @@ Image* GetGIFImage(const std::string& theFileName)
 				*/
 				while (ReadBlobBlock(fp.get(), (char*)header) > 0);
 
-				dispose = header[0] >> 2;
-				delay = (header[2] << 8) | header[1];
 				if ((header[0] & 0x01) == 1)
 					opacity = header[3];
 				break;
@@ -383,18 +372,11 @@ Image* GetGIFImage(const std::string& theFileName)
 			}
 			case 0xff:
 			{
-				int
-					loop;
-
 				/*
 				Read Netscape Loop extension.
 				*/
-				loop = false;
-				if (ReadBlobBlock(fp.get(), (char*)header) > 0)
-					loop = !strncmp((char*)header, "NETSCAPE2.0", 11);
-				while (ReadBlobBlock(fp.get(), (char*)header) > 0)
-					if (loop)
-						iterations = (header[2] << 8) | header[1];
+				ReadBlobBlock(fp.get(), (char*)header);
+				while (ReadBlobBlock(fp.get(), (char*)header) > 0);
 				break;
 			}
 			default:
@@ -408,7 +390,6 @@ Image* GetGIFImage(const std::string& theFileName)
 		if (c != ',')  // not an image descriptor
 			continue;
 
-		image_count++;
 
 		uint16_t pagex;
 		uint16_t pagey;
@@ -432,9 +413,6 @@ Image* GetGIFImage(const std::string& theFileName)
 
 		interlaced = BitSet(flag, 0x40);
 
-		delay = 0;
-		dispose = 0;
-		iterations = 1;
 		if ((width == 0) || (height == 0))
 			return nullptr;
 		if (!BitSet(flag, 0x80))
