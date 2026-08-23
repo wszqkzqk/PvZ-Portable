@@ -29,15 +29,9 @@
 
 using namespace Sexy;
 
-inline int QueryCounters([[maybe_unused]] int64_t *lpPerformanceCount)
+inline int QueryCounters(int64_t *lpPerformanceCount)
 {
-	unreachable();
-	return 1;
-}
-
-inline int DeltaCounters([[maybe_unused]] int64_t *lpPerformanceCount)
-{
-	unreachable();
+	*lpPerformanceCount = static_cast<int64_t>(SDL_GetPerformanceCounter());
 	return 1;
 }
 
