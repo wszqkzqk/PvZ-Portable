@@ -216,7 +216,7 @@ void SexyPerf::EndPerf()
 
 	gPerfOn = false;
 
-	int64_t aFreq = PerfTimer::GetCPUSpeed();
+	int64_t aFreq = SDL_GetPerformanceFrequency();
 
 	gDuration = ((double)(anEndTime - gStartTime - gCollateTime))*1000/aFreq;
 
