@@ -1146,7 +1146,7 @@ void CutScene::AnimateBoard()
 	{
 		int aTimeSeedChoserSlideOnStart = TimeSeedChoserSlideOnStart + mCrazyDaveTime;
 		int aTimeSeedChoserSlideOnEnd = TimeSeedChoserSlideOnEnd + mCrazyDaveTime;
-		SeedChooserScreen* aSeedChoser = mApp->mSeedChooserScreen;
+		SeedChooserScreen* aSeedChoser = mApp->mSeedChooserScreen.get();
 		// Seed chooser slides on
 		if (mCutsceneTime > aTimeSeedChoserSlideOnStart && mCutsceneTime <= aTimeSeedChoserSlideOnEnd)
 		{
@@ -1322,7 +1322,7 @@ void CutScene::AnimateBoard()
 		}
 	}
 
-	mApp->mSeedChooserScreen->mParent->BringToFront(mApp->mSeedChooserScreen);
+	mApp->mSeedChooserScreen->mParent->BringToFront(mApp->mSeedChooserScreen.get());
 }
 
 void CutScene::ShowShovel()
@@ -1355,7 +1355,7 @@ void CutScene::StartSeedChooser()
 {
 	mApp->mSeedChooserScreen->mMouseVisible = true;
 	mSeedChoosing = true;
-	mApp->mWidgetManager->SetFocus(mApp->mSeedChooserScreen);
+	mApp->mWidgetManager->SetFocus(mApp->mSeedChooserScreen.get());
 }
 
 void CutScene::EndSeedChooser()

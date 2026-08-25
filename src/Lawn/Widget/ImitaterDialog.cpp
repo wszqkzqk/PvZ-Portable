@@ -166,7 +166,7 @@ void ImitaterDialog::MouseDown(int x, int y, int theClickCount)
 	SeedType aSeedType = SeedHitTest(x, y);
 	if (aSeedType != SeedType::SEED_NONE)
 	{
-		SeedChooserScreen* aSeedChooser = mApp->mSeedChooserScreen;
+		SeedChooserScreen* aSeedChooser = mApp->mSeedChooserScreen.get();
 		if (!aSeedChooser->SeedNotAllowedToPick(aSeedType))
 		{
 			ChosenSeed& aImitater = aSeedChooser->mChosenSeeds[SeedType::SEED_IMITATER];

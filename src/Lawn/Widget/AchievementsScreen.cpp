@@ -184,7 +184,7 @@ void AchievementsWidget::KeyDown(KeyCode theKey) {
 	}
 	else if (theKey == KEYCODE_ESCAPE) {
 		mApp->mGameSelector->SlideTo(0, 0);
-		mApp->mGameSelector->mWidgetManager->SetFocus(mApp->mGameSelector);
+		mApp->mGameSelector->mWidgetManager->SetFocus(mApp->mGameSelector.get());
 	}
 }
 
@@ -200,7 +200,7 @@ void AchievementsWidget::MouseUp(int x, int y, [[maybe_unused]] int theClickCoun
 	Point aPos = Point(x, y);
 	if (aBackButtonRect.Contains(aPos)) {
 		mApp->mGameSelector->SlideTo(0, 0);
-		mApp->mGameSelector->mWidgetManager->SetFocus(mApp->mGameSelector);
+		mApp->mGameSelector->mWidgetManager->SetFocus(mApp->mGameSelector.get());
 	}
 
 	if (mMoreRockRect.Contains(aPos)) {

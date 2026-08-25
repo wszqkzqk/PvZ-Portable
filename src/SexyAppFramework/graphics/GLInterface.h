@@ -30,11 +30,11 @@
 #include "Common.h"
 #include "graphics/GLPlatform.h"
 #include "graphics/MemoryImage.h"
-#include <memory>
 #include "graphics/NativeDisplay.h"
 #include "misc/Rect.h"
 #include "misc/Ratio.h"
 #include "misc/SexyMatrix.h"
+#include <memory>
 
 namespace Sexy
 {
@@ -191,7 +191,7 @@ public:
 	int						mRefreshRate;
 	int						mMillisecondsPerFrame;
 
-	std::unique_ptr<GLImage>		mScreenImage;
+	std::unique_ptr<GLImage>	mScreenImage;
 
 	int						mNextCursorX;
 	int						mNextCursorY;

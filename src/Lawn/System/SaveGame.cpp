@@ -2735,7 +2735,7 @@ static void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 	theContext.SyncBytes(theBoard->mAdvice.get(), sizeof(MessageWidget));
 	theContext.SyncBytes(theBoard->mSeedBank.get(), sizeof(SeedBank));
 	theContext.SyncBytes(theBoard->mChallenge.get(), sizeof(Challenge));
-	theContext.SyncBytes(theBoard->mApp->mMusic, sizeof(Music));
+	theContext.SyncBytes(theBoard->mApp->mMusic.get(), sizeof(Music));
 
 	if (theContext.mReading)
 	{
