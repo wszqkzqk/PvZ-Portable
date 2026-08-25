@@ -29,6 +29,7 @@
 #include "Color.h"
 #include "misc/Rect.h"
 #include "misc/Point.h"
+#include <memory>
 
 namespace Sexy
 {
@@ -85,7 +86,7 @@ public:
 	int						mNumCols;
 
 	// for animations
-	AnimInfo				*mAnimInfo;
+	std::unique_ptr<AnimInfo>	mAnimInfo;
 
 public:
 	Image();
