@@ -30,6 +30,7 @@
 #include "Common.h"
 #include "graphics/GLPlatform.h"
 #include "graphics/MemoryImage.h"
+#include <memory>
 #include "graphics/NativeDisplay.h"
 #include "misc/Rect.h"
 #include "misc/Ratio.h"
@@ -190,7 +191,7 @@ public:
 	int						mRefreshRate;
 	int						mMillisecondsPerFrame;
 
-	GLImage*				mScreenImage;
+	std::unique_ptr<GLImage>		mScreenImage;
 
 	int						mNextCursorX;
 	int						mNextCursorY;

@@ -46,9 +46,6 @@ public:
 	void SetStartTime(int theTimeMillisecondsAgo);
 
 	double GetDuration();
-
-	static int64_t GetCPUSpeed(); // in Hz
-	static int GetCPUSpeedMHz();
 };
 
 class SexyPerf

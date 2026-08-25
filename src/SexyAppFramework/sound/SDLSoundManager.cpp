@@ -48,9 +48,6 @@ SDLSoundManager::SDLSoundManager()
 		mBasePans[i] = 0;
 	}
 
-	for (i = 0; i < MAX_CHANNELS; i++)
-		mPlayingSounds[i] = nullptr;
-
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO))
 	{
 		Sexy::PrintF("Failed to initialize SDL audio subsystem\n");
@@ -70,6 +67,8 @@ SDLSoundManager::SDLSoundManager()
 
 SDLSoundManager::~SDLSoundManager()
 {
+	// Must precede Mix_CloseAudio(): ~SDLSoundInstance calls mixer functions
+	ReleaseChannels();
 	if (mInitializedMixer)
 		Mix_CloseAudio();
 
@@ -355,12 +354,12 @@ SoundInstance* SDLSoundManager::GetSoundInstance(intptr_t theSfxID)
 	if (mSourceSounds[theSfxID] == nullptr)
 		return nullptr;
 
-	mPlayingSounds[aFreeChannel] = new SDLSoundInstance(this, mSourceSounds[theSfxID], aFreeChannel);
+	mPlayingSounds[aFreeChannel] = std::make_unique<SDLSoundInstance>(this, mSourceSounds[theSfxID], aFreeChannel);
 
 	mPlayingSounds[aFreeChannel]->SetBasePan(mBasePans[theSfxID]);
 	mPlayingSounds[aFreeChannel]->SetBaseVolume(mBaseVolumes[theSfxID]);
 
-	return mPlayingSounds[aFreeChannel];
+	return mPlayingSounds[aFreeChannel].get();
 }
 
 void SDLSoundManager::ReleaseSounds()
@@ -378,13 +377,7 @@ void SDLSoundManager::ReleaseSounds()
 void SDLSoundManager::ReleaseChannels()
 {
 	for (int i = 0; i < MAX_CHANNELS; i++)
-	{
-		if (mPlayingSounds[i] != nullptr)
-		{
-			delete mPlayingSounds[i];
-			mPlayingSounds[i] = nullptr;
-		}
-	}
+		mPlayingSounds[i].reset();
 }
 
 double SDLSoundManager::GetMasterVolume()
@@ -454,8 +447,7 @@ int SDLSoundManager::FindFreeChannel()
 
 		if (mPlayingSounds[i]->IsReleased())
 		{
-			delete mPlayingSounds[i];
-			mPlayingSounds[i] = nullptr;
+			mPlayingSounds[i].reset();
 			return i;
 		}
 	}
@@ -468,9 +460,6 @@ void SDLSoundManager::ReleaseFreeChannels()
 	for (int i = 0; i < MAX_CHANNELS; i++)
 	{
 		if (mPlayingSounds[i] != nullptr && mPlayingSounds[i]->IsReleased())
-		{
-			delete mPlayingSounds[i];
-			mPlayingSounds[i] = nullptr;
-		}
+			mPlayingSounds[i].reset();
 	}
 }

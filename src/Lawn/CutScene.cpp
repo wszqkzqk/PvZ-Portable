@@ -116,16 +116,11 @@ CutScene::CutScene()
 	mCrazyDaveCountDown = 0;
 	mCrazyDaveLastTalkIndex = -1;
 	mUpsellHideBoard = false;
-	mUpsellChallengeScreen = nullptr;
 	mPreUpdatingBoard = false;
 }
 
 CutScene::~CutScene()
 {
-	if (mUpsellChallengeScreen)
-	{
-		delete mUpsellChallengeScreen;
-	}
 	mApp->mMuteSoundsForCutscene = false;
 
 	mApp->mResourceManager->ReleaseTrackedResources(mLoadedResourceNames);
@@ -1781,11 +1776,7 @@ void CutScene::ClearUpsellBoard()
 	}
 	mBoard->mPoolSparklyParticleID = ParticleSystemID::PARTICLESYSTEMID_NULL;
 
-	if (mUpsellChallengeScreen)
-	{
-		delete mUpsellChallengeScreen;
-		mUpsellChallengeScreen = nullptr;
-	}
+	mUpsellChallengeScreen.reset();
 }
 
 void CutScene::AddUpsellZombie(ZombieType theZombieType, int thePixelX, int theGridY)
@@ -1970,7 +1961,7 @@ void CutScene::LoadUpsellBoardFog()
 void CutScene::LoadUpsellChallengeScreen()
 {
 	ClearUpsellBoard();
-	mUpsellChallengeScreen = new ChallengeScreen(mApp, ChallengePage::CHALLENGE_PAGE_CHALLENGE);
+	mUpsellChallengeScreen = std::make_unique<ChallengeScreen>(mApp, ChallengePage::CHALLENGE_PAGE_CHALLENGE);
 }
 
 void CutScene::LoadUpsellBoardRoof()

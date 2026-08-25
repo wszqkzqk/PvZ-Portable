@@ -26,6 +26,7 @@
 #define __SDLSOUNDMANAGER_H__
 
 #include "SoundManager.h"
+#include <memory>
 #include <SDL.h>
 #include <SDL_mixer_ext/SDL_mixer_ext.h>
 
@@ -44,7 +45,7 @@ protected:
 	std::string				mSourceFileNames[MAX_SOURCE_SOUNDS];
 	double					mBaseVolumes[MAX_SOURCE_SOUNDS];
 	int						mBasePans[MAX_SOURCE_SOUNDS];
-	SDLSoundInstance*		mPlayingSounds[MAX_CHANNELS];
+	std::unique_ptr<SDLSoundInstance>	mPlayingSounds[MAX_CHANNELS];
 	double					mMasterVolume;
 	uint64_t				mLastReleaseTick;
 	int						mMixerFreq;

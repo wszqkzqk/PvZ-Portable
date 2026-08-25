@@ -4096,6 +4096,7 @@ void SexyAppBase::AddMemoryImage(MemoryImage* theMemoryImage)
 
 void SexyAppBase::RemoveMemoryImage(MemoryImage* theMemoryImage)
 {
+	if (mGLInterface)
 	{
 		std::scoped_lock anAutoCrit(mGLInterface->mCritSect);
 		MemoryImageSet::iterator anItr = mMemoryImageSet.find(theMemoryImage);

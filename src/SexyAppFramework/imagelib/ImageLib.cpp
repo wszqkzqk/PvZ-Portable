@@ -50,13 +50,9 @@ Image::Image()
 {
 	mWidth = 0;
 	mHeight = 0;
-	mBits = nullptr;
 }
 
-Image::~Image()
-{
-	delete[] mBits;
-}
+Image::~Image() = default;
 
 int	Image::GetWidth()
 {
@@ -70,7 +66,7 @@ int	Image::GetHeight()
 
 uint32_t* Image::GetBits()
 {
-	return mBits;
+	return mBits.get();
 }
 
 // PNG Pak Support
@@ -178,7 +174,7 @@ Image* GetPNGImage(const std::string& theFileName)
 	Image* anImage = new Image();
 	anImage->mWidth = width;
 	anImage->mHeight = height;
-	anImage->mBits = aBits;
+	anImage->mBits.reset(aBits);
 
 	return anImage;
 }
@@ -242,14 +238,14 @@ Image* GetTGAImage(const std::string& theFileName)
 
 	anImage->mWidth = anImageWidth;
 	anImage->mHeight = anImageHeight;
-	anImage->mBits = new uint32_t[anImageWidth*anImageHeight];
+	anImage->mBits = std::make_unique<uint32_t[]>(anImageWidth*anImageHeight);
 
-	p_fread(anImage->mBits, 4, anImage->mWidth*anImage->mHeight, aTGAFile);
+	p_fread(anImage->mBits.get(), 4, anImage->mWidth*anImage->mHeight, aTGAFile);
 
 	// TGA stores BGRA in LE; on BE need to byteswap each pixel
 	if constexpr (std::endian::native == std::endian::big)
 	{
-		uint32_t* ptr = anImage->mBits;
+		uint32_t* ptr = anImage->mBits.get();
 		for (int i = 0; i < anImageWidth * anImageHeight; i++, ptr++)
 			*ptr = Sexy::ByteSwap32(*ptr);
 	}
@@ -431,19 +427,16 @@ Image* GetGIFImage(const std::string& theFileName)
 		}
 		else
 		{
-			unsigned char
-				* colormap;
-
 			/*
 			Read local colormap.
 			*/
-			colormap = new unsigned char[3 * colors];
+			auto colormap = std::make_unique<unsigned char[]>(3 * colors);
 
 			[[maybe_unused]] int pos = p_ftell(fp.get());
 
-			p_fread(colormap, sizeof(char), 3 * colors, fp.get());
+			p_fread(colormap.get(), sizeof(char), 3 * colors, fp.get());
 
-			p = colormap;
+			p = colormap.get();
 			for (i = 0; i < (int)colors; i++)
 			{
 				int r = *p++;
@@ -452,7 +445,6 @@ Image* GetGIFImage(const std::string& theFileName)
 
 				colortable[i] = 0xFF000000 | (r << 16) | (g << 8) | (b);
 			}
-			delete[] colormap;
 		}
 
 		global_colormap.reset();
@@ -694,7 +686,7 @@ constexpr const int NullCode = -1;
 
 		anImage->mWidth = width;
 		anImage->mHeight = height;
-		anImage->mBits = aBits;
+		anImage->mBits.reset(aBits);
 
 		//TODO: Change for animation crap
 		return anImage;
@@ -772,7 +764,7 @@ bool ImageLib::WriteJPEGImage(const std::string& theFileName, Image* theImage)
 
 	aTempBuffer = new unsigned char[row_stride];
 
-	uint32_t* aSrcPtr = theImage->mBits;
+	uint32_t* aSrcPtr = theImage->mBits.get();
 
 	for (int aRow = 0; aRow < theImage->mHeight; aRow++)
 	{
@@ -861,7 +853,7 @@ bool ImageLib::WritePNGImage(const std::string& theFileName, Image* theImage)
 
 	for (int i = 0; i < theImage->mHeight; i++)
 	{
-		png_bytep aRowPtr = (png_bytep) (theImage->mBits + i*theImage->mWidth);
+		png_bytep aRowPtr = (png_bytep) (theImage->mBits.get() + i*theImage->mWidth);
 		png_write_rows(png_ptr, &aRowPtr, 1);
 	}
 
@@ -927,11 +919,11 @@ bool ImageLib::WriteTGAImage(const std::string& theFileName, Image* theImage)
 
 	if constexpr (std::endian::native == std::endian::little)
 	{
-		fwrite(theImage->mBits, 4, theImage->mWidth * theImage->mHeight, aTGAFile);
+		fwrite(theImage->mBits.get(), 4, theImage->mWidth * theImage->mHeight, aTGAFile);
 	}
 	else
 	{
-		std::vector<uint32_t> aPixelsLE(theImage->mBits, theImage->mBits + theImage->mWidth * theImage->mHeight);
+		std::vector<uint32_t> aPixelsLE(theImage->mBits.get(), theImage->mBits.get() + theImage->mWidth * theImage->mHeight);
 		for (uint32_t& pixel : aPixelsLE)
 			pixel = Sexy::ToLE32(pixel);
 		fwrite(aPixelsLE.data(), 4, aPixelsLE.size(), aTGAFile);
@@ -1114,7 +1106,7 @@ Image* GetJPEGImage(const std::string& theFileName)
 	anImage = new Image();
 	anImage->mWidth = cinfo.output_width;
 	anImage->mHeight = cinfo.output_height;
-	anImage->mBits = aBits;
+	anImage->mBits.reset(aBits);
 	aBits = nullptr; // anImage owns it now; avoid double delete in the error path
 
 	jpeg_finish_decompress(&cinfo);
@@ -1242,8 +1234,8 @@ static void ComposeAlpha(Image* theImage, Image* theAlphaImage)
 		theImage->mHeight != theAlphaImage->mHeight)
 		return;
 
-	uint32_t* aDstBits = theImage->mBits;
-	const uint32_t* aSrcBits = theAlphaImage->mBits;
+	uint32_t* aDstBits = theImage->mBits.get();
+	const uint32_t* aSrcBits = theAlphaImage->mBits.get();
 	const int aSize = theImage->mWidth * theImage->mHeight;
 
 	for (int i = 0; i < aSize; i++)
@@ -1252,7 +1244,7 @@ static void ComposeAlpha(Image* theImage, Image* theAlphaImage)
 
 static void ApplyAlphaAsImage(Image* theImage, uint32_t theBaseColor)
 {
-	uint32_t* aBits = theImage->mBits;
+	uint32_t* aBits = theImage->mBits.get();
 	const int aSize = theImage->mWidth * theImage->mHeight;
 
 	for (int i = 0; i < aSize; i++)
@@ -1283,7 +1275,7 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 	Image* anImage = TryLoadByExt(aFilename, anExt);
 
 	// Probe alpha images with fast existence check
-	Image* anAlphaImage = nullptr;
+	std::unique_ptr<Image> anAlphaImage;
 	if (lookForAlphaImage)
 	{
 		const auto slashEnd = (aLastSlashPos != std::string::npos) ? aLastSlashPos + 1 : 0;
@@ -1291,13 +1283,13 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 			theFilename.substr(slashEnd);
 
 		if (FastFileExists(alphaPath1))
-			anAlphaImage = GetImage(alphaPath1, false);
+			anAlphaImage.reset(GetImage(alphaPath1, false));
 
 		if (!anAlphaImage)
 		{
 			const std::string alphaPath2 = theFilename + "_";
 			if (FastFileExists(alphaPath2))
-				anAlphaImage = GetImage(alphaPath2, false);
+				anAlphaImage.reset(GetImage(alphaPath2, false));
 		}
 	}
 
@@ -1306,12 +1298,11 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 	{
 		if (anImage)
 		{
-			ComposeAlpha(anImage, anAlphaImage);
-			delete anAlphaImage;
+			ComposeAlpha(anImage, anAlphaImage.get());
 		}
 		else
 		{
-			anImage = anAlphaImage;
+			anImage = anAlphaImage.release();
 			ApplyAlphaAsImage(anImage, static_cast<uint32_t>(gAlphaComposeColor));
 		}
 	}

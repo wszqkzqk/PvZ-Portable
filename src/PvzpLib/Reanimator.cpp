@@ -383,7 +383,7 @@ void ReanimationPreload(ReanimationType theReanimationType)
 	ReanimationCreateAtlas(aReanimDef, theReanimationType);
 	if (aReanimDef->mReanimAtlas)
 	{
-		PvzpSandImageIfNeeded(aReanimDef->mReanimAtlas->mMemoryImage);
+		PvzpSandImageIfNeeded(aReanimDef->mReanimAtlas->mMemoryImage.get());
 	}
 }
 
@@ -752,7 +752,7 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, [[maybe_unused]] int
 	if (aAtlasImage != nullptr)  // atlas exists, the frame has an image, and no override is set
 	{
 		Rect aSrcRect(aAtlasImage->mX, aAtlasImage->mY, aAtlasImage->mWidth, aAtlasImage->mHeight);
-		aImage = mDefinition->mReanimAtlas->mMemoryImage;
+		aImage = mDefinition->mReanimAtlas->mMemoryImage.get();
 		if (mFilterEffect != FilterEffect::FILTER_EFFECT_NONE)
 		{
 			aImage = FilterEffectGetImage(aImage, mFilterEffect);

@@ -205,6 +205,7 @@ public:
 	bool					mNoDefer;
 	bool					mFullScreenPageFlip;
 	bool					mTabletPC;
+	MemoryImageSet			mMemoryImageSet; // must outlive mGLInterface: ~GLImage -> RemoveMemoryImage()
 	std::unique_ptr<GLInterface>	mGLInterface;
 	bool					mAlphaDisabled;
 	std::unique_ptr<MusicInterface>	mMusicInterface;
@@ -224,7 +225,6 @@ public:
 	int						mAutoMuteCount;
 	bool					mDemoMute;
 	bool					mMuteOnLostFocus;
-	MemoryImageSet			mMemoryImageSet;
 	SharedImageMap			mSharedImageMap;
 	std::atomic<bool>		mCleanupSharedImages;
 

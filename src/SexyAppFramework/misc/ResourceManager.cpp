@@ -626,7 +626,7 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, GLImage *theImage)
 		for (int j=0; j < aNumCols; j++)
 		{
 			uint32_t* aRowPtr = aMasterColPtr;
-			uint32_t* anAlphaBits = anAlphaImage->mBits;
+			uint32_t* anAlphaBits = anAlphaImage->mBits.get();
 			for (int y=0; y<aCelHeight; y++)
 			{
 				uint32_t *aDestPtr = aRowPtr;
@@ -663,7 +663,7 @@ bool ResourceManager::LoadAlphaImage(ImageRes *theRes, GLImage *theImage)
 		return Fail(StrFormat("AlphaImage size mismatch between %s and %s",theRes->mPath.c_str(),theRes->mAlphaImage.c_str()));
 
 	uint32_t* aBits1 = theImage->mBits.get();
-	uint32_t* aBits2 = anAlphaImage->mBits;
+	uint32_t* aBits2 = anAlphaImage->mBits.get();
 	int aSize = theImage->mWidth*theImage->mHeight;
 
 	for (int i = 0; i < aSize; i++)
@@ -739,7 +739,7 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 		aGLImage->mRenderFlags |= RenderImageFlag_MinimizeNumSubdivisions;
 
 	if (theRes->mAnimInfo.mAnimType != AnimType_None)
-		aGLImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
+		aGLImage->mAnimInfo = std::make_unique<AnimInfo>(theRes->mAnimInfo);
 
 	aGLImage->mNumRows = theRes->mRows;
 	aGLImage->mNumCols = theRes->mCols;

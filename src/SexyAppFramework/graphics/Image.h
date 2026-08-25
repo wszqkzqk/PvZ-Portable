@@ -86,7 +86,7 @@ public:
 	int						mNumCols;
 
 	// for animations
-	std::unique_ptr<AnimInfo>	mAnimInfo;
+	std::unique_ptr<AnimInfo>		mAnimInfo;
 
 public:
 	Image();

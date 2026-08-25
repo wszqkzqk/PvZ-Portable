@@ -35,13 +35,6 @@ inline int QueryCounters(int64_t *lpPerformanceCount)
 	return 1;
 }
 
-static int64_t CalcCPUSpeed()
-{
-	return 0;
-}
-
-static int64_t gCPUSpeed = 0;
-
 PerfTimer::PerfTimer()
 {
 	mDuration = 0;
@@ -83,23 +76,6 @@ double PerfTimer::GetDuration()
 		CalcDuration();
 
 	return mDuration;
-}
-
-int64_t PerfTimer::GetCPUSpeed()
-{
-	if(gCPUSpeed<=0)
-	{
-		gCPUSpeed = CalcCPUSpeed();
-		if (gCPUSpeed<=0)
-			gCPUSpeed = 1;
-	}
-
-	return gCPUSpeed;
-}
-
-int PerfTimer::GetCPUSpeedMHz()
-{
-	return (int)(gCPUSpeed/1000000);
 }
 
 struct PerfInfo

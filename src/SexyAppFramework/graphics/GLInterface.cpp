@@ -1065,7 +1065,6 @@ GLInterface::GLInterface(SexyAppBase* theApp)
 	mPresentationRect = Rect(0, 0, mWidth, mHeight);
 	mRefreshRate = 60;
 	mMillisecondsPerFrame = 1000 / mRefreshRate;
-	mScreenImage = nullptr;
 	mNextCursorX = mNextCursorY = 0;
 	mCursorX = mCursorY = 0;
 
@@ -1077,6 +1076,7 @@ GLInterface::GLInterface(SexyAppBase* theApp)
 
 GLInterface::~GLInterface()
 {
+	mScreenImage.reset();
 	Flush();
 	for (auto *img : mImageSet)
 	{
@@ -1116,7 +1116,7 @@ void GLInterface::Remove3DData(MemoryImage* theImage)
 	}
 }
 
-GLImage* GLInterface::GetScreenImage() { return mScreenImage; }
+GLImage* GLInterface::GetScreenImage() { return mScreenImage.get(); }
 
 void GLInterface::UpdateViewport()
 {
@@ -1217,8 +1217,7 @@ bool GLInterface::Redraw(Rect*)
 
 void GLInterface::SetVideoOnlyDraw(bool)
 {
-	delete mScreenImage;
-	mScreenImage = new GLImage(this);
+	mScreenImage = std::make_unique<GLImage>(this);
 	mScreenImage->mWidth  = mWidth;
 	mScreenImage->mHeight = mHeight;
 	mScreenImage->SetImageMode(false, false);

@@ -22,6 +22,7 @@
 #ifndef __REANIMATLAS_H__
 #define __REANIMATLAS_H__
 
+#include <memory>
 #include <vector>
 #include "misc/Rect.h"
 using namespace Sexy;
@@ -52,7 +53,7 @@ class ReanimAtlas
 {
 public:
 	std::vector<ReanimAtlasImage>   mImageArray;
-	MemoryImage*                    mMemoryImage;
+	std::unique_ptr<MemoryImage>    mMemoryImage;
 
 public:
 	ReanimAtlas();

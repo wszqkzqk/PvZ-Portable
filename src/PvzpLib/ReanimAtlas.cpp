@@ -28,15 +28,9 @@
 #include "graphics/Graphics.h"
 #include "graphics/MemoryImage.h"
 
-ReanimAtlas::ReanimAtlas()
-{
-	mMemoryImage = nullptr;
-}
+ReanimAtlas::ReanimAtlas() = default;
 
-ReanimAtlas::~ReanimAtlas()
-{
-	delete mMemoryImage;
-}
+ReanimAtlas::~ReanimAtlas() = default;
 
 ReanimAtlasImage* ReanimAtlas::GetEncodedReanimAtlas(Image* theImage)
 {
@@ -243,12 +237,12 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition* theReanimDef)
 		}
 	}
 
-	mMemoryImage = ReanimAtlasMakeBlankMemoryImage(aAtlasWidth, aAtlasHeight);
-	Graphics aMemoryGraphis(mMemoryImage);
+	mMemoryImage.reset(ReanimAtlasMakeBlankMemoryImage(aAtlasWidth, aAtlasHeight));
+	Graphics aMemoryGraphis(mMemoryImage.get());
 	for (int aImageIndex = 0; aImageIndex < static_cast<int>(mImageArray.size()); aImageIndex++)
 	{
 		ReanimAtlasImage* aImage = &mImageArray[aImageIndex];
 		aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY);
 	}
-	FixPixelsOnAlphaEdgeForBlending(mMemoryImage);  // set transparent pixels to the average color of their neighbors
+	FixPixelsOnAlphaEdgeForBlending(mMemoryImage.get());  // set transparent pixels to the average color of their neighbors
 }

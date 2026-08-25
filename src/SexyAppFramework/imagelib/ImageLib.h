@@ -26,6 +26,7 @@
 #define __IMAGELIB_H__
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace ImageLib
@@ -36,7 +37,7 @@ class Image
 public:
 	int						mWidth;
 	int						mHeight;
-	uint32_t*				mBits;
+	std::unique_ptr<uint32_t[]>		mBits;
 
 public:
 	Image();
