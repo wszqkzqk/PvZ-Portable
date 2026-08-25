@@ -131,7 +131,7 @@ public:
 	void                    DrawSlotMachine(Graphics* g);
 	int                    UpdateToolTip(int theX, int theY);
 	void                    WhackAZombieSpawning();
-	int                    UpdateZombieSpawning();
+	bool                   UpdateZombieSpawning();
 	void                    BeghouledClearCrater(int theCount);
 	void                    MouseDownWhackAZombie(int theX, int theY);
 	void                    DrawStormNight(Graphics* g);

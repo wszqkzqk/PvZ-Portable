@@ -2898,7 +2898,7 @@ void Challenge::WhackAZombieSpawning()
 	}
 }
 
-int Challenge::UpdateZombieSpawning()
+bool Challenge::UpdateZombieSpawning()
 {
 	if (mApp->IsWhackAZombieLevel())
 	{
