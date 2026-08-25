@@ -313,7 +313,7 @@ A second script `scripts/pvzp-user-converter.py` edits the **global user data**.
 
 ```bash
 # Overview of a profile
-python scripts/pvzp-user-converter.py info ~/.local/io.github.wszqkzqk/PvZPortable/userdata/user1.dat
+python scripts/pvzp-user-converter.py info ~/.local/share/io.github.wszqkzqk/PvZPortable/userdata/user1.dat
 
 # Quick single-value edit (in place)
 python scripts/pvzp-user-converter.py set user1.dat coins 99999
