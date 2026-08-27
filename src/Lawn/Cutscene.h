@@ -50,11 +50,11 @@ public:
 	bool                        mPreloaded;
 	bool                        mPlacedZombies;
 	bool                        mPlacedLawnItems;
-	int                         mCrazyDaveCountDown;              //+0x38 Countdown for Crazy Dave's upsell dialog
-	int                         mCrazyDaveLastTalkIndex;          //+0x3C Index of Crazy Dave's upsell dialog lines
-	bool                        mUpsellHideBoard;                 //+0x40 Whether to hide the board during upsell
-	std::unique_ptr<ChallengeScreen> mUpsellChallengeScreen;      //+0x44 The challenge screen inserted during upsell
-	bool                        mPreUpdatingBoard;                //+0x48 Whether the board is pre-updating during scene setup
+	int                         mCrazyDaveCountDown;              // Countdown for Crazy Dave's upsell dialog
+	int                         mCrazyDaveLastTalkIndex;          // Index of Crazy Dave's upsell dialog lines
+	bool                        mUpsellHideBoard;                 // Whether to hide the board during upsell
+	std::unique_ptr<ChallengeScreen> mUpsellChallengeScreen;      // The challenge screen inserted during upsell
+	bool                        mPreUpdatingBoard;                // Whether the board is pre-updating during scene setup
 	std::vector<std::string> mLoadedResourceNames;
 
 public:
