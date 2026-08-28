@@ -92,6 +92,17 @@ static void GfxBegin(GLenum vertexMode)
 	gVertexMode = vertexMode;
 }
 
+static GLenum gBlendSrc = 0;
+static GLenum gBlendDst = 0;
+
+static void SetBlendFunc(GLenum theSrc, GLenum theDst)
+{
+	if (gBlendSrc == theSrc && gBlendDst == theDst) return;
+	glBlendFunc(theSrc, theDst);
+	gBlendSrc = theSrc;
+	gBlendDst = theDst;
+}
+
 static void GfxEnd()
 {
 	if (gVertexMode == (GLenum)-1) return;
@@ -100,25 +111,16 @@ static void GfxEnd()
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, gVbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLVertex) * gNumVertices, gVertices.data(), GL_DYNAMIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT,         GL_FALSE, sizeof(GLVertex), (const void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE,  GL_TRUE,  sizeof(GLVertex), (const void*)(sizeof(float)*3));
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 2, GL_FLOAT,         GL_FALSE, sizeof(GLVertex), (const void*)(sizeof(float)*3 + sizeof(uint32_t)));
-		glEnableVertexAttribArray(2);
-
 		glDrawArrays(gVertexMode, 0, gNumVertices);
 	}
 
 	gVertexMode = (GLenum)-1;
 	gNumVertices = 0;
-	gVertices.clear();
 }
 
-static void GfxFlushIfOverBudget()
+static void GfxEnsureSpace(int theAdditional)
 {
-	if (gVertexMode == (GLenum)-1 || gNumVertices < MAX_VERTICES) return;
+	if (gVertexMode == (GLenum)-1 || gNumVertices + theAdditional <= MAX_VERTICES) return;
 	GLenum oldMode = gVertexMode;
 	GfxEnd();
 	GfxBegin(oldMode);
@@ -129,12 +131,9 @@ static void GfxAddVertices(const GLVertex *arr, int arrCount)
 	if (gVertexMode == (GLenum)-1) return;
 	if (arrCount <= 0) return;
 
-	const int oldCount = gNumVertices;
+	GfxEnsureSpace(arrCount);
+	memcpy(gVertices.data() + gNumVertices, arr, sizeof(GLVertex) * arrCount);
 	gNumVertices += arrCount;
-	gVertices.resize(gNumVertices);
-	memcpy(gVertices.data() + oldCount, arr, sizeof(GLVertex) * arrCount);
-
-	GfxFlushIfOverBudget();
 }
 
 static void GfxAddVertices(VertexList &arr)
@@ -148,11 +147,9 @@ static void GfxAddVertices(const TriVertex arr[][3], int arrCount, unsigned int 
 	if (gVertexMode == (GLenum)-1) return;
 	if (arrCount <= 0) return;
 
-	const int oldCount = gNumVertices;
-	gNumVertices += arrCount * 3;
-	gVertices.resize(gNumVertices);
+	GfxEnsureSpace(arrCount * 3);
 
-	GLVertex* dst = gVertices.data() + oldCount;
+	GLVertex* dst = gVertices.data() + gNumVertices;
 	for (int tri = 0; tri < arrCount; tri++)
 	{
 		const TriVertex* v = arr[tri];
@@ -160,14 +157,14 @@ static void GfxAddVertices(const TriVertex arr[][3], int arrCount, unsigned int 
 		{
 			dst[i].sx    = v[i].x + tx;
 			dst[i].sy    = v[i].y + ty;
+			dst[i].sz    = 0;
 			dst[i].color = GetColorFromTriVertex(v[i], theColor);
 			dst[i].tu    = v[i].u * aMaxTotalU;
 			dst[i].tv    = v[i].v * aMaxTotalV;
 		}
 		dst += 3;
+		gNumVertices += 3;
 	}
-
-	GfxFlushIfOverBudget();
 }
 
 // Unified GLSL body; VERT_IN / V2F / FRAG_OUT / TEX2D macros from GLPlatform.h.
@@ -559,8 +556,24 @@ TextureData::~TextureData()
 	ReleaseTextures();
 }
 
+struct GfxTextureCache
+{
+	GLuint tex = 0;
+	int filter = 0;
+	int clampUv = -1;
+	float uvBounds[4] = {};
+	bool valid = false;
+};
+static GfxTextureCache gTextureCache;
+
+static void GfxInvalidateTextureCache()
+{
+	gTextureCache.valid = false;
+}
+
 void TextureData::ReleaseTextures()
 {
+	GfxInvalidateTextureCache();
 	for (auto &piece : mTextures)
 		glDeleteTextures(1, &piece.mTexture);
 	mTextures.clear();
@@ -666,6 +679,7 @@ void TextureData::CreateTextures(MemoryImage *theImage)
 	mHeight = theImage->mHeight;
 	mBitsChangedCount = theImage->mBitsChangedCount;
 	mPixelFormat = aFormat;
+	GfxInvalidateTextureCache();
 }
 
 void TextureData::CheckCreateTextures(MemoryImage *theImage)
@@ -734,12 +748,26 @@ static constexpr float kDefaultUvBounds[4] = { 0.f, 0.f, 1.f, 1.f };
 
 static void GfxBindTexture(GLuint tex, const float *uvBounds = kDefaultUvBounds, bool clampUv = true)
 {
-	glBindTexture(GL_TEXTURE_2D, tex);
 	int f = gLinearFilter ? GL_LINEAR : GL_NEAREST;
+	int c = clampUv ? 1 : 0;
+	if (gTextureCache.valid
+		&& gTextureCache.tex == tex
+		&& gTextureCache.filter == f
+		&& gTextureCache.clampUv == c
+		&& memcmp(gTextureCache.uvBounds, uvBounds, sizeof(gTextureCache.uvBounds)) == 0)
+		return;
+
+	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, f);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, f);
-	glUniform1i(gUfClampUvEnabled, clampUv ? 1 : 0);
+	glUniform1i(gUfClampUvEnabled, c);
 	glUniform4fv(gUfUvBounds, 1, uvBounds);
+
+	gTextureCache.tex = tex;
+	gTextureCache.filter = f;
+	gTextureCache.clampUv = c;
+	memcpy(gTextureCache.uvBounds, uvBounds, sizeof(gTextureCache.uvBounds));
+	gTextureCache.valid = true;
 }
 
 void TextureData::Blt(float theX, float theY, const Rect& theSrcRect, const Color& theColor)
@@ -1070,8 +1098,7 @@ GLInterface::GLInterface(SexyAppBase* theApp)
 
 	gVertexMode  = (GLenum)-1;
 	gNumVertices = 0;
-	gVertices.clear();
-	gVertices.reserve(MAX_VERTICES);
+	gVertices.resize(MAX_VERTICES);
 }
 
 GLInterface::~GLInterface()
@@ -1088,9 +1115,9 @@ GLInterface::~GLInterface()
 void GLInterface::SetDrawMode(int theDrawMode)
 {
 	if (theDrawMode == Graphics::DRAWMODE_NORMAL)
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	else
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		SetBlendFunc(GL_SRC_ALPHA, GL_ONE);
 }
 
 void GLInterface::AddGLImage(GLImage* theGLImage)
@@ -1167,6 +1194,13 @@ int GLInterface::Init(bool IsWindowed)
 		glGenBuffers(1, &gVbo);
 		glBindBuffer(GL_ARRAY_BUFFER, gVbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLVertex) * MAX_VERTICES, nullptr, GL_DYNAMIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT,         GL_FALSE, sizeof(GLVertex), (const void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE,  GL_TRUE,  sizeof(GLVertex), (const void*)(sizeof(float)*3));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 2, GL_FLOAT,         GL_FALSE, sizeof(GLVertex), (const void*)(sizeof(float)*3 + sizeof(uint32_t)));
+		glEnableVertexAttribArray(2);
 	}
 
 	int aMaxSize;
@@ -1231,7 +1265,7 @@ void GLInterface::SetCursorPos(int x, int y)
 
 bool GLInterface::PreDraw()
 {
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	return true;
 }
 
@@ -1270,6 +1304,7 @@ bool GLInterface::CreateImageTexture(MemoryImage *theImage)
 
 bool GLInterface::RecoverBits(MemoryImage* theImage)
 {
+	GfxInvalidateTextureCache();
 	if (!theImage->mRenderData) return false;
 
 	TextureData* data = (TextureData*)theImage->mRenderData;
