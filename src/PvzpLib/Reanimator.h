@@ -221,8 +221,8 @@ public:
 	void                 Draw(Graphics* g);
 	void                            DrawAllRenderGroups(Graphics* g);
 	void                            DrawRenderGroup(Graphics* g, int theRenderGroup);
-	bool                            DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, PvzpTriangleGroup* theTriangleGroup);
-	void                            GetCurrentTransform(int theTrackIndex, ReanimatorTransform* theTransformCurrent);
+	bool                            DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, PvzpTriangleGroup* theTriangleGroup, ReanimatorFrameTime* theFrameTime = nullptr);
+	void                            GetCurrentTransform(int theTrackIndex, ReanimatorTransform* theTransformCurrent, ReanimatorFrameTime* theFrameTime = nullptr);
 	void                            GetTransformAtTime(int theTrackIndex, ReanimatorTransform* theTransform, ReanimatorFrameTime* theFrameTime);
 	void                            GetFrameTime(ReanimatorFrameTime* theFrameTime);
 	int                             FindTrackIndex(const char* theTrackName);

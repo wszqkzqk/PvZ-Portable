@@ -357,10 +357,6 @@ bool gPvzpTriangleDrawAdditive = false;
 
 PvzpTriangleGroup::PvzpTriangleGroup()
 {
-	for (int i = 0; i < 256; i++)
-		for (int j = 0; j < 3; j++)
-			mVertArray[i][j].color = 0UL;
-
 	mImage = nullptr;
 	mTriangleCount = 0;
 	mDrawMode = Graphics::DRAWMODE_NORMAL;

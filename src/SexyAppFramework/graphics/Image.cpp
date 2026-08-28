@@ -61,16 +61,6 @@ int	Image::GetHeight()
 	return mHeight;
 }
 
-int Image::GetCelHeight()
-{
-	return mHeight / mNumRows;
-}
-
-int Image::GetCelWidth()
-{
-	return mWidth / mNumCols;
-}
-
 Rect Image::GetCelRect(int theCel)
 {
 	int h = GetCelHeight();
