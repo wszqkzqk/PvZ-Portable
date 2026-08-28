@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <map>
+#include <memory>
 
 namespace Sexy
 {
@@ -41,7 +42,7 @@ enum FilterEffect : int32_t
 	NUM_FILTER_EFFECTS
 };
 
-typedef std::map<Image*, Image*> ImageFilterMap;
+typedef std::map<Image*, std::unique_ptr<Image>> ImageFilterMap;
 extern ImageFilterMap gFilterMap[FilterEffect::NUM_FILTER_EFFECTS];
 
 void                FilterEffectInitForApp();

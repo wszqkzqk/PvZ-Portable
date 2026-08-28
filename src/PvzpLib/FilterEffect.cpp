@@ -99,13 +99,6 @@ void FilterEffectDisposeForApp()
 	{
 		ImageFilterMap& aFilterMap = gFilterMap[i];
 
-		for (ImageFilterMap::iterator it = aFilterMap.begin(); it != aFilterMap.end(); it++)
-		{
-			Image* aImage = it->second;
-			if (aImage != nullptr)
-				delete aImage;
-		}
-
 		aFilterMap.clear();
 	}
 }
@@ -191,7 +184,7 @@ Image* FilterEffectGetImage(Image* theImage, FilterEffect theFilterEffect)
 	ImageFilterMap& aFilterMap = gFilterMap[theFilterEffect];
 	ImageFilterMap::iterator it = aFilterMap.find(theImage);
 	if (it != aFilterMap.end())
-		return it->second;
+		return it->second.get();
 
 	MemoryImage* aImage = FilterEffectCreateImage(theImage, theFilterEffect);
 	aFilterMap.insert(ImageFilterMap::value_type(theImage, aImage));

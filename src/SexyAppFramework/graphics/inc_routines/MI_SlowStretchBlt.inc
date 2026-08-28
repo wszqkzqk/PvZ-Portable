@@ -19,10 +19,10 @@
 	int aTempDestHeight = theDestRect.mHeight+4;
 
 	// For holding horizontally resized pixels not vertically (yet)
-	uint32_t* aNewHorzPixels = new uint32_t[aTempDestWidth*aSrcHeightI*4];
+	std::unique_ptr<uint32_t[]> aNewHorzPixels(new uint32_t[aTempDestWidth*aSrcHeightI*4]);
 
-	[[maybe_unused]] uint32_t* aNewHorzPixelsEnd = aNewHorzPixels + (aTempDestWidth*aSrcHeightI*4);  // unused in Release mode
-	memset(aNewHorzPixels, 0, aTempDestWidth*aSrcHeightI*4*4);
+	[[maybe_unused]] uint32_t* aNewHorzPixelsEnd = aNewHorzPixels.get() + (aTempDestWidth*aSrcHeightI*4);  // unused in Release mode
+	memset(aNewHorzPixels.get(), 0, aTempDestWidth*aSrcHeightI*4*4);
 
 	if (theSrcRect.mWidth >= theDestRect.mWidth)
 	{
@@ -128,11 +128,11 @@
 		}
 	}
 
-	uint32_t* aNewPixels = new uint32_t[aTempDestWidth*aTempDestHeight*4];
+	std::unique_ptr<uint32_t[]> aNewPixels(new uint32_t[aTempDestWidth*aTempDestHeight*4]);
 
-	[[maybe_unused]] uint32_t* aNewPixelsEnd = aNewPixels + (aTempDestWidth*aTempDestHeight*4);  // Unused in Release mode
+	[[maybe_unused]] uint32_t* aNewPixelsEnd = aNewPixels.get() + (aTempDestWidth*aTempDestHeight*4);  // Unused in Release mode
 
-	memset(aNewPixels, 0, aTempDestWidth*aTempDestHeight*4*4);
+	memset(aNewPixels.get(), 0, aTempDestWidth*aTempDestHeight*4*4);
 
 	// Now resize vertically
 	if (theSrcRect.mHeight >= theDestRect.mHeight)
@@ -268,6 +268,4 @@
 		}
 	}
 
-	delete[] aNewPixels;
-	delete[] aNewHorzPixels;
 }

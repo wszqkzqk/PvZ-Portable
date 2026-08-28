@@ -100,8 +100,7 @@ int main(int argc, char** argv)
 	gLawnApp->Start();
 #ifndef __EMSCRIPTEN__
 	gLawnApp->Shutdown();
-	if (gLawnApp)
-		delete gLawnApp;
+	delete gLawnApp;
 #endif
 
 	return 0;
