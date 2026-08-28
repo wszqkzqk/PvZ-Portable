@@ -211,13 +211,11 @@ void Trail::Draw(Graphics* g)
 		float aWidthOverLengthCur = FloatTrackEvaluate(mDefinition->mWidthOverLength, aUCur, mTrailInterp[TrailTracks::TRACK_WIDTH_OVER_LENGTH]);
 		float aWidthOverLengthNext = FloatTrackEvaluate(mDefinition->mWidthOverLength, aUNext, mTrailInterp[TrailTracks::TRACK_WIDTH_OVER_LENGTH]);
 		float aWidthOverTimeCur = FloatTrackEvaluate(mDefinition->mWidthOverTime, aTimeValue, mTrailInterp[TrailTracks::TRACK_WIDTH_OVER_TIME]);
-		float aWidthOverTimeNext = FloatTrackEvaluate(mDefinition->mWidthOverTime, aTimeValue, mTrailInterp[TrailTracks::TRACK_WIDTH_OVER_TIME]);
 		float aAlphaOverLengthCur = FloatTrackEvaluate(mDefinition->mAlphaOverLength, aUCur, mTrailInterp[TrailTracks::TRACK_ALPHA_OVER_LENGTH]);
 		float aAlphaOverLengthNext = FloatTrackEvaluate(mDefinition->mAlphaOverLength, aUNext, mTrailInterp[TrailTracks::TRACK_ALPHA_OVER_LENGTH]);
 		float aAlphaOverTimeCur = FloatTrackEvaluate(mDefinition->mAlphaOverTime, aTimeValue, mTrailInterp[TrailTracks::TRACK_ALPHA_OVER_TIME]);
-		float aAlphaOverTimeNext = FloatTrackEvaluate(mDefinition->mAlphaOverTime, aTimeValue, mTrailInterp[TrailTracks::TRACK_ALPHA_OVER_TIME]);
 		int anAlphaCur = std::clamp(FloatRoundToInt(aAlphaOverLengthCur * aAlphaOverTimeCur * mColorOverride.mAlpha), 0, 255);
-		int anAlphaNext = std::clamp(FloatRoundToInt(aAlphaOverLengthNext * aAlphaOverTimeNext * mColorOverride.mAlpha), 0, 255);
+		int anAlphaNext = std::clamp(FloatRoundToInt(aAlphaOverLengthNext * aAlphaOverTimeCur * mColorOverride.mAlpha), 0, 255);
 		Sexy::Color aColorCur = mColorOverride;
 		Sexy::Color aColorNext = mColorOverride;
 		aColorCur.mAlpha = anAlphaCur;
@@ -228,10 +226,10 @@ void Trail::Draw(Graphics* g)
 		aPosition[0].y = mTrailCenter.y + aPointCur.aPos.y + aNormalCur.y * aWidthOverLengthCur * aWidthOverTimeCur;
 		aPosition[1].x = mTrailCenter.x + aPointCur.aPos.x + -aNormalCur.x * aWidthOverLengthCur * aWidthOverTimeCur;
 		aPosition[1].y = mTrailCenter.y + aPointCur.aPos.y + -aNormalCur.y * aWidthOverLengthCur * aWidthOverTimeCur;
-		aPosition[2].x = mTrailCenter.x + aPointNext.aPos.x + aNormalNext.x * aWidthOverLengthNext * aWidthOverTimeNext;
-		aPosition[2].y = mTrailCenter.y + aPointNext.aPos.y + aNormalNext.y * aWidthOverLengthNext * aWidthOverTimeNext;
-		aPosition[3].x = mTrailCenter.x + aPointNext.aPos.x + -aNormalNext.x * aWidthOverLengthNext * aWidthOverTimeNext;
-		aPosition[3].y = mTrailCenter.y + aPointNext.aPos.y + -aNormalNext.y * aWidthOverLengthNext * aWidthOverTimeNext;
+		aPosition[2].x = mTrailCenter.x + aPointNext.aPos.x + aNormalNext.x * aWidthOverLengthNext * aWidthOverTimeCur;
+		aPosition[2].y = mTrailCenter.y + aPointNext.aPos.y + aNormalNext.y * aWidthOverLengthNext * aWidthOverTimeCur;
+		aPosition[3].x = mTrailCenter.x + aPointNext.aPos.x + -aNormalNext.x * aWidthOverLengthNext * aWidthOverTimeCur;
+		aPosition[3].y = mTrailCenter.y + aPointNext.aPos.y + -aNormalNext.y * aWidthOverLengthNext * aWidthOverTimeCur;
 
 		int aVertCur = i * 2;
 		int aVertNext = aVertCur + 1;

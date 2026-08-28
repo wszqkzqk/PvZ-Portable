@@ -43,12 +43,13 @@ ToolTipWidget::ToolTipWidget()
 	mMaxLinesWidth = 0;
 }
 
-void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
+void ToolTipWidget::GetLines(std::vector<std::string_view>& theLines)
 {
 	int aLineWidth = 0;
 	size_t aLineStart = 0;
 	size_t aCurPos = 0;
 	char32_t aPrevChar = 0;
+	std::string_view aLabelView(mLabel);
 
 	int aBreakDrawLen = -1;
 	size_t aBreakResumePos = 0;
@@ -68,7 +69,7 @@ void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
 
 		if (aChar == U'\n')
 		{
-			theLines.push_back(mLabel.substr(aLineStart, aCharStart - aLineStart));
+			theLines.push_back(aLabelView.substr(aLineStart, aCharStart - aLineStart));
 			aLineWidth = 0;
 			aLineStart = aCharEnd;
 			aBreakDrawLen = -1;
@@ -84,7 +85,7 @@ void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
 			aBreakResumePos = aCharEnd;
 			if (aLineWidth >= mGetsLinesWidth)
 			{
-				theLines.push_back(mLabel.substr(aLineStart, aBreakDrawLen));
+				theLines.push_back(aLabelView.substr(aLineStart, aBreakDrawLen));
 				aCurPos = aBreakResumePos;
 				while (aCurPos < mLabel.size() && mLabel[aCurPos] == ' ')
 					aCurPos++;
@@ -104,7 +105,7 @@ void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
 			aBreakResumePos = aCharStart;
 			if (aLineWidth >= mGetsLinesWidth)
 			{
-				theLines.push_back(mLabel.substr(aLineStart, aBreakDrawLen));
+				theLines.push_back(aLabelView.substr(aLineStart, aBreakDrawLen));
 				aCurPos = aBreakResumePos;
 				aLineStart = aCurPos;
 				aLineWidth = 0;
@@ -118,13 +119,13 @@ void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
 
 	if (aLineStart < mLabel.size())
 	{
-		theLines.push_back(mLabel.substr(aLineStart));
+		theLines.push_back(aLabelView.substr(aLineStart));
 	}
 }
 
 void ToolTipWidget::CalculateSize()
 {
-	std::vector<std::string> aLines;
+	std::vector<std::string_view> aLines;
 
 	int aTitleWidth = FONT_TINYBOLD->StringWidth(mTitle);
 	int aWarningWidth = FONT_PICO129->StringWidth(mWarningText);
@@ -235,13 +236,13 @@ void ToolTipWidget::Draw(Graphics* g)
 		aPosY += FONT_PICO129->GetAscent() + 2;
 	}
 
-	std::vector<std::string> aLines;
+	std::vector<std::string_view> aLines;
 	GetLines(aLines);
 
 	g->SetFont(FONT_PICO129);
 	for (size_t i = 0; i < aLines.size(); i++)
 	{
-		std::string aLine = aLines[i];
+		std::string_view aLine = aLines[i];
 		g->DrawString(aLine, aPosX + (mWidth - FONT_PICO129->StringWidth(aLine)) / 2, aPosY + FONT_PICO129->GetAscent());
 		aPosY += FONT_PICO129->GetAscent() + 2;
 	}

@@ -62,7 +62,6 @@ GameSelectorOverlay::GameSelectorOverlay(GameSelector* theGameSelector)
 
 GameSelector::GameSelector(LawnApp* theApp)
 {
-	PvzpHesitationTrace("pregameselector");
 	mLoadedResourceNames.push_back("DelayLoad_Zombatar");
 	mLoadedResourceNames.push_back("DelayLoad_Almanac");
 
@@ -364,8 +363,6 @@ GameSelector::GameSelector(LawnApp* theApp)
 	AddWidget(mStoreButton);
 	AddWidget(mAlmanacButton);
 	AddWidget(mOverlayWidget);
-
-	PvzpHesitationTrace("gameselectorinit");
 }
 
 GameSelector::~GameSelector()

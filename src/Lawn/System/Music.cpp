@@ -168,15 +168,10 @@ void Music::SetupVolumeForTune(MusicTune theMusicTune, float theDrumsVolume, flo
 
 void Music::LoadSong(MusicFile theMusicFile, std::string_view theFileName)
 {
-	PvzpHesitationTrace("preloadsong");
 	if (!PvzpLoadMusic(theMusicFile, theFileName))
 	{
 		PvzpLogLn("music failed to load");
 		mMusicDisabled = true;
-	}
-	else
-	{
-		PvzpHesitationTrace("song '{}'", theFileName);
 	}
 }
 

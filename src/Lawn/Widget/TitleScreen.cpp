@@ -94,7 +94,6 @@ void TitleScreen::Draw(Graphics* g)
 		if (!mDrawnYet)
 		{
 			PvzpLogLn("First Draw Time: {} ms", SDL_GetTicks() - mApp->mTimeLoaded);
-			PvzpHesitationTrace("TitleScreen First Draw");
 			mDrawnYet = true;
 		}
 

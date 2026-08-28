@@ -54,7 +54,7 @@ public:
 	void                SetTitle(std::string_view theTitle);
 	void                SetWarningText(std::string_view theWarningText);
 	void                CalculateSize();
-	void                GetLines(std::vector<std::string>& theLines);
+	void                GetLines(std::vector<std::string_view>& theLines);
 	inline void         FlashWarning() { mWarningFlashCounter = 70; }
 	inline void         Update() { if (mWarningFlashCounter > 0) mWarningFlashCounter--; }
 	inline void         SetPosition(int theX, int theY) { mX = theX; mY = theY; }

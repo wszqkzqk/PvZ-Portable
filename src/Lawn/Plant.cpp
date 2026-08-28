@@ -3537,6 +3537,7 @@ float PlantFlowerPotHeightOffset(SeedType theSeedType, float theFlowerPotScale)
 float PlantDrawHeightOffset(Board* theBoard, Plant* thePlant, SeedType theSeedType, int theCol, int theRow)
 {
 	float aHeightOffset = 0.0f;
+	Plant* aFlowerPot = theBoard ? theBoard->GetFlowerPotAt(theCol, theRow) : nullptr;
 
 	bool doFloating = false;
 	if (Plant::IsFlying(theSeedType))
@@ -3571,7 +3572,7 @@ float PlantDrawHeightOffset(Board* theBoard, Plant* thePlant, SeedType theSeedTy
 
 	if (theBoard && (thePlant == nullptr || !thePlant->mSquished))
 	{
-		Plant* aPot = theBoard->GetFlowerPotAt(theCol, theRow);
+		Plant* aPot = aFlowerPot;
 		if (aPot && !aPot->mSquished && theSeedType != SeedType::SEED_FLOWERPOT)
 		{
 			aHeightOffset += PlantFlowerPotHeightOffset(theSeedType, 1.0f);
@@ -3639,7 +3640,7 @@ float PlantDrawHeightOffset(Board* theBoard, Plant* thePlant, SeedType theSeedTy
 			aHeightOffset += 6.0f;
 		}
 
-		if (theBoard && theBoard->GetFlowerPotAt(theCol, theRow) && gLawnApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN)
+		if (aFlowerPot && gLawnApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN)
 		{
 			aHeightOffset += 5.0f;
 		}

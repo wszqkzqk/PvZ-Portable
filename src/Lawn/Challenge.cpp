@@ -1168,14 +1168,18 @@ int Challenge::MouseMove(int x, int y)
 	return false;
 }
 
-int Challenge::UpdateToolTip(int theX, int theY)
+int Challenge::UpdateToolTip(int theX, int theY, const HitResult* theHitResult)
 {
 	if (!mApp->IsSlotMachineLevel())
 		return false;
 
-	HitResult aHitResult;
-	mBoard->MouseHitTest(theX, theY, &aHitResult);
-	if (aHitResult.mObjectType != GameObjectType::OBJECT_TYPE_SLOT_MACHINE_HANDLE ||
+	HitResult aLocalHitResult;
+	if (theHitResult == nullptr)
+	{
+		mBoard->MouseHitTest(theX, theY, &aLocalHitResult);
+		theHitResult = &aLocalHitResult;
+	}
+	if (theHitResult->mObjectType != GameObjectType::OBJECT_TYPE_SLOT_MACHINE_HANDLE ||
 		mBoard->mCursorObject->mCursorType != CursorType::CURSOR_TYPE_NORMAL ||
 		mChallengeState != ChallengeState::STATECHALLENGE_NORMAL)
 		return false;

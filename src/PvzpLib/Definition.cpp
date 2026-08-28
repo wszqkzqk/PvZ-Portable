@@ -353,7 +353,6 @@ bool DefinitionLoadImage(Image** theImage, const std::string& theName)
 			SharedImageRef aImageRef = gSexyAppBase->GetSharedImage(aPathToTry);
 			if ((Image*)aImageRef != nullptr)
 			{
-				PvzpHesitationTrace("Load Image '{}'", theName);
 				PvzpAddImageToMap(&aImageRef, theName);
 				PvzpMarkImageForSanding((Image*)aImageRef);
 				*theImage = (Image*)aImageRef;
@@ -1296,13 +1295,11 @@ bool DefinitionCompileAndLoad(const std::string& theXMLFilePath, const DefMap* t
 	const bool aRequireCompiledUpToDate = false;
 #endif
 
-	PvzpHesitationTrace("predef");
 	std::string aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
 
 	const bool aShouldTryCompiled = !aRequireCompiledUpToDate || DefinitionIsCompiled(theXMLFilePath);
 	if (aShouldTryCompiled && DefinitionReadCompiledFile(aCompiledFilePath, theDefMap, theDefinition))
 	{
-		PvzpHesitationTrace("loaded {}", aCompiledFilePath);
 		return true;
 	}
 
@@ -1310,7 +1307,6 @@ bool DefinitionCompileAndLoad(const std::string& theXMLFilePath, const DefMap* t
 	aTimer.Start();
 	bool aResult = DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition);
 	PvzpLogLn("compile {} ms:'{}'", (int)aTimer.GetDuration(), aCompiledFilePath);
-	PvzpHesitationTrace("compiled {}", aCompiledFilePath);
 	if (aResult)
 		return true;
 
