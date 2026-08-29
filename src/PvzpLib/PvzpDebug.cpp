@@ -76,7 +76,7 @@ void PvzpAssertReport(const char* theCondition, const char* theFile, int theLine
 	else
 		aBuffer = std::format("\n{}({})\nassertion failed: {}", theFile, theLine, theMsg);
 
-	Sexy::DispatchLog(Sexy::SexyLogPriority::Info, aBuffer);
+	Sexy::DispatchLog(Sexy::SexyLogPriority::Error, aBuffer);
 	PvzpErrorMessageBox(aBuffer, "Assertion failed");
 	exit(1);
 }
