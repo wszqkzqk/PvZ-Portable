@@ -920,6 +920,8 @@ void Reanimation::DrawRenderGroup(Graphics* g, int theRenderGroup)
 {
 	if (mDead)
 		return;
+	if (mDefinition->mTracks.count == 0)
+		return;
 
 	PvzpTriangleGroup aTriangleGroup;
 	ReanimatorFrameTime aFrameTime;
