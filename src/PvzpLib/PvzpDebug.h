@@ -66,7 +66,7 @@ void				PvzpTraceWithoutSpamming(std::format_string<Args...> theFmt, Args&&... t
 		return;
 
 	gLastTraceTime = aTime;
-	PvzpLog(theFmt, theArgs...);
+	Sexy::DispatchLog(Sexy::SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
 }
 
 template<typename... Args>
