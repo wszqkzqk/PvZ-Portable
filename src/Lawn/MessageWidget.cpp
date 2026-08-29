@@ -29,7 +29,7 @@
 #include "../PvzpLib/Reanimator.h"
 #include "../PvzpLib/PvzpStringFile.h"
 #include <algorithm>
-#include <cstdio>
+#include <SDL.h>
 
 MessageWidget::MessageWidget(LawnApp* theApp)
 {
@@ -109,13 +109,13 @@ void MessageWidget::SetLabel(std::string_view theNewLabel, MessageStyle theMessa
 	if (mReanimType != ReanimationType::REANIM_NONE && mDuration > 0)
 	{
 		mMessageStyleNext = theMessageStyle;
-		snprintf(mLabelNext, sizeof(mLabelNext), "%s", aLabel.c_str());
+		SDL_strlcpy(mLabelNext, aLabel.c_str(), sizeof(mLabelNext));
 		ClearLabel();
 	}
 	else
 	{
 		ClearReanim();
-		snprintf(mLabel, sizeof(mLabel), "%s", aLabel.c_str());
+		SDL_strlcpy(mLabel, aLabel.c_str(), sizeof(mLabel));
 		mMessageStyle = theMessageStyle;
 		mReanimType = ReanimationType::REANIM_NONE;
 

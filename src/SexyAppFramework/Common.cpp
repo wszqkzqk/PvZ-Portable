@@ -29,8 +29,6 @@
 #include <cstdlib>
 #include <filesystem>
 #include <chrono>
-#include <cstdarg>
-#include <cstdio>
 #include <fstream>
 #include <mutex>
 #include <SDL.h>
@@ -389,37 +387,6 @@ std::string Sexy::RemoveTrailingSlash(std::string_view theDirectory)
 		return std::string(theDirectory);
 
 	return PathToU8(PathFromU8(theDirectory).lexically_normal());
-}
-std::string Sexy::VFormat(const char* fmt, va_list argPtr)
-{
-	va_list argsCopy;
-	va_copy(argsCopy, argPtr);
-
-#ifdef _WIN32
-	int required = _vscprintf(fmt, argsCopy);
-#else
-	int required = vsnprintf(nullptr, 0, fmt, argsCopy);
-#endif
-	va_end(argsCopy);
-
-	if (required <= 0)
-		return std::string();
-
-	std::string result;
-	result.resize((size_t)required + 1);
-
-	va_list argsCopy2;
-	va_copy(argsCopy2, argPtr);
-#ifdef _WIN32
-	_vsnprintf(result.data(), (size_t)required + 1, fmt, argsCopy2);
-#else
-	vsnprintf(result.data(), (size_t)required + 1, fmt, argsCopy2);
-#endif
-	va_end(argsCopy2);
-
-	result.resize((size_t)required);
-
-	return result;
 }
 
 std::string Sexy::Evaluate(std::string_view theString, const DefinesMap& theDefinesMap)

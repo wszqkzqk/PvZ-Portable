@@ -127,12 +127,6 @@ const ulong SEXY_RAND_MAX = 0x7FFFFFFF;
 
 extern bool			gDebug;
 
-#if defined(__GNUC__) || defined(__clang__)
-#define SEXY_FORMAT_ATTRIBUTE(theFormatIndex, theFirstArgIndex) __attribute__((format(printf, theFormatIndex, theFirstArgIndex)))
-#else
-#define SEXY_FORMAT_ATTRIBUTE(theFormatIndex, theFirstArgIndex)
-#endif
-
 enum class SexyLogPriority { Info, Error };
 
 void				DispatchLog(SexyLogPriority thePriority, std::string_view theText);
@@ -154,7 +148,6 @@ int					Rand();
 int					Rand(int range);
 float				Rand(float range);
 void				SRand(ulong theSeed);
-extern std::string	VFormat(const char* fmt, va_list argPtr) SEXY_FORMAT_ATTRIBUTE(1, 0);
 std::string			GetAppDataFolder();
 void				SetAppDataFolder(std::string_view thePath);
 std::string			GetAppDataPath(std::string_view theRelativePath);

@@ -20,6 +20,8 @@
  */
 
 #include <time.h>
+#include <cstdarg>
+#include <cstdio>
 #include <format>
 #include "LawnApp.h"
 #include "Resources.h"
@@ -835,9 +837,31 @@ void LawnApp::FinishCreateUserDialog(bool isYes)
 std::string LawnApp::GetFormattedString(std::string theComponentId, std::string theDefault, ...)
 {
 	std::string aFormat = GetString(theComponentId, theDefault);
+
 	va_list args;
 	va_start(args, theDefault);
-	std::string aResult = VFormat(aFormat.c_str(), args);
+
+	va_list argsCopy;
+	va_copy(argsCopy, args);
+#ifdef _WIN32
+	int required = _vscprintf(aFormat.c_str(), argsCopy);
+#else
+	int required = vsnprintf(nullptr, 0, aFormat.c_str(), argsCopy);
+#endif
+	va_end(argsCopy);
+
+	std::string aResult;
+	if (required > 0)
+	{
+		aResult.resize((size_t)required + 1);
+#ifdef _WIN32
+		_vsnprintf(aResult.data(), (size_t)required + 1, aFormat.c_str(), args);
+#else
+		vsnprintf(aResult.data(), (size_t)required + 1, aFormat.c_str(), args);
+#endif
+		aResult.resize((size_t)required);
+	}
+
 	va_end(args);
 	return aResult;
 }
