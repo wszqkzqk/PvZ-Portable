@@ -132,6 +132,8 @@ static void GfxAddVertices(const GLVertex *arr, int arrCount)
 	if (arrCount <= 0) return;
 
 	GfxEnsureSpace(arrCount);
+	if (arrCount > MAX_VERTICES)
+		gVertices.resize(arrCount);
 	memcpy(gVertices.data() + gNumVertices, arr, sizeof(GLVertex) * arrCount);
 	gNumVertices += arrCount;
 }
@@ -148,6 +150,8 @@ static void GfxAddVertices(const TriVertex arr[][3], int arrCount, unsigned int 
 	if (arrCount <= 0) return;
 
 	GfxEnsureSpace(arrCount * 3);
+	if (arrCount * 3 > MAX_VERTICES)
+		gVertices.resize(arrCount * 3);
 
 	GLVertex* dst = gVertices.data() + gNumVertices;
 	for (int tri = 0; tri < arrCount; tri++)
