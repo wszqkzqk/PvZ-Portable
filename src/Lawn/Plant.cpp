@@ -43,6 +43,7 @@
 #include "../PvzpLib/PvzpStringFile.h"
 #include "Widget/AchievementsScreen.h"
 #include <algorithm>
+#include <format>
 
 constinit const PlantDefinition gPlantDefs[SeedType::NUM_SEED_TYPES] = {
 	{ .mSeedType = SeedType::SEED_PEASHOOTER,        .mPlantImage = nullptr, .mReanimationType = ReanimationType::REANIM_PEASHOOTER,    .mPacketIndex = 0,  .mSeedCost = 100, .mRefreshTime = 750,    .mSubClass = PlantSubClass::SUBCLASS_SHOOTER, .mLaunchRate = 150,  .mPlantName = "PEASHOOTER" },
@@ -5035,15 +5036,15 @@ int Plant::GetCost(SeedType theSeedType, SeedType theImitaterType)
 std::string Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType)
 {
 	const PlantDefinition& aPlantDef = GetPlantDefinition(theSeedType);
-	std::string aName = StrFormat("[%s]", aPlantDef.mPlantName);
+	std::string aName = std::format("[{}]", aPlantDef.mPlantName);
 	std::string aTranslatedName(PvzpStringTranslate(aName));
 
 	if (theSeedType == SeedType::SEED_IMITATER && theImitaterType != SeedType::SEED_NONE)
 	{
 		const PlantDefinition& aImitaterDef = GetPlantDefinition(theImitaterType);
-		std::string aImitaterName = StrFormat("[%s]", aImitaterDef.mPlantName);
+		std::string aImitaterName = std::format("[{}]", aImitaterDef.mPlantName);
 		std::string aTranslatedImitaterName(PvzpStringTranslate(aImitaterName));
-		return StrFormat("%s %s", aTranslatedName.c_str(), aTranslatedImitaterName.c_str());
+		return std::format("{} {}", aTranslatedName, aTranslatedImitaterName);
 	}
 
 	return aTranslatedName;
@@ -5052,7 +5053,7 @@ std::string Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType)
 std::string Plant::GetToolTip(SeedType theSeedType)
 {
 	const PlantDefinition& aPlantDef = GetPlantDefinition(theSeedType);
-	std::string aToolTip = StrFormat("[%s_TOOLTIP]", aPlantDef.mPlantName);
+	std::string aToolTip = std::format("[{}_TOOLTIP]", aPlantDef.mPlantName);
 	return std::string(PvzpStringTranslate(aToolTip));
 }
 

@@ -30,6 +30,7 @@
 #include "graphics/GLImage.h"
 #include <algorithm>
 #include <mutex>
+#include <format>
 #include "fcaseopen/fcaseopen.h"
 
 using namespace Sexy;
@@ -189,7 +190,7 @@ bool FontData::Error(const std::string& theError)
 
 		if (mCurrentLine.length() > 0)
 		{
-			anErrorString += " on Line " + StrFormat("%d:\r\n\r\n", mCurrentLineNum) + mCurrentLine;
+			anErrorString += " on Line " + std::format("{}:\r\n\r\n", mCurrentLineNum) + mCurrentLine;
 		}
 
 		mApp->Popup(anErrorString);

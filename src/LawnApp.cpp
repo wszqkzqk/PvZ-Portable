@@ -20,6 +20,7 @@
  */
 
 #include <time.h>
+#include <format>
 #include "LawnApp.h"
 #include "Resources.h"
 #include "Lawn/LawnCommon.h"
@@ -1943,7 +1944,7 @@ std::string LawnApp::GetStageString(int theLevel)
 {
 	int aArea = std::clamp((theLevel - 1) / LEVELS_PER_AREA + 1, 1, ADVENTURE_AREAS + 1);
 	int aSub = theLevel - (aArea - 1) * LEVELS_PER_AREA;
-	return StrFormat("%d-%d", aArea, aSub);
+	return std::format("{}-{}", aArea, aSub);
 }
 
 bool LawnApp::IsAdventureMode()
@@ -2332,7 +2333,7 @@ void LawnApp::RemoveParticle(ParticleSystemID theParticleID)
 
 bool LawnApp::AdvanceCrazyDaveText()
 {
-	std::string aMessageName = StrFormat("[CRAZY_DAVE_%d]", mCrazyDaveMessageIndex + 1);
+	std::string aMessageName = std::format("[CRAZY_DAVE_{}]", mCrazyDaveMessageIndex + 1);
 	if (!PvzpStringListExists(aMessageName))
 	{
 		return false;
@@ -2344,7 +2345,7 @@ bool LawnApp::AdvanceCrazyDaveText()
 
 std::string LawnApp::GetCrazyDaveText(int theMessageIndex)
 {
-	std::string aMessage = StrFormat("[CRAZY_DAVE_%d]", theMessageIndex);
+	std::string aMessage = std::format("[CRAZY_DAVE_{}]", theMessageIndex);
 	aMessage = PvzpReplaceString(aMessage, "{PLAYER_NAME}", mPlayerInfo->mName);
 	aMessage = PvzpReplaceString(aMessage, "{MONEY}", GetMoneyString(mPlayerInfo->mCoins));
 	int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
@@ -3101,15 +3102,15 @@ std::string LawnApp::GetMoneyString(int theAmount)
 	int aValue = theAmount * 10;
 	if (aValue > 999999)
 	{
-		return StrFormat("$%d,%03d,%03d", aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000, aValue - aValue / 1000 * 1000);
+		return std::format("${},{:03d},{:03d}", aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000, aValue - aValue / 1000 * 1000);
 	}
 	else if (aValue > 9999)
 	{
-		return StrFormat("$%d,%03d", aValue / 1000, aValue - aValue / 1000 * 1000);
+		return std::format("${},{:03d}", aValue / 1000, aValue - aValue / 1000 * 1000);
 	}
 	else
 	{
-		return StrFormat("$%d", aValue);
+		return std::format("${}", aValue);
 	}
 }
 
@@ -3150,7 +3151,7 @@ std::string LawnGetCurrentLevelName()
 	}
 	if (gLawnApp->IsAdventureMode())
 	{
-		return StrFormat("F%s", gLawnApp->GetStageString(gLawnApp->mBoard->mLevel).c_str());
+		return std::format("F{}", gLawnApp->GetStageString(gLawnApp->mBoard->mLevel));
 	}
 
 	return gLawnApp->GetCurrentChallengeDef().mChallengeName;

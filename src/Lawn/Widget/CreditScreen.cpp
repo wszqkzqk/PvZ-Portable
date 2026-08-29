@@ -35,6 +35,7 @@
 #include "../../PvzpLib/PvzpStringFile.h"
 #include "graphics/Font.h"
 #include <optional>
+#include <format>
 
 static constexpr float CREDIT_SCREEN_ANIM_RATE = 0.3f;
 
@@ -750,7 +751,7 @@ static int DrawCreditsContent(Graphics* g, int theYPos, bool theDraw)
 
 	for (int aSection = 3; aSection <= 11; aSection++)
 	{
-		std::string aRolesKey = StrFormat("[CREDITS_ROLES%d]", aSection);
+		std::string aRolesKey = std::format("[CREDITS_ROLES{}]", aSection);
 		std::optional<std::string_view> aRolesLookup = PvzpStringTryTranslate(aRolesKey);
 		if (!aRolesLookup)
 			continue;
@@ -769,7 +770,7 @@ static int DrawCreditsContent(Graphics* g, int theYPos, bool theDraw)
 			continue;
 		}
 
-		std::string aNamesKey = StrFormat("[CREDITS_NAMES%d]", aSection);
+		std::string aNamesKey = std::format("[CREDITS_NAMES{}]", aSection);
 		std::string_view aNames = PvzpStringTryTranslate(aNamesKey).value_or("");
 
 		// Split roles and names by newline, draw side by side

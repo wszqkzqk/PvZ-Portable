@@ -20,6 +20,7 @@
  */
 
 #include <climits>
+#include <format>
 
 #include "Plant.h"
 #include "Board.h"
@@ -73,7 +74,7 @@ constexpr Color ZOMBIE_MINDCONTROLLED_COLOR = Color(128, 64, 192, 255);
 
 static std::string ZombatarTrackName(const char* thePrefix, int theIndex)
 {
-	return Sexy::StrFormat("%s%02d", thePrefix, theIndex);
+	return std::format("{}{:02d}", thePrefix, theIndex);
 }
 
 constinit const ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES] = {

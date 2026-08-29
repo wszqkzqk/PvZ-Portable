@@ -24,6 +24,7 @@
 #include <stdarg.h>
 #include <stdexcept>
 #include <fstream>
+#include <format>
 
 #ifdef __SWITCH__
 #include <switch.h>
@@ -83,9 +84,9 @@ void PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine
 
 	std::string aBuffer;
 	if (*theCondition != '\0')
-		aBuffer = Sexy::StrFormat("\n%s(%d)\nassertion failed: '%s'\n%s", theFile, theLine, theCondition, aFormattedMsg.c_str());
+		aBuffer = std::format("\n{}({})\nassertion failed: '{}'\n{}", theFile, theLine, theCondition, aFormattedMsg);
 	else
-		aBuffer = Sexy::StrFormat("\n%s(%d)\nassertion failed: %s", theFile, theLine, aFormattedMsg.c_str());
+		aBuffer = std::format("\n{}({})\nassertion failed: {}", theFile, theLine, aFormattedMsg);
 
 	PvzpTrace("%s", aBuffer.c_str());
 	PvzpErrorMessageBox(aBuffer.c_str(), "Assertion failed");

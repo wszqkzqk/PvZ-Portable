@@ -33,6 +33,7 @@
 #include "misc/PerfTimer.h"
 #include "graphics/MemoryImage.h"
 #include <algorithm>
+#include <format>
 
 constexpr const int NO_BASE_POSE = -2;
 
@@ -1420,7 +1421,7 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex)
 	ReanimationType aReanimationType = ReanimationType::REANIM_NONE;
 	if (aAttacherInfo.mReanimName.size() != 0)
 	{
-		std::string aReanimFileName = StrFormat("reanim/%s.reanim", aAttacherInfo.mReanimName.c_str());
+		std::string aReanimFileName = std::format("reanim/{}.reanim", aAttacherInfo.mReanimName);
 		for (unsigned int i = 0; i < gReanimationParamArraySize; i++)  // find the reanim type for this file name
 		{
 			const ReanimationParams* aParams = &gReanimationParamArray[i];
