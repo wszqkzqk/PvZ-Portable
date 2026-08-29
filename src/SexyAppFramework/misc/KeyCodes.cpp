@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <SDL.h>
 
 using namespace Sexy;
 
@@ -135,7 +136,7 @@ KeyCode	Sexy::GetKeyCodeFromName(const std::string& theKeyName)
 	if (theKeyName.length() >= MAX_KEYNAME_LEN-1)
 		return KEYCODE_UNKNOWN;
 
-	strcpy(aKeyName, theKeyName.c_str());
+	SDL_strlcpy(aKeyName, theKeyName.c_str(), sizeof(aKeyName));
 	char *s = aKeyName;
 	while (*s)
 	{
