@@ -232,8 +232,7 @@ void ReportAchievement::GiveAchievement(LawnApp* theApp, int theAchievement, boo
 		return;
 
 	std::string aAchievementName = theApp->GetString(gAchievementList[theAchievement].name, gAchievementList[theAchievement].name);
-	std::string aFormat = theApp->GetString("%s Achievement!", "%s Achievement!");
-	std::string aMessage = Sexy::StrFormat(aFormat.c_str(), aAchievementName.c_str());
+	std::string aMessage = theApp->GetFormattedString("%s Achievement!", "%s Achievement!", aAchievementName.c_str());
 
 	if (theApp->mBoard) {
 		theApp->mBoard->DisplayAdvice(aMessage, MESSAGE_STYLE_ACHIEVEMENT, AdviceType::ADVICE_NONE);
