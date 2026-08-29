@@ -29,6 +29,7 @@
 #include <mutex>
 
 #include <time.h>
+#include <SDL.h>
 
 #include "memmgr.h"
 
@@ -70,7 +71,7 @@ void SexyMemAddTrack(void *addr,  int asize,  const char* fname, int lnum)
 	gShowLeaks = true;
 
 	SEXY_ALLOC_INFO &info = gSexyAllocMap[addr];
-	strncpy(info.file, fname, sizeof(info.file)-1);
+	SDL_strlcpy(info.file, fname, sizeof(info.file));
 	info.line = lnum;
 	info.size = asize;
 };
