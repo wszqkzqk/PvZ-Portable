@@ -117,7 +117,7 @@ The app's Documents folder is exposed via iTunes/Finder file sharing and the iOS
 
 #### Notes
 
-- Requires iOS 15.0+ (arm64).
+- Requires iOS 16.4+ (arm64).
 - Free Apple ID signatures expire after 7 days; TrollStore installs are permanent.
 - Same touch-to-mouse mapping and aspect ratio behavior as the Android port.
 

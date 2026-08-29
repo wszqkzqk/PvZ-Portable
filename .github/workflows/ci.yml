@@ -689,7 +689,7 @@ jobs:
     name: Build for iOS (arm64)
     runs-on: macos-latest
     env:
-      IOS_DEPLOY_TARGET: "15.0"
+      IOS_DEPLOY_TARGET: "16.4"
     steps:
     - uses: actions/checkout@v6
       with:
