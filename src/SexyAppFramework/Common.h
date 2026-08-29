@@ -140,7 +140,6 @@ int					Rand(int range);
 float				Rand(float range);
 void				SRand(ulong theSeed);
 extern std::string	VFormat(const char* fmt, va_list argPtr) SEXY_FORMAT_ATTRIBUTE(1, 0);
-extern std::string	StrFormat(const char* fmt ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
 std::string			GetAppDataFolder();
 void				SetAppDataFolder(std::string_view thePath);
 std::string			GetAppDataPath(std::string_view theRelativePath);

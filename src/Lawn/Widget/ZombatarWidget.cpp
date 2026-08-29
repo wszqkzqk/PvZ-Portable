@@ -1170,8 +1170,7 @@ void ZombatarWidget::DrawCreate(Graphics* g)
 	{
 		g->SetFont(FONT_BRIANNETOD12);
 		g->SetColor(Color(255, 255, 255));
-		std::string aPage = Sexy::StrFormat(
-			mApp->GetString("ZOMBATAR_PAGE", "Page %d / %d").c_str(), mSubPage + 1, mMaxSubPages + 1);
+		std::string aPage = mApp->GetFormattedString("ZOMBATAR_PAGE", "Page %d / %d", mSubPage + 1, mMaxSubPages + 1);
 		g->DrawString(aPage, 321, 441);
 	}
 }

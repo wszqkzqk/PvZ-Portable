@@ -416,17 +416,6 @@ std::string Sexy::VFormat(const char* fmt, va_list argPtr)
 	return result;
 }
 
-//overloaded StrFormat: should only be used by the xml strings
-std::string Sexy::StrFormat(const char* fmt ...)
-{
-	va_list argList;
-	va_start(argList, fmt);
-	std::string result = VFormat(fmt, argList);
-	va_end(argList);
-
-	return result;
-}
-
 std::string Sexy::Evaluate(std::string_view theString, const DefinesMap& theDefinesMap)
 {
 	std::string anEvaluatedString(theString);

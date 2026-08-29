@@ -965,8 +965,8 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
 			if (theStoreItem == STORE_ITEM_PACKET_UPGRADE)
 			{
 				++mApp->mPlayerInfo->mPurchases[theStoreItem];
-				std::string aDialogLines = StrFormat(
-					mApp->GetString("NOW_YOU_CAN_CHOOSE_X_SEEDS", "Now you can choose to take %d seeds with you per level!").c_str(),
+				std::string aDialogLines = mApp->GetFormattedString(
+					"NOW_YOU_CAN_CHOOSE_X_SEEDS", "Now you can choose to take %d seeds with you per level!",
 					6 + mApp->mPlayerInfo->mPurchases[theStoreItem]);
 				Dialog* aDialog = mApp->DoDialog(DIALOG_UPGRADED, true, mApp->GetString("MORE_SLOTS", "More slots!"), aDialogLines, "[DIALOG_BUTTON_OK]", BUTTONS_FOOTER);
 

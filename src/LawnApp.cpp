@@ -832,6 +832,16 @@ void LawnApp::FinishCreateUserDialog(bool isYes)
 	}
 }
 
+std::string LawnApp::GetFormattedString(std::string theComponentId, std::string theDefault, ...)
+{
+	std::string aFormat = GetString(theComponentId, theDefault);
+	va_list args;
+	va_start(args, theDefault);
+	std::string aResult = VFormat(aFormat.c_str(), args);
+	va_end(args);
+	return aResult;
+}
+
 void LawnApp::DoConfirmDeleteUserDialog(const std::string& theName)
 {
 	KillDialog(Dialogs::DIALOG_CONFIRMDELETEUSER);
@@ -839,9 +849,7 @@ void LawnApp::DoConfirmDeleteUserDialog(const std::string& theName)
 		Dialogs::DIALOG_CONFIRMDELETEUSER,
 		true,
 		GetString("ARE_YOU_SURE", "Are You Sure?"),
-		StrFormat(
-			GetString("DELETE_USER_WARNING", "This will permanently remove '%s' from the player roster!").c_str(),
-			theName.c_str()),
+		GetFormattedString("DELETE_USER_WARNING", "This will permanently remove '%s' from the player roster!", theName.c_str()),
 		"",
 		Dialog::BUTTONS_YES_NO
 	);
@@ -1710,9 +1718,7 @@ void LawnApp::URLOpenFailed(const std::string& theURL)
 	CopyToClipboard(theURL);
 
 	std::string aString =
-		StrFormat(
-			GetString("OPEN_URL", "Please open the following URL in your browser\n\n%s\n\nFor your convenience, this URL has already been copied to your clipboard.").c_str(),
-			theURL.c_str());
+		GetFormattedString("OPEN_URL", "Please open the following URL in your browser\n\n%s\n\nFor your convenience, this URL has already been copied to your clipboard.", theURL.c_str());
 
 	DoDialog(Dialogs::DIALOG_OPENURL_WAIT, true, GetString("OPEN_BROWSER", "Open Browser"), "[DIALOG_BUTTON_OK]", aString, Dialog::BUTTONS_FOOTER);
 }
