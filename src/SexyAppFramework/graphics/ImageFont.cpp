@@ -341,13 +341,13 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 					ListDataElement* aRectElement = new ListDataElement();
 					aRectList->mElementVector.emplace_back(aRectElement);
 
-					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::format("{}", aRectIntVector[0] + aXPos)));
+					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::to_string(aRectIntVector[0] + aXPos)));
 
-					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::format("{}", aRectIntVector[1])));
+					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::to_string(aRectIntVector[1])));
 
-					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::format("{}", aWidthsVector[aWidthNum])));
+					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::to_string(aWidthsVector[aWidthNum])));
 
-					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::format("{}", aRectIntVector[3])));
+					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::to_string(aRectIntVector[3])));
 
 					aXPos += aWidthsVector[aWidthNum];
 				}

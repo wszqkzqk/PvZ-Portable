@@ -28,7 +28,6 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <cstdio>
-#include <format>
 
 using namespace Sexy;
 
@@ -86,7 +85,7 @@ void SexyApp::HandleCmdLineParam(std::string_view theParamName, std::string_view
 		std::string aVersionString =
 			"Product: " + mProdName + "\n" +
 			"Version: " + mProductVersion + "\n" +
-			"Build Num: " + std::format("{}", mBuildNum) + "\n" +
+			"Build Num: " + std::to_string(mBuildNum) + "\n" +
 			"Commit Date: " + mCommitDate + "\n" +
 			CLI_LICENSE_SUMMARY;
 
@@ -105,7 +104,7 @@ void SexyApp::HandleCmdLineParam(std::string_view theParamName, std::string_view
 std::string SexyApp::GetGameSEHInfo()
 {
 	std::string anInfoString = SexyAppBase::GetGameSEHInfo() +
-		"Build Num: " + std::format("{}", mBuildNum) + "\r\n" +
+		"Build Num: " + std::to_string(mBuildNum) + "\r\n" +
 		"Commit Date: " + mCommitDate + "\r\n";
 
 	return anInfoString;

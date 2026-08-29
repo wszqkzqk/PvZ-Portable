@@ -568,7 +568,7 @@ void DrawSeedPacket(Graphics* g, float x, float y, SeedType theSeedType, SeedTyp
 		{
 			if (theUseCurrentCost)
 			{
-				aCostStr = std::format("{}", gLawnApp->mBoard->GetCurrentPlantCost(theSeedType, theImitaterType));
+				aCostStr = std::to_string(gLawnApp->mBoard->GetCurrentPlantCost(theSeedType, theImitaterType));
 			}
 			else
 			{
@@ -577,7 +577,7 @@ void DrawSeedPacket(Graphics* g, float x, float y, SeedType theSeedType, SeedTyp
 		}
 		else
 		{
-			aCostStr = std::format("{}", Plant::GetCost(theSeedType, theImitaterType));
+			aCostStr = std::to_string(Plant::GetCost(theSeedType, theImitaterType));
 		}
 
 		_Font* aTextFont = Sexy::FONT_PICO129;
@@ -975,7 +975,7 @@ void SeedBank::Draw(Graphics* g)
 
 	if (!mBoard->HasConveyorBeltSeedBank())
 	{
-		std::string aMoneyLabel = std::format("{}", std::max(mBoard->mSunMoney, 0));
+		std::string aMoneyLabel = std::to_string(std::max(mBoard->mSunMoney, 0));
 		Color aMoneyColor(0, 0, 0);
 		if (mBoard->mOutOfMoneyCounter > 0 && mBoard->mOutOfMoneyCounter % 20 < 10)
 		{

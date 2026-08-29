@@ -22,7 +22,6 @@
 #include "SexyAppBase.h"
 #include "PvzpList.h"
 #include <algorithm>
-#include <format>
 #include "PvzpDebug.h"
 #include "PvzpCommon.h"
 #include "../LawnApp.h"
@@ -1247,7 +1246,7 @@ std::string PvzpReplaceNumberString(std::string_view theText, const char* theStr
 	size_t aPos = aFinalString.find(theStringToFind);
 	if (aPos != std::string::npos)
 	{
-		std::string aNumberString = std::format("{}", theNumber);
+		std::string aNumberString = std::to_string(theNumber);
 		aFinalString.replace(aPos, strlen(theStringToFind), aNumberString);
 	}
 
