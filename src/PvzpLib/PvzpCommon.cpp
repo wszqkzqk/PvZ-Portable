@@ -428,6 +428,8 @@ void PvzpDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& 
 {
 	std::string_view aFinalString = PvzpStringTranslate(theString);
 
+	memset(gRenderTail, 0, sizeof(gRenderTail));
+	memset(gRenderHead, 0, sizeof(gRenderHead));
 	ImageFont* aFont = reinterpret_cast<ImageFont*>(const_cast<_Font*>(theFont));
 	if (!aFont->mFontData->mInitialized)
 		return;
@@ -557,8 +559,6 @@ void PvzpDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& 
 	for (int aPoolIdx = 0; aPoolIdx < 256; aPoolIdx++)
 	{
 		RenderCommand* aRenderCommand = gRenderHead[aPoolIdx];
-		gRenderHead[aPoolIdx] = nullptr;
-		gRenderTail[aPoolIdx] = nullptr;
 
 		while (aRenderCommand)
 		{
