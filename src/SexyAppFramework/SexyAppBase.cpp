@@ -513,9 +513,9 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	std::string aRecordedVersion(aStrLen, '\0');
 	if (!aFile.read(aRecordedVersion.data(), aStrLen)) return false;
 	if (aRecordedVersion.empty())
-		SDL_Log("%s", "Demo has no program version tag; replay may diverge.");
+		Sexy::LogInfo("Demo has no program version tag; replay may diverge.");
 	else if (mProductVersion != aRecordedVersion)
-		SDL_Log("%s", std::format("Demo was recorded with a different program version (recorded: {}, current: {}); replay may diverge.", aRecordedVersion, mProductVersion).c_str());
+		Sexy::LogInfo("Demo was recorded with a different program version (recorded: {}, current: {}); replay may diverge.", aRecordedVersion, mProductVersion);
 
 	std::streampos aFilePos = aFile.tellg();
 	aFile.seekg(0, std::ios::end);
