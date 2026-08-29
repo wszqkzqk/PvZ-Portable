@@ -133,9 +133,9 @@ void SexyApp::InitPropertiesHook()
 
 void SexyApp::Init()
 {
-	Sexy::PrintF("Product: %s\n", mProdName.c_str());
-	Sexy::PrintF("BuildNum: %d\n", mBuildNum);
-	Sexy::PrintF("CommitDate: %s\n", mCommitDate.c_str());
+	Sexy::LogInfo("Product: {}\n", mProdName);
+	Sexy::LogInfo("BuildNum: {}\n", mBuildNum);
+	Sexy::LogInfo("CommitDate: {}\n", mCommitDate);
 
 	SexyAppBase::Init();
 }

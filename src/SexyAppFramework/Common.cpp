@@ -31,6 +31,8 @@
 #include <chrono>
 #include <cstdarg>
 #include <cstdio>
+#include <fstream>
+#include <mutex>
 #include <SDL.h>
 
 #include "misc/PerfTimer.h"
@@ -49,15 +51,6 @@ static inline char ToLowerAscii(char c)
 	return (char)std::tolower((unsigned char)c);
 }
 
-static inline void SexyLogV(SDL_LogPriority thePriority, const char* theFormat, va_list theArgs)
-{
-	std::string aBuffer = Sexy::VFormat(theFormat, theArgs);
-	if (aBuffer.empty())
-		return;
-
-	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, thePriority, "%s", aBuffer.c_str());
-}
-
 static inline bool IsUnicodeSpace(char32_t theChar)
 {
 	switch (theChar)
@@ -74,20 +67,33 @@ static inline bool IsUnicodeSpace(char32_t theChar)
 	}
 }
 
-void Sexy::PrintF(const char *text, ...)
+static std::ofstream gLogFileSink;
+static std::mutex gLogFileSinkMutex;
+
+void Sexy::RegisterLogFileSink(std::string_view thePath)
 {
-	va_list args;
-	va_start(args, text);
-	SexyLogV(SDL_LOG_PRIORITY_INFO, text, args);
-	va_end(args);
+	gLogFileSink.open(PathFromU8(thePath), std::ios::app | std::ios::binary);
+	if (!gLogFileSink)
+		LogError("Failed to open log file '{}'", thePath);
 }
 
-void Sexy::LogError(const char* theFormat, ...)
+void Sexy::DispatchLog(SexyLogPriority thePriority, std::string_view theText)
 {
-	va_list args;
-	va_start(args, theFormat);
-	SexyLogV(SDL_LOG_PRIORITY_ERROR, theFormat, args);
-	va_end(args);
+	if (theText.empty())
+		return;
+
+	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, thePriority == SexyLogPriority::Error ? SDL_LOG_PRIORITY_ERROR : SDL_LOG_PRIORITY_INFO, "%s", std::string(theText).c_str());
+
+	if (gLogFileSink)
+	{
+		std::scoped_lock aLock(gLogFileSinkMutex);
+		gLogFileSink << theText << '\n' << std::flush;
+		if (!gLogFileSink)
+		{
+			SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "%s", "Failed to write to log file");
+			gLogFileSink.close();
+		}
+	}
 }
 
 int Sexy::Rand()

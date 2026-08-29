@@ -1058,7 +1058,7 @@ void GameSelector::KeyChar(char theChar)
 
 	if ((gIsPartnerBuild || mApp->mDebugKeysEnabled) && theChar == 'u' && mApp->mPlayerInfo)
 	{
-		PvzpTraceAndLogLn("Selector cheat key '%c'", theChar);
+		PvzpLog("Selector cheat key '{}'", theChar);
 
 		mApp->mPlayerInfo->mFinishedAdventure = 2;
 		mApp->mPlayerInfo->AddCoins(50000);
@@ -1079,7 +1079,7 @@ void GameSelector::KeyChar(char theChar)
 
 	if (mApp->mDebugKeysEnabled)
 	{
-		PvzpTraceAndLogLn("Selector cheat key '%c'", theChar);
+		PvzpLog("Selector cheat key '{}'", theChar);
 		if (theChar == 'c' || theChar == 'C')
 		{
 			mMinigamesLocked = false;

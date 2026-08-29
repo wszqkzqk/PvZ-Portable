@@ -513,9 +513,9 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	std::string aRecordedVersion(aStrLen, '\0');
 	if (!aFile.read(aRecordedVersion.data(), aStrLen)) return false;
 	if (aRecordedVersion.empty())
-		SDL_Log("Demo has no program version tag; replay may diverge.");
+		SDL_Log("%s", "Demo has no program version tag; replay may diverge.");
 	else if (mProductVersion != aRecordedVersion)
-		SDL_Log("Demo was recorded with a different program version (recorded: %s, current: %s); replay may diverge.", aRecordedVersion.c_str(), mProductVersion.c_str());
+		SDL_Log("%s", std::format("Demo was recorded with a different program version (recorded: {}, current: {}); replay may diverge.", aRecordedVersion, mProductVersion).c_str());
 
 	std::streampos aFilePos = aFile.tellg();
 	aFile.seekg(0, std::ios::end);
@@ -1547,15 +1547,12 @@ std::string SexyAppBase::GetGameSEHInfo()
 {
 	int aSecLoaded = (SDL_GetTicks() - mTimeLoaded) / 1000;
 
-	char aTimeStr[16];
-	snprintf(aTimeStr, sizeof(aTimeStr), "%02d:%02d:%02d", (aSecLoaded/60/60), (aSecLoaded/60)%60, aSecLoaded%60);
-
 	std::string anInfoString =
 		"Product: " + mProdName + "\r\n" +
 		"Version: " + mProductVersion + "\r\n";
 
 	anInfoString +=
-		"Time Loaded: " + std::string(aTimeStr) + "\r\n"
+		"Time Loaded: " + std::format("{:02}:{:02}:{:02}", (aSecLoaded/60/60), (aSecLoaded/60)%60, aSecLoaded%60) + "\r\n"
 		"Fullscreen: " + (mIsWindowed ? std::string("No") : std::string("Yes")) + "\r\n";
 
 	return anInfoString;
@@ -1905,7 +1902,7 @@ void SexyAppBase::EndPopup()
 int SexyAppBase::MsgBox(const std::string& theText, const std::string& theTitle, [[maybe_unused]] int theFlags)
 {
 	BeginPopup();
-	Sexy::PrintF("%s\n===\n%s\n", theTitle.c_str(), theText.c_str());
+	Sexy::LogInfo("{}\n===\n{}\n", theTitle, theText);
 
 #ifdef __SWITCH__
 	ErrorApplicationConfig c;
@@ -1929,7 +1926,7 @@ void SexyAppBase::Popup(const std::string& theString)
 	BeginPopup();
 	if (!mShutdown)
 	{
-		Sexy::PrintF("FATAL ERROR\n===\n%s\n", theString.c_str());
+		Sexy::LogInfo("FATAL ERROR\n===\n{}\n", theString);
 #if defined(__SWITCH__)
 		ErrorApplicationConfig c;
 		errorApplicationCreate(&c, "Fatal error", theString.c_str());
@@ -2310,7 +2307,7 @@ void SexyAppBase::LoadingThreadProcStub(SexyAppBase *theArg)
 
 	aSexyApp->LoadingThreadProc();
 
-	Sexy::PrintF("Resource Loading Time: %d\r\n", (SDL_GetTicks() - aSexyApp->mTimeLoaded));
+	Sexy::LogInfo("Resource Loading Time: {}\r\n", (SDL_GetTicks() - aSexyApp->mTimeLoaded));
 
 	aSexyApp->mLoadingThreadCompleted = true;
 }
@@ -2952,15 +2949,15 @@ void SexyAppBase::Start()
 
 	WaitForLoadingThread();
 
-	Sexy::PrintF("Seconds       = %g\r\n", (SDL_GetTicks() - aStartTime) / 1000.0);
-	Sexy::PrintF("Sleep Count   = %u\r\n", mSleepCount);
-	Sexy::PrintF("Update Count  = %u\r\n", mUpdateCount);
-	Sexy::PrintF("Draw Count    = %u\r\n", mDrawCount);
-	Sexy::PrintF("Draw Time     = %" PRIu64 "\r\n", mDrawTime);
-	Sexy::PrintF("Screen Blt    = %u\r\n", mScreenBltTime);
+	Sexy::LogInfo("Seconds       = {:.6g}\r\n", (SDL_GetTicks() - aStartTime) / 1000.0);
+	Sexy::LogInfo("Sleep Count   = {}\r\n", mSleepCount);
+	Sexy::LogInfo("Update Count  = {}\r\n", mUpdateCount);
+	Sexy::LogInfo("Draw Count    = {}\r\n", mDrawCount);
+	Sexy::LogInfo("Draw Time     = {}\r\n", mDrawTime);
+	Sexy::LogInfo("Screen Blt    = {}\r\n", mScreenBltTime);
 	if (mDrawTime+mScreenBltTime > 0)
 	{
-		Sexy::PrintF("Avg FPS       = %" PRIu64 "\r\n", static_cast<uint64_t>(mDrawCount) * 1000 / (mDrawTime+mScreenBltTime));
+		Sexy::LogInfo("Avg FPS       = {}\r\n", static_cast<uint64_t>(mDrawCount) * 1000 / (mDrawTime+mScreenBltTime));
 	}
 
 	PreTerminate();

@@ -38,6 +38,7 @@
 #include <type_traits>
 #include <bit>
 #include <algorithm>
+#include <format>
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -132,8 +133,22 @@ extern bool			gDebug;
 #define SEXY_FORMAT_ATTRIBUTE(theFormatIndex, theFirstArgIndex)
 #endif
 
-void				PrintF(const char *text, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
-void				LogError(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
+enum class SexyLogPriority { Info, Error };
+
+void				DispatchLog(SexyLogPriority thePriority, std::string_view theText);
+void				RegisterLogFileSink(std::string_view thePath);
+
+template<typename... Args>
+void				LogInfo(std::format_string<Args...> theFmt, Args&&... theArgs)
+{
+	DispatchLog(SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
+}
+
+template<typename... Args>
+void				LogError(std::format_string<Args...> theFmt, Args&&... theArgs)
+{
+	DispatchLog(SexyLogPriority::Error, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
+}
 
 int					Rand();
 int					Rand(int range);

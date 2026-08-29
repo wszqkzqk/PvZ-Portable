@@ -5654,7 +5654,7 @@ void Zombie::DrawReanim(Graphics* g, const ZombieDrawPosition& theDrawPos, int t
 	if (aBodyReanim == nullptr)
 	{
 #ifdef PVZ_DEBUG
-		PvzpTrace("Missing zombie reanimation");
+		PvzpLog("Missing zombie reanimation");
 #endif
 		return;
 	}

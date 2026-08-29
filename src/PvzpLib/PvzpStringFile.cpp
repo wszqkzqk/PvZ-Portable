@@ -71,7 +71,7 @@ bool PvzpStringListReadName(const char*& thePtr, std::string& theName)
 	{
 		if (strspn(thePtr, " \n\r\t") != strlen(thePtr))  // the remaining text is not all whitespace
 		{
-			PvzpTrace("Failed to find string name");
+			PvzpLog("Failed to find string name");
 			return false;
 		}
 
@@ -83,7 +83,7 @@ bool PvzpStringListReadName(const char*& thePtr, std::string& theName)
 		const char* aNameEnd = strchr(aNameStart + 1, ']');
 		if (aNameEnd == nullptr)
 		{
-			PvzpTrace("Failed to find ']'");
+			PvzpLog("Failed to find ']'");
 			return false;
 		}
 
@@ -91,7 +91,7 @@ bool PvzpStringListReadName(const char*& thePtr, std::string& theName)
 		theName = Sexy::Trim(std::string(aNameStart + 1, aCount));
 		if (theName.size() == 0)
 		{
-			PvzpTrace("Name Too Short");
+			PvzpLog("Name Too Short");
 			return false;
 		}
 
@@ -146,7 +146,7 @@ bool PvzpStringListReadFile(const char* theFileName)
 	std::string aFileContent;
 	if (!gSexyAppBase->ReadUTF8StringFromFile(theFileName, &aFileContent))
 	{
-		PvzpTrace("Failed to open '%s'", theFileName);
+		PvzpLog("Failed to open '{}'", theFileName);
 		return false;
 	}
 
@@ -156,7 +156,7 @@ bool PvzpStringListReadFile(const char* theFileName)
 void PvzpStringListLoad(const char* theFileName)
 {
 	if (!PvzpStringListReadFile(theFileName))
-		PvzpErrorMessageBox(std::format("Failed to load string list file '{}'", theFileName).c_str(), "Error");
+		PvzpErrorMessageBox(std::format("Failed to load string list file '{}'", theFileName), "Error");
 }
 
 std::string_view PvzpStringListFind(std::string_view theName)

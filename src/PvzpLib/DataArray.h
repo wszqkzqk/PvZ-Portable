@@ -86,7 +86,7 @@ public:
 	void DataArrayFree(T* theItem)
 	{
 		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
-		PVZP_ASSERT(DataArrayGet(mItemIds[anIndex]) == theItem, "Failed: DataArrayFree(%p) in %s", (void*)theItem, mName);
+		PVZP_ASSERT(DataArrayGet(mItemIds[anIndex]) == theItem, "Failed: DataArrayFree({:p}) in {}", (void*)theItem, mName);
 		DataArrayResetItemAt(anIndex);
 		mItemIds[anIndex] = mFreeListHead;
 		mFreeListHead = anIndex;
@@ -106,7 +106,7 @@ public:
 	{
 		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
 		unsigned int anId = mItemIds[anIndex];
-		PVZP_ASSERT(DataArrayGet(anId) == theItem, "Failed: DataArrayGetID(%p) for %s", (void*)theItem, mName);
+		PVZP_ASSERT(DataArrayGet(anId) == theItem, "Failed: DataArrayGetID({:p}) for {}", (void*)theItem, mName);
 		return anId;
 	}
 
@@ -155,8 +155,8 @@ public:
 
 	T* DataArrayAlloc()
 	{
-		PVZP_ASSERT(mSize < mMaxSize, "Data array full: %s", mName);
-		PVZP_ASSERT(mFreeListHead <= mMaxUsedCount, "DataArrayAlloc error in %s", mName);
+		PVZP_ASSERT(mSize < mMaxSize, "Data array full: {}", mName);
+		PVZP_ASSERT(mFreeListHead <= mMaxUsedCount, "DataArrayAlloc error in {}", mName);
 		unsigned int aNext = mMaxUsedCount;
 		if (mFreeListHead == mMaxUsedCount)
 			mFreeListHead = ++mMaxUsedCount;
@@ -185,7 +185,7 @@ public:
 
 	T* DataArrayGet(unsigned int theId)
 	{
-		PVZP_ASSERT(DataArrayTryToGet(theId) != nullptr, "Failed: DataArrayGet(0x%x) for %s", theId, mName);
+		PVZP_ASSERT(DataArrayTryToGet(theId) != nullptr, "Failed: DataArrayGet(0x{:x}) for {}", theId, mName);
 		return &mItems[theId & DATA_ARRAY_INDEX_MASK];
 	}
 

@@ -353,7 +353,7 @@ bool DefinitionLoadImage(Image** theImage, const std::string& theName)
 			SharedImageRef aImageRef = gSexyAppBase->GetSharedImage(aPathToTry);
 			if ((Image*)aImageRef != nullptr)
 			{
-				PvzpHesitationTrace("Load Image '%s'", theName.c_str());
+				PvzpHesitationTrace("Load Image '{}'", theName);
 				PvzpAddImageToMap(&aImageRef, theName);
 				PvzpMarkImageForSanding((Image*)aImageRef);
 				*theImage = (Image*)aImageRef;
@@ -382,7 +382,7 @@ inline bool DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArra
 	SMemR(theReadPtr, &aDefSize, sizeof(int));  // read the cached definition struct size
 	if (aDefSize != theDefMap->mDefSize)
 	{
-		PvzpTrace("cache has old def: array size");
+		PvzpLog("cache has old def: array size");
 		return false;
 	}
 	if (theArray->mArrayCount == 0)
@@ -537,13 +537,13 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
 	// The first two dwords are a CompressedDefinitionHeader, so the buffer must be at least 8 bytes
 	if (theCompressedBufferSize < 8)
 	{
-		PvzpTrace("Compile def too small: %s", theCompiledFilePath.c_str());
+		PvzpLog("Compile def too small: {}", theCompiledFilePath);
 		return nullptr;
 	}
 	CompressedDefinitionHeader* aHeader = (CompressedDefinitionHeader*)theCompressedBuffer;
 	if (aHeader->mCookie != 0xDEADFED4L)
 	{
-		PvzpTrace("Compiled fire cookie wrong: %s\n", theCompiledFilePath.c_str());
+		PvzpLog("Compiled fire cookie wrong: {}\n", theCompiledFilePath);
 		return nullptr;
 	}
 
@@ -597,7 +597,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	aFileStream.read(aCompressedBuffer.data(), (std::streamsize)aCompressedSize);
 	bool aReadCompressedFailed = !aFileStream || (size_t)aFileStream.gcount() != aCompressedSize;
 	if (aReadCompressedFailed) {
-		PvzpTrace("Failed to read compiled file: %s\n", theCompiledFilePath.c_str());
+		PvzpLog("Failed to read compiled file: {}\n", theCompiledFilePath);
 		return false;
 	}
 
@@ -608,7 +608,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 
 	uint aDefHash = DefinitionCalcHash(theDefMap);  // CRC checked against the stored hash below
 	if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint)) {
-		PvzpTrace("Compiled file size too small: %s\n", theCompiledFilePath.c_str());
+		PvzpLog("Compiled file size too small: {}\n", theCompiledFilePath);
 		return false;
 	} // must hold the definition data plus the stored hash
 
@@ -618,7 +618,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	uint aCashHash;
 	SMemR(aBufferPtr, &aCashHash, sizeof(uint));  // read the stored CRC hash
 	if (aCashHash != aDefHash) {
-		PvzpTrace("Compiled file schema wrong: %s\n", theCompiledFilePath.c_str());
+		PvzpLog("Compiled file schema wrong: {}\n", theCompiledFilePath);
 		return false;
 	} // a hash mismatch means the cached data is stale
 
@@ -629,7 +629,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	bool aResult = DefMapReadFromCache(aBufferPtr, theDefMap, theDefinition);
 	size_t aReadMemSize = (uintptr_t)aBufferPtr - (uintptr_t)aUncompressedBuffer.get();
 	if (aResult && aReadMemSize != aUncompressedSize) {
-		PvzpTrace("Compiled file wrong size: %s\n", theCompiledFilePath.c_str());
+		PvzpLog("Compiled file wrong size: {}\n", theCompiledFilePath);
 		return false;
 	}
 	return aResult;
@@ -663,7 +663,7 @@ bool DefinitionIsCompiled(const std::string& theXMLFilePath)
 	std::filesystem::file_time_type aXMLFileTime{};
 	if (!DefinitionGetFileModTime(theXMLFilePath, aXMLFileTime))
 	{
-		PvzpTrace("Can't find source file to compile '%s'", theXMLFilePath.c_str());
+		PvzpLog("Can't find source file to compile '{}'", theXMLFilePath);
 		return false;
 	}
 
@@ -676,18 +676,6 @@ void DefinitionFillWithDefaults(const DefMap* theDefMap, void* theDefinition)
 	for (const DefField* aField = theDefMap->mMapFields; *aField->mFieldName != '\0'; aField++)
 		if (aField->mFieldType == DefFieldType::DT_STRING)
 			*(const char**)((uintptr_t)theDefinition + aField->mFieldOffset) = "";
-}
-
-void DefinitionXmlError(XMLParser* theXmlParser, const char* theFormat, ...)
-{
-	va_list argList;
-	va_start(argList, theFormat);
-	std::string aFormattedMessage = Sexy::VFormat(theFormat, argList);
-	va_end(argList);
-
-	int aLine = theXmlParser->GetCurrentLineNum();
-	std::string aFileName = theXmlParser->GetFileName();
-	PvzpTraceAndLogLn("%s(%d): XML Definition Error: %s", aFileName.c_str(), aLine, aFormattedMessage.c_str());
 }
 
 bool DefinitionReadXMLString(XMLParser* theXmlParser, std::string& theValue)
@@ -744,7 +732,7 @@ bool DefinitionReadIntField(XMLParser* theXmlParser, int* theValue)
 	if (sscanf(aStringValue.c_str(), "%d", theValue) == 1)
 		return true;
 
-	DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
+	DefinitionXmlError(theXmlParser, "Can't parse int value '{}'", aStringValue);
 	return false;
 }
 
@@ -757,7 +745,7 @@ bool DefinitionReadFloatField(XMLParser* theXmlParser, float* theValue)
 	if (sscanf(aStringValue.c_str(), "%f", theValue) == 1)
 		return true;
 
-	DefinitionXmlError(theXmlParser, "Can't parse float value '%s'", aStringValue.c_str());
+	DefinitionXmlError(theXmlParser, "Can't parse float value '{}'", aStringValue);
 	return false;
 }
 
@@ -789,7 +777,7 @@ bool DefinitionReadEnumField(XMLParser* theXmlParser, int* theValue, const DefSy
 	if (DefSymbolValueFromString(theSymbolMap, aStringValue.c_str(), theValue))
 		return true;
 
-	DefinitionXmlError(theXmlParser, "Can't parse enum value '%s'", aStringValue.c_str());
+	DefinitionXmlError(theXmlParser, "Can't parse enum value '{}'", aStringValue);
 	return false;
 }
 
@@ -802,7 +790,7 @@ bool DefinitionReadVector2Field(XMLParser* theXmlParser, SexyVector2* theValue)
 	if (sscanf(aStringValue.c_str(), "%f %f", &theValue->x, &theValue->y) == 2)
 		return true;
 
-	DefinitionXmlError(theXmlParser, "Can't parse vector2 value '%s'", aStringValue.c_str());
+	DefinitionXmlError(theXmlParser, "Can't parse vector2 value '{}'", aStringValue);
 	return false;
 }
 
@@ -1016,9 +1004,9 @@ bool DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack*
 
 
 	/*
-    PvzpTraceAndLogLn("%s | %d", aStringChars, aFloatTrackVec.size());
+    PvzpLog("{} | {}", aStringChars, aFloatTrackVec.size());
     for (auto &i : aFloatTrackVec) {
-        PvzpTraceAndLogLn("%f", i.mTime);
+        PvzpLog("{:f}", i.mTime);
     }
     */
 
@@ -1045,7 +1033,7 @@ bool DefinitionReadFlagField(XMLParser* theXmlParser, const std::string& theElem
 	float aFlag; // This was obviously a bug, the casting is wrong, although amusingly it just woks since it's just a bit
 	if (sscanf(aStringValue.c_str(), "%f", &aFlag) != 1)
 	{
-		DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
+		DefinitionXmlError(theXmlParser, "Can't parse int value '{}'", aStringValue);
 		return false;
 	}
 
@@ -1076,7 +1064,7 @@ bool DefinitionReadImageField(XMLParser* theXmlParser, Image** theImage)
 		return true;
 
 	std::string aMessgae = std::format("Failed to find image '{}' in {}", aStringValue, theXmlParser->GetFileName());
-	PvzpErrorMessageBox(aMessgae.c_str(), "Missing image");
+	PvzpErrorMessageBox(aMessgae, "Missing image");
 
 	return false;
 }
@@ -1091,7 +1079,7 @@ bool DefinitionReadFontField(XMLParser* theXmlParser, _Font** theFont)
 		return true;
 
 	std::string aMessgae = std::format("Failed to find font '{}' in {}", aStringValue, theXmlParser->GetFileName());
-	PvzpErrorMessageBox(aMessgae.c_str(), "Missing font");
+	PvzpErrorMessageBox(aMessgae, "Missing font");
 
 	return false;
 }
@@ -1160,11 +1148,11 @@ bool DefinitionReadField(XMLParser* theXmlParser, const DefMap* theDefMap, void*
 			if (aSuccess)
 				return true;
 
-			DefinitionXmlError(theXmlParser, "Failed to read '%s' field", aXMLElement.mValue.c_str());
+			DefinitionXmlError(theXmlParser, "Failed to read '{}' field", aXMLElement.mValue);
 			return false;
 		}
 	}
-	DefinitionXmlError(theXmlParser, "Ignoring unknown element '%s'", aXMLElement.mValue.c_str());
+	DefinitionXmlError(theXmlParser, "Ignoring unknown element '{}'", aXMLElement.mValue);
 	return false;
 }
 
@@ -1291,7 +1279,7 @@ bool DefinitionCompileFile(const std::string& theXMLFilePath, const std::string&
 	XMLParser aXMLParser = XMLParser();
 	if (!aXMLParser.OpenFile(theXMLFilePath))
 	{
-		PvzpTrace("XML file not found: %s\n", theXMLFilePath.c_str());
+		PvzpLog("XML file not found: {}\n", theXMLFilePath);
 		return false;
 	}
 	else if (!DefinitionLoadMap(&aXMLParser, theDefMap, theDefinition))
@@ -1314,20 +1302,20 @@ bool DefinitionCompileAndLoad(const std::string& theXMLFilePath, const DefMap* t
 	const bool aShouldTryCompiled = !aRequireCompiledUpToDate || DefinitionIsCompiled(theXMLFilePath);
 	if (aShouldTryCompiled && DefinitionReadCompiledFile(aCompiledFilePath, theDefMap, theDefinition))
 	{
-		PvzpHesitationTrace("loaded %s", aCompiledFilePath.c_str());
+		PvzpHesitationTrace("loaded {}", aCompiledFilePath);
 		return true;
 	}
 
 	PerfTimer aTimer;
 	aTimer.Start();
 	bool aResult = DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition);
-	PvzpTrace("compile %d ms:'%s'", (int)aTimer.GetDuration(), aCompiledFilePath.c_str());
-	PvzpHesitationTrace("compiled %s", aCompiledFilePath.c_str());
+	PvzpLog("compile {} ms:'{}'", (int)aTimer.GetDuration(), aCompiledFilePath);
+	PvzpHesitationTrace("compiled {}", aCompiledFilePath);
 	if (aResult)
 		return true;
 
 #ifndef PVZ_DEBUG
-	PvzpErrorMessageBox(std::format("missing resource {}", aCompiledFilePath).c_str(), "Error");
+	PvzpErrorMessageBox(std::format("missing resource {}", aCompiledFilePath), "Error");
 	exit(0);
 #endif
 	return false;

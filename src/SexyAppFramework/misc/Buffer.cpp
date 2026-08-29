@@ -26,6 +26,7 @@
 #include <SDL_stdinc.h>
 #include <array>
 #include <bit>
+#include <format>
 constexpr const long POLYNOMIAL = 0x04c11db7L;
 
 using namespace Sexy;
@@ -109,9 +110,7 @@ std::string Buffer::ToWebString() const
 	int anOldReadBitPos = mReadBitPos;
 	mReadBitPos = 0;
 
-	char aStr[256];
-	snprintf(aStr, sizeof(aStr), "%08X", aSizeBits);
-	aString += aStr;
+	aString += std::format("{:08X}", aSizeBits);
 
 	int aNumChars = (aSizeBits + 5) / 6;
 	for (int aCharNum = 0; aCharNum < aNumChars; aCharNum++)

@@ -916,7 +916,7 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	int aDuration = std::max(aTimer.GetDuration(), 0.0);
 	if (aDuration > 20)
 	{
-		PvzpTraceAndLogLn("LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration, LawnGetCurrentLevelName().c_str());
+		PvzpLog("LOADING:Long sanding '{}' {} ms on {}", theImage->mFilePath, aDuration, LawnGetCurrentLevelName());
 	}
 }
 
@@ -1060,7 +1060,7 @@ bool PvzpResourceManager::PvzpLoadResources(const std::string& theGroup)
 	int aDuration = std::max(aTimer.GetDuration(), 0.0);
 	if (aDuration > 20)
 	{
-		PvzpTraceAndLogLn("LOADED: '%s' %d ms on %s", theGroup.c_str(), aDuration, LawnGetCurrentLevelName().c_str());
+		PvzpLog("LOADED: '{}' {} ms on {}", theGroup, aDuration, LawnGetCurrentLevelName());
 	}
 
 	return true;
@@ -1151,8 +1151,8 @@ bool PvzpResourceManager::PvzpLoadNextResource()
 			}
 		}
 
-		PvzpHesitationTrace("Loading: '%s'", aRes->mPath.c_str());
-		PvzpHesitationTrace("resource '%s'", aRes->mPath.c_str());
+		PvzpHesitationTrace("Loading: '{}'", aRes->mPath);
+		PvzpHesitationTrace("resource '{}'", aRes->mPath);
 		return true;
 	}
 
@@ -1269,33 +1269,4 @@ bool PvzpIsPointInPolygon(const SexyVector2* thePolygonPoint, int theNumberPolyg
 			return false;
 	}
 	return true;
-}
-
-int PvzpVsnprintf(char* theBuffer, int theSize, const char* theFormat, va_list theArgList)
-{
-	try
-	{
-		int aCount = vsnprintf(theBuffer, theSize, theFormat, theArgList);
-		if (aCount == -1)
-		{
-			theBuffer[theSize - 1] = '\0';
-			aCount = theSize - 1;
-		}
-		return aCount;
-	}
-	catch (std::exception&)
-	{
-		PVZP_ASSERT(, "bad format string");
-		return 1;
-	}
-}
-
-int PvzpSnprintf(char* theBuffer, int theSize, const char* theFormat, ...)
-{
-	va_list argList;
-	va_start(argList, theFormat);
-	int aCount = PvzpVsnprintf(theBuffer, theSize, theFormat, argList);
-	va_end(argList);
-
-	return aCount;
 }

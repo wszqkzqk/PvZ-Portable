@@ -341,19 +341,13 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 					ListDataElement* aRectElement = new ListDataElement();
 					aRectList->mElementVector.emplace_back(aRectElement);
 
-					char aStr[256];
+					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::format("{}", aRectIntVector[0] + aXPos)));
 
-					snprintf(aStr, sizeof(aStr), "%d", aRectIntVector[0] + aXPos);
-					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(aStr));
+					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::format("{}", aRectIntVector[1])));
 
-					snprintf(aStr, sizeof(aStr), "%d", aRectIntVector[1]);
-					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(aStr));
+					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::format("{}", aWidthsVector[aWidthNum])));
 
-					snprintf(aStr, sizeof(aStr), "%d", aWidthsVector[aWidthNum]);
-					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(aStr));
-
-					snprintf(aStr, sizeof(aStr), "%d", aRectIntVector[3]);
-					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(aStr));
+					aRectElement->mElementVector.push_back(std::make_unique<SingleDataElement>(std::format("{}", aRectIntVector[3])));
 
 					aXPos += aWidthsVector[aWidthNum];
 				}

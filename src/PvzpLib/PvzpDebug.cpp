@@ -19,11 +19,7 @@
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <time.h>
-#include <cinttypes>
-#include <stdarg.h>
 #include <stdexcept>
-#include <fstream>
 #include <format>
 
 #ifdef __SWITCH__
@@ -38,17 +34,14 @@
 
 using namespace Sexy;
 
-static char gLogFileName[512];
-static char gDebugDataFolder[512];
-
-void PvzpErrorMessageBox(const char* theMessage, const char* theTitle)
+void PvzpErrorMessageBox(std::string_view theMessage, std::string_view theTitle)
 {
 #ifdef __SWITCH__
 	ErrorApplicationConfig c;
-	errorApplicationCreate(&c, theTitle, theMessage);
+	errorApplicationCreate(&c, std::string(theTitle).c_str(), std::string(theMessage).c_str());
 	errorApplicationShow(&c);
 #else
-	throw std::runtime_error("Error Box\n--" + std::string(theTitle) + "--\n" + theMessage);
+	throw std::runtime_error("Error Box\n--" + std::string(theTitle) + "--\n" + std::string(theMessage));
 #endif
 }
 
@@ -72,111 +65,18 @@ void PvzpFree(void* theBlock)
 
 void PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine)
 {
-	PvzpAssertFailed(theCondition, theFile, theLine, "%s", "");
+	PvzpAssertReport(theCondition, theFile, theLine, "");
 }
 
-void PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine, const char* theMsg, ...)
+void PvzpAssertReport(const char* theCondition, const char* theFile, int theLine, std::string_view theMsg)
 {
-	va_list argList;
-	va_start(argList, theMsg);
-	std::string aFormattedMsg = Sexy::VFormat(theMsg, argList);
-	va_end(argList);
-
 	std::string aBuffer;
 	if (*theCondition != '\0')
-		aBuffer = std::format("\n{}({})\nassertion failed: '{}'\n{}", theFile, theLine, theCondition, aFormattedMsg);
+		aBuffer = std::format("\n{}({})\nassertion failed: '{}'\n{}", theFile, theLine, theCondition, theMsg);
 	else
-		aBuffer = std::format("\n{}({})\nassertion failed: {}", theFile, theLine, aFormattedMsg);
+		aBuffer = std::format("\n{}({})\nassertion failed: {}", theFile, theLine, theMsg);
 
-	PvzpTrace("%s", aBuffer.c_str());
-	PvzpErrorMessageBox(aBuffer.c_str(), "Assertion failed");
+	Sexy::DispatchLog(Sexy::SexyLogPriority::Info, aBuffer);
+	PvzpErrorMessageBox(aBuffer, "Assertion failed");
 	exit(0);
-}
-
-void PvzpLogLn(const char* theFormat, ...)
-{
-	va_list argList;
-	va_start(argList, theFormat);
-	std::string aBuffer = Sexy::VFormat(theFormat, argList);
-	va_end(argList);
-
-	if (!aBuffer.empty())
-		PvzpLogStringLn(aBuffer.c_str());
-}
-
-void PvzpLogStringLn(const char* theMsg)
-{
-#ifdef PVZ_DEBUG
-	std::ofstream f(Sexy::PathFromU8(gLogFileName), std::ios::app | std::ios::binary);
-	if (!f)
-	{
-		Sexy::LogError("Failed to open log file '%s'", gLogFileName);
-		return;
-	}
-
-	f << theMsg << '\n';
-	if (!f)
-	{
-		Sexy::LogError("Failed to write to log file");
-	}
-#endif
-}
-
-void PvzpTrace(const char* theFormat, ...)
-{
-	va_list argList;
-	va_start(argList, theFormat);
-	std::string aBuffer = Sexy::VFormat(theFormat, argList);
-	va_end(argList);
-
-	if (!aBuffer.empty())
-		Sexy::PrintF("%s", aBuffer.c_str());
-}
-
-void PvzpHesitationTrace(...)
-{
-}
-
-void PvzpTraceAndLogLn(const char* theFormat, ...)
-{
-	va_list argList;
-	va_start(argList, theFormat);
-	std::string aBuffer = Sexy::VFormat(theFormat, argList);
-	va_end(argList);
-
-	if (aBuffer.empty())
-		return;
-
-	Sexy::PrintF("%s", aBuffer.c_str());
-	PvzpLogStringLn(aBuffer.c_str());
-}
-
-void PvzpTraceWithoutSpamming(const char* theFormat, ...)
-{
-	static uint64_t gLastTraceTime = 0LL;
-	uint64_t aTime = time(nullptr);
-	if (aTime <= gLastTraceTime) // at most one trace per second
-		return;
-
-	gLastTraceTime = aTime;
-
-	va_list argList;
-	va_start(argList, theFormat);
-	std::string aBuffer = Sexy::VFormat(theFormat, argList);
-	va_end(argList);
-
-	if (!aBuffer.empty())
-		Sexy::PrintF("%s", aBuffer.c_str());
-}
-
-void PvzpAssertInitForApp()
-{
-	MkDir(GetAppDataPath("userdata"));
-	std::string aRelativeUserPath = GetAppDataPath("userdata/");
-	strcpy(gDebugDataFolder, aRelativeUserPath.c_str());
-	strcpy(gLogFileName, gDebugDataFolder);
-	strcpy(gLogFileName + strlen(gLogFileName), "log.txt");
-	PVZP_ASSERT(strlen(gLogFileName) < 512);
-
-	PvzpLogLn("Started %" PRIu64, static_cast<uint64_t>(time(nullptr)));
 }

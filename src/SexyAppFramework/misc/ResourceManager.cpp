@@ -157,13 +157,10 @@ bool ResourceManager::Fail(const std::string& theErrorText)
 
 		int aLineNum = mXMLParser->GetCurrentLineNum();
 
-		char aLineNumStr[16];
-		snprintf(aLineNumStr, sizeof(aLineNumStr), "%d", aLineNum);
-
 		mError = theErrorText;
 
 		if (aLineNum > 0)
-			mError += std::string(" on Line ") + aLineNumStr;
+			mError += std::format(" on Line {}", aLineNum);
 
 		if (mXMLParser->GetFileName().length() > 0)
 			mError += " in File '" + mXMLParser->GetFileName() + "'";

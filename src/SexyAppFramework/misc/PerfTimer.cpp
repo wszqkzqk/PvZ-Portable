@@ -23,6 +23,7 @@
  */
 
 #include "PerfTimer.h"
+#include <format>
 #include <map>
 #include <set>
 #include <SDL.h>
@@ -226,15 +227,12 @@ void SexyPerf::StopTiming(const char *theName)
 std::string SexyPerf::GetResults()
 {
 	std::string aResult;
-	char aBuf[512];
 
-	snprintf(aBuf, sizeof(aBuf), "Total Time: %.2f\n", gDuration);
-	aResult += aBuf;
+	aResult += std::format("Total Time: {:.2f}\n", gDuration);
 	for (PerfInfoSet::iterator anItr = gPerfInfoSet.begin(); anItr != gPerfInfoSet.end(); ++anItr)
 	{
 		const PerfInfo &anInfo = *anItr;
-		snprintf(aBuf, sizeof(aBuf), "%s (%d calls, %%%.2f time): %.2f (%.2f avg, %.2f longest)\n", anInfo.mPerfName, anInfo.mCallCount, anInfo.mMillisecondDuration/gDuration*100, anInfo.mMillisecondDuration, anInfo.mMillisecondDuration/anInfo.mCallCount, anInfo.mLongestCall);
-		aResult += aBuf;
+		aResult += std::format("{} ({} calls, %{:.2f} time): {:.2f} ({:.2f} avg, {:.2f} longest)\n", anInfo.mPerfName, anInfo.mCallCount, anInfo.mMillisecondDuration/gDuration*100, anInfo.mMillisecondDuration, anInfo.mMillisecondDuration/anInfo.mCallCount, anInfo.mLongestCall);
 	}
 
 

@@ -230,7 +230,7 @@ void PlayerInfo::LoadDetails()
 	}
 	catch (DataReaderException&)
 	{
-		PvzpTrace("Failed to player data, resetting it\n");
+		PvzpLog("Failed to player data, resetting it\n");
 		Reset();
 	}
 }

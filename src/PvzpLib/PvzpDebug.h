@@ -22,6 +22,8 @@
 #ifndef __PVZPDEBUG_H__
 #define __PVZPDEBUG_H__
 
+#include <format>
+
 #include "../SexyAppFramework/Common.h"
 
 class PvzpHesitationBracket
@@ -31,26 +33,47 @@ public:
 	int				mBracketStartTime;
 
 public:
-	PvzpHesitationBracket(const char* /*theFormat*/, ...) { ; }
+	template<typename... Args>
+	PvzpHesitationBracket(std::string_view, Args&&...) { ; }
 	~PvzpHesitationBracket() { ; }
 
 	inline void		EndBracket() { ; }
 };
 
-void				PvzpLogLn(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
-void				PvzpLogStringLn(const char* theMsg);
-void				PvzpTrace(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
-void				PvzpTraceMemory();
-void				PvzpTraceAndLogLn(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
-void				PvzpTraceWithoutSpamming(const char* theFormat, ...) SEXY_FORMAT_ATTRIBUTE(1, 2);
-void				PvzpHesitationTrace(...);
-void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine);
-void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine, const char* theMsg, ...) SEXY_FORMAT_ATTRIBUTE(4, 5);
-void		PvzpErrorMessageBox(const char* theMessage, const char* theTitle);
+template<typename... Args>
+void				PvzpHesitationTrace(std::string_view, Args&&...) { ; }
 
-void*	PvzpMalloc(int theSize);
-void		PvzpFree(void* theBlock);
-void				PvzpAssertInitForApp();
+void				PvzpTraceMemory();
+void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine);
+void				PvzpAssertReport(const char* theCondition, const char* theFile, int theLine, std::string_view theMsg);
+void				PvzpErrorMessageBox(std::string_view theMessage, std::string_view theTitle);
+
+void*				PvzpMalloc(int theSize);
+void				PvzpFree(void* theBlock);
+
+template<typename... Args>
+void				PvzpLog(std::format_string<Args...> theFmt, Args&&... theArgs)
+{
+	Sexy::DispatchLog(Sexy::SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
+}
+
+template<typename... Args>
+void				PvzpTraceWithoutSpamming(std::format_string<Args...> theFmt, Args&&... theArgs)
+{
+	static uint64_t gLastTraceTime = 0LL;
+	uint64_t aTime = std::time(nullptr);
+	if (aTime <= gLastTraceTime) // at most one trace per second
+		return;
+
+	gLastTraceTime = aTime;
+	PvzpLog(theFmt, theArgs...);
+}
+
+template<typename... Args>
+void				PvzpAssertFailed(const char* theCondition, const char* theFile, int theLine, std::format_string<Args...> theMsg, Args&&... theArgs)
+{
+	PvzpAssertReport(theCondition, theFile, theLine, std::vformat(theMsg.get(), std::make_format_args(theArgs...)));
+}
 
 #ifdef PVZ_DEBUG
 #define PVZP_ASSERT(condition, ...) { \

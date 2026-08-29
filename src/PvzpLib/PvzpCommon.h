@@ -21,7 +21,6 @@
 
 #pragma once
 #include <cstdint>
-#include <cstdarg>
 #include <stdlib.h>
 #include <cmath>
 #include <cfloat>
@@ -146,8 +145,6 @@ void					Pvzp_SWTri_AddAllDrawTriFuncs();
 
 std::string				PvzpReplaceString(std::string_view theText, const char* theStringToFind, std::string_view theStringToSubstitute);
 std::string				PvzpReplaceNumberString(std::string_view theText, const char* theStringToFind, int theNumber);
-int						PvzpSnprintf(char* theBuffer, int theSize, const char* theFormat, ...);
-int						PvzpVsnprintf(char* theBuffer, int theSize, const char* theFormat, va_list theArgList);
 
 PvzpAllocator*			FindGlobalAllocator(int theSize);
 void                    FreeGlobalAllocators();

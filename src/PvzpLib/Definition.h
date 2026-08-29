@@ -23,9 +23,12 @@
 #define __PVZPDEFINITION_H__
 
 #include <string>
+#include <format>
 #include "PvzpList.h"
+#include "PvzpDebug.h"
 #include "Reanimator.h"
 #include "PvzpParticle.h"
+#include "../SexyAppFramework/misc/XMLParser.h"
 
 enum class DefFieldType : int
 {
@@ -131,7 +134,14 @@ bool                    IsFileInPakFile(const std::string& theFilePath);
 bool                    DefinitionIsCompiled(const std::string& theXMLFilePath);
 bool                    DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const DefMap* theDefMap, void* theDefinition);
 void                    DefinitionFillWithDefaults(const DefMap* theDefMap, void* theDefinition);
-void                    DefinitionXmlError(XMLParser* theXmlParser, char* theFormat, ...);
+template<typename... Args>
+void                    DefinitionXmlError(XMLParser* theXmlParser, std::format_string<Args...> theFormat, Args&&... theArgs)
+{
+	std::string aFormattedMessage = std::vformat(theFormat.get(), std::make_format_args(theArgs...));
+	int aLine = theXmlParser->GetCurrentLineNum();
+	std::string aFileName = theXmlParser->GetFileName();
+	PvzpLog("{}({}): XML Definition Error: {}", aFileName, aLine, aFormattedMessage);
+}
 bool                    DefSymbolValueFromString(const DefSymbol* theSymbolMap, const char* theName, int* theResultValue);
 bool                    DefinitionReadXMLString(XMLParser* theXmlParser, std::string& theValue);
 bool                    DefinitionReadIntField(XMLParser* theXmlParser, int* theValue);

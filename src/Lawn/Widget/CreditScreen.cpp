@@ -1170,11 +1170,11 @@ void CreditScreen::Update()
 			int aUnsyncedFrames = (aUnsyncedDuration + 5) / 10;
 			if (aUnsyncedFrames < 0)
 			{
-				PvzpTrace("Movie playing too fast %d frames", 1 - aUnsyncedFrames);
+				PvzpLog("Movie playing too fast {} frames", 1 - aUnsyncedFrames);
 			}
 			else if (aUnsyncedFrames > 2)
 			{
-				PvzpTrace("Movie playing too slow %d frames", aUnsyncedFrames - 1);
+				PvzpLog("Movie playing too slow {} frames", aUnsyncedFrames - 1);
 			}
 
 			if (aUnsyncedDuration > 10000)

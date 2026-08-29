@@ -290,7 +290,7 @@ void CutScene::FindPlaceForStreetZombies(ZombieType theZombieType, bool theZombi
 
 	if (aPicksCount == 0)
 	{
-		PvzpTrace("No place for street zombie!!");
+		PvzpLog("No place for street zombie!!");
 		thePosX = 2;
 		thePosY = 2;
 	}
@@ -497,7 +497,7 @@ void CutScene::PreloadResources()
 	PlaceStreetZombies();
 
 	mBoard->mPreloadTime = std::max(aTimer.GetDuration(), 0.0);
-	PvzpTrace("preloading: %d ms", mBoard->mPreloadTime);
+	PvzpLog("preloading: {} ms", mBoard->mPreloadTime);
 	PvzpHesitationTrace("CutScene::PreloadResources");
 }
 

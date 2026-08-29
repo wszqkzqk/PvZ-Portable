@@ -171,12 +171,12 @@ void Music::LoadSong(MusicFile theMusicFile, std::string_view theFileName)
 	PvzpHesitationTrace("preloadsong");
 	if (!PvzpLoadMusic(theMusicFile, theFileName))
 	{
-		PvzpTrace("music failed to load\n");
+		PvzpLog("music failed to load\n");
 		mMusicDisabled = true;
 	}
 	else
 	{
-		PvzpHesitationTrace("song '%.*s'", static_cast<int>(theFileName.size()), theFileName.data());
+		PvzpHesitationTrace("song '{}'", theFileName);
 	}
 }
 
