@@ -48,6 +48,7 @@
 #include "misc/PerfTimer.h"
 #include "widget/WidgetManager.h"
 #include <algorithm>
+#include <format>
 
 static const int	TimePanRightStart				= 1500;
 static const int	TimePanRightEnd					= 3500;
@@ -2144,8 +2145,8 @@ void CutScene::UpdateUpsell()
 			Reanimation* aReanimHead = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_THREEPEATER);
 			aReanimHead->mLoopType = ReanimLoopType::REANIM_LOOP;
 			aReanimHead->mAnimRate = aReanimThreepeater->mAnimRate;
-			aReanimHead->SetFramesForLayer(StrFormat("anim_head_idle%d", i).c_str());
-			aReanimHead->AttachToAnotherReanimation(aReanimThreepeater, StrFormat("anim_head%d", i).c_str());
+			aReanimHead->SetFramesForLayer(std::format("anim_head_idle{}", i).c_str());
+			aReanimHead->AttachToAnotherReanimation(aReanimThreepeater, std::format("anim_head{}", i).c_str());
 		}
 		AttachEffect* anAttachEffect = AttachReanim(aCrazyDaveReanim->GetTrackInstanceByName("Dave_body1")->mAttachmentID, aReanimThreepeater, 0.0f, 0.0f);
 		PvzpScaleRotateTransformMatrix(anAttachEffect->mOffset, -70.0f, 260.0f, 0.5f, 1.2f, 1.2f);

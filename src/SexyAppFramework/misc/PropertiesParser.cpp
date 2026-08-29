@@ -25,6 +25,7 @@
 #include "PropertiesParser.h"
 #include "XMLParser.h"
 #include <stdlib.h>
+#include <format>
 
 using namespace Sexy;
 
@@ -42,8 +43,8 @@ void PropertiesParser::Fail(const std::string& theErrorText)
 		int aLineNum = mXMLParser->GetCurrentLineNum();
 
 		mError = theErrorText;
-		if (aLineNum > 0) mError += StrFormat(" on Line %d", aLineNum);
-		if (!mXMLParser->GetFileName().empty()) mError += StrFormat(" in File '%s'", mXMLParser->GetFileName().c_str());
+		if (aLineNum > 0) mError += std::format(" on Line {}", aLineNum);
+		if (!mXMLParser->GetFileName().empty()) mError += std::format(" in File '{}'", mXMLParser->GetFileName());
 	}
 }
 

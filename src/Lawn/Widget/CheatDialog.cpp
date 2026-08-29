@@ -28,6 +28,7 @@
 #include "../System/PlayerInfo.h"
 #include "widget/WidgetManager.h"
 #include <algorithm>
+#include <format>
 
 CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_CHEAT, true, "CHEAT", "Enter New Level:", "", Dialog::BUTTONS_OK_CANCEL)
 {
@@ -40,11 +41,11 @@ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_C
 	std::string aCheatStr;
 	if (mApp->mGameMode != GameMode::GAMEMODE_ADVENTURE)
 	{
-		aCheatStr = StrFormat("C%d", static_cast<int>(mApp->mGameMode));
+		aCheatStr = std::format("C{}", static_cast<int>(mApp->mGameMode));
 	}
 	else if (mApp->HasFinishedAdventure())
 	{
-		aCheatStr = StrFormat("F%s", mApp->GetStageString(mApp->mPlayerInfo->GetLevel()).c_str());
+		aCheatStr = std::format("F{}", mApp->GetStageString(mApp->mPlayerInfo->GetLevel()));
 	}
 	else
 	{

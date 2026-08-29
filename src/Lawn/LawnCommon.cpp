@@ -20,6 +20,7 @@
  */
 
 #include <time.h>
+#include <format>
 #include "Board.h"
 #include "Plant.h"
 #include "../LawnApp.h"
@@ -163,12 +164,12 @@ std::unique_ptr<Checkbox> MakeNewCheckbox(int theId, CheckboxListener* theListen
 
 std::string GetSavedGameName(GameMode theGameMode, int theProfileId)
 {
-	return GetAppDataPath(StrFormat("userdata/game%d_%d.v4", theProfileId, static_cast<int>(theGameMode)));
+	return GetAppDataPath(std::format("userdata/game{}_{}.v4", theProfileId, static_cast<int>(theGameMode)));
 }
 
 std::string GetLegacySavedGameName(GameMode theGameMode, int theProfileId)
 {
-	return GetAppDataPath(StrFormat("userdata/game%d_%d.dat", theProfileId, static_cast<int>(theGameMode)));
+	return GetAppDataPath(std::format("userdata/game{}_{}.dat", theProfileId, static_cast<int>(theGameMode)));
 }
 
 int GetCurrentDaysSince2000(time_t theTime)

@@ -29,6 +29,7 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <format>
 #include "PvzpDebug.h"
 #include "Definition.h"
 #include "zlib.h"
@@ -1074,7 +1075,7 @@ bool DefinitionReadImageField(XMLParser* theXmlParser, Image** theImage)
 	if (DefinitionLoadImage(theImage, aStringValue))
 		return true;
 
-	std::string aMessgae = StrFormat("Failed to find image '%s' in %s", aStringValue.c_str(), theXmlParser->GetFileName().c_str());
+	std::string aMessgae = std::format("Failed to find image '{}' in {}", aStringValue, theXmlParser->GetFileName());
 	PvzpErrorMessageBox(aMessgae.c_str(), "Missing image");
 
 	return false;
@@ -1089,7 +1090,7 @@ bool DefinitionReadFontField(XMLParser* theXmlParser, _Font** theFont)
 	if (DefinitionLoadFont(theFont, aStringValue))
 		return true;
 
-	std::string aMessgae = StrFormat("Failed to find font '%s' in %s", aStringValue.c_str(), theXmlParser->GetFileName().c_str());
+	std::string aMessgae = std::format("Failed to find font '{}' in {}", aStringValue, theXmlParser->GetFileName());
 	PvzpErrorMessageBox(aMessgae.c_str(), "Missing font");
 
 	return false;
@@ -1326,7 +1327,7 @@ bool DefinitionCompileAndLoad(const std::string& theXMLFilePath, const DefMap* t
 		return true;
 
 #ifndef PVZ_DEBUG
-	PvzpErrorMessageBox(StrFormat("missing resource %s", aCompiledFilePath.c_str()).c_str(), "Error");
+	PvzpErrorMessageBox(std::format("missing resource {}", aCompiledFilePath).c_str(), "Error");
 	exit(0);
 #endif
 	return false;

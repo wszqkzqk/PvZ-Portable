@@ -19,6 +19,7 @@
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <format>
 #include "PvzpDebug.h"
 #include "PvzpCommon.h"
 #include "PvzpStringFile.h"
@@ -155,7 +156,7 @@ bool PvzpStringListReadFile(const char* theFileName)
 void PvzpStringListLoad(const char* theFileName)
 {
 	if (!PvzpStringListReadFile(theFileName))
-		PvzpErrorMessageBox(Sexy::StrFormat("Failed to load string list file '%s'", theFileName).c_str(), "Error");
+		PvzpErrorMessageBox(std::format("Failed to load string list file '{}'", theFileName).c_str(), "Error");
 }
 
 std::string_view PvzpStringListFind(std::string_view theName)

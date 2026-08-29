@@ -42,6 +42,7 @@
 #include <memory>
 #include <system_error>
 #include <tuple>
+#include <format>
 
 #include <SDL.h>
 
@@ -3170,8 +3171,8 @@ static std::string GetTimestampedDemoFileName(std::string_view theDemoPrefix)
 	time_t aNow = time(nullptr);
 	tm aNowTM = *localtime(&aNow);
 
-	std::string aBaseName = StrFormat((std::string(theDemoPrefix) + "-%04d%02d%02d-%02d%02d%02d").c_str(),
-		aNowTM.tm_year + 1900, aNowTM.tm_mon + 1, aNowTM.tm_mday, aNowTM.tm_hour, aNowTM.tm_min, aNowTM.tm_sec);
+	std::string aBaseName = std::format("{}-{:04d}{:02d}{:02d}-{:02d}{:02d}{:02d}",
+		theDemoPrefix, aNowTM.tm_year + 1900, aNowTM.tm_mon + 1, aNowTM.tm_mday, aNowTM.tm_hour, aNowTM.tm_min, aNowTM.tm_sec);
 	std::string aName = aBaseName + ".dmo";
 	const std::string aSuffixPrefix = aBaseName + '-';
 	auto aDemoFiles = FindDemoFiles(theDemoPrefix, true);
@@ -3180,7 +3181,7 @@ static std::string GetTimestampedDemoFileName(std::string_view theDemoPrefix)
 		if (aFileName == aName)
 			return aBaseName + "-2.dmo";
 		if (aFileName.starts_with(aSuffixPrefix))
-			return StrFormat("%s-%d.dmo", aBaseName.c_str(), atoi(aFileName.c_str() + aSuffixPrefix.length()) + 1);
+			return std::format("{}-{}.dmo", aBaseName, atoi(aFileName.c_str() + aSuffixPrefix.length()) + 1);
 	}
 
 	return aName;

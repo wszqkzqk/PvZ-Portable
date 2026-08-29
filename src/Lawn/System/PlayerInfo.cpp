@@ -20,6 +20,7 @@
  */
 
 #include <bit>
+#include <format>
 
 #include "DataSync.h"
 #include <algorithm>
@@ -216,7 +217,7 @@ void PlayerInfo::LoadDetails()
 	try
 	{
 		Buffer aBuffer;
-		std::string aFileName = GetAppDataPath(StrFormat("userdata/user%d.dat", mId));
+		std::string aFileName = GetAppDataPath(std::format("userdata/user{}.dat", mId));
 		if (!gSexyAppBase->ReadBufferFromFile(aFileName, &aBuffer, false))
 		{
 			return;
@@ -242,13 +243,13 @@ void PlayerInfo::SaveDetails()
 	SyncDetails(aSync);
 
 	MkDir(GetAppDataPath("userdata"));
-	std::string aFileName = GetAppDataPath(StrFormat("userdata/user%d.dat", mId));
+	std::string aFileName = GetAppDataPath(std::format("userdata/user{}.dat", mId));
 	gSexyAppBase->WriteBytesToFile(aFileName, aWriter.GetDataPtr(), aWriter.GetDataLen());
 }
 
 void PlayerInfo::DeleteUserFiles()
 {
-	std::string aFilename = GetAppDataPath(StrFormat("userdata/user%d.dat", mId));
+	std::string aFilename = GetAppDataPath(std::format("userdata/user{}.dat", mId));
 	gSexyAppBase->EraseFile(aFilename);
 
 	for (int i = 0; i < static_cast<int>(GameMode::NUM_GAME_MODES); i++)
