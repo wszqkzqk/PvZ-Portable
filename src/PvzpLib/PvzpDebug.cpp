@@ -78,5 +78,5 @@ void PvzpAssertReport(const char* theCondition, const char* theFile, int theLine
 
 	Sexy::DispatchLog(Sexy::SexyLogPriority::Info, aBuffer);
 	PvzpErrorMessageBox(aBuffer, "Assertion failed");
-	exit(0);
+	exit(1);
 }
