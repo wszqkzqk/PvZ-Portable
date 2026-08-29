@@ -1063,8 +1063,8 @@ bool DefinitionReadImageField(XMLParser* theXmlParser, Image** theImage)
 	if (DefinitionLoadImage(theImage, aStringValue))
 		return true;
 
-	std::string aMessgae = std::format("Failed to find image '{}' in {}", aStringValue, theXmlParser->GetFileName());
-	PvzpErrorMessageBox(aMessgae, "Missing image");
+	std::string aMessage = std::format("Failed to find image '{}' in {}", aStringValue, theXmlParser->GetFileName());
+	PvzpErrorMessageBox(aMessage, "Missing image");
 
 	return false;
 }
@@ -1078,8 +1078,8 @@ bool DefinitionReadFontField(XMLParser* theXmlParser, _Font** theFont)
 	if (DefinitionLoadFont(theFont, aStringValue))
 		return true;
 
-	std::string aMessgae = std::format("Failed to find font '{}' in {}", aStringValue, theXmlParser->GetFileName());
-	PvzpErrorMessageBox(aMessgae, "Missing font");
+	std::string aMessage = std::format("Failed to find font '{}' in {}", aStringValue, theXmlParser->GetFileName());
+	PvzpErrorMessageBox(aMessage, "Missing font");
 
 	return false;
 }
