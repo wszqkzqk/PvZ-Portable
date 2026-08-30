@@ -24,6 +24,7 @@
 
 #include <string>
 #include <format>
+#include "PvzpCommon.h"
 #include "PvzpList.h"
 #include "PvzpDebug.h"
 #include "Reanimator.h"
