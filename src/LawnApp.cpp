@@ -834,7 +834,7 @@ void LawnApp::FinishCreateUserDialog(bool isYes)
 	}
 }
 
-std::string LawnApp::GetFormattedString(std::string theComponentId, std::string theDefault, ...)
+std::string LawnApp::GetFormattedString(std::string_view theComponentId, std::string_view theDefault, ...)
 {
 	std::string aFormat = GetString(theComponentId, theDefault);
 
