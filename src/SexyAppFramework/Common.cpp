@@ -83,7 +83,7 @@ void Sexy::DispatchLogLn(SexyLogPriority thePriority, std::string_view theText)
 	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, thePriority == SexyLogPriority::Error ? SDL_LOG_PRIORITY_ERROR : SDL_LOG_PRIORITY_INFO, "%.*s", static_cast<int>(theText.size()), theText.data());
 
 	std::scoped_lock aLock(gLogFileSinkMutex);
-	if (gLogFileSink)
+	if (gLogFileSink.is_open())
 	{
 		gLogFileSink << theText << '\n' << std::flush;
 		if (!gLogFileSink)
