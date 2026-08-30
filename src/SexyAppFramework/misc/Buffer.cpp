@@ -110,7 +110,7 @@ std::string Buffer::ToWebString() const
 	int anOldReadBitPos = mReadBitPos;
 	mReadBitPos = 0;
 
-	aString += std::format("{:08X}", aSizeBits);
+	aString += std::format("{:08X}", static_cast<unsigned int>(aSizeBits));
 
 	int aNumChars = (aSizeBits + 5) / 6;
 	for (int aCharNum = 0; aCharNum < aNumChars; aCharNum++)
