@@ -1902,7 +1902,7 @@ void SexyAppBase::EndPopup()
 int SexyAppBase::MsgBox(const std::string& theText, const std::string& theTitle, [[maybe_unused]] int theFlags)
 {
 	BeginPopup();
-	Sexy::LogInfo("{}\n===\n{}\n", theTitle, theText);
+	Sexy::LogInfo("{}\n===\n{}", theTitle, theText);
 
 #ifdef __SWITCH__
 	ErrorApplicationConfig c;
@@ -1926,7 +1926,7 @@ void SexyAppBase::Popup(const std::string& theString)
 	BeginPopup();
 	if (!mShutdown)
 	{
-		Sexy::LogInfo("FATAL ERROR\n===\n{}\n", theString);
+		Sexy::LogInfo("FATAL ERROR\n===\n{}", theString);
 #if defined(__SWITCH__)
 		ErrorApplicationConfig c;
 		errorApplicationCreate(&c, "Fatal error", theString.c_str());
@@ -2307,7 +2307,7 @@ void SexyAppBase::LoadingThreadProcStub(SexyAppBase *theArg)
 
 	aSexyApp->LoadingThreadProc();
 
-	Sexy::LogInfo("Resource Loading Time: {}\r\n", (SDL_GetTicks() - aSexyApp->mTimeLoaded));
+	Sexy::LogInfo("Resource Loading Time: {}", (SDL_GetTicks() - aSexyApp->mTimeLoaded));
 
 	aSexyApp->mLoadingThreadCompleted = true;
 }
@@ -2949,15 +2949,15 @@ void SexyAppBase::Start()
 
 	WaitForLoadingThread();
 
-	Sexy::LogInfo("Seconds       = {:.6g}\r\n", (SDL_GetTicks() - aStartTime) / 1000.0);
-	Sexy::LogInfo("Sleep Count   = {}\r\n", mSleepCount);
-	Sexy::LogInfo("Update Count  = {}\r\n", mUpdateCount);
-	Sexy::LogInfo("Draw Count    = {}\r\n", mDrawCount);
-	Sexy::LogInfo("Draw Time     = {}\r\n", mDrawTime);
-	Sexy::LogInfo("Screen Blt    = {}\r\n", mScreenBltTime);
+	Sexy::LogInfo("Seconds       = {:.6g}", (SDL_GetTicks() - aStartTime) / 1000.0);
+	Sexy::LogInfo("Sleep Count   = {}", mSleepCount);
+	Sexy::LogInfo("Update Count  = {}", mUpdateCount);
+	Sexy::LogInfo("Draw Count    = {}", mDrawCount);
+	Sexy::LogInfo("Draw Time     = {}", mDrawTime);
+	Sexy::LogInfo("Screen Blt    = {}", mScreenBltTime);
 	if (mDrawTime+mScreenBltTime > 0)
 	{
-		Sexy::LogInfo("Avg FPS       = {}\r\n", static_cast<uint64_t>(mDrawCount) * 1000 / (mDrawTime+mScreenBltTime));
+		Sexy::LogInfo("Avg FPS       = {}", static_cast<uint64_t>(mDrawCount) * 1000 / (mDrawTime+mScreenBltTime));
 	}
 
 	PreTerminate();

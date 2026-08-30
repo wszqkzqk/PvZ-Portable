@@ -105,14 +105,15 @@ void SexyDumpUnfreed()
 		return;
 
 	time_t aTime = time(nullptr);
-	std::string aHeader = std::format("Memory Leak Report for {}\n", asctime(localtime(&aTime)));
-	fprintf(f, "%s", aHeader.c_str());
+	std::string aHeader = std::format("Memory Leak Report for {}", asctime(localtime(&aTime)));
+	aHeader.pop_back();
+	fprintf(f, "%s\n\n", aHeader.c_str());
 	Sexy::LogInfo("\n{}", aHeader);
 	for (SexyAllocMap::iterator i = gSexyAllocMap.begin(); i != gSexyAllocMap.end(); i++)
 	{
-		std::string aLine = std::format("{}({}) : Leak {} byte{}\n", i->second.file, i->second.line, i->second.size, i->second.size > 1 ? "s" : "");
+		std::string aLine = std::format("{}({}) : Leak {} byte{}", i->second.file, i->second.line, i->second.size, i->second.size > 1 ? "s" : "");
 		Sexy::LogInfo("{}", aLine);
-		fprintf(f, "%s", aLine.c_str());
+		fprintf(f, "%s\n", aLine.c_str());
 
 #ifdef SEXY_DUMP_LEAKED_MEM
 		unsigned char* data = (unsigned char*)i->first;
@@ -171,11 +172,11 @@ void SexyDumpUnfreed()
 	}
 
 
-	std::string aSeparator = "-----------------------------------------------------------\n";
-	fprintf(f, "%s", aSeparator.c_str());
+	std::string aSeparator = "-----------------------------------------------------------";
+	fprintf(f, "%s\n", aSeparator.c_str());
 	Sexy::LogInfo("{}", aSeparator);
-	std::string aTotal = std::format("Total Unfreed: {} bytes ({}KB)\n\n", totalSize, totalSize / 1024);
+	std::string aTotal = std::format("Total Unfreed: {} bytes ({}KB)", totalSize, totalSize / 1024);
 	Sexy::LogInfo("{}", aTotal);
-	fprintf(f, "%s", aTotal.c_str());
+	fprintf(f, "%s\n\n", aTotal.c_str());
 	fclose(f);
 }

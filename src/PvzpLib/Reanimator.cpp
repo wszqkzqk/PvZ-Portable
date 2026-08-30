@@ -1166,7 +1166,7 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 	if (aReanimDef->mTracks.tracks != nullptr)  // non-null tracks means the definition is already loaded
 		return;
 	const ReanimationParams* aReanimParams = &gReanimationParamArray[theReanimType];
-	PvzpLog("'{}'\n", aReanimParams->mReanimFileName);
+	PvzpLog("'{}'", aReanimParams->mReanimFileName);
 	if (theIsPreloading)
 	{
 		if (gSexyAppBase->mShutdown || LawnGetCloseRequest())  // abort preloading when the app is shutting down

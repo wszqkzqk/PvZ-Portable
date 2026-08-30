@@ -2983,7 +2983,7 @@ void LawnApp::PreloadForUser()
 	int aNumTasks = mCompletedLoadingThreadTasks + GetNumPreloadingTasks();
 	if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN)
 	{
-		PvzpLog("preload canceled\n");
+		PvzpLog("preload canceled");
 		mNumLoadingThreadTasks = aNumTasks;
 		return;
 	}
@@ -3020,7 +3020,7 @@ void LawnApp::PreloadForUser()
 
 				if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN)
 				{
-					PvzpLog("preload canceled\n");
+					PvzpLog("preload canceled");
 					mNumLoadingThreadTasks = aNumTasks;
 					return;
 				}
@@ -3052,7 +3052,7 @@ void LawnApp::PreloadForUser()
 
 			if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN)
 			{
-				PvzpLog("preload canceled\n");
+				PvzpLog("preload canceled");
 				mNumLoadingThreadTasks = aNumTasks;
 				return;
 			}

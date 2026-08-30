@@ -327,7 +327,7 @@ PvzpParticle* PvzpParticleEmitter::SpawnParticle(int theIndex, int theSpawnCount
 	DataArray<PvzpParticle>& aDataArray = mParticleSystem->mParticleHolder->mParticles;
 	if (aDataArray.mSize == aDataArray.mMaxSize)
 	{
-		PvzpTraceWithoutSpamming("Too many particles '{}'\n", mEmitterDef->mName);
+		PvzpTraceWithoutSpamming("Too many particles '{}'", mEmitterDef->mName);
 		return nullptr;
 	}
 
@@ -606,12 +606,12 @@ bool PvzpParticleEmitter::CrossFadeParticleToName(PvzpParticle* theParticle, con
 	PvzpEmitterDefinition* aDef = mParticleSystem->FindEmitterDefByName(theEmitterName);
 	if (aDef == nullptr)
 	{
-		PvzpLog("Can't find emitter to cross fade: {}\n", theEmitterName);
+		PvzpLog("Can't find emitter to cross fade: {}", theEmitterName);
 		return false;
 	}
 	if (mParticleSystem->mParticleHolder->mEmitters.mSize == mParticleSystem->mParticleHolder->mEmitters.mMaxSize)
 	{
-		PvzpLog("Too many emitters to cross fade\n");
+		PvzpLog("Too many emitters to cross fade");
 		return false;
 	}
 
@@ -734,7 +734,7 @@ bool PvzpParticleEmitter::CrossFadeParticle(PvzpParticle* theParticle, PvzpParti
 {
 	if (theParticle->mCrossFadeDuration > 0)
 	{
-		PvzpLog("We don't support cross fading more than one at a time\n");
+		PvzpLog("We don't support cross fading more than one at a time");
 		return false;
 	}
 	if (!FloatTrackIsSet(theToEmitter->mEmitterDef->mCrossFadeDuration))
@@ -1166,7 +1166,7 @@ void PvzpParticleEmitter::CrossFadeEmitter(PvzpParticleEmitter* theToEmitter)
 {
 	if (mEmitterCrossFadeCountDown > 0)
 	{
-		PvzpLog("We don't support cross fading emitters more than one at a time\n");
+		PvzpLog("We don't support cross fading emitters more than one at a time");
 		return;
 	}
 	if (!FloatTrackIsSet(theToEmitter->mEmitterDef->mCrossFadeDuration))
@@ -1192,17 +1192,17 @@ void PvzpParticleSystem::CrossFade(const char* theEmitterName)
 	PvzpEmitterDefinition* aEmitterDef = FindEmitterDefByName(theEmitterName);
 	if (aEmitterDef == nullptr)
 	{
-		PvzpLog("Can't find cross fade emitter: {}\n", theEmitterName);
+		PvzpLog("Can't find cross fade emitter: {}", theEmitterName);
 		return;
 	}
 	if (!FloatTrackIsSet(aEmitterDef->mCrossFadeDuration))
 	{
-		PvzpLog("Can't cross fade without duration set: {}\n", theEmitterName);
+		PvzpLog("Can't cross fade without duration set: {}", theEmitterName);
 		return;
 	}
 	if (mParticleHolder->mEmitters.mSize + mEmitterList.mSize > mParticleHolder->mEmitters.mMaxSize)
 	{
-		PvzpLog("Too many emitters to cross fade\n");
+		PvzpLog("Too many emitters to cross fade");
 		ParticleSystemDie();
 		return;
 	}
@@ -1253,12 +1253,12 @@ PvzpParticleSystem* PvzpParticleHolder::AllocParticleSystemFromDef(float theX, f
 {
 	if (mParticleSystems.mSize == mParticleSystems.mMaxSize)
 	{
-		PvzpLog("Too many particle systems\n");
+		PvzpLog("Too many particle systems");
 		return nullptr;
 	}
 	if (theDefinition->mEmitterDefCount + mEmitters.mSize > mEmitters.mMaxSize)
 	{
-		PvzpLog("Too many particle emitters\n");
+		PvzpLog("Too many particle emitters");
 		return nullptr;
 	}
 

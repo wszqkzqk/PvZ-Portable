@@ -543,7 +543,7 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
 	CompressedDefinitionHeader* aHeader = (CompressedDefinitionHeader*)theCompressedBuffer;
 	if (aHeader->mCookie != 0xDEADFED4L)
 	{
-		PvzpLog("Compiled fire cookie wrong: {}\n", theCompiledFilePath);
+		PvzpLog("Compiled fire cookie wrong: {}", theCompiledFilePath);
 		return nullptr;
 	}
 
@@ -597,7 +597,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	aFileStream.read(aCompressedBuffer.data(), (std::streamsize)aCompressedSize);
 	bool aReadCompressedFailed = !aFileStream || (size_t)aFileStream.gcount() != aCompressedSize;
 	if (aReadCompressedFailed) {
-		PvzpLog("Failed to read compiled file: {}\n", theCompiledFilePath);
+		PvzpLog("Failed to read compiled file: {}", theCompiledFilePath);
 		return false;
 	}
 
@@ -608,7 +608,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 
 	uint aDefHash = DefinitionCalcHash(theDefMap);  // CRC checked against the stored hash below
 	if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint)) {
-		PvzpLog("Compiled file size too small: {}\n", theCompiledFilePath);
+		PvzpLog("Compiled file size too small: {}", theCompiledFilePath);
 		return false;
 	} // must hold the definition data plus the stored hash
 
@@ -618,7 +618,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	uint aCashHash;
 	SMemR(aBufferPtr, &aCashHash, sizeof(uint));  // read the stored CRC hash
 	if (aCashHash != aDefHash) {
-		PvzpLog("Compiled file schema wrong: {}\n", theCompiledFilePath);
+		PvzpLog("Compiled file schema wrong: {}", theCompiledFilePath);
 		return false;
 	} // a hash mismatch means the cached data is stale
 
@@ -629,7 +629,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	bool aResult = DefMapReadFromCache(aBufferPtr, theDefMap, theDefinition);
 	size_t aReadMemSize = (uintptr_t)aBufferPtr - (uintptr_t)aUncompressedBuffer.get();
 	if (aResult && aReadMemSize != aUncompressedSize) {
-		PvzpLog("Compiled file wrong size: {}\n", theCompiledFilePath);
+		PvzpLog("Compiled file wrong size: {}", theCompiledFilePath);
 		return false;
 	}
 	return aResult;
@@ -1279,7 +1279,7 @@ bool DefinitionCompileFile(const std::string& theXMLFilePath, const std::string&
 	XMLParser aXMLParser = XMLParser();
 	if (!aXMLParser.OpenFile(theXMLFilePath))
 	{
-		PvzpLog("XML file not found: {}\n", theXMLFilePath);
+		PvzpLog("XML file not found: {}", theXMLFilePath);
 		return false;
 	}
 	else if (!DefinitionLoadMap(&aXMLParser, theDefMap, theDefinition))
