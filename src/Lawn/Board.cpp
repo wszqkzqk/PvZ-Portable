@@ -7011,9 +7011,9 @@ void Board::DrawDebugText(Graphics* g)
 	}
 
 	g->SetFont(FONT_PICO129);
-	g->SetColor(Color::Black);
 	if (!aText.empty())
 	{
+		g->SetColor(Color::Black);
 		g->DrawStringWordWrapped(aText, 10, 89);
 		g->DrawStringWordWrapped(aText, 11, 91);
 		g->DrawStringWordWrapped(aText, 9, 90);
