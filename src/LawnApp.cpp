@@ -646,7 +646,7 @@ AlmanacDialog* LawnApp::DoAlmanacDialog(SeedType theSeedType, ZombieType theZomb
 	}
 
 	int aDuration = mTimer.GetDuration();
-	PvzpLog("almanac load time: {} ms", aDuration);
+	PvzpLogLn("almanac load time: {} ms", aDuration);
 
 	return aDialog;
 }
@@ -1170,9 +1170,9 @@ void LawnApp::Init()
 	Sexy::MkDir(Sexy::GetAppDataPath("userdata"));
 #ifdef PVZ_DEBUG
 	Sexy::RegisterLogFileSink(Sexy::GetAppDataPath("userdata/") + "log.txt");
-	PvzpLog("Started {}", static_cast<uint64_t>(std::time(nullptr)));
+	PvzpLogLn("Started {}", static_cast<uint64_t>(std::time(nullptr)));
 #endif
-	PvzpLog("session id: {}", static_cast<long long>(mSessionID));
+	PvzpLogLn("session id: {}", static_cast<long long>(mSessionID));
 
 	if (!mResourceManager->ParseResourcesFile("properties/resources.xml"))
 	{
@@ -1211,7 +1211,7 @@ void LawnApp::Init()
 
 #ifdef PVZ_DEBUG
 	int aDuration = mTimer.GetDuration();
-	PvzpLog("loading: 'profiles' {} ms", aDuration);
+	PvzpLogLn("loading: 'profiles' {} ms", aDuration);
 #endif
 	mTimer.Start();
 
@@ -1243,7 +1243,7 @@ void LawnApp::Init()
 
 #ifdef PVZ_DEBUG
 	aDuration = mTimer.GetDuration();
-	PvzpLog("loading: 'system' {} ms", aDuration);
+	PvzpLogLn("loading: 'system' {} ms", aDuration);
 #endif
 	mTimer.Start();
 
@@ -1253,7 +1253,7 @@ void LawnApp::Init()
 
 #ifdef PVZ_DEBUG
 	aDuration = mTimer.GetDuration();
-	PvzpLog("loading: 'loaderbar' {} ms", aDuration);
+	PvzpLogLn("loading: 'loaderbar' {} ms", aDuration);
 #endif
 	mTimer.Start();
 }
@@ -1673,7 +1673,7 @@ void LawnApp::LoadingThreadProc()
 	mDefaultFont = FONT_PICO129; // framework widgets fall back to this when no font is set
 
 	aHesitationResources.EndBracket();
-	PvzpLog("loading '{}' {} ms", "resources", static_cast<int>(aTimer.GetDuration()));
+	PvzpLogLn("loading '{}' {} ms", "resources", static_cast<int>(aTimer.GetDuration()));
 
 	mMusic->MusicInit();
 	// aDuration goes unused
@@ -1687,11 +1687,11 @@ void LawnApp::LoadingThreadProc()
 	mReanimatorCache->ReanimatorCacheInitialize();
 	PvzpFoleyInitialize(gLawnFoleyParamArray, LENGTH(gLawnFoleyParamArray));
 
-	PvzpLog("loading '{}' {} ms", "stuff", static_cast<int>(aTimer.GetDuration()));
+	PvzpLogLn("loading '{}' {} ms", "stuff", static_cast<int>(aTimer.GetDuration()));
 	aTimer.Start();
 
 	TrailLoadDefinitions(gLawnTrailArray, LENGTH(gLawnTrailArray));
-	PvzpLog("loading '{}' {} ms", "trail", static_cast<int>(aTimer.GetDuration()));
+	PvzpLogLn("loading '{}' {} ms", "trail", static_cast<int>(aTimer.GetDuration()));
 	aTimer.Start();
 	PvzpHesitationTrace("trail");
 
@@ -2528,7 +2528,7 @@ void LawnApp::CrazyDaveDoneHanding()
 	ReanimatorTrackInstance* aHandTrackInstance = aCrazyDaveReanim->GetTrackInstanceByName("Dave_handinghand");
 	AttachmentDie(aHandTrackInstance->mAttachmentID);
 
-	PvzpLog("DoneHanding");
+	PvzpLogLn("DoneHanding");
 }
 
 void LawnApp::CrazyDaveStopSound()
@@ -2646,7 +2646,7 @@ void LawnApp::CrazyDaveTalkMessage(const std::string& theMessage)
 
 			Reanimation* aWallnutReanim = AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_WALLNUT);
 			aWallnutReanim->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
-			PvzpLog("Handed");
+			PvzpLogLn("Handed");
 
 			ReanimatorTrackInstance* aHandTrackInstance = aCrazyDaveReanim->GetTrackInstanceByName("Dave_handinghand");
 			AttachEffect* aAttachEffect = AttachReanim(aHandTrackInstance->mAttachmentID, aWallnutReanim, 100.0f, 393.0f);
@@ -2983,7 +2983,7 @@ void LawnApp::PreloadForUser()
 	int aNumTasks = mCompletedLoadingThreadTasks + GetNumPreloadingTasks();
 	if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN)
 	{
-		PvzpLog("preload canceled");
+		PvzpLogLn("preload canceled");
 		mNumLoadingThreadTasks = aNumTasks;
 		return;
 	}
@@ -3020,7 +3020,7 @@ void LawnApp::PreloadForUser()
 
 				if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN)
 				{
-					PvzpLog("preload canceled");
+					PvzpLogLn("preload canceled");
 					mNumLoadingThreadTasks = aNumTasks;
 					return;
 				}
@@ -3052,7 +3052,7 @@ void LawnApp::PreloadForUser()
 
 			if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN)
 			{
-				PvzpLog("preload canceled");
+				PvzpLogLn("preload canceled");
 				mNumLoadingThreadTasks = aNumTasks;
 				return;
 			}
@@ -3067,7 +3067,7 @@ void LawnApp::PreloadForUser()
 
 	if (mCompletedLoadingThreadTasks != aNumTasks)
 	{
-		PvzpLog("num preload tasks wasn't calculated correctly");
+		PvzpLogLn("num preload tasks wasn't calculated correctly");
 		mCompletedLoadingThreadTasks = aNumTasks;
 	}
 }

@@ -52,9 +52,9 @@ void*				PvzpMalloc(int theSize);
 void				PvzpFree(void* theBlock);
 
 template<typename... Args>
-void				PvzpLog(std::format_string<Args...> theFmt, Args&&... theArgs)
+void				PvzpLogLn(std::format_string<Args...> theFmt, Args&&... theArgs)
 {
-	Sexy::DispatchLog(Sexy::SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
+	Sexy::DispatchLogLn(Sexy::SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
 }
 
 template<typename... Args>
@@ -66,7 +66,7 @@ void				PvzpTraceWithoutSpamming(std::format_string<Args...> theFmt, Args&&... t
 		return;
 
 	gLastTraceTime = aTime;
-	Sexy::DispatchLog(Sexy::SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
+	Sexy::DispatchLogLn(Sexy::SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
 }
 
 template<typename... Args>

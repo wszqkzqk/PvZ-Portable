@@ -382,7 +382,7 @@ inline bool DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArra
 	SMemR(theReadPtr, &aDefSize, sizeof(int));  // read the cached definition struct size
 	if (aDefSize != theDefMap->mDefSize)
 	{
-		PvzpLog("cache has old def: array size");
+		PvzpLogLn("cache has old def: array size");
 		return false;
 	}
 	if (theArray->mArrayCount == 0)
@@ -537,13 +537,13 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
 	// The first two dwords are a CompressedDefinitionHeader, so the buffer must be at least 8 bytes
 	if (theCompressedBufferSize < 8)
 	{
-		PvzpLog("Compile def too small: {}", theCompiledFilePath);
+		PvzpLogLn("Compile def too small: {}", theCompiledFilePath);
 		return nullptr;
 	}
 	CompressedDefinitionHeader* aHeader = (CompressedDefinitionHeader*)theCompressedBuffer;
 	if (aHeader->mCookie != 0xDEADFED4L)
 	{
-		PvzpLog("Compiled fire cookie wrong: {}", theCompiledFilePath);
+		PvzpLogLn("Compiled fire cookie wrong: {}", theCompiledFilePath);
 		return nullptr;
 	}
 
@@ -597,7 +597,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	aFileStream.read(aCompressedBuffer.data(), (std::streamsize)aCompressedSize);
 	bool aReadCompressedFailed = !aFileStream || (size_t)aFileStream.gcount() != aCompressedSize;
 	if (aReadCompressedFailed) {
-		PvzpLog("Failed to read compiled file: {}", theCompiledFilePath);
+		PvzpLogLn("Failed to read compiled file: {}", theCompiledFilePath);
 		return false;
 	}
 
@@ -608,7 +608,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 
 	uint aDefHash = DefinitionCalcHash(theDefMap);  // CRC checked against the stored hash below
 	if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint)) {
-		PvzpLog("Compiled file size too small: {}", theCompiledFilePath);
+		PvzpLogLn("Compiled file size too small: {}", theCompiledFilePath);
 		return false;
 	} // must hold the definition data plus the stored hash
 
@@ -618,7 +618,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	uint aCashHash;
 	SMemR(aBufferPtr, &aCashHash, sizeof(uint));  // read the stored CRC hash
 	if (aCashHash != aDefHash) {
-		PvzpLog("Compiled file schema wrong: {}", theCompiledFilePath);
+		PvzpLogLn("Compiled file schema wrong: {}", theCompiledFilePath);
 		return false;
 	} // a hash mismatch means the cached data is stale
 
@@ -629,7 +629,7 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	bool aResult = DefMapReadFromCache(aBufferPtr, theDefMap, theDefinition);
 	size_t aReadMemSize = (uintptr_t)aBufferPtr - (uintptr_t)aUncompressedBuffer.get();
 	if (aResult && aReadMemSize != aUncompressedSize) {
-		PvzpLog("Compiled file wrong size: {}", theCompiledFilePath);
+		PvzpLogLn("Compiled file wrong size: {}", theCompiledFilePath);
 		return false;
 	}
 	return aResult;
@@ -663,7 +663,7 @@ bool DefinitionIsCompiled(const std::string& theXMLFilePath)
 	std::filesystem::file_time_type aXMLFileTime{};
 	if (!DefinitionGetFileModTime(theXMLFilePath, aXMLFileTime))
 	{
-		PvzpLog("Can't find source file to compile '{}'", theXMLFilePath);
+		PvzpLogLn("Can't find source file to compile '{}'", theXMLFilePath);
 		return false;
 	}
 
@@ -1004,9 +1004,9 @@ bool DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack*
 
 
 	/*
-    PvzpLog("{} | {}", aStringChars, aFloatTrackVec.size());
+    PvzpLogLn("{} | {}", aStringChars, aFloatTrackVec.size());
     for (auto &i : aFloatTrackVec) {
-        PvzpLog("{:f}", i.mTime);
+        PvzpLogLn("{:f}", i.mTime);
     }
     */
 
@@ -1279,7 +1279,7 @@ bool DefinitionCompileFile(const std::string& theXMLFilePath, const std::string&
 	XMLParser aXMLParser = XMLParser();
 	if (!aXMLParser.OpenFile(theXMLFilePath))
 	{
-		PvzpLog("XML file not found: {}", theXMLFilePath);
+		PvzpLogLn("XML file not found: {}", theXMLFilePath);
 		return false;
 	}
 	else if (!DefinitionLoadMap(&aXMLParser, theDefMap, theDefinition))
@@ -1309,7 +1309,7 @@ bool DefinitionCompileAndLoad(const std::string& theXMLFilePath, const DefMap* t
 	PerfTimer aTimer;
 	aTimer.Start();
 	bool aResult = DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition);
-	PvzpLog("compile {} ms:'{}'", (int)aTimer.GetDuration(), aCompiledFilePath);
+	PvzpLogLn("compile {} ms:'{}'", (int)aTimer.GetDuration(), aCompiledFilePath);
 	PvzpHesitationTrace("compiled {}", aCompiledFilePath);
 	if (aResult)
 		return true;

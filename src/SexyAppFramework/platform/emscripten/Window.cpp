@@ -73,7 +73,7 @@ void SexyAppBase::MakeWindow()
 
 		if (!context)
 		{
-			Sexy::LogError("Failed to create WebGL context.");
+			Sexy::LogErrorLn("Failed to create WebGL context.");
 			return;
 		}
 

@@ -72,10 +72,10 @@ void Sexy::RegisterLogFileSink(std::string_view thePath)
 {
 	gLogFileSink.open(PathFromU8(thePath), std::ios::app | std::ios::binary);
 	if (!gLogFileSink)
-		LogError("Failed to open log file '{}'", thePath);
+		LogErrorLn("Failed to open log file '{}'", thePath);
 }
 
-void Sexy::DispatchLog(SexyLogPriority thePriority, std::string_view theText)
+void Sexy::DispatchLogLn(SexyLogPriority thePriority, std::string_view theText)
 {
 	if (theText.empty())
 		return;

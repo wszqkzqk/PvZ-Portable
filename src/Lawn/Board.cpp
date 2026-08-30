@@ -1175,7 +1175,7 @@ bool Board::IsZombieWaveDistributionOk()
 	{
 		if (aZombieType != ZombieType::ZOMBIE_YETI && CanZombieSpawnOnLevel(aZombieType, mLevel) && aZombieTypeCount[aZombieType] == 0)
 		{
-			PvzpLog("Didn't spawn required zombie {}, level {}", GetZombieDefinition(aZombieType).mZombieName, mLevel);
+			PvzpLogLn("Didn't spawn required zombie {}, level {}", GetZombieDefinition(aZombieType).mZombieName, mLevel);
 			return false;
 		}
 	}
@@ -2612,7 +2612,7 @@ Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromW
 {
 	if (mZombies.mSize >= mZombies.mMaxSize - 1)
 	{
-		PvzpLog("Too many zombies!!");
+		PvzpLogLn("Too many zombies!!");
 		return nullptr;
 	}
 
@@ -7672,7 +7672,7 @@ void Board::KeyChar(char theChar)
 	if (!mApp->mDebugKeysEnabled)
 		return;
 
-	PvzpLog("Board cheat key '{}'", theChar);
+	PvzpLogLn("Board cheat key '{}'", theChar);
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN)
 	{

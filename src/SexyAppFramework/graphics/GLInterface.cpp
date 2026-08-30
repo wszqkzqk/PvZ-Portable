@@ -227,7 +227,7 @@ static GLuint shaderCompile(const char *src, uint32_t srcLen, GLenum type)
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLen);
 		char *log = (char*)malloc(logLen);
 		glGetShaderInfoLog(shader, logLen, &logLen, log);
-		Sexy::LogInfo("Shader error: {}\n{}{}{}", log, strings[0], strings[1], strings[2]);
+		Sexy::LogInfoLn("Shader error: {}\n{}{}{}", log, strings[0], strings[1], strings[2]);
 		free(log);
 		glDeleteShader(shader);
 		if (gSexyAppBase != nullptr)

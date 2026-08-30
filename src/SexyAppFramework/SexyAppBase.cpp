@@ -513,9 +513,9 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError)
 	std::string aRecordedVersion(aStrLen, '\0');
 	if (!aFile.read(aRecordedVersion.data(), aStrLen)) return false;
 	if (aRecordedVersion.empty())
-		Sexy::LogInfo("Demo has no program version tag; replay may diverge.");
+		Sexy::LogInfoLn("Demo has no program version tag; replay may diverge.");
 	else if (mProductVersion != aRecordedVersion)
-		Sexy::LogInfo("Demo was recorded with a different program version (recorded: {}, current: {}); replay may diverge.", aRecordedVersion, mProductVersion);
+		Sexy::LogInfoLn("Demo was recorded with a different program version (recorded: {}, current: {}); replay may diverge.", aRecordedVersion, mProductVersion);
 
 	std::streampos aFilePos = aFile.tellg();
 	aFile.seekg(0, std::ios::end);
@@ -1902,7 +1902,7 @@ void SexyAppBase::EndPopup()
 int SexyAppBase::MsgBox(const std::string& theText, const std::string& theTitle, [[maybe_unused]] int theFlags)
 {
 	BeginPopup();
-	Sexy::LogInfo("{}\n===\n{}", theTitle, theText);
+	Sexy::LogInfoLn("{}\n===\n{}", theTitle, theText);
 
 #ifdef __SWITCH__
 	ErrorApplicationConfig c;
@@ -1926,7 +1926,7 @@ void SexyAppBase::Popup(const std::string& theString)
 	BeginPopup();
 	if (!mShutdown)
 	{
-		Sexy::LogInfo("FATAL ERROR\n===\n{}", theString);
+		Sexy::LogInfoLn("FATAL ERROR\n===\n{}", theString);
 #if defined(__SWITCH__)
 		ErrorApplicationConfig c;
 		errorApplicationCreate(&c, "Fatal error", theString.c_str());
@@ -2307,7 +2307,7 @@ void SexyAppBase::LoadingThreadProcStub(SexyAppBase *theArg)
 
 	aSexyApp->LoadingThreadProc();
 
-	Sexy::LogInfo("Resource Loading Time: {}", (SDL_GetTicks() - aSexyApp->mTimeLoaded));
+	Sexy::LogInfoLn("Resource Loading Time: {}", (SDL_GetTicks() - aSexyApp->mTimeLoaded));
 
 	aSexyApp->mLoadingThreadCompleted = true;
 }
@@ -2949,15 +2949,15 @@ void SexyAppBase::Start()
 
 	WaitForLoadingThread();
 
-	Sexy::LogInfo("Seconds       = {:.6g}", (SDL_GetTicks() - aStartTime) / 1000.0);
-	Sexy::LogInfo("Sleep Count   = {}", mSleepCount);
-	Sexy::LogInfo("Update Count  = {}", mUpdateCount);
-	Sexy::LogInfo("Draw Count    = {}", mDrawCount);
-	Sexy::LogInfo("Draw Time     = {}", mDrawTime);
-	Sexy::LogInfo("Screen Blt    = {}", mScreenBltTime);
+	Sexy::LogInfoLn("Seconds       = {:.6g}", (SDL_GetTicks() - aStartTime) / 1000.0);
+	Sexy::LogInfoLn("Sleep Count   = {}", mSleepCount);
+	Sexy::LogInfoLn("Update Count  = {}", mUpdateCount);
+	Sexy::LogInfoLn("Draw Count    = {}", mDrawCount);
+	Sexy::LogInfoLn("Draw Time     = {}", mDrawTime);
+	Sexy::LogInfoLn("Screen Blt    = {}", mScreenBltTime);
 	if (mDrawTime+mScreenBltTime > 0)
 	{
-		Sexy::LogInfo("Avg FPS       = {}", static_cast<uint64_t>(mDrawCount) * 1000 / (mDrawTime+mScreenBltTime));
+		Sexy::LogInfoLn("Avg FPS       = {}", static_cast<uint64_t>(mDrawCount) * 1000 / (mDrawTime+mScreenBltTime));
 	}
 
 	PreTerminate();
@@ -3456,7 +3456,7 @@ void SexyAppBase::Init()
 
 	if (mGLInterface == nullptr)
 	{
-		Sexy::LogError("FATAL: Failed to create OpenGL interface.");
+		Sexy::LogErrorLn("FATAL: Failed to create OpenGL interface.");
 		mShutdown = true;
 		return;
 	}

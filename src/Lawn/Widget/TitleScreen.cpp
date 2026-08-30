@@ -93,7 +93,7 @@ void TitleScreen::Draw(Graphics* g)
 
 		if (!mDrawnYet)
 		{
-			PvzpLog("First Draw Time: {} ms", SDL_GetTicks() - mApp->mTimeLoaded);
+			PvzpLogLn("First Draw Time: {} ms", SDL_GetTicks() - mApp->mTimeLoaded);
 			PvzpHesitationTrace("TitleScreen First Draw");
 			mDrawnYet = true;
 		}
@@ -177,7 +177,7 @@ void TitleScreen::Draw(Graphics* g)
 	int aGrassX = mStartButton->mX;
 	int aGrassY = mStartButton->mY - 17;
 
-	//Sexy::LogInfo("{} {}\n", aGrassX, aGrassY);
+	//Sexy::LogInfoLn("{} {}\n", aGrassX, aGrassY);
 	g->DrawImage(IMAGE_LOADBAR_DIRT, aGrassX, aGrassY + 18);
 
 	if (mCurBarWidth >= mTotalBarWidth)

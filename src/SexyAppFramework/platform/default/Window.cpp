@@ -86,7 +86,7 @@ void SexyAppBase::MakeWindow()
 		}
 		if (!context)
 		{
-			Sexy::LogError("Failed to create OpenGL ES context.");
+			Sexy::LogErrorLn("Failed to create OpenGL ES context.");
 			return;
 		}
 #else
@@ -109,7 +109,7 @@ void SexyAppBase::MakeWindow()
 
 			if (!context)
 			{
-				Sexy::LogError("Failed to create any OpenGL context. "
+				Sexy::LogErrorLn("Failed to create any OpenGL context. "
 					"Please check your graphics drivers.");
 				return;
 			}

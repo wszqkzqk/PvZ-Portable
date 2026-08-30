@@ -2759,7 +2759,7 @@ bool LawnLoadGame(Board* theBoard, const std::string& theFilePath)
 {
 	if (LawnLoadGameV4(theBoard, theFilePath))
 	{
-		PvzpLog("Loaded save game (v4)");
+		PvzpLogLn("Loaded save game (v4)");
 		return true;
 	}
 
@@ -2784,7 +2784,7 @@ bool LawnLoadGame(Board* theBoard, const std::string& theFilePath)
 		return false;
 	}
 
-	PvzpLog("Loaded save game (legacy)");
+	PvzpLogLn("Loaded save game (legacy)");
 	FixBoardAfterLoad(theBoard);
 	theBoard->mApp->mGameScene = GameScenes::SCENE_PLAYING;
 	return true;

@@ -140,7 +140,7 @@ void                    DefinitionXmlError(XMLParser* theXmlParser, std::format_
 	std::string aFormattedMessage = std::vformat(theFormat.get(), std::make_format_args(theArgs...));
 	int aLine = theXmlParser->GetCurrentLineNum();
 	std::string aFileName = theXmlParser->GetFileName();
-	PvzpLog("{}({}): XML Definition Error: {}", aFileName, aLine, aFormattedMessage);
+	PvzpLogLn("{}({}): XML Definition Error: {}", aFileName, aLine, aFormattedMessage);
 }
 bool                    DefSymbolValueFromString(const DefSymbol* theSymbolMap, const char* theName, int* theResultValue);
 bool                    DefinitionReadXMLString(XMLParser* theXmlParser, std::string& theValue);

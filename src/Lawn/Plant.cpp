@@ -2977,7 +2977,7 @@ Reanimation* Plant::AttachBlinkAnim(Reanimation* theReanimBody)
 
 	if (aAnimToAttach == nullptr)
 	{
-		PvzpLog("Missing head anim");
+		PvzpLogLn("Missing head anim");
 		return nullptr;
 	}
 
@@ -3004,7 +3004,7 @@ Reanimation* Plant::AttachBlinkAnim(Reanimation* theReanimBody)
 	}
 	else
 	{
-		PvzpLog("Missing anim_idle for blink");
+		PvzpLogLn("Missing anim_idle for blink");
 	}
 
 	aBlinkReanim->mFilterEffect = theReanimBody->mFilterEffect;

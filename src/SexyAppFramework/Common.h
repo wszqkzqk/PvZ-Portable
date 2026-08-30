@@ -129,19 +129,19 @@ extern bool			gDebug;
 
 enum class SexyLogPriority { Info, Error };
 
-void				DispatchLog(SexyLogPriority thePriority, std::string_view theText);
+void				DispatchLogLn(SexyLogPriority thePriority, std::string_view theText);
 void				RegisterLogFileSink(std::string_view thePath);
 
 template<typename... Args>
-void				LogInfo(std::format_string<Args...> theFmt, Args&&... theArgs)
+void				LogInfoLn(std::format_string<Args...> theFmt, Args&&... theArgs)
 {
-	DispatchLog(SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
+	DispatchLogLn(SexyLogPriority::Info, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
 }
 
 template<typename... Args>
-void				LogError(std::format_string<Args...> theFmt, Args&&... theArgs)
+void				LogErrorLn(std::format_string<Args...> theFmt, Args&&... theArgs)
 {
-	DispatchLog(SexyLogPriority::Error, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
+	DispatchLogLn(SexyLogPriority::Error, std::vformat(theFmt.get(), std::make_format_args(theArgs...)));
 }
 
 int					Rand();
