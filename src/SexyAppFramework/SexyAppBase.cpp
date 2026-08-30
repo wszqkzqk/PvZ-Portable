@@ -1340,10 +1340,13 @@ void SexyAppBase::ReadFromRegistry()
 	if (RegistryReadInteger("Muted", &anInt))
 		mMuteCount = anInt;
 
-#if !defined(__IPHONEOS__) && (!defined(__ANDROID__) || defined(__TERMUX__)) && !defined(__SWITCH__) && !defined(__EMSCRIPTEN__)
+	// The read must happen on every platform to keep the demo command stream in sync
 	if (RegistryReadInteger("ScreenMode", &anInt))
+	{
+#if !defined(__IPHONEOS__) && (!defined(__ANDROID__) || defined(__TERMUX__)) && !defined(__SWITCH__) && !defined(__EMSCRIPTEN__)
 		mIsWindowed = anInt == 0;
 #endif
+	}
 
 	RegistryReadInteger("PreferredX", &mPreferredX);
 	RegistryReadInteger("PreferredY", &mPreferredY);
