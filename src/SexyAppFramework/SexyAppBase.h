@@ -243,6 +243,7 @@ public:
 	uint					mSleepCount;
 	uint					mDrawCount;
 	uint					mUpdateCount;
+	uint32_t				mStartTick;
 	int						mUpdateAppState;
 	int						mUpdateAppDepth;
 	double					mUpdateMultiplier;
@@ -459,6 +460,7 @@ public:
 	virtual void			HandleGameAlreadyRunning();
 
 	virtual void			Start();
+	void					LogPerfStats();
 	virtual void			Init();
 	virtual void			PreGLInterfaceInitHook();
 	virtual void			PostGLInterfaceInitHook();
