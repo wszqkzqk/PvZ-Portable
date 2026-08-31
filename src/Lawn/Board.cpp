@@ -8942,11 +8942,39 @@ int GetRectOverlap(const Rect& rect1, const Rect& rect2)
 
 bool GetCircleRectOverlap(int theCircleX, int theCircleY, int theRadius, const Rect& theRect)
 {
-	int aNearX = std::clamp(theCircleX, theRect.mX, theRect.mX + theRect.mWidth);
-	int aNearY = std::clamp(theCircleY, theRect.mY, theRect.mY + theRect.mHeight);
-	int dx = theCircleX - aNearX;
-	int dy = theCircleY - aNearY;
-	return dx * dx + dy * dy <= theRadius * theRadius;
+	int dx = 0;
+	int dy = 0;
+	bool xOut = false;
+	bool yOut = false;
+
+	if (theCircleX < theRect.mX)
+	{
+		xOut = true;
+		dx = theRect.mX - theCircleX;
+	}
+	else if (theCircleX > theRect.mX + theRect.mWidth)
+	{
+		xOut = true;
+		dx = theCircleX - theRect.mX - theRect.mWidth;
+	}
+	if (theCircleY < theRect.mY)
+	{
+		yOut = true;
+		dy = theRect.mY - theCircleY;
+	}
+	else if (theCircleY > theRect.mY + theRect.mHeight)
+	{
+		yOut = true;
+		dy = theCircleY - theRect.mY - theRect.mHeight;
+	}
+
+	if (!xOut && !yOut)
+		return true;
+	if (xOut && yOut)
+		return dx * dx + dy * dy <= theRadius * theRadius;
+	if (xOut)
+		return dx <= theRadius;
+	return dy <= theRadius;
 }
 
 void Board::KillAllPlantsInRadius(int theX, int theY, int theRadius)
