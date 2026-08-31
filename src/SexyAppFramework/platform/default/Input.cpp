@@ -399,6 +399,19 @@ static void RecordDemoEvent(SexyAppBase* theApp, const SDL_Event& theEvent)
 					theApp->mDemoBuffer.WriteNumBits(DEMO_ACTIVATE_APP, 5);
 					theApp->mDemoBuffer.WriteNumBits(theEvent.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ? 1 : 0, 1);
 					break;
+
+				case SDL_WINDOWEVENT_ENTER:
+				case SDL_WINDOWEVENT_LEAVE:
+				{
+					bool aMouseIn = theEvent.window.event == SDL_WINDOWEVENT_ENTER;
+					if (theApp->mMouseIn != aMouseIn)
+					{
+						theApp->WriteDemoTimingBlock();
+						theApp->mDemoBuffer.WriteNumBits(0, 1);
+						theApp->mDemoBuffer.WriteNumBits(aMouseIn ? DEMO_MOUSE_ENTER : DEMO_MOUSE_EXIT, 5);
+					}
+					break;
+				}
 			}
 			break;
 
@@ -649,6 +662,27 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 					case SDL_WINDOWEVENT_FOCUS_LOST:
 						mActive = event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED;
 						RehupFocus();
+						break;
+
+					case SDL_WINDOWEVENT_ENTER:
+						if (!mMouseIn)
+						{
+							int x, y;
+							SDL_GetMouseState(&x, &y);
+							mWidgetManager->RemapMouse(x, y);
+							mMouseIn = true;
+							mWidgetManager->MouseMove(x, y);
+							EnforceCursor();
+						}
+						break;
+
+					case SDL_WINDOWEVENT_LEAVE:
+						if (mMouseIn)
+						{
+							mWidgetManager->MouseExit(mWidgetManager->mLastMouseX, mWidgetManager->mLastMouseY);
+							mMouseIn = false;
+							EnforceCursor();
+						}
 						break;
 				}
 				break;
