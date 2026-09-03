@@ -1440,7 +1440,7 @@ void MemoryImage::BltRotated(Image* theImage, float theX, float theY, const Rect
 	{
 		if (aMemoryImage->mColorTable == nullptr)
 		{
-			uint32_t* aSrcBits = aMemoryImage->GetBits() + theSrcRect.mX + theSrcRect.mY*theSrcRect.mWidth;
+			uint32_t* aSrcBits = aMemoryImage->GetBits() + theSrcRect.mX + theSrcRect.mY*aMemoryImage->mWidth;
 
 			#define SRC_TYPE uint32_t
 			#define READ_COLOR(ptr) (*(ptr))
@@ -1460,7 +1460,7 @@ void MemoryImage::BltRotated(Image* theImage, float theX, float theY, const Rect
 		else
 		{
 			uint32_t* aColorTable = aMemoryImage->mColorTable.get();
-			uchar* aSrcBits = aMemoryImage->mColorIndices.get() + theSrcRect.mX + theSrcRect.mY*theSrcRect.mWidth;
+			uchar* aSrcBits = aMemoryImage->mColorIndices.get() + theSrcRect.mX + theSrcRect.mY*aMemoryImage->mWidth;
 
 			#define SRC_TYPE uchar
 			#define READ_COLOR(ptr) (aColorTable[*(ptr)])
