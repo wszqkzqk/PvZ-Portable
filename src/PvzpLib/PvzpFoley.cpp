@@ -288,6 +288,7 @@ void PvzpFoley::PlayFoleyPitch(FoleyType theFoleyType, float thePitch)
 	aFoleyInstance->mInstance = aSoundInstance;
 	aFoleyInstance->mRefCount = 1;
 	aFoleyInstance->mStartTime = gSexyAppBase->mUpdateCount;
+	aFoleyInstance->mPaused = false;
 	aFoleyData->mLastVariationPlayed = aVariation;
 	if (thePitch != 0.0f)
 		aSoundInstance->AdjustPitch(thePitch);
