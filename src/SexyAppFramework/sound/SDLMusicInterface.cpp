@@ -62,6 +62,8 @@ bool SDLMusicInterface::LoadMusic(int theSongId, const std::string& theFileName)
 
 	SDLMusicInfo aMusicInfo;
 	aMusicInfo.mHMusic = aHMusic;
+
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
 	mMusicMap.insert(SDLMusicMap::value_type(theSongId, aMusicInfo));
 
 	return true;
@@ -69,6 +71,8 @@ bool SDLMusicInterface::LoadMusic(int theSongId, const std::string& theFileName)
 
 void SDLMusicInterface::PlayMusic(int theSongId, int theOffset, bool noLoop)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -86,6 +90,8 @@ void SDLMusicInterface::PlayMusic(int theSongId, int theOffset, bool noLoop)
 
 void SDLMusicInterface::StopMusic(int theSongId)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	Mix_HaltMusic();
 
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
@@ -99,6 +105,8 @@ void SDLMusicInterface::StopMusic(int theSongId)
 
 void SDLMusicInterface::PauseMusic(int theSongId)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -109,6 +117,8 @@ void SDLMusicInterface::PauseMusic(int theSongId)
 
 void SDLMusicInterface::ResumeMusic(int theSongId)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -119,6 +129,8 @@ void SDLMusicInterface::ResumeMusic(int theSongId)
 
 void SDLMusicInterface::StopAllMusic()
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.begin();
 	while (anItr != mMusicMap.end())
 	{
@@ -131,6 +143,8 @@ void SDLMusicInterface::StopAllMusic()
 
 void SDLMusicInterface::UnloadMusic(int theSongId)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	StopMusic(theSongId);
 
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
@@ -145,6 +159,8 @@ void SDLMusicInterface::UnloadMusic(int theSongId)
 
 void SDLMusicInterface::UnloadAllMusic()
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	StopAllMusic();
 	for (SDLMusicMap::iterator anItr = mMusicMap.begin(); anItr != mMusicMap.end(); ++anItr)
 	{
@@ -156,6 +172,8 @@ void SDLMusicInterface::UnloadAllMusic()
 
 void SDLMusicInterface::PauseAllMusic()
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	for (SDLMusicMap::iterator anItr = mMusicMap.begin(); anItr != mMusicMap.end(); ++anItr)
 	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
@@ -166,6 +184,8 @@ void SDLMusicInterface::PauseAllMusic()
 
 void SDLMusicInterface::ResumeAllMusic()
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	for (SDLMusicMap::iterator anItr = mMusicMap.begin(); anItr != mMusicMap.end(); ++anItr)
 	{
 		SDLMusicInfo* aMusicInfo = &anItr->second;
@@ -176,6 +196,8 @@ void SDLMusicInterface::ResumeAllMusic()
 
 void SDLMusicInterface::FadeIn(int theSongId, int theOffset, double theSpeed, bool noLoop)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -194,6 +216,8 @@ void SDLMusicInterface::FadeIn(int theSongId, int theOffset, double theSpeed, bo
 
 void SDLMusicInterface::FadeOut(int theSongId, bool stopSong, double theSpeed)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -210,6 +234,8 @@ void SDLMusicInterface::FadeOut(int theSongId, bool stopSong, double theSpeed)
 
 void SDLMusicInterface::FadeOutAll(bool stopSong, double theSpeed)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.begin();
 	while (anItr != mMusicMap.end())
 	{
@@ -224,6 +250,8 @@ void SDLMusicInterface::FadeOutAll(bool stopSong, double theSpeed)
 
 void SDLMusicInterface::SetSongVolume(int theSongId, double theVolume)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -236,6 +264,8 @@ void SDLMusicInterface::SetSongVolume(int theSongId, double theVolume)
 
 void SDLMusicInterface::SetSongMaxVolume(int theSongId, double theMaxVolume)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -249,6 +279,8 @@ void SDLMusicInterface::SetSongMaxVolume(int theSongId, double theMaxVolume)
 
 bool SDLMusicInterface::IsPlaying(int theSongId)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{
@@ -273,6 +305,8 @@ void SDLMusicInterface::Update()
 {
 	Mix_VolumeMusic(mGlobalVolume);
 	Mix_VolumeMusicGeneral(mGlobalVolume);
+
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
 
 	SDLMusicMap::iterator anItr = mMusicMap.begin();
 	while (anItr != mMusicMap.end())
@@ -307,6 +341,8 @@ void SDLMusicInterface::Update()
 // functions for dealing with MODs
 int SDLMusicInterface::GetMusicOrder(int theSongId)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
+
 	SDLMusicMap::iterator anItr = mMusicMap.find(theSongId);
 	if (anItr != mMusicMap.end())
 	{

@@ -30,6 +30,8 @@
 #include <SDL.h>
 #include <SDL_mixer_ext/SDL_mixer_ext.h>
 
+#include <mutex>
+
 namespace Sexy
 {
 
@@ -56,6 +58,7 @@ class SDLMusicInterface : public MusicInterface
 {
 public:
 	SDLMusicMap				mMusicMap;
+	std::recursive_mutex	mMusicMapMutex;
 	int						mGlobalVolume;
 	int						mMusicLoadFlags;
 

@@ -28,6 +28,8 @@
 #include "../../PvzpLib/PvzpCommon.h"
 #include "sound/SDLMusicInterface.h"
 
+#include <mutex>
+
 using namespace Sexy;
 
 Music::Music()
@@ -105,6 +107,8 @@ bool Music::PvzpLoadMusic(MusicFile theMusicFile, std::string_view theFileName)
 
 	SDLMusicInfo aMusicInfo;
 	aMusicInfo.mHMusic = aHMusic;
+
+	std::scoped_lock anAutoCrit(anSDL->mMusicMapMutex);
 	anSDL->mMusicMap.insert(SDLMusicMap::value_type(theMusicFile, aMusicInfo));
 	return true;
 }
@@ -193,6 +197,7 @@ void Music::MusicInit()
 void Music::MusicCreditScreenInit()
 {
 	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
+	std::scoped_lock anAutoCrit(anSDL->mMusicMapMutex);
 	if (anSDL->mMusicMap.find((int)MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN) == anSDL->mMusicMap.end())
 		LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
 }
@@ -223,6 +228,7 @@ void Music::StopAllMusic()
 Mix_Music* Music::GetMusicHandle(MusicFile theMusicFile)
 {
 	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
+	std::scoped_lock anAutoCrit(anSDL->mMusicMapMutex);
 	auto anItr = anSDL->mMusicMap.find((int)theMusicFile);
 	PVZP_ASSERT(anItr != anSDL->mMusicMap.end());
 	return anItr->second.mHMusic;
@@ -231,6 +237,7 @@ Mix_Music* Music::GetMusicHandle(MusicFile theMusicFile)
 void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolume)
 {
 	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
+	std::scoped_lock anAutoCrit(anSDL->mMusicMapMutex);
 	auto anItr = anSDL->mMusicMap.find((int)theMusicFile);
 	PVZP_ASSERT(anItr != anSDL->mMusicMap.end());
 	SDLMusicInfo* aMusicInfo = &anItr->second;
