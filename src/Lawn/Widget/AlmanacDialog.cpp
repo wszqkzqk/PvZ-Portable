@@ -58,8 +58,8 @@ AlmanacDialog::AlmanacDialog(LawnApp* theApp) : LawnDialog(theApp, DIALOG_ALMANA
 	mCloseButton->mDownImage = nullptr;
 	mCloseButton->SetFont(Sexy::FONT_BRIANNETOD12);
 	Color aColor = Color(42, 42, 90);
-	mCloseButton->mColors[ButtonWidget::COLOR_LABEL] = aColor;
-	mCloseButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = aColor;
+	mCloseButton->SetLabelColor(aColor);
+	mCloseButton->SetLabelHiliteColor(aColor);
 	mCloseButton->Resize(676, 567, 89, 26);
 	mCloseButton->mParentWidget = this;
 	mCloseButton->mTextOffsetX = -8;
@@ -71,8 +71,8 @@ AlmanacDialog::AlmanacDialog(LawnApp* theApp) : LawnDialog(theApp, DIALOG_ALMANA
 	mIndexButton->mOverImage = Sexy::IMAGE_ALMANAC_INDEXBUTTONHIGHLIGHT;
 	mIndexButton->mDownImage = nullptr;
 	mIndexButton->SetFont(Sexy::FONT_BRIANNETOD12);
-	mIndexButton->mColors[ButtonWidget::COLOR_LABEL] = aColor;
-	mIndexButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = aColor;
+	mIndexButton->SetLabelColor(aColor);
+	mIndexButton->SetLabelHiliteColor(aColor);
 	mIndexButton->Resize(32, 567, 164, 26);
 	mIndexButton->mParentWidget = this;
 	mIndexButton->mTextOffsetX = 8;
@@ -86,8 +86,8 @@ AlmanacDialog::AlmanacDialog(LawnApp* theApp) : LawnDialog(theApp, DIALOG_ALMANA
 	mPlantButton->mDisabledImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_DISABLED;
 	mPlantButton->mOverOverlayImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_GLOW;
 	mPlantButton->SetFont(Sexy::FONT_DWARVENTODCRAFT18YELLOW);
-	mPlantButton->mColors[ButtonWidget::COLOR_LABEL] = Color::White;
-	mPlantButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color::White;
+	mPlantButton->SetLabelColor(Color::White);
+	mPlantButton->SetLabelHiliteColor(Color::White);
 	mPlantButton->Resize(130, 345, 156, 42);
 	mPlantButton->mTextOffsetY = -1;
 	mPlantButton->mParentWidget = this;

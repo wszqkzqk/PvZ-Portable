@@ -66,7 +66,7 @@ SeedChooserScreen::SeedChooserScreen()
 	mStartButton->mDisabledImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_DISABLED;
 	mStartButton->mOverOverlayImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_GLOW;
 	mStartButton->SetFont(Sexy::FONT_DWARVENTODCRAFT18YELLOW);
-	mStartButton->mColors[GameButton::COLOR_LABEL_HILITE] = Color::White;
+	mStartButton->SetLabelHiliteColor(Color::White);
 	mStartButton->Resize(154, 545, 156, 42);
 	mStartButton->mTextOffsetY = -1;
 	EnableStartButton(false);
@@ -82,8 +82,8 @@ SeedChooserScreen::SeedChooserScreen()
 	mRandomButton->mOverImage = Sexy::IMAGE_BLANK;
 	mRandomButton->mDownImage = Sexy::IMAGE_BLANK;
 	mRandomButton->SetFont(Sexy::FONT_BRIANNETOD12);
-	mRandomButton->mColors[0] = Color(255, 240, 0);
-	mRandomButton->mColors[1] = Color(200, 200, 255);
+	mRandomButton->SetLabelColor(Color(255, 240, 0));
+	mRandomButton->SetLabelHiliteColor(Color(200, 200, 255));
 	mRandomButton->Resize(332, 546, 100, 30);
 	if (!mApp->mCheatKeys)
 	{
@@ -103,8 +103,8 @@ SeedChooserScreen::SeedChooserScreen()
 	mViewLawnButton->mOverImage = aOverImage;
 	mViewLawnButton->mDownImage = nullptr;
 	mViewLawnButton->SetFont(Sexy::FONT_BRIANNETOD12);
-	mViewLawnButton->mColors[0] = aBtnColor;
-	mViewLawnButton->mColors[1] = aBtnColor;
+	mViewLawnButton->SetLabelColor(aBtnColor);
+	mViewLawnButton->SetLabelHiliteColor(aBtnColor);
 	mViewLawnButton->Resize(22, 561, aImageWidth, aImageHeight);
 	mViewLawnButton->mParentWidget = this;
 	mViewLawnButton->mTextOffsetY = 1;
@@ -120,8 +120,8 @@ SeedChooserScreen::SeedChooserScreen()
 	mAlmanacButton->mOverImage = aOverImage;
 	mAlmanacButton->mDownImage = nullptr;
 	mAlmanacButton->SetFont(Sexy::FONT_BRIANNETOD12);
-	mAlmanacButton->mColors[0] = aBtnColor;
-	mAlmanacButton->mColors[1] = aBtnColor;
+	mAlmanacButton->SetLabelColor(aBtnColor);
+	mAlmanacButton->SetLabelHiliteColor(aBtnColor);
 	mAlmanacButton->Resize(560, 572, aImageWidth, aImageHeight);
 	mAlmanacButton->mParentWidget = this;
 	mAlmanacButton->mTextOffsetY = 1;
@@ -132,8 +132,8 @@ SeedChooserScreen::SeedChooserScreen()
 	mStoreButton->mOverImage = aOverImage;
 	mStoreButton->mDownImage = nullptr;
 	mStoreButton->SetFont(Sexy::FONT_BRIANNETOD12);
-	mStoreButton->mColors[0] = aBtnColor;
-	mStoreButton->mColors[1] = aBtnColor;
+	mStoreButton->SetLabelColor(aBtnColor);
+	mStoreButton->SetLabelHiliteColor(aBtnColor);
 	mStoreButton->Resize(680, 572, aImageWidth, aImageHeight);
 	mStoreButton->mParentWidget = this;
 	mStoreButton->mTextOffsetY = 1;
@@ -793,8 +793,8 @@ SeedType SeedChooserScreen::FindSeedInBank(int theIndexInBank)
 void SeedChooserScreen::EnableStartButton(bool theEnabled)
 {
 	mStartButton->SetDisabled(!theEnabled);
-	if (theEnabled) mStartButton->mColors[GameButton::COLOR_LABEL] = Color::White;
-	else mStartButton->mColors[GameButton::COLOR_LABEL] = Color(64, 64, 64);
+	if (theEnabled) mStartButton->SetLabelColor(Color::White);
+	else mStartButton->SetLabelColor(Color(64, 64, 64));
 }
 
 void SeedChooserScreen::ClickedSeedInBank(ChosenSeed& theChosenSeed)

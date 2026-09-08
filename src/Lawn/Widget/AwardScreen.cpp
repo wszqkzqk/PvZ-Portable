@@ -141,8 +141,8 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 	mStartButton->mDisabledImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_DISABLED;
 	mStartButton->mOverOverlayImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_GLOW;
 	mStartButton->SetFont(Sexy::FONT_DWARVENTODCRAFT15);
-	mStartButton->mColors[ButtonWidget::COLOR_LABEL] = Color(213, 159, 43);
-	mStartButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(213, 159, 43);
+	mStartButton->SetLabelColor(Color(213, 159, 43));
+	mStartButton->SetLabelHiliteColor(Color(213, 159, 43));
 	mStartButton->Resize(324, 500, 156, 42);
 	mStartButton->mTextOffsetY = -1;
 
@@ -153,8 +153,8 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 	mContinueButton->mDisabledImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_DISABLED;
 	mContinueButton->mOverOverlayImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_GLOW;
 	mContinueButton->SetFont(Sexy::FONT_DWARVENTODCRAFT15);
-	mContinueButton->mColors[ButtonWidget::COLOR_LABEL] = Color(213, 159, 43);
-	mContinueButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(213, 159, 43);
+	mContinueButton->SetLabelColor(Color(213, 159, 43));
+	mContinueButton->SetLabelHiliteColor(Color(213, 159, 43));
 	mContinueButton->Resize(324, 515, 156, 42);
 	mContinueButton->mParentWidget = this;
 	mContinueButton->mTextOffsetY = -1;
@@ -167,8 +167,8 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 	mMenuButton->mOverImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW;
 	mMenuButton->mDownImage = nullptr;
 	mMenuButton->SetFont(Sexy::FONT_BRIANNETOD12);
-	mMenuButton->mColors[ButtonWidget::COLOR_LABEL] = Color(42, 42, 90);
-	mMenuButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(42, 42, 90);
+	mMenuButton->SetLabelColor(Color(42, 42, 90));
+	mMenuButton->SetLabelHiliteColor(Color(42, 42, 90));
 	mMenuButton->mParentWidget = this;
 	mMenuButton->Resize(677, 16, 111, 26);
 	mMenuButton->mTextOffsetY = 1;
@@ -187,8 +187,8 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 		mStartButton->mDisabledImage = nullptr;
 		mStartButton->mOverOverlayImage = nullptr;
 		mStartButton->SetFont(Sexy::FONT_HOUSEOFTERROR20);
-		mStartButton->mColors[ButtonWidget::COLOR_LABEL] = Color(255, 255, 255);
-		mStartButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(213, 159, 43);
+		mStartButton->SetLabelColor(Color(255, 255, 255));
+		mStartButton->SetLabelHiliteColor(Color(213, 159, 43));
 		mStartButton->Resize(325, 505, 190, 73);
 		mStartButton->mTextOffsetX = 33;
 		mStartButton->mTextOffsetY = -2;

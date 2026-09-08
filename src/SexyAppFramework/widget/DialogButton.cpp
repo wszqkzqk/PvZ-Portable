@@ -29,13 +29,14 @@
 
 using namespace Sexy;
 
-static int gDialogButtonColors[][3] = {
-	{255, 255, 255},
-	{255, 255, 255},
-	{0, 0, 0},
-	{255, 255, 255},
-	{132, 132, 132},
-	{212, 212, 212}};
+static constexpr ButtonColorScheme gDialogButtonColors{
+	.mLabel = Color(255, 255, 255),
+	.mLabelHilite = Color(255, 255, 255),
+	.mDarkOutline = Color(0, 0, 0),
+	.mLightOutline = Color(255, 255, 255),
+	.mMediumOutline = Color(132, 132, 132),
+	.mBkg = Color(212, 212, 212),
+};
 
 DialogButton::DialogButton(Image* theComponentImage, int theId, ButtonListener* theListener) :
 	ButtonWidget(theId, theListener)
@@ -46,7 +47,7 @@ DialogButton::DialogButton(Image* theComponentImage, int theId, ButtonListener* 
 	mTranslateX = mTranslateY = 1;
 	mDoFinger = true;
 
-	SetColors(gDialogButtonColors, NUM_COLORS);
+	SetColors(gDialogButtonColors);
 }
 
 void DialogButton::Draw(Graphics* g)
@@ -103,9 +104,9 @@ void DialogButton::Draw(Graphics* g)
 		g->SetFont(mFont.get());
 
 		if (mIsOver)
-			g->SetColor(mColors[COLOR_LABEL_HILITE]);
+			g->SetColor(mColors.mLabelHilite);
 		else
-			g->SetColor(mColors[COLOR_LABEL]);
+			g->SetColor(mColors.mLabel);
 
 		int aFontX = (mWidth - mFont->StringWidth(mLabel))/2;
 		int aFontY = (mHeight + mFont->GetAscent() - mFont->GetAscentPadding() - mFont->GetAscent()/6 - 1)/2;

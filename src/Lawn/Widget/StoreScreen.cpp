@@ -113,8 +113,8 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mBackButton->mOverImage = Sexy::IMAGE_STORE_MAINMENUBUTTONHIGHLIGHT;
 	mBackButton->mDownImage = Sexy::IMAGE_STORE_MAINMENUBUTTONDOWN;
 	mBackButton->SetFont(Sexy::FONT_HOUSEOFTERROR20);
-	mBackButton->mColors[ButtonWidget::COLOR_LABEL] = Color(98, 153, 235);
-	mBackButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(167, 192, 235);
+	mBackButton->SetLabelColor(Color(98, 153, 235));
+	mBackButton->SetLabelHiliteColor(Color(167, 192, 235));
 	mBackButton->Resize(366, 512, aMenuImage->mWidth, aMenuImage->mHeight);
 	mBackButton->mTextOffsetX = -7;
 	mBackButton->mTextOffsetY = 1;
@@ -128,8 +128,8 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mPrevButton->mButtonImage = aPrevImage;
 	mPrevButton->mOverImage = Sexy::IMAGE_STORE_PREVBUTTONHIGHLIGHT;
 	mPrevButton->mDownImage = Sexy::IMAGE_STORE_PREVBUTTONHIGHLIGHT;
-	mPrevButton->mColors[ButtonWidget::COLOR_LABEL] = Color(255, 240, 0);
-	mPrevButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(200, 200, 255);
+	mPrevButton->SetLabelColor(Color(255, 240, 0));
+	mPrevButton->SetLabelHiliteColor(Color(200, 200, 255));
 	mPrevButton->Resize(252, 402, aPrevImage->mWidth, aPrevImage->mHeight);
 
 	mNextButton = std::make_unique<NewLawnButton>(nullptr, StoreScreen::StoreScreen_Next, this);
@@ -139,8 +139,8 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mNextButton->mButtonImage = aNextImage;
 	mNextButton->mOverImage = Sexy::IMAGE_STORE_NEXTBUTTONHIGHLIGHT;
 	mNextButton->mDownImage = Sexy::IMAGE_STORE_NEXTBUTTONHIGHLIGHT;
-	mNextButton->mColors[ButtonWidget::COLOR_LABEL] = Color(255, 240, 0);
-	mNextButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(200, 200, 255);
+	mNextButton->SetLabelColor(Color(255, 240, 0));
+	mNextButton->SetLabelHiliteColor(Color(200, 200, 255));
 	mNextButton->Resize(596, 402, aNextImage->mWidth, aNextImage->mHeight);
 
 	mOverlayWidget = std::make_unique<StoreScreenOverlay>(this);

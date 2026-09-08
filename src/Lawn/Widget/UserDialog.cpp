@@ -28,12 +28,13 @@
 #include "../../PvzpLib/PvzpStringFile.h"
 #include "widget/ListWidget.h"
 
-static int gUserListWidgetColors[][3] = {
-	{  23,  24,  35 },
-	{   0,   0,   0 },
-	{ 235, 225, 180 },
-	{ 255, 255, 255 },
-	{  20, 180,  15 }
+static constexpr ListWidgetColorScheme gUserListWidgetColors{
+	.mBkg = Color(23, 24, 35),
+	.mOutline = Color(0, 0, 0),
+	.mText = Color(235, 225, 180),
+	.mHilite = Color(255, 255, 255),
+	.mSelect = Color(20, 180, 15),
+	.mSelectText = std::nullopt,
 };
 
 // these dialogs don't have localizations
@@ -41,7 +42,7 @@ UserDialog::UserDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_USE
 {
 	mVerticalCenterText = false;
 	mUserList = std::make_unique<ListWidget>(0, FONT_BRIANNETOD16, this);
-	mUserList->SetColors(gUserListWidgetColors, LENGTH(gUserListWidgetColors));
+	mUserList->SetColors(gUserListWidgetColors);
 	mUserList->mDrawOutline = true;
 	mUserList->mJustify = ListWidget::JUSTIFY_CENTER;
 	mUserList->mItemHeight = 24;

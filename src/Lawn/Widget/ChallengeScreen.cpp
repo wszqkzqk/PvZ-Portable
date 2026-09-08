@@ -134,8 +134,8 @@ ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 		Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW, Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW);
 	mBackButton->mTextDownOffsetX = 1;
 	mBackButton->mTextDownOffsetY = 1;
-	mBackButton->mColors[ButtonWidget::COLOR_LABEL] = Color(42, 42, 90);
-	mBackButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(42, 42, 90);
+	mBackButton->SetLabelColor(Color(42, 42, 90));
+	mBackButton->SetLabelHiliteColor(Color(42, 42, 90));
 	mBackButton->Resize(18, 568, 111, 26);
 
 	for (int aPageIdx = CHALLENGE_PAGE_SURVIVAL; aPageIdx < MAX_CHALLANGE_PAGES; aPageIdx++)
@@ -151,8 +151,8 @@ ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 		aPageButton->mOverImage = Sexy::IMAGE_BLANK;
 		aPageButton->mDownImage = Sexy::IMAGE_BLANK;
 		aPageButton->SetFont(Sexy::FONT_BRIANNETOD12);
-		aPageButton->mColors[ButtonWidget::COLOR_LABEL] = Color(255, 240, 0);
-		aPageButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(220, 220, 0);
+		aPageButton->SetLabelColor(Color(255, 240, 0));
+		aPageButton->SetLabelHiliteColor(Color(220, 220, 0));
 		aPageButton->Resize(200 + 100 * aPageIdx, 540, 100, 75);
 		if (!ShowPageButtons() || aPageIdx == CHALLENGE_PAGE_SURVIVAL || aPageIdx == CHALLENGE_PAGE_PUZZLE)
 			aPageButton->mVisible = false;
@@ -372,12 +372,12 @@ void ChallengeScreen::UpdateButtons()
 
 		if (aPage == mPageIndex)
 		{
-			aPageButton->mColors[ButtonWidget::COLOR_LABEL] = Color(64, 64, 64);
+			aPageButton->SetLabelColor(Color(64, 64, 64));
 			aPageButton->mDisabled = true;
 		}
 		else
 		{
-			aPageButton->mColors[ButtonWidget::COLOR_LABEL] = Color(255, 240, 0);
+			aPageButton->SetLabelColor(Color(255, 240, 0));
 			aPageButton->mDisabled = false;
 		}
 	}

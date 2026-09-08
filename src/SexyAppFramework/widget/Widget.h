@@ -47,7 +47,6 @@ public:
 	bool					mIsDown;
 	bool					mIsOver;
 	bool					mHasTransparencies;
-	std::vector<Color>		mColors;
 	Insets					mMouseInsets;
 	bool					mDoFinger;
 	bool					mWantsFocus;
@@ -67,12 +66,6 @@ public:
 
 	virtual void			OrderInManagerChanged();
 	virtual void			SetVisible(bool isVisible);
-
-	virtual void			SetColors(int theColors[][3], int theNumColors);
-	virtual void			SetColors(int theColors[][4], int theNumColors);
-	virtual void			SetColor(int theIdx, const Color& theColor);
-	virtual const Color&	GetColor(int theIdx);
-	virtual Color			GetColor(int theIdx, const Color& theDefaultColor);
 
 	virtual void			SetDisabled(bool isDisabled);
 	virtual void			ShowFinger(bool on);

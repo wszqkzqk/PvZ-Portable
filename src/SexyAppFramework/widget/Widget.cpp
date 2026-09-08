@@ -55,7 +55,6 @@ Widget::Widget()
 Widget::~Widget()
 {
 	gSexyAppBase->mResourceManager->ReleaseTrackedResources(mLoadedResourceNames);
-	mColors.clear();
 }
 
 void Widget::WidgetRemovedHelper()
@@ -123,49 +122,6 @@ void Widget::DrawOverlay(Graphics* g, [[maybe_unused]] int thePriority)
 	DrawOverlay(g);
 }
 
-
-void Widget::SetColors(int theColors[][3], int theNumColors)
-{
-	mColors.clear();
-
-	for (int i = 0; i < theNumColors; i++)
-		SetColor(i, Color(theColors[i][0], theColors[i][1], theColors[i][2]));
-	MarkDirty();
-}
-
-void Widget::SetColors(int theColors[][4], int theNumColors)
-{
-	mColors.clear();
-
-	for (int i = 0; i < theNumColors; i++)
-		SetColor(i, Color(theColors[i][0], theColors[i][1], theColors[i][2], theColors[i][3]));
-
-	MarkDirty();
-}
-
-void Widget::SetColor(int theIdx, const Color& theColor)
-{
-	if (theIdx >= (int)mColors.size())
-		mColors.resize(theIdx + 1);
-
-	mColors[theIdx] = theColor;
-	MarkDirty();
-}
-
-const Color& Widget::GetColor(int theIdx)
-{
-	static Color aColor;
-	if (theIdx < (int) mColors.size())
-		return mColors[theIdx];
-	return aColor;
-}
-
-Color Widget::GetColor(int theIdx, const Color& theDefaultColor)
-{
-	if (theIdx < (int) mColors.size())
-		return mColors[theIdx];
-	return theDefaultColor;
-}
 
 void Widget::Resize(int theX, int theY, int theWidth, int theHeight)
 {

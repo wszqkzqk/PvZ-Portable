@@ -355,8 +355,8 @@ CreditScreen::CreditScreen(LawnApp* theApp)
 	mReplayButton = MakeNewButton(CreditScreen::Credits_Button_Replay, this, "[CREDITS_REPLAY_BUTTON]", FONT_HOUSEOFTERROR16, IMAGE_CREDITS_PLAYBUTTON, nullptr, nullptr);
 	mReplayButton->mTextDownOffsetX = 1;
 	mReplayButton->mTextDownOffsetY = 1;
-	mReplayButton->mColors[ButtonWidget::COLOR_LABEL] = Color(255, 255, 255);
-	mReplayButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(213, 159, 43);
+	mReplayButton->SetLabelColor(Color(255, 255, 255));
+	mReplayButton->SetLabelHiliteColor(Color(213, 159, 43));
 	mReplayButton->Resize(10, 530, 125, 65);
 	mReplayButton->SetVisible(false);
 	mReplayButton->mTextOffsetX = 33;

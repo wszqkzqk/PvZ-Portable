@@ -27,6 +27,7 @@
 
 #include "ScrollListener.h"
 #include "Widget.h"
+#include <optional>
 
 namespace Sexy
 {
@@ -34,6 +35,16 @@ namespace Sexy
 class ScrollbarWidget;
 class ListListener;
 class _Font;
+
+struct ListWidgetColorScheme
+{
+	Color					mBkg;
+	Color					mOutline;
+	Color					mText;
+	Color					mHilite;
+	Color					mSelect;
+	std::optional<Color>	mSelectText;
+};
 
 class ListWidget : public Widget, public ScrollListener
 {
@@ -45,21 +56,12 @@ public:
 		JUSTIFY_RIGHT
 	};
 
-	enum
-	{
-		COLOR_BKG				=0,
-		COLOR_OUTLINE,
-		COLOR_TEXT,
-		COLOR_HILITE,
-		COLOR_SELECT,
-		COLOR_SELECT_TEXT,
-	};
-
 public:
 	int							mId;
 	_Font*						mFont;
 	ScrollbarWidget*			mScrollbar;
 	int							mJustify;
+	ListWidgetColorScheme		mColors;
 
 	std::vector<std::string>	mLines;
 	std::vector<Color>			mLineColors;
@@ -90,12 +92,12 @@ public:
 	virtual void				Sort(bool ascending);
 	virtual std::string			GetStringAt(int theIdx);
 	void						Resize(int theX, int theY, int theWidth, int theHeight) override;
+	virtual void				SetColors(const ListWidgetColorScheme& theColors);
 	virtual int					AddLine(const std::string& theLine, bool alphabetical);
 	virtual void				SetLine(int theIdx, const std::string& theString);
 	virtual int					GetLineCount();
 	virtual int					GetLineIdx(const std::string& theLine);
 	virtual void				SetColor(const std::string& theLine, const Color& theColor);
-	void						SetColor(int theIdx, const Color& theColor) override;
 	virtual void				SetLineColor(int theIdx, const Color& theColor);
 	virtual void				RemoveLine(int theIdx);
 	virtual void				RemoveAll();

@@ -42,6 +42,17 @@ extern std::string DIALOG_NO_STRING;
 extern std::string DIALOG_OK_STRING;
 extern std::string DIALOG_CANCEL_STRING;
 
+struct DialogColorScheme
+{
+	Color					mHeader;
+	Color					mLines;
+	Color					mFooter;
+	Color					mButtonText;
+	Color					mButtonTextHilite;
+	Color					mBkg;
+	Color					mOutline;
+};
+
 class Dialog : public Widget, public ButtonListener
 {
 public:
@@ -62,20 +73,9 @@ public:
 		ID_FOOTER	= 1000
 	};
 
-	enum
-	{
-		COLOR_HEADER = 0,
-		COLOR_LINES,
-		COLOR_FOOTER,
-		COLOR_BUTTON_TEXT,
-		COLOR_BUTTON_TEXT_HILITE,
-		COLOR_BKG,
-		COLOR_OUTLINE,
-		NUM_COLORS
-	};
-
 	DialogListener*			mDialogListener;
 	Image*					mComponentImage;
+	DialogColorScheme		mColors;
 	std::unique_ptr<DialogButton>	mYesButton;
 	std::unique_ptr<DialogButton>	mNoButton;
 	int						mNumButtons;
@@ -117,7 +117,11 @@ public:
 	virtual void			SetHeaderFont(_Font* theFont);
 	virtual void			SetLinesFont(_Font* theFont);
 
-	void					SetColor(int theIdx, const Color& theColor) override;
+	virtual void			SetColors(const DialogColorScheme& theColors);
+	virtual void			SetHeaderColor(const Color& theColor);
+	virtual void			SetLinesColor(const Color& theColor);
+	virtual void			SetButtonTextColor(const Color& theColor);
+	virtual void			SetButtonTextHiliteColor(const Color& theColor);
 	virtual int				GetPreferredHeight(int theWidth);
 
 	void					Draw(Graphics* g) override;

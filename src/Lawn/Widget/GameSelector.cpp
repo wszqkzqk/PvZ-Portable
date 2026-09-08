@@ -408,45 +408,45 @@ void GameSelector::SyncButtons()
 	{
 		//mMinigameButton->mOverImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_SURVIVAL_HIGHLIGHT;
 		//mMinigameButton->mDownImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_SURVIVAL_HIGHLIGHT;
-		mMinigameButton->SetColor(ButtonWidget::COLOR_BKG, Color(128, 128, 128));
+		mMinigameButton->SetBkgColor(Color(128, 128, 128));
 	}
 	else
 	{
 		//mMinigameButton->mOverImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_SURVIVAL_HIGHLIGHT;
 		//mMinigameButton->mDownImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_SURVIVAL_HIGHLIGHT;
-		mMinigameButton->SetColor(ButtonWidget::COLOR_BKG, Color::White);
+		mMinigameButton->SetBkgColor(Color::White);
 	}
 	if (mPuzzleLocked)
 	{
 		//mPuzzleButton->mOverImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_CHALLENGES_HIGHLIGHT;
 		//mPuzzleButton->mDownImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_CHALLENGES_HIGHLIGHT;
-		mPuzzleButton->SetColor(ButtonWidget::COLOR_BKG, Color(128, 128, 128));
+		mPuzzleButton->SetBkgColor(Color(128, 128, 128));
 	}
 	else
 	{
 		//mPuzzleButton->mOverImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_CHALLENGES_HIGHLIGHT;
 		//mPuzzleButton->mDownImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_CHALLENGES_HIGHLIGHT;
-		mPuzzleButton->SetColor(ButtonWidget::COLOR_BKG, Color::White);
+		mPuzzleButton->SetBkgColor(Color::White);
 	}
 	if (mSurvivalLocked)
 	{
 		//mSurvivalButton->mOverImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_VASEBREAKER_HIGHLIGHT;
 		//mSurvivalButton->mDownImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_VASEBREAKER_HIGHLIGHT;
-		mSurvivalButton->SetColor(ButtonWidget::COLOR_BKG, Color(128, 128, 128));
+		mSurvivalButton->SetBkgColor(Color(128, 128, 128));
 	}
 	else
 	{
 		//mSurvivalButton->mOverImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_VASEBREAKER_HIGHLIGHT;
 		//mSurvivalButton->mDownImage = Sexy::IMAGE_REANIM_SELECTORSCREEN_VASEBREAKER_HIGHLIGHT;
-		mSurvivalButton->SetColor(ButtonWidget::COLOR_BKG, Color::White);
+		mSurvivalButton->SetBkgColor(Color::White);
 	}
 
 	ReanimatorTrackInstance* aMinigameTrack = aSelectorReanim->GetTrackInstanceByName("SelectorScreen_Survival_button");
 	ReanimatorTrackInstance* aPuzzleTrack = aSelectorReanim->GetTrackInstanceByName("SelectorScreen_Challenges_button");
 	ReanimatorTrackInstance* aSurvivalTrack = aSelectorReanim->GetTrackInstanceByName("SelectorScreen_ZenGarden_button");
-	aMinigameTrack->mTrackColor = mMinigameButton->GetColor(ButtonWidget::COLOR_BKG);
-	aPuzzleTrack->mTrackColor = mPuzzleButton->GetColor(ButtonWidget::COLOR_BKG);
-	aSurvivalTrack->mTrackColor = mSurvivalButton->GetColor(ButtonWidget::COLOR_BKG);
+	aMinigameTrack->mTrackColor = mMinigameButton->mColors.mBkg;
+	aPuzzleTrack->mTrackColor = mPuzzleButton->mColors.mBkg;
+	aSurvivalTrack->mTrackColor = mSurvivalButton->mColors.mBkg;
 
 	if (mShowStartButton)
 	{
@@ -647,7 +647,7 @@ void GameSelector::DrawOverlay(Graphics* g)
 		}
 
 		g->SetColorizeImages(true);
-		g->SetColor(mAdventureButton->mColors[ButtonWidget::COLOR_BKG]);
+		g->SetColor(mAdventureButton->mColors.mBkg);
 		PvzpDrawImageCelF(g, Sexy::IMAGE_SELECTORSCREEN_LEVELNUMBERS, aTransAreaX + 486.0f, aTransAreaY + 47.f, aStage, 0);
 		if (aSub < 10)
 		{
@@ -791,7 +791,7 @@ void GameSelector::Update()
 			return;
 		}
 
-		mAdventureButton->SetColor(ButtonWidget::COLOR_BKG, mStartingGameCounter % 20 < 10 ? Color(80, 80, 80) : Color::White);
+		mAdventureButton->SetBkgColor(mStartingGameCounter % 20 < 10 ? Color(80, 80, 80) : Color::White);
 		if (mStartingGameCounter == 125)
 			mApp->PlaySample(Sexy::SOUND_EVILLAUGH);
 	}

@@ -33,12 +33,12 @@
 #include "misc/SexyMatrix.h"
 #include "widget/Checkbox.h"
 
-int gLawnEditWidgetColors[][4] = {
-	{ 0,   0,   0,   0 },
-	{ 0,   0,   0,   0 },
-	{ 240, 240, 255, 255 },
-	{ 255, 255, 255, 255 },
-	{ 0,   0,   0,   255 },
+static constexpr EditWidgetColorScheme gLawnEditWidgetColors{
+	.mBkg = Color(0, 0, 0, 0),
+	.mOutline = Color(0, 0, 0, 0),
+	.mText = Color(240, 240, 255, 255),
+	.mHilite = Color(255, 255, 255, 255),
+	.mHiliteText = Color(0, 0, 0, 255),
 };
 
 // returns whether [theNumber - theRange, theNumber + theRange] contains a multiple of theMod
@@ -140,7 +140,7 @@ std::unique_ptr<LawnEditWidget> CreateEditWidget(int theId, EditListener* theLis
 {
 	auto aEditWidget = std::make_unique<LawnEditWidget>(theId, theListener, theDialog);
 	aEditWidget->SetFont(Sexy::FONT_BRIANNETOD16);
-	aEditWidget->SetColors(gLawnEditWidgetColors, EditWidget::NUM_COLORS);
+	aEditWidget->SetColors(gLawnEditWidgetColors);
 	aEditWidget->mBlinkDelay = 14;
 
 	return aEditWidget;

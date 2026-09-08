@@ -32,12 +32,13 @@
 
 using namespace Sexy;
 
-static int gEditWidgetColors[][3] =
-{{255, 255, 255},
-{0, 0, 0},
-{0, 0, 0},
-{0, 0, 0},
-{255, 255, 255}};
+static constexpr EditWidgetColorScheme gEditWidgetColors{
+	.mBkg = Color(255, 255, 255),
+	.mOutline = Color(0, 0, 0),
+	.mText = Color(0, 0, 0),
+	.mHilite = Color(0, 0, 0),
+	.mHiliteText = Color(255, 255, 255),
+};
 
 EditWidget::EditWidget(int theId, EditListener* theEditListener)
 {
@@ -59,13 +60,19 @@ EditWidget::EditWidget(int theId, EditListener* theEditListener)
 	mMaxPixels = -1;
 	mBlinkDelay = 40;
 
-	SetColors(gEditWidgetColors, NUM_COLORS);
+	SetColors(gEditWidgetColors);
 }
 
 EditWidget::~EditWidget()
 {
 	ClearWidthCheckFonts();
 
+}
+
+void EditWidget::SetColors(const EditWidgetColorScheme& theColors)
+{
+	mColors = theColors;
+	MarkDirty();
 }
 
 void EditWidget::ClearWidthCheckFonts()
@@ -126,7 +133,7 @@ void EditWidget::Draw(Graphics* g) // Already translated
 
 	std::string_view aString = mString;
 
-	g->SetColor(mColors[COLOR_BKG]);
+	g->SetColor(mColors.mBkg);
 	g->FillRect(0, 0, mWidth, mHeight);
 
 	for (int i = 0; i < 2; i++)
@@ -155,19 +162,19 @@ void EditWidget::Draw(Graphics* g) // Already translated
 		bool hasfocus = mHasFocus || mDrawSelOverride;
 		if (i == 1 && hasfocus)
 		{
-			aClipG->SetColor(mColors[COLOR_HILITE]);
+			aClipG->SetColor(mColors.mHilite);
 			aClipG->FillRect(0, 0, mWidth, mHeight);
 		}
 
 		if (i == 0 || !hasfocus)
-			aClipG->SetColor(mColors[COLOR_TEXT]);
+			aClipG->SetColor(mColors.mText);
 		else
-			aClipG->SetColor(mColors[COLOR_HILITE_TEXT]);
+			aClipG->SetColor(mColors.mHiliteText);
 		aClipG->DrawString(aString.substr(mLeftPos), 4, (mHeight - mFont->GetHeight())/2 + mFont->GetAscent());
 
 	}
 
-	g->SetColor(mColors[COLOR_OUTLINE]);
+	g->SetColor(mColors.mOutline);
 	g->DrawRect(0, 0, mWidth-1, mHeight-1);
 }
 
@@ -782,7 +789,7 @@ void EditWidget::MouseLeave()
 
 void EditWidget::MarkDirty()
 {
-	if (mColors[COLOR_BKG].mAlpha != 255)
+	if (mColors.mBkg.mAlpha != 255)
 		Widget::MarkDirtyFull();
 	else
 		Widget::MarkDirty();

@@ -32,7 +32,14 @@
 
 using namespace Sexy;
 
-static int gInitialListWidgetColors[][3] = {{255, 255, 255}, {255, 255, 255}, {0, 0, 0}, {0, 192, 0}, {0, 0, 128}, {255, 255, 255}};
+static constexpr ListWidgetColorScheme gInitialListWidgetColors{
+	.mBkg = Color(255, 255, 255),
+	.mOutline = Color(255, 255, 255),
+	.mText = Color(0, 0, 0),
+	.mHilite = Color(0, 192, 0),
+	.mSelect = Color(0, 0, 128),
+	.mSelectText = Color(255, 255, 255),
+};
 
 ListWidget::ListWidget(int theId, _Font *theFont, ListListener *theListListener)
 {
@@ -45,7 +52,7 @@ ListWidget::ListWidget(int theId, _Font *theFont, ListListener *theListListener)
 	else
 		mItemHeight = -1;
 
-	SetColors(gInitialListWidgetColors, 6);
+	SetColors(gInitialListWidgetColors);
 
 	mId = theId;
 	mFont = theFont;
@@ -63,6 +70,12 @@ ListWidget::ListWidget(int theId, _Font *theFont, ListListener *theListListener)
 }
 
 ListWidget::~ListWidget() = default;
+
+void ListWidget::SetColors(const ListWidgetColorScheme& theColors)
+{
+	mColors = theColors;
+	MarkDirty();
+}
 
 void ListWidget::RemovedFromManager(WidgetManager *theManager)
 {
@@ -185,7 +198,7 @@ int ListWidget::AddLine(const std::string& theLine, bool alphabetical)
 					else
 						aListWidget->mLines.insert(aListWidget->mLines.begin() + i, "-");
 
-					aListWidget->mLineColors.insert(aListWidget->mLineColors.begin() + i, mColors[COLOR_TEXT]);
+					aListWidget->mLineColors.insert(aListWidget->mLineColors.begin() + i, mColors.mText);
 					aListWidget->MarkDirty();
 
 					aListWidget = aListWidget->mChild;
@@ -212,7 +225,7 @@ int ListWidget::AddLine(const std::string& theLine, bool alphabetical)
 			else
 				aListWidget->mLines.push_back("-");
 
-			aListWidget->mLineColors.push_back(mColors[COLOR_TEXT]);
+			aListWidget->mLineColors.push_back(mColors.mText);
 			aListWidget->MarkDirty();
 
 			aListWidget = aListWidget->mChild;
@@ -250,11 +263,6 @@ void ListWidget::SetColor(const std::string& theLine, const Color& theColor)
 {
 	int anIdx = GetLineIdx(theLine);
 	SetLineColor(anIdx, theColor);
-}
-
-void ListWidget::SetColor(int theIdx, const Color& theColor)
-{
-	Widget::SetColor(theIdx, theColor);
 }
 
 void ListWidget::SetLineColor(int theIdx, const Color& theColor)
@@ -350,7 +358,7 @@ void ListWidget::OrderInManagerChanged()
 
 void ListWidget::Draw(Graphics *g)
 {
-	g->SetColor(mColors[COLOR_BKG]);
+	g->SetColor(mColors.mBkg);
 	g->FillRect(0, 0, mWidth, mHeight);
 
 	Graphics aClipG(*g);
@@ -382,14 +390,14 @@ void ListWidget::Draw(Graphics *g)
 
 		if (i == mSelectIdx || (i==mHiliteIdx && mDrawSelectWhenHilited))
 		{
-			aSelectClipG.SetColor(mColors[COLOR_SELECT]);
+			aSelectClipG.SetColor(mColors.mSelect);
 			aSelectClipG.FillRect(0, aDrawY, mWidth, anItemHeight);
 		}
 
 		if (i == mHiliteIdx)
-			aClipG.SetColor(mColors[COLOR_HILITE]);
-		else if ((i == mSelectIdx) && (mColors.size() > COLOR_SELECT_TEXT))
-			aClipG.SetColor(mColors[COLOR_SELECT_TEXT]);
+			aClipG.SetColor(mColors.mHilite);
+		else if ((i == mSelectIdx) && mColors.mSelectText.has_value())
+			aClipG.SetColor(*mColors.mSelectText);
 		else
 			aClipG.SetColor(mLineColors[i]);
 
@@ -413,7 +421,7 @@ void ListWidget::Draw(Graphics *g)
 
 	if (mDrawOutline)
 	{
-		g->SetColor(mColors[COLOR_OUTLINE]);
+		g->SetColor(mColors.mOutline);
 		g->DrawRect(0, 0, mWidth-1, mHeight-1);
 	}
 }

@@ -41,7 +41,7 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 {
 	mApp = theApp;
 	mFromGameSelector = theFromGameSelector;
-	SetColor(Dialog::COLOR_BUTTON_TEXT, Color(255, 255, 100));
+	SetButtonTextColor(Color(255, 255, 100));
 	mAlmanacButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Almanac, this, "[VIEW_ALMANAC_BUTTON]");
 	mRestartButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Restart, this, "[RESTART_LEVEL]");
 	mBackToMainButton = MakeButton(NewOptionsDialog::NewOptionsDialog_MainMenu, this, "[MAIN_MENU_BUTTON]");
@@ -62,8 +62,8 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 	mBackToGameButton->mTextDownOffsetX = 0;
 	mBackToGameButton->mTextDownOffsetY = 1;
 	mBackToGameButton->SetFont(FONT_DWARVENTODCRAFT36GREENINSET);
-	mBackToGameButton->SetColor(ButtonWidget::COLOR_LABEL, Color::White);
-	mBackToGameButton->SetColor(ButtonWidget::COLOR_LABEL_HILITE, Color::White);
+	mBackToGameButton->SetLabelColor(Color::White);
+	mBackToGameButton->SetLabelHiliteColor(Color::White);
 	mBackToGameButton->mHiliteFont = FONT_DWARVENTODCRAFT36BRIGHTGREENINSET;
 
 	mMusicVolumeSlider = std::make_unique<Slider>(IMAGE_OPTIONS_SLIDERSLOT, IMAGE_OPTIONS_SLIDERKNOB2, NewOptionsDialog::NewOptionsDialog_MusicVolume, this);

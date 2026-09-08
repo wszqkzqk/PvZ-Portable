@@ -46,8 +46,8 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::stri
 	mVerticalCenterText = true;
 	mDialogHeader = PvzpStringTranslate(theDialogHeader);
 	mDialogLines = PvzpStringTranslate(theDialogLines);
-	SetColor(0, { 0xE0,0xBB,0x62 });
-	SetColor(1, { 0xE0,0xBB,0x62 });
+	SetHeaderColor(Color(0xE0, 0xBB, 0x62));
+	SetLinesColor(Color(0xE0, 0xBB, 0x62));
 	SetHeaderFont(Sexy::FONT_DWARVENTODCRAFT24);
 	SetLinesFont(Sexy::FONT_DWARVENTODCRAFT15);
 	mContentInsets = Insets(36, 35, 46, 36);
@@ -364,13 +364,13 @@ void LawnDialog::Draw(Graphics* g)
 	{
 		int aOffsetY = aFontY - mHeaderFont->GetAscentPadding() + mHeaderFont->GetAscent();
 		g->SetFont(mHeaderFont.get());
-		g->SetColor(mColors[Dialog::COLOR_HEADER]);
+		g->SetColor(mColors.mHeader);
 		WriteCenteredLine(g, aOffsetY, mDialogHeader);
 		aFontY = aOffsetY - mHeaderFont->GetAscent() + mHeaderFont->GetHeight() + mSpaceAfterHeader;
 	}
 
 	g->SetFont(mLinesFont.get());
-	g->SetColor(mColors[Dialog::COLOR_LINES]);
+	g->SetColor(mColors.mLines);
 	int aLinesAreaWidth = mWidth - mContentInsets.mLeft - mContentInsets.mRight - mBackgroundInsets.mLeft - mBackgroundInsets.mRight - 4;
 	Rect aRect(mBackgroundInsets.mLeft + mContentInsets.mLeft + 2, aFontY, aLinesAreaWidth, 0);
 	if (mVerticalCenterText)

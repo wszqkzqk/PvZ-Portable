@@ -34,22 +34,22 @@ namespace Sexy
 class _Font;
 class EditListener;
 
+struct EditWidgetColorScheme
+{
+	Color					mBkg;
+	Color					mOutline;
+	Color					mText;
+	Color					mHilite;
+	Color					mHiliteText;
+};
+
 class EditWidget : public Widget
 {
 public:
-	enum
-	{
-		COLOR_BKG,
-		COLOR_OUTLINE,
-		COLOR_TEXT,
-		COLOR_HILITE,
-		COLOR_HILITE_TEXT,
-		NUM_COLORS
-	};
-
 	int						mId;
 	std::string				mString;
 	std::unique_ptr<_Font>		mFont;
+	EditWidgetColorScheme	mColors;
 
 	struct WidthCheck
 	{
@@ -88,6 +88,7 @@ protected:
 
 public:
 	virtual void			SetFont(_Font* theFont, _Font* theWidthCheckFont = nullptr);
+	virtual void			SetColors(const EditWidgetColorScheme& theColors);
 	virtual void			SetText(const std::string& theText, bool leftPosToZero = true);
 	virtual bool			IsPartOfWord(char32_t theChar);
 	virtual int				GetCharAt(int x, int y);

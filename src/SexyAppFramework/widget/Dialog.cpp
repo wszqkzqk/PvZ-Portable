@@ -40,17 +40,6 @@ std::string Sexy::DIALOG_NO_STRING				= "NO";
 std::string Sexy::DIALOG_OK_STRING				= "OK";
 std::string Sexy::DIALOG_CANCEL_STRING			= "CANCEL";
 
-struct DialogColorScheme
-{
-	Color mHeader;
-	Color mLines;
-	Color mFooter;
-	Color mButtonText;
-	Color mButtonTextHilite;
-	Color mBkg;
-	Color mOutline;
-};
-
 static constexpr DialogColorScheme gDefaultDialogColors{
 	.mHeader = Color(255, 255, 255),
 	.mLines = Color(255, 255, 0),
@@ -122,36 +111,61 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 		aColors.mButtonTextHilite = Color(0, 0, 0);
 	}
 
-	SetColor(COLOR_HEADER, aColors.mHeader);
-	SetColor(COLOR_LINES, aColors.mLines);
-	SetColor(COLOR_FOOTER, aColors.mFooter);
-	SetColor(COLOR_BUTTON_TEXT, aColors.mButtonText);
-	SetColor(COLOR_BUTTON_TEXT_HILITE, aColors.mButtonTextHilite);
-	SetColor(COLOR_BKG, aColors.mBkg);
-	SetColor(COLOR_OUTLINE, aColors.mOutline);
+	SetColors(aColors);
 }
 
 
 Dialog::~Dialog() = default;
 
-void Dialog::SetColor(int theIdx, const Color& theColor)
+void Dialog::SetColors(const DialogColorScheme& theColors)
 {
-	Widget::SetColor(theIdx, theColor);
+	mColors = theColors;
+	MarkDirty();
 
-	if (theIdx == COLOR_BUTTON_TEXT)
+	if (mYesButton != nullptr)
 	{
-		if (mYesButton != nullptr)
-			mYesButton->SetColor(DialogButton::COLOR_LABEL, theColor);
-		if (mNoButton != nullptr)
-			mNoButton->SetColor(DialogButton::COLOR_LABEL, theColor);
+		mYesButton->SetLabelColor(mColors.mButtonText);
+		mYesButton->SetLabelHiliteColor(mColors.mButtonTextHilite);
 	}
-	else if (theIdx == COLOR_BUTTON_TEXT_HILITE)
+	if (mNoButton != nullptr)
 	{
-		if (mYesButton != nullptr)
-			mYesButton->SetColor(DialogButton::COLOR_LABEL_HILITE, theColor);
-		if (mNoButton != nullptr)
-			mNoButton->SetColor(DialogButton::COLOR_LABEL_HILITE, theColor);
+		mNoButton->SetLabelColor(mColors.mButtonText);
+		mNoButton->SetLabelHiliteColor(mColors.mButtonTextHilite);
 	}
+}
+
+void Dialog::SetHeaderColor(const Color& theColor)
+{
+	mColors.mHeader = theColor;
+	MarkDirty();
+}
+
+void Dialog::SetLinesColor(const Color& theColor)
+{
+	mColors.mLines = theColor;
+	MarkDirty();
+}
+
+void Dialog::SetButtonTextColor(const Color& theColor)
+{
+	mColors.mButtonText = theColor;
+	MarkDirty();
+
+	if (mYesButton != nullptr)
+		mYesButton->SetLabelColor(theColor);
+	if (mNoButton != nullptr)
+		mNoButton->SetLabelColor(theColor);
+}
+
+void Dialog::SetButtonTextHiliteColor(const Color& theColor)
+{
+	mColors.mButtonTextHilite = theColor;
+	MarkDirty();
+
+	if (mYesButton != nullptr)
+		mYesButton->SetLabelHiliteColor(theColor);
+	if (mNoButton != nullptr)
+		mNoButton->SetLabelHiliteColor(theColor);
 }
 
 void Dialog::SetButtonFont(_Font* theFont)
@@ -233,9 +247,9 @@ void Dialog::Draw(Graphics* g)
 	}
 	else
 	{
-		g->SetColor(GetColor(COLOR_OUTLINE, gDefaultDialogColors.mOutline));
+		g->SetColor(mColors.mOutline);
 		g->DrawRect(12, 12, mWidth - 12*2 - 1, mHeight - 12*2 - 1);
-		g->SetColor(GetColor(COLOR_BKG, gDefaultDialogColors.mBkg));
+		g->SetColor(mColors.mBkg);
 		g->FillRect(12+1, 12+1, mWidth - 12*2 - 2, mHeight - 12*2 - 2);
 
 		g->SetColor(Color(0, 0, 0, 128));
@@ -250,7 +264,7 @@ void Dialog::Draw(Graphics* g)
 		aCurY += mHeaderFont->GetAscent() - mHeaderFont->GetAscentPadding();
 
 		g->SetFont(mHeaderFont.get());
-		g->SetColor(mColors[COLOR_HEADER]);
+		g->SetColor(mColors.mHeader);
 		WriteCenteredLine(g, aCurY, mDialogHeader);
 
 		aCurY += mHeaderFont->GetHeight() - mHeaderFont->GetAscent();
@@ -259,7 +273,7 @@ void Dialog::Draw(Graphics* g)
 	}
 
 	g->SetFont(mLinesFont.get());
-	g->SetColor(mColors[COLOR_LINES]);
+	g->SetColor(mColors.mLines);
 
 	Rect aRect(mBackgroundInsets.mLeft+mContentInsets.mLeft+2, aCurY, mWidth-mContentInsets.mLeft-mContentInsets.mRight-mBackgroundInsets.mLeft-mBackgroundInsets.mRight-4, 0);
 	aCurY += WriteWordWrapped(g, aRect, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset, mTextAlign);
@@ -270,7 +284,7 @@ void Dialog::Draw(Graphics* g)
 		aCurY += mHeaderFont->GetLineSpacing();
 
 		g->SetFont(mHeaderFont.get());
-		g->SetColor(mColors[COLOR_FOOTER]);
+		g->SetColor(mColors.mFooter);
 		WriteCenteredLine(g, aCurY, mDialogFooter);
 	}
 }
