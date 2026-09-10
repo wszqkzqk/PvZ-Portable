@@ -3444,8 +3444,7 @@ GridItem* Challenge::GetPortalLeftRight(int theGridX, int theGridY, int theToLef
 		int aIsDir = (aPortalX > theGridX) ^ theToLeft;
 		if (aGridItem->IsOpenPortal() && aIsDir && aGridItem->mGridY == theGridY)
 		{
-			int aIsCls = (aGridItemRecord->mGridX > aPortalX) ^ theToLeft;
-			if (!aGridItemRecord || aIsCls)
+			if (!aGridItemRecord || ((aGridItemRecord->mGridX > aPortalX) ^ theToLeft))
 			{
 				aGridItemRecord = aGridItem;
 			}
