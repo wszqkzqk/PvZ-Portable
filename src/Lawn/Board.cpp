@@ -2027,7 +2027,7 @@ bool Board::IsPoolSquare(int theGridX, int theGridY)
 
 Plant* Board::NewPlant(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType)
 {
-	// a plant also allocates its body reanimation; refuse when either pool is literally full
+	// a plant also allocates its body reanimation; one slot is kept in reserve, like the zombie pool's
 	if (mPlants.mSize + 1 >= mPlants.mMaxSize || ReanimPoolFull())
 		return nullptr;
 

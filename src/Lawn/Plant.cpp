@@ -972,6 +972,8 @@ void Plant::StarFruitFire()
 	for (int i = 0; i < 5; i++)
 	{
 		Projectile* aProjectile = mBoard->AddProjectile(mX + 25, mY + 25, mRenderOrder - 1, mRow, ProjectileType::PROJECTILE_STAR);
+		if (aProjectile == nullptr)
+			continue;
 		aProjectile->mDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
 		aProjectile->mMotionType = ProjectileMotion::MOTION_STAR;
 
@@ -4733,6 +4735,8 @@ void Plant::Fire(Zombie* theTargetZombie, int theRow, PlantWeapon thePlantWeapon
 	}
 
 	Projectile* aProjectile = mBoard->AddProjectile(aOriginX, aOriginY, mRenderOrder - 1, theRow, aProjectileType);
+	if (aProjectile == nullptr)
+		return;
 	aProjectile->mDamageRangeFlags = GetDamageRangeFlags(thePlantWeapon);
 
 	if (mSeedType == SeedType::SEED_CABBAGEPULT || mSeedType == SeedType::SEED_KERNELPULT ||
