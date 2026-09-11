@@ -7339,7 +7339,8 @@ bool Zombie::TrySpawnLevelAward()
 	if (aCoinType != CoinType::COIN_NONE)
 	{
 		mApp->PlayFoley(FoleyType::FOLEY_SPAWN_SUN);
-		mBoard->AddCoin(aCenterX, aCenterY, aCoinType, aCoinMotion);
+		if (mBoard->AddCoin(aCenterX, aCenterY, aCoinType, aCoinMotion) == nullptr)
+			mBoard->FadeOutLevel();  // the coin pool is full: end the level without the award instead of soft-locking
 	}
 
 	mDroppedLoot = true;

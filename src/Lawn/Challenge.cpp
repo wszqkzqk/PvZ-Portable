@@ -2291,6 +2291,8 @@ void Challenge::SpawnLevelAward(int theGridX, int theGridY)
 	mApp->mBoardResult = BOARDRESULT_WON;
 	mApp->PlayFoley(FOLEY_SPAWN_SUN);
 	Coin* aCoin = mBoard->AddCoin(aPosX, aPosY, aCoinType, COIN_MOTION_COIN);
+	if (aCoin == nullptr)
+		mBoard->FadeOutLevel();  // the coin pool is full: end the level without the award instead of soft-locking
 	mApp->AddPvzpParticle(BOARD_WIDTH / 2, BOARD_HEIGHT / 2, RENDER_LAYER_TOP, PARTICLE_SCREEN_FLASH);
 
 	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
