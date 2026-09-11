@@ -1157,7 +1157,12 @@ void ReanimationHolder::InitializeHolder()
 
 Reanimation* ReanimationHolder::AllocReanimation(float theX, float theY, int theRenderOrder, ReanimationType theReanimationType)
 {
-	PVZP_ASSERT(mReanimations.mSize != mReanimations.mMaxSize);
+	if (mReanimations.mSize >= mReanimations.mMaxSize)
+	{
+		PvzpTraceWithoutSpamming("Reanimation pool full, dropping effect");
+		return nullptr;
+	}
+
 	Reanimation* aReanim = mReanimations.DataArrayAlloc();
 	aReanim->mRenderOrder = theRenderOrder;
 	aReanim->mReanimationHolder = this;
@@ -1447,9 +1452,13 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex)
 	{
 		AttachmentDie(aTrackInstance->mAttachmentID);
 		aAttachReanim = gEffectSystem->mReanimationHolder->AllocReanimation(0.0f, 0.0f, 0, aReanimationType);
+		if (aAttachReanim == nullptr)
+			return;
+
 		aAttachReanim->mLoopType = aAttacherInfo.mLoopType;
 		aAttachReanim->mAnimRate = aAttacherInfo.mAnimRate;
-		AttachReanim(aTrackInstance->mAttachmentID, aAttachReanim, 0.0f, 0.0f);
+		if (AttachReanim(aTrackInstance->mAttachmentID, aAttachReanim, 0.0f, 0.0f) == nullptr)
+			return;  // AttachReanim disposes of the reanimation on failure
 		mFrameBasePose = NO_BASE_POSE;  // with an attachment set, this reanim has no base pose frame
 	}
 

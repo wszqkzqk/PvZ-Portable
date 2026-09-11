@@ -114,7 +114,7 @@ public:
 
 	void                    InitializeHolder();
 	void                    DisposeHolder();
-	Attachment*             AllocAttachment();
+	Attachment*             AllocAttachment();  // nullptr when the pool is full even after pruning
 };
 
 #endif

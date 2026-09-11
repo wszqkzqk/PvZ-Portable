@@ -22,6 +22,7 @@
 #ifndef __DATAARRAY_H__
 #define __DATAARRAY_H__
 
+#include <cstdlib>
 #include <iterator>
 #include <memory>
 #include <new>
@@ -104,6 +105,9 @@ public:
 
 	inline unsigned int DataArrayGetID(T* theItem)
 	{
+		if (theItem == nullptr)
+			return 0U;  // the null ID; DataArrayTryToGet(0) is nullptr
+
 		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
 		unsigned int anId = mItemIds[anIndex];
 		PVZP_ASSERT(DataArrayGet(anId) == theItem, "Failed: DataArrayGetID({:p}) for {}", (void*)theItem, mName);
@@ -155,7 +159,13 @@ public:
 
 	T* DataArrayAlloc()
 	{
-		PVZP_ASSERT(mSize < mMaxSize, "Data array full: {}", mName);
+		// fail-stop backstop: callers are expected to pre-check capacity; reaching here is a bug
+		if (mSize >= mMaxSize)
+		{
+			PvzpTraceWithoutSpamming("Data array full: {}", mName);
+			std::abort();
+		}
+
 		PVZP_ASSERT(mFreeListHead <= mMaxUsedCount, "DataArrayAlloc error in {}", mName);
 		unsigned int aNext = mMaxUsedCount;
 		if (mFreeListHead == mMaxUsedCount)

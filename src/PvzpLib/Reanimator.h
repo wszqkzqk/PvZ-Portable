@@ -131,7 +131,7 @@ public:
 
 	void                            InitializeHolder();
 	void                            DisposeHolder();
-	Reanimation*                    AllocReanimation(float theX, float theY, int theRenderOrder, ReanimationType theReanimationType);
+	Reanimation*                    AllocReanimation(float theX, float theY, int theRenderOrder, ReanimationType theReanimationType);  // nullptr when the pool is full
 };
 
 // the current playback time position of an animation

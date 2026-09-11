@@ -701,6 +701,11 @@ Attachment* AttachmentHolder::AllocAttachment()
 			}
 		}
 	}
+	if (mAttachments.mSize >= mAttachments.mMaxSize)
+	{
+		PvzpTraceWithoutSpamming("Attachment pool full, dropping effect");
+		return nullptr;
+	}
 
 	return mAttachments.DataArrayAlloc();
 }
@@ -953,10 +958,16 @@ AttachEffect* CreateEffectAttachment(AttachmentID& theAttachmentID, EffectType t
 	if (aAttachment == nullptr || aAttachment->mDead)
 	{
 		aAttachment = gEffectSystem->mAttachmentHolder->AllocAttachment();
+		if (aAttachment == nullptr)
+		{
+			theAttachmentID = AttachmentID::ATTACHMENTID_NULL;
+			return nullptr;
+		}
 		theAttachmentID = (AttachmentID)gEffectSystem->mAttachmentHolder->mAttachments.DataArrayGetID(aAttachment);
 	}
 
-	PVZP_ASSERT(aAttachment->mNumEffects < MAX_EFFECTS_PER_ATTACHMENT);
+	if (aAttachment->mNumEffects >= MAX_EFFECTS_PER_ATTACHMENT)
+		return nullptr;
 	PVZP_ASSERT(!aAttachment->mDead);
 
 	AttachEffect* aAttachEffect = &aAttachment->mEffectArray[aAttachment->mNumEffects];
@@ -972,8 +983,16 @@ AttachEffect* CreateEffectAttachment(AttachmentID& theAttachmentID, EffectType t
 
 AttachEffect* AttachReanim(AttachmentID& theAttachmentID, Reanimation* theReanimation, float theOffsetX, float theOffsetY)
 {
+	if (theReanimation == nullptr)
+		return nullptr;
+
 	unsigned int aReanimId = gEffectSystem->mReanimationHolder->mReanimations.DataArrayGetID(theReanimation);
 	AttachEffect* aAttachEffect = CreateEffectAttachment(theAttachmentID, EffectType::EFFECT_REANIM, aReanimId, theOffsetX, theOffsetY);
+	if (aAttachEffect == nullptr)
+	{
+		theReanimation->ReanimationDie();  // dispose of the orphan reanimation
+		return nullptr;
+	}
 
 	PVZP_ASSERT(!theReanimation->mIsAttachment);
 	theReanimation->mIsAttachment = true;
@@ -988,6 +1007,11 @@ AttachEffect* AttachParticle(AttachmentID& theAttachmentID, PvzpParticleSystem* 
 
 	unsigned int aParticleId = gEffectSystem->mParticleHolder->mParticleSystems.DataArrayGetID(theParticleSystem);
 	AttachEffect* aAttachEffect = CreateEffectAttachment(theAttachmentID, EffectType::EFFECT_PARTICLE, aParticleId, theOffsetX, theOffsetY);
+	if (aAttachEffect == nullptr)
+	{
+		theParticleSystem->ParticleSystemDie();  // dispose of the orphan particle system
+		return nullptr;
+	}
 
 	PVZP_ASSERT(!theParticleSystem->mIsAttachment);
 	theParticleSystem->mIsAttachment = true;
@@ -997,8 +1021,16 @@ AttachEffect* AttachParticle(AttachmentID& theAttachmentID, PvzpParticleSystem* 
 
 AttachEffect* AttachTrail(AttachmentID& theAttachmentID, Trail* theTrail, float theOffsetX, float theOffsetY)
 {
+	if (theTrail == nullptr)
+		return nullptr;
+
 	unsigned int aTrailId = gEffectSystem->mTrailHolder->mTrails.DataArrayGetID(theTrail);
 	AttachEffect* aAttachEffect = CreateEffectAttachment(theAttachmentID, EffectType::EFFECT_TRAIL, aTrailId, theOffsetX, theOffsetY);
+	if (aAttachEffect == nullptr)
+	{
+		theTrail->mDead = true;  // dispose of the orphan trail
+		return nullptr;
+	}
 
 	PVZP_ASSERT(!theTrail->mIsAttachment);
 	theTrail->mIsAttachment = true;
