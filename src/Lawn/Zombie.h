@@ -164,7 +164,7 @@ public:
 	Zombie();
 	~Zombie();
 
-	void                            ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Zombie* theParentZombie, int theFromWave);
+	bool                            ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Zombie* theParentZombie, int theFromWave);  // false when the body reanimation is unavailable
 	void                            Animate();
 	void                            CheckIfPreyCaught();
 	void                            EatZombie(Zombie* theZombie);

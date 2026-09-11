@@ -220,21 +220,29 @@ Plant* ZenGarden::PlacePottedPlant(intptr_t thePottedPlantIndex)
 	if (needPot)
 	{
 		Plant* aPot = mBoard->NewPlant(aPottedPlant->mX, aPottedPlant->mY, SeedType::SEED_FLOWERPOT, SeedType::SEED_NONE);
-		aPot->mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PLANT, 0, aPot->mY);
-		aPot->mStateCountdown = 0;
+		if (aPot)
+		{
+			aPot->mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PLANT, 0, aPot->mY);
+			aPot->mStateCountdown = 0;
 
-		Reanimation* aPotReanim = mApp->ReanimationGet(aPot->mBodyReanimID);
-		if (Plant::IsAquatic(aSeedType))
-		{
-			aPotReanim->SetFramesForLayer("anim_waterplants");
-		}
-		else
-		{
-			aPotReanim->SetFramesForLayer("anim_zengarden");
+			Reanimation* aPotReanim = mApp->ReanimationTryToGet(aPot->mBodyReanimID);
+			if (aPotReanim)
+			{
+				if (Plant::IsAquatic(aSeedType))
+				{
+					aPotReanim->SetFramesForLayer("anim_waterplants");
+				}
+				else
+				{
+					aPotReanim->SetFramesForLayer("anim_zengarden");
+				}
+			}
 		}
 	}
 
 	Plant* aPlant = mBoard->NewPlant(aPottedPlant->mX, aPottedPlant->mY, aSeedType, SeedType::SEED_NONE);
+	if (aPlant == nullptr)
+		return nullptr;
 	aPlant->mPottedPlantIndex = thePottedPlantIndex;
 	aPlant->mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PLANT, 0, aPlant->mY + 1);
 	aPlant->mStateCountdown = 0;
@@ -542,8 +550,8 @@ void ZenGarden::PlantFertilized(Plant* thePlant)
 		if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE &&
 			mBoard->mCursorObject->mGlovePlantID == aOldPlantID)
 		{
-			// keep the glove holding the replacement plant
-			mBoard->mCursorObject->mGlovePlantID = (PlantID)mBoard->mPlants.DataArrayGetID(aNewPlant);
+			// keep the glove holding the replacement plant, or empty it if the replacement failed
+			mBoard->mCursorObject->mGlovePlantID = aNewPlant ? (PlantID)mBoard->mPlants.DataArrayGetID(aNewPlant) : PlantID::PLANTID_NULL;
 		}
 		mApp->PlaySample(SOUND_LOADINGBAR_FLOWER);
 	}
@@ -964,50 +972,85 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
 				aZenTool->mPosX = x;
 				aZenTool->mPosY = y;
 				Reanimation* aWateringCanReanim = mApp->AddReanimation(x, y, 0, ReanimationType::REANIM_ZENGARDEN_WATERINGCAN);
-				aWateringCanReanim->PlayReanim("anim_water_area", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 8.0f);
-				aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aWateringCanReanim);
-				aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_GOLD_WATERING_CAN;
-				mApp->PlayFoley(FoleyType::FOLEY_WATERING);
+				if (aWateringCanReanim)
+				{
+					aWateringCanReanim->PlayReanim("anim_water_area", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 8.0f);
+					aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aWateringCanReanim);
+					aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_GOLD_WATERING_CAN;
+					mApp->PlayFoley(FoleyType::FOLEY_WATERING);
+				}
+				else
+				{
+					aZenTool->GridItemDie();
+				}
 			}
 			else
 			{
 				Reanimation* aWateringCanReanim = mApp->AddReanimation(aPlantToFeed->mX + 32, aPlantToFeed->mY, 0, ReanimationType::REANIM_ZENGARDEN_WATERINGCAN);
-				aWateringCanReanim->PlayReanim("anim_water", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 0.0f);
-				aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aWateringCanReanim);
-				aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_WATERING_CAN;
-				mApp->PlayFoley(FoleyType::FOLEY_WATERING);
+				if (aWateringCanReanim)
+				{
+					aWateringCanReanim->PlayReanim("anim_water", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 0.0f);
+					aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aWateringCanReanim);
+					aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_WATERING_CAN;
+					mApp->PlayFoley(FoleyType::FOLEY_WATERING);
+				}
+				else
+				{
+					aZenTool->GridItemDie();
+				}
 			}
 		}
 		else if (theCursorType == CursorType::CURSOR_TYPE_FERTILIZER)
 		{
 			Reanimation* aFertilizerReanim = mApp->AddReanimation(aPlantToFeed->mX, aPlantToFeed->mY, 0, ReanimationType::REANIM_ZENGARDEN_FERTILIZER);
-			aFertilizerReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
-			aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aFertilizerReanim);
-			aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_FERTILIZER;
-			mApp->PlayFoley(FoleyType::FOLEY_FERTILIZER);
+			if (aFertilizerReanim)
+			{
+				aFertilizerReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
+				aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aFertilizerReanim);
+				aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_FERTILIZER;
+				mApp->PlayFoley(FoleyType::FOLEY_FERTILIZER);
 
-			PVZP_ASSERT(mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_FERTILIZER] > PURCHASE_COUNT_OFFSET);
-			mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_FERTILIZER]--;
+				PVZP_ASSERT(mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_FERTILIZER] > PURCHASE_COUNT_OFFSET);
+				mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_FERTILIZER]--;
+			}
+			else
+			{
+				aZenTool->GridItemDie();
+			}
 		}
 		else if (theCursorType == CursorType::CURSOR_TYPE_BUG_SPRAY)
 		{
 			Reanimation* aBugSprayReanim = mApp->AddReanimation(aPlantToFeed->mX + 54, aPlantToFeed->mY, 0, ReanimationType::REANIM_ZENGARDEN_BUGSPRAY);
-			aBugSprayReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
-			aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aBugSprayReanim);
-			aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_BUG_SPRAY;
-			mApp->PlayFoley(FoleyType::FOLEY_BUGSPRAY);
+			if (aBugSprayReanim)
+			{
+				aBugSprayReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
+				aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aBugSprayReanim);
+				aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_BUG_SPRAY;
+				mApp->PlayFoley(FoleyType::FOLEY_BUGSPRAY);
 
-			PVZP_ASSERT(mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_BUG_SPRAY] > PURCHASE_COUNT_OFFSET);
-			mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_BUG_SPRAY]--;
+				PVZP_ASSERT(mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_BUG_SPRAY] > PURCHASE_COUNT_OFFSET);
+				mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_BUG_SPRAY]--;
+			}
+			else
+			{
+				aZenTool->GridItemDie();
+			}
 		}
 		else if (theCursorType == CursorType::CURSOR_TYPE_PHONOGRAPH)
 		{
 			Reanimation* aPhonographReanim = mApp->AddReanimation(aPlantToFeed->mX + 20, aPlantToFeed->mY + 34, 0, ReanimationType::REANIM_ZENGARDEN_PHONOGRAPH);
-			aPhonographReanim->mAnimRate = 20.0f;
-			aPhonographReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
-			aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aPhonographReanim);
-			aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_PHONOGRAPH;
-			mApp->PlayFoley(FoleyType::FOLEY_PHONOGRAPH);
+			if (aPhonographReanim)
+			{
+				aPhonographReanim->mAnimRate = 20.0f;
+				aPhonographReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
+				aZenTool->mGridItemReanimID = mApp->ReanimationGetID(aPhonographReanim);
+				aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_PHONOGRAPH;
+				mApp->PlayFoley(FoleyType::FOLEY_PHONOGRAPH);
+			}
+			else
+			{
+				aZenTool->GridItemDie();
+			}
 		}
 	}
 
@@ -1303,6 +1346,11 @@ void ZenGarden::AddStinky()
 	aStinky->mGoalX = aStinky->mPosX;
 	aStinky->mGoalY = aStinky->mPosY;
 	Reanimation* aReanimStinky = mApp->AddReanimation(aStinky->mPosX, aStinky->mPosY, 0, ReanimationType::REANIM_STINKY);
+	if (aReanimStinky == nullptr)
+	{
+		aStinky->GridItemDie();
+		return;
+	}
 	aReanimStinky->OverrideScale(0.8f, 0.8f);
 	aStinky->mGridItemReanimID = mApp->ReanimationGetID(aReanimStinky);
 
@@ -1411,23 +1459,27 @@ void ZenGarden::StinkyPickGoal(GridItem* theStinky)
 	theStinky->mGridItemCounter = 100;
 	if (theStinky->mGoalX < theStinky->mPosX && theStinky->mGridItemState == GridItemState::GRIDITEM_STINKY_WALKING_RIGHT)
 	{
-		Reanimation* aStinyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+		Reanimation* aStinyReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
 		theStinky->mGridItemState = GridItemState::GRIDITEM_STINKY_TURNING_LEFT;
-		aStinyReanim->PlayReanim("turn", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 6.0f);
+		if (aStinyReanim)
+			aStinyReanim->PlayReanim("turn", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 6.0f);
 		theStinky->mMotionTrailCount = 0;
 	}
 	else if (theStinky->mGoalX > theStinky->mPosX && theStinky->mGridItemState == GridItemState::GRIDITEM_STINKY_WALKING_LEFT)
 	{
-		Reanimation* aStinyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+		Reanimation* aStinyReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
 		theStinky->mGridItemState = GridItemState::GRIDITEM_STINKY_TURNING_RIGHT;
-		aStinyReanim->PlayReanim("turn", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 6.0f);
+		if (aStinyReanim)
+			aStinyReanim->PlayReanim("turn", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 6.0f);
 		theStinky->mMotionTrailCount = 0;
 	}
 }
 
 void ZenGarden::StinkyWakeUp(GridItem* theStinky)
 {
-	Reanimation* aStinkyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+	Reanimation* aStinkyReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
+	if (aStinkyReanim == nullptr)
+		return;
 	aStinkyReanim->PlayReanim("anim_out", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 6.0f);
 	theStinky->mGridItemState = GridItemState::GRIDITEM_STINKY_WAKING_UP;
 
@@ -1439,21 +1491,28 @@ void ZenGarden::StinkyWakeUp(GridItem* theStinky)
 
 void ZenGarden::StinkyStartFallingAsleep(GridItem* theStinky)
 {
-	Reanimation* aStinkyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+	Reanimation* aStinkyReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
+	if (aStinkyReanim == nullptr)
+		return;
 	aStinkyReanim->PlayReanim("anim_in", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 6.0f);
 	theStinky->mGridItemState = GridItemState::GRIDITEM_STINKY_FALLING_ASLEEP;
 }
 
 void ZenGarden::StinkyFinishFallingAsleep(GridItem* theStinky, int theBlendTime)
 {
-	Reanimation* aStinkyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+	Reanimation* aStinkyReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
+	if (aStinkyReanim == nullptr)
+		return;
 	aStinkyReanim->PlayReanim("anim_out", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, theBlendTime, 0.0f);
 	aStinkyReanim->mAnimRate = 0.0f;
 
 	Reanimation* aSleepingReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_SLEEPING);
-	aSleepingReanim->mAnimRate = 3.0f;
-	aSleepingReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
-	AttachReanim(aStinkyReanim->GetTrackInstanceByName("shell")->mAttachmentID, aSleepingReanim, 34.0f, 39.0f);
+	if (aSleepingReanim)
+	{
+		aSleepingReanim->mAnimRate = 3.0f;
+		aSleepingReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
+		AttachReanim(aStinkyReanim->GetTrackInstanceByName("shell")->mAttachmentID, aSleepingReanim, 34.0f, 39.0f);
+	}
 
 	theStinky->mGridItemState = GridItemState::GRIDITEM_STINKY_SLEEPING;
 	if (!gLawnApp->mPlayerInfo->mHasWokenStinky)
@@ -1464,7 +1523,9 @@ void ZenGarden::StinkyFinishFallingAsleep(GridItem* theStinky, int theBlendTime)
 
 void ZenGarden::UpdateStinkyMotionTrail(GridItem* theStinky, bool theStinkyHighOnChocolate)
 {
-	Reanimation* aStinkyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+	Reanimation* aStinkyReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
+	if (aStinkyReanim == nullptr)
+		return;
 	if (!theStinkyHighOnChocolate)
 	{
 		theStinky->mMotionTrailCount = 0;
@@ -1493,7 +1554,9 @@ void ZenGarden::UpdateStinkyMotionTrail(GridItem* theStinky, bool theStinkyHighO
 
 void ZenGarden::StinkyAnimRateUpdate(GridItem* theStinky)
 {
-	Reanimation* aStinkyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+	Reanimation* aStinkyReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
+	if (aStinkyReanim == nullptr)
+		return;
 	if (IsStinkyHighOnChocolate())
 	{
 		if (theStinky->mGridItemState == GridItemState::GRIDITEM_STINKY_WALKING_LEFT ||
@@ -1524,7 +1587,9 @@ void ZenGarden::ResetStinkyTimers()
 
 void ZenGarden::StinkyUpdate(GridItem* theStinky)
 {
-	Reanimation* aStinkyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+	Reanimation* aStinkyReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
+	if (aStinkyReanim == nullptr)
+		return;
 	// Unsigned delta checks already treat "time moved before event" as expired.
 	// Extra reset-on-future-time logic is unnecessary now.
 	bool aStinkyHighOnChocolate = IsStinkyHighOnChocolate();
@@ -1589,9 +1654,10 @@ void ZenGarden::StinkyUpdate(GridItem* theStinky)
 			}
 			else if (theStinky->mGridItemState == GridItemState::GRIDITEM_STINKY_WALKING_RIGHT)
 			{
-				Reanimation* aReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
+				Reanimation* aReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
 				theStinky->mGridItemState = GridItemState::GRIDITEM_STINKY_TURNING_LEFT;
-				aReanim->PlayReanim("turn", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 6.0f);
+				if (aReanim)
+					aReanim->PlayReanim("turn", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 6.0f);
 				theStinky->mMotionTrailCount = 0;
 				theStinky->mGoalX = theStinky->mPosX;
 				theStinky->mGoalY = theStinky->mPosY;

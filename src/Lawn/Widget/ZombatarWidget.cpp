@@ -913,7 +913,11 @@ void ZombatarWidget::CreatePreviewZombie()
 	mPreviewZombie = std::make_unique<Zombie>();
 	mPreviewZombie->mApp = mApp;
 	mPreviewZombie->mBoard = nullptr;
-	mPreviewZombie->ZombieInitialize(0, ZombieType::ZOMBIE_FLAG, false, nullptr, Zombie::ZOMBIE_WAVE_UI);
+	if (!mPreviewZombie->ZombieInitialize(0, ZombieType::ZOMBIE_FLAG, false, nullptr, Zombie::ZOMBIE_WAVE_UI))
+	{
+		mPreviewZombie.reset();
+		return;
+	}
 	mPreviewZombie->mPosX = 0.0f;
 	mPreviewZombie->mPosY = 0.0f;
 	mPreviewZombie->mX = 0;

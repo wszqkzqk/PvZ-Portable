@@ -137,7 +137,8 @@ void CutScene::PlaceAZombie(ZombieType theZombieType, int theGridX, int theGridY
 	}
 
 	Zombie* aZombie = mBoard->AddZombieInRow(theZombieType, theGridY, -2);
-	PVZP_ASSERT(aZombie);
+	if (aZombie == nullptr)
+		return;
 	aZombie->mPosX = theGridX * 56 + 830;
 	aZombie->mPosY = theGridY * 90 + 70;
 	if (theGridX % 2 == 1)
@@ -1480,25 +1481,34 @@ void CutScene::UpdateZombiesWon()
 		ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIES_WON, true);
 		int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_SCREEN_FADE, 0, 0);
 		Reanimation* aReanimation = mApp->AddReanimation(-BOARD_OFFSET, 0, aRenderPosition, ReanimationType::REANIM_ZOMBIES_WON);
-		aReanimation->mAnimRate = 12.0f;
-		aReanimation->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
-		aReanimation->GetTrackInstanceByName("fullscreen")->mTrackColor = Color::Black;
-		mZombiesWonReanimID = mApp->ReanimationGetID(aReanimation);
-		aReanimation->SetFramesForLayer("ZombiesWon");
+		if (aReanimation)
+		{
+			aReanimation->mAnimRate = 12.0f;
+			aReanimation->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
+			aReanimation->GetTrackInstanceByName("fullscreen")->mTrackColor = Color::Black;
+			mZombiesWonReanimID = mApp->ReanimationGetID(aReanimation);
+			aReanimation->SetFramesForLayer("ZombiesWon");
+		}
 		mApp->PlayFoley(FoleyType::FOLEY_SCREAM);
 	}
 
 	if (mCutsceneTime == LostTimeBrainGraphicShake)
 	{
-		mApp->ReanimationGet(mZombiesWonReanimID)->SetShakeOverride("ZombiesWon", 1.0f);
+		Reanimation* aReanimation = mApp->ReanimationTryToGet(mZombiesWonReanimID);
+		if (aReanimation)
+			aReanimation->SetShakeOverride("ZombiesWon", 1.0f);
 	}
 	if (mCutsceneTime == LostTimeBrainGraphicCancelShake)
 	{
-		mApp->ReanimationGet(mZombiesWonReanimID)->SetShakeOverride("ZombiesWon", 0.0f);
+		Reanimation* aReanimation = mApp->ReanimationTryToGet(mZombiesWonReanimID);
+		if (aReanimation)
+			aReanimation->SetShakeOverride("ZombiesWon", 0.0f);
 	}
 	if (mCutsceneTime == LostTimeBrainGraphicEnd)
 	{
-		mApp->ReanimationGet(mZombiesWonReanimID)->SetFramesForLayer("anim_screen");
+		Reanimation* aReanimation = mApp->ReanimationTryToGet(mZombiesWonReanimID);
+		if (aReanimation)
+			aReanimation->SetFramesForLayer("anim_screen");
 	}
 
 	if (mCutsceneTime == LostTimeEnd)
@@ -1780,6 +1790,8 @@ void CutScene::ClearUpsellBoard()
 void CutScene::AddUpsellZombie(ZombieType theZombieType, int thePixelX, int theGridY)
 {
 	Zombie* aZombie = mBoard->AddZombieInRow(theZombieType, theGridY, 0);
+	if (aZombie == nullptr)
+		return;
 	aZombie->mPosX = thePixelX;
 	aZombie->mPosY = aZombie->GetPosYBasedOnRow(theGridY);
 	aZombie->SetRow(theGridY);
@@ -2120,54 +2132,80 @@ void CutScene::UpdateUpsell()
 	mCrazyDaveCountDown = ParseTalkTimeFromMessage();
 
 	Reanimation* aCrazyDaveReanim = mApp->ReanimationTryToGet(mApp->mCrazyDaveReanimID);
+	if (aCrazyDaveReanim == nullptr)
+		return;
 	switch (mCrazyDaveLastTalkIndex)
 	{
 	case 3305:  // "Like this!"
 	{
 		Reanimation* aReanimSquash = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_SQUASH);
-		aReanimSquash->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
-		AttachEffect* anAttachEffect = AttachReanim(aCrazyDaveReanim->GetTrackInstanceByName("Dave_handinghand")->mAttachmentID, aReanimSquash, 92.0f, 387.0f);
-		anAttachEffect->mOffset.m00 = 1.2f;
-		anAttachEffect->mOffset.m11 = 1.2f;
-		aCrazyDaveReanim->Update();
+		if (aReanimSquash)
+		{
+			aReanimSquash->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
+			AttachEffect* anAttachEffect = AttachReanim(aCrazyDaveReanim->GetTrackInstanceByName("Dave_handinghand")->mAttachmentID, aReanimSquash, 92.0f, 387.0f);
+			if (anAttachEffect)
+			{
+				anAttachEffect->mOffset.m00 = 1.2f;
+				anAttachEffect->mOffset.m11 = 1.2f;
+			}
+			aCrazyDaveReanim->Update();
+		}
 		break;
 	}
 
 	case 3306:  // "And this!"
 	{
 		Reanimation* aReanimThreepeater = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_THREEPEATER);
-		aReanimThreepeater->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
-		for (int i = 1; i < 4; i++)
+		if (aReanimThreepeater)
 		{
-			Reanimation* aReanimHead = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_THREEPEATER);
-			aReanimHead->mLoopType = ReanimLoopType::REANIM_LOOP;
-			aReanimHead->mAnimRate = aReanimThreepeater->mAnimRate;
-			aReanimHead->SetFramesForLayer(std::format("anim_head_idle{}", i).c_str());
-			aReanimHead->AttachToAnotherReanimation(aReanimThreepeater, std::format("anim_head{}", i).c_str());
+			aReanimThreepeater->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
+			for (int i = 1; i < 4; i++)
+			{
+				Reanimation* aReanimHead = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_THREEPEATER);
+				if (aReanimHead == nullptr)
+					continue;
+				aReanimHead->mLoopType = ReanimLoopType::REANIM_LOOP;
+				aReanimHead->mAnimRate = aReanimThreepeater->mAnimRate;
+				aReanimHead->SetFramesForLayer(std::format("anim_head_idle{}", i).c_str());
+				aReanimHead->AttachToAnotherReanimation(aReanimThreepeater, std::format("anim_head{}", i).c_str());
+			}
+			AttachEffect* anAttachEffect = AttachReanim(aCrazyDaveReanim->GetTrackInstanceByName("Dave_body1")->mAttachmentID, aReanimThreepeater, 0.0f, 0.0f);
+			if (anAttachEffect)
+				PvzpScaleRotateTransformMatrix(anAttachEffect->mOffset, -70.0f, 260.0f, 0.5f, 1.2f, 1.2f);
+			aCrazyDaveReanim->Update();
+			aReanimThreepeater->Update();
 		}
-		AttachEffect* anAttachEffect = AttachReanim(aCrazyDaveReanim->GetTrackInstanceByName("Dave_body1")->mAttachmentID, aReanimThreepeater, 0.0f, 0.0f);
-		PvzpScaleRotateTransformMatrix(anAttachEffect->mOffset, -70.0f, 260.0f, 0.5f, 1.2f, 1.2f);
-		aCrazyDaveReanim->Update();
-		aReanimThreepeater->Update();
 		break;
 	}
 
 	case 3307:  // "Later, I'll add this too!"
 	{
 		Reanimation* aReanimMagnet = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_MAGNETSHROOM);
-		aReanimMagnet->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
-		PvzpScaleRotateTransformMatrix(aReanimMagnet->mOverlayMatrix, 0, 0, 0.3f, 1, 1);
-		AttachEffect* anAttachEffect = AttachReanim(aCrazyDaveReanim->GetTrackInstanceByName("Dave_pot")->mAttachmentID, aReanimMagnet, 25.0f, 49.0f);
-		anAttachEffect->mOffset.m00 = 1.2f;
-		anAttachEffect->mOffset.m11 = 1.2f;
-		aCrazyDaveReanim->Update();
+		if (aReanimMagnet)
+		{
+			aReanimMagnet->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
+			PvzpScaleRotateTransformMatrix(aReanimMagnet->mOverlayMatrix, 0, 0, 0.3f, 1, 1);
+			AttachEffect* anAttachEffect = AttachReanim(aCrazyDaveReanim->GetTrackInstanceByName("Dave_pot")->mAttachmentID, aReanimMagnet, 25.0f, 49.0f);
+			if (anAttachEffect)
+			{
+				anAttachEffect->mOffset.m00 = 1.2f;
+				anAttachEffect->mOffset.m11 = 1.2f;
+			}
+			aCrazyDaveReanim->Update();
+		}
 		break;
 	}
 
 	case 3309:  // "Because I'm cra-zy!!!!"
-		aCrazyDaveReanim->FindSubReanim(ReanimationType::REANIM_THREEPEATER)->ReanimationDie();
-		aCrazyDaveReanim->FindSubReanim(ReanimationType::REANIM_MAGNETSHROOM)->ReanimationDie();
+	{
+		Reanimation* aSubReanim = aCrazyDaveReanim->FindSubReanim(ReanimationType::REANIM_THREEPEATER);
+		if (aSubReanim)
+			aSubReanim->ReanimationDie();
+		aSubReanim = aCrazyDaveReanim->FindSubReanim(ReanimationType::REANIM_MAGNETSHROOM);
+		if (aSubReanim)
+			aSubReanim->ReanimationDie();
 		break;
+	}
 
 	case 3312:  // "I'll give you more battles!"
 		mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_MINIGAME_LOONBOON);

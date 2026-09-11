@@ -273,6 +273,7 @@ public:
 	ZombieType						PickZombieType(int theZombiePoints, int theWaveIndex, ZombiePicker* theZombiePicker);
 	int								PickRowForNewZombie(ZombieType theZombieType);
 	Zombie*				AddZombie(ZombieType theZombieType, int theFromWave);
+	bool							ReanimPoolFull() const;
 	void							SpawnZombieWave();
 	void							RemoveAllZombies();
 	void							RemoveCutsceneZombies();

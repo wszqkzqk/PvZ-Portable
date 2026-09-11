@@ -217,10 +217,13 @@ void MessageWidget::LayoutReanimText()
 			break;
 
 		Reanimation* aReanimText = mApp->AddReanimation(aCurPosX, aCurPosY, 0, mReanimType);
-		aReanimText->mIsAttachment = true;
-		aReanimText->PlayReanim("anim_enter", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0.0f, 0.0f);
-		mTextReanimID[aCharIdx] = mApp->ReanimationGetID(aReanimText);
-		mTextReanimByteOffset[aCharIdx] = aCharStart;
+		if (aReanimText)
+		{
+			aReanimText->mIsAttachment = true;
+			aReanimText->PlayReanim("anim_enter", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0.0f, 0.0f);
+			mTextReanimID[aCharIdx] = mApp->ReanimationGetID(aReanimText);
+			mTextReanimByteOffset[aCharIdx] = aCharStart;
+		}
 
 		aCurPosX += aFont->CharWidth(aChar);
 		if (aChar == U'\n')

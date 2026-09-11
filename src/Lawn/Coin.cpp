@@ -76,10 +76,13 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 		float aPosX = mWidth * 0.5f;
 		float aPosY = mHeight * 0.5f;
 		Reanimation* aSunReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_SUN);
-		aSunReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
-		aSunReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
-		aSunReanim->mAnimRate = 6.0f;
-		AttachReanim(mAttachmentID, aSunReanim, aPosX, aPosY);
+		if (aSunReanim)
+		{
+			aSunReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
+			aSunReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
+			aSunReanim->mAnimRate = 6.0f;
+			AttachReanim(mAttachmentID, aSunReanim, aPosX, aPosY);
+		}
 	}
 	else if (mType == CoinType::COIN_SILVER)
 	{
@@ -89,11 +92,14 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 		float aPosX = 9.0f;
 		float aPosY = 9.0f;
 		Reanimation* aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_COIN_SILVER);
-		aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
-		aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
-		aCoinReanim->mAnimTime = RandRangeFloat(0.0f, 0.99f);
-		aCoinReanim->mAnimRate *= RandRangeFloat(0.6f, 1.0f);
-		AttachReanim(mAttachmentID, aCoinReanim, aPosX, aPosY);
+		if (aCoinReanim)
+		{
+			aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
+			aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
+			aCoinReanim->mAnimTime = RandRangeFloat(0.0f, 0.99f);
+			aCoinReanim->mAnimRate *= RandRangeFloat(0.6f, 1.0f);
+			AttachReanim(mAttachmentID, aCoinReanim, aPosX, aPosY);
+		}
 	}
 	else if (mType == CoinType::COIN_GOLD)
 	{
@@ -103,11 +109,14 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 		float aPosX = 9.0f;
 		float aPosY = 9.0f;
 		Reanimation* aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_COIN_GOLD);
-		aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
-		aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
-		aCoinReanim->mAnimTime = RandRangeFloat(0.0f, 0.99f);
-		aCoinReanim->mAnimRate *= RandRangeFloat(0.6f, 1.0f);
-		AttachReanim(mAttachmentID, aCoinReanim, aPosX, aPosY);
+		if (aCoinReanim)
+		{
+			aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
+			aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
+			aCoinReanim->mAnimTime = RandRangeFloat(0.0f, 0.99f);
+			aCoinReanim->mAnimRate *= RandRangeFloat(0.6f, 1.0f);
+			AttachReanim(mAttachmentID, aCoinReanim, aPosX, aPosY);
+		}
 	}
 	else if (mType == CoinType::COIN_DIAMOND)
 	{
@@ -117,11 +126,14 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 		float aPosX = -3.0f;
 		float aPosY = 4.0f;
 		Reanimation* aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_DIAMOND);
-		aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
-		aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
-		aCoinReanim->mAnimTime = RandRangeFloat(0.0f, 0.99f);
-		aCoinReanim->mAnimRate = RandRangeFloat(50.0f, 80.0f);
-		AttachReanim(mAttachmentID, aCoinReanim, aPosX, aPosY);
+		if (aCoinReanim)
+		{
+			aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
+			aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
+			aCoinReanim->mAnimTime = RandRangeFloat(0.0f, 0.99f);
+			aCoinReanim->mAnimRate = RandRangeFloat(50.0f, 80.0f);
+			AttachReanim(mAttachmentID, aCoinReanim, aPosX, aPosY);
+		}
 	}
 
 	if (mApp->IsStormyNightLevel())
@@ -1013,6 +1025,8 @@ void Coin::FanOutCoins(CoinType theCoinType, int theNumCoins)
 		float aPosX = mPosX + 20.0f;
 		float aPosY = mPosY;
 		Coin* aCoin = mBoard->AddCoin(static_cast<int>(aPosX), static_cast<int>(aPosY), theCoinType, CoinMotion::COIN_MOTION_FROM_PRESENT);
+		if (aCoin == nullptr)
+			continue;
 		aCoin->mVelX = 5.0f * sin(aAngle);
 		aCoin->mVelY = 5.0f * cos(aAngle);
 	}

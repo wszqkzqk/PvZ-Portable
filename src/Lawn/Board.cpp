@@ -1527,6 +1527,8 @@ void Board::InitLevel()
 Reanimation* Board::CreateRakeReanim(float theRakeX, float theRakeY, int theRenderOrder)
 {
 	Reanimation* aReanim = mApp->AddReanimation(theRakeX + 20, theRakeY, theRenderOrder, REANIM_RAKE);
+	if (aReanim == nullptr)
+		return nullptr;
 	aReanim->mAnimRate = 0;
 	aReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
 	aReanim->mIsAttachment = true;
@@ -1581,7 +1583,8 @@ void Board::PlaceRake()
 	aRake->mPosX = GridToPixelX(aGridX, aGridY);
 	aRake->mPosY = GridToPixelY(aGridX, aGridY);
 	aRake->mRenderOrder = MakeRenderOrder(RenderLayer::RENDER_LAYER_GRAVE_STONE, aGridY, 9);
-	aRake->mGridItemReanimID = mApp->ReanimationGetID(CreateRakeReanim(aRake->mPosX, aRake->mPosY, 0)); // Lmao gotta pass in the right coords
+	Reanimation* aRakeReanim = CreateRakeReanim(aRake->mPosX, aRake->mPosY, 0);
+	aRake->mGridItemReanimID = mApp->ReanimationGetID(aRakeReanim);
 	aRake->mGridItemState = GridItemState::GRIDITEM_STATE_RAKE_ATTRACTING;
 }
 
@@ -1955,6 +1958,12 @@ void Board::ClearAdvice(AdviceType theHelpIndex)
 
 Coin* Board::AddCoin(int theX, int theY, CoinType theCoinType, CoinMotion theCoinMotion)
 {
+	if (mCoins.mSize >= mCoins.mMaxSize)
+	{
+		PvzpTraceWithoutSpamming("Coin pool full, dropping coin");
+		return nullptr;
+	}
+
 	Coin* aCoin = mCoins.DataArrayAlloc();
 	aCoin->CoinInitialize(theX, theY, theCoinType, theCoinMotion);
 	if (mApp->IsFirstTimeAdventureMode() && mLevel == 1)
@@ -2018,6 +2027,10 @@ bool Board::IsPoolSquare(int theGridX, int theGridY)
 
 Plant* Board::NewPlant(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType)
 {
+	// a plant also allocates its body reanimation; refuse when either pool is literally full
+	if (mPlants.mSize + 1 >= mPlants.mMaxSize || ReanimPoolFull())
+		return nullptr;
+
 	Plant* aPlant = mPlants.DataArrayAlloc();
 	aPlant->mIsOnBoard = true;
 	aPlant->PlantInitialize(theGridX, theGridY, theSeedType, theImitaterType);
@@ -2026,6 +2039,9 @@ Plant* Board::NewPlant(int theGridX, int theGridY, SeedType theSeedType, SeedTyp
 
 void Board::DoPlantingEffects(int theGridX, int theGridY, Plant* thePlant)
 {
+	if (thePlant == nullptr)
+		return;
+
 	int aXPos = GridToPixelX(theGridX, theGridY) + 41;
 	int aYPos = GridToPixelY(theGridX, theGridY) + 74;
 	if (thePlant)
@@ -2071,6 +2087,8 @@ void Board::DoPlantingEffects(int theGridX, int theGridY, Plant* thePlant)
 Plant* Board::AddPlant(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType)
 {
 	Plant* aPlant = NewPlant(theGridX, theGridY, theSeedType, theImitaterType);
+	if (aPlant == nullptr)
+		return nullptr;
 	DoPlantingEffects(theGridX, theGridY, aPlant);
 	mChallenge->PlantAdded(aPlant);
 
@@ -2606,9 +2624,17 @@ bool Board::CanAddBobSled()
 	return false;
 }
 
+bool Board::ReanimPoolFull() const
+{
+	const DataArray<Reanimation>& aReanimations = mApp->mEffectSystem->mReanimationHolder->mReanimations;
+	return aReanimations.mSize >= aReanimations.mMaxSize;
+}
+
 Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromWave)
 {
-	if (mZombies.mSize >= mZombies.mMaxSize - 1)
+	// a bobsled team consumes 4 slots (sled + 3 followers)
+	const unsigned int aRequiredSlots = (theZombieType == ZombieType::ZOMBIE_BOBSLED) ? 4U : 1U;
+	if (mZombies.mSize >= mZombies.mMaxSize - aRequiredSlots)
 	{
 		PvzpLogLn("Too many zombies!!");
 		return nullptr;
@@ -2621,12 +2647,21 @@ Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromW
 
 	bool aVariant = !Rand(5);
 	Zombie* aZombie = mZombies.DataArrayAlloc();
-	aZombie->ZombieInitialize(theRow, theZombieType, aVariant, nullptr, theFromWave);
+	if (!aZombie->ZombieInitialize(theRow, theZombieType, aVariant, nullptr, theFromWave))
+	{
+		mZombies.DataArrayFree(aZombie);
+		return nullptr;
+	}
 	if (theZombieType == ZombieType::ZOMBIE_BOBSLED && aZombie->IsOnBoard())
 	{
 		for (int _i = 0; _i < 3; _i++)
 		{
-			mZombies.DataArrayAlloc()->ZombieInitialize(theRow, ZombieType::ZOMBIE_BOBSLED, false, aZombie, theFromWave);
+			Zombie* aFollowerZombie = mZombies.DataArrayAlloc();
+			if (!aFollowerZombie->ZombieInitialize(theRow, ZombieType::ZOMBIE_BOBSLED, false, aZombie, theFromWave))
+			{
+				mZombies.DataArrayFree(aFollowerZombie);
+				break;  // the sled tolerates missing followers (they are looked up with ZombieTryToGet)
+			}
 		}
 	}
 	return aZombie;
@@ -3771,6 +3806,11 @@ void Board::MouseDownWithPlant(int x, int y, int theClickCount)
 	ClearAdvice(AdviceType::ADVICE_PLANT_POTATOE_MINE_ON_LILY);
 	ClearAdvice(AdviceType::ADVICE_SURVIVE_FLAGS);
 
+	bool aAllocatesNewPlant = mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_BANK ||
+		mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_USABLE_COIN;
+	if (aAllocatesNewPlant && (ReanimPoolFull() || mPlants.mSize + 1 >= mPlants.mMaxSize))
+		return;
+
 	if (!mApp->mEasyPlantingCheat && mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_BANK && !HasConveyorBeltSeedBank())
 	{
 		if (!TakeSunMoney(GetCurrentPlantCost(aPlantingSeedType, SeedType::SEED_NONE)))
@@ -3847,16 +3887,19 @@ void Board::MouseDownWithPlant(int x, int y, int theClickCount)
 	else if (mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_BANK)
 	{
 		Plant* aPlant = AddPlant(aGridX, aGridY, mCursorObject->mType, mCursorObject->mImitaterType);
-		if (aIsAwake)
+		if (aPlant)
 		{
-			aPlant->SetSleeping(false);
-		}
-		else
-		{
-			aPlant->mWakeUpCounter = aWakeUpCounter;
-		}
+			if (aIsAwake)
+			{
+				aPlant->SetSleeping(false);
+			}
+			else
+			{
+				aPlant->mWakeUpCounter = aWakeUpCounter;
+			}
 
-		mSeedBank->mSeedPackets[mCursorObject->mSeedBankIndex].WasPlanted();
+			mSeedBank->mSeedPackets[mCursorObject->mSeedBankIndex].WasPlanted();
+		}
 	}
 	else
 	{
@@ -4786,7 +4829,14 @@ void Board::BungeeDropZombie(BungeeDropGrid* theBungeeDropGrid, ZombieType theZo
 
 	Zombie* aBungeeZombie = AddZombie(ZombieType::ZOMBIE_BUNGEE, mCurrentWave);
 	Zombie* aZombie = AddZombie(theZombieType, mCurrentWave);
-	PVZP_ASSERT(aBungeeZombie && aZombie);
+	if (aBungeeZombie == nullptr || aZombie == nullptr)
+	{
+		if (aBungeeZombie)
+			aBungeeZombie->DieNoLoot();
+		if (aZombie)
+			aZombie->DieNoLoot();
+		return;
+	}
 
 	aBungeeZombie->BungeeDropZombie(aZombie, aGrid->mX, aGrid->mY);
 }
@@ -5118,6 +5168,8 @@ void Board::ZombiesWon(Zombie* theZombie)
 
 	ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIES_WON, true);
 	Reanimation* aReanim = mApp->AddReanimation(-BOARD_OFFSET, 0, MakeRenderOrder(RenderLayer::RENDER_LAYER_SCREEN_FADE, 0, 0), ReanimationType::REANIM_ZOMBIES_WON);
+	if (aReanim == nullptr)
+		return;
 	aReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
 	aReanim->GetTrackInstanceByName("fullscreen")->mTrackColor = Color::Black;
 	aReanim->SetFramesForLayer("anim_screen");
@@ -5933,9 +5985,19 @@ bool RenderItemSortFunc(const RenderItem& theItem1, const RenderItem& theItem2)
 	return theItem1.mZPos < theItem2.mZPos;
 }
 
+static inline bool RenderListFull(int theCurRenderItem, int theNeededItems = 1)
+{
+	if (theCurRenderItem + theNeededItems > MAX_RENDER_ITEMS)
+	{
+		PvzpTraceWithoutSpamming("Too many render items");
+		return true;
+	}
+	return false;
+}
+
 void Board::AddBossRenderItem(RenderItem* theRenderList, int& theCurRenderItem, Zombie* theBossZombie)
 {
-	PVZP_ASSERT(theCurRenderItem < MAX_RENDER_ITEMS);
+	if (RenderListFull(theCurRenderItem, 5)) return;  // worst case: 4 boss parts + 1 fireball
 	int aBackLegRow = 1;
 	int aFrontLegRow = 3;
 	int aBackArmRow = 4;
@@ -6006,7 +6068,7 @@ static inline void AddGameObjectRenderItem(RenderItem* theRenderList, int& theCu
 
 static inline void AddGameObjectRenderItemCursorPreview(RenderItem* theRenderList, int& theCurRenderItem, RenderObjectType theRenderObjectType, GameObject* theGameObject)
 {
-	PVZP_ASSERT(theCurRenderItem < MAX_RENDER_ITEMS);
+	if (RenderListFull(theCurRenderItem)) return;
 	RenderItem& aRenderItem = theRenderList[theCurRenderItem];
 	aRenderItem.mRenderObjectType = theRenderObjectType;
 	aRenderItem.mZPos = theGameObject->mRenderOrder;
@@ -6018,7 +6080,7 @@ static inline void AddGameObjectRenderItemCursorPreview(RenderItem* theRenderLis
 
 static inline void AddGameObjectRenderItemPlant(RenderItem* theRenderList, int& theCurRenderItem, RenderObjectType theRenderObjectType, GameObject* theGameObject)
 {
-	PVZP_ASSERT(theCurRenderItem < MAX_RENDER_ITEMS);
+	if (RenderListFull(theCurRenderItem)) return;
 	RenderItem& aRenderItem = theRenderList[theCurRenderItem];
 	aRenderItem.mRenderObjectType = theRenderObjectType;
 	aRenderItem.mZPos = theGameObject->mRenderOrder;
@@ -6030,7 +6092,7 @@ static inline void AddGameObjectRenderItemPlant(RenderItem* theRenderList, int& 
 
 static inline void AddGameObjectRenderItemZombie(RenderItem* theRenderList, int& theCurRenderItem, RenderObjectType theRenderObjectType, GameObject* theGameObject)
 {
-	PVZP_ASSERT(theCurRenderItem < MAX_RENDER_ITEMS);
+	if (RenderListFull(theCurRenderItem)) return;
 	RenderItem& aRenderItem = theRenderList[theCurRenderItem];
 	aRenderItem.mRenderObjectType = theRenderObjectType;
 	aRenderItem.mZPos = theGameObject->mRenderOrder;
@@ -6041,7 +6103,7 @@ static inline void AddGameObjectRenderItemZombie(RenderItem* theRenderList, int&
 
 static inline void AddGameObjectRenderItemProjectile(RenderItem* theRenderList, int& theCurRenderItem, RenderObjectType theRenderObjectType, GameObject* theGameObject)
 {
-	PVZP_ASSERT(theCurRenderItem < MAX_RENDER_ITEMS);
+	if (RenderListFull(theCurRenderItem)) return;
 	RenderItem& aRenderItem = theRenderList[theCurRenderItem];
 	aRenderItem.mRenderObjectType = theRenderObjectType;
 	aRenderItem.mZPos = theGameObject->mRenderOrder;
@@ -6052,7 +6114,7 @@ static inline void AddGameObjectRenderItemProjectile(RenderItem* theRenderList, 
 
 static inline void AddGameObjectRenderItemCoin(RenderItem* theRenderList, int& theCurRenderItem, RenderObjectType theRenderObjectType, GameObject* theGameObject)
 {
-	PVZP_ASSERT(theCurRenderItem < MAX_RENDER_ITEMS);
+	if (RenderListFull(theCurRenderItem)) return;
 	RenderItem& aRenderItem = theRenderList[theCurRenderItem];
 	aRenderItem.mRenderObjectType = theRenderObjectType;
 	aRenderItem.mZPos = theGameObject->mRenderOrder;
@@ -6063,7 +6125,7 @@ static inline void AddGameObjectRenderItemCoin(RenderItem* theRenderList, int& t
 
 static inline void AddUIRenderItem(RenderItem* theRenderList, int& theCurRenderItem, RenderObjectType theRenderObjectType, int thePosZ)
 {
-	PVZP_ASSERT(theCurRenderItem < MAX_RENDER_ITEMS);
+	if (RenderListFull(theCurRenderItem)) return;
 	RenderItem& aRenderItem = theRenderList[theCurRenderItem];
 	aRenderItem.mRenderObjectType = theRenderObjectType;
 	aRenderItem.mZPos = thePosZ;
@@ -6075,6 +6137,13 @@ void Board::DrawGameObjects(Graphics* g)
 {
 	RenderItem aRenderList[MAX_RENDER_ITEMS];
 	int aRenderItemCount = 0;
+	RenderItem aDummyRenderItem;
+	auto AllocRenderItem = [&]() -> RenderItem&
+	{
+		if (RenderListFull(aRenderItemCount))
+			return aDummyRenderItem;
+		return aRenderList[aRenderItemCount++];
+	};
 
 	{
 		for (Plant* aPlant : mPlants)
@@ -6087,20 +6156,18 @@ void Board::DrawGameObjects(Graphics* g)
 
 				if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN && aPlant->mPottedPlantIndex != -1)
 				{
-					RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+					RenderItem& aRenderItem = AllocRenderItem();
 					aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_PLANT_OVERLAY;
 					aRenderItem.mZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, 0, mY);
 					aRenderItem.mPlant = aPlant;
-					aRenderItemCount++;
 				}
 
 				if ((aPlant->mSeedType == SeedType::SEED_MAGNETSHROOM || aPlant->mSeedType == SeedType::SEED_GOLD_MAGNET) && aPlant->DrawMagnetItemsOnTop())
 				{
-					RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+					RenderItem& aRenderItem = AllocRenderItem();
 					aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_PLANT_MAGNET_ITEMS;
 					aRenderItem.mZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, -1);
 					aRenderItem.mPlant = aPlant;
-					aRenderItemCount++;
 				}
 			}
 		}
@@ -6128,20 +6195,18 @@ void Board::DrawGameObjects(Graphics* g)
 
 				if (aZombie->HasShadow())
 				{
-					RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+					RenderItem& aRenderItem = AllocRenderItem();
 					aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_ZOMBIE_SHADOW;
 					aRenderItem.mZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_GROUND, aZombie->mRow, 3);
 					aRenderItem.mZombie = aZombie;
-					aRenderItemCount++;
 				}
 
 				if (aZombie->mZombieType == ZombieType::ZOMBIE_BUNGEE)
 				{
-					RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+					RenderItem& aRenderItem = AllocRenderItem();
 					aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_ZOMBIE_BUNGEE_TARGET;
 					aRenderItem.mZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_PROJECTILE, aZombie->mRow, 1);
 					aRenderItem.mZombie = aZombie;
-					aRenderItemCount++;
 				}
 			}
 		}
@@ -6153,11 +6218,10 @@ void Board::DrawGameObjects(Graphics* g)
 				continue;
 			AddGameObjectRenderItemProjectile(aRenderList, aRenderItemCount, RenderObjectType::RENDER_ITEM_PROJECTILE, aProjectile);
 
-			RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+			RenderItem& aRenderItem = AllocRenderItem();
 			aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_PROJECTILE_SHADOW;
 			aRenderItem.mZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_GROUND, aProjectile->mRow, 3);
 			aRenderItem.mProjectile = aProjectile;
-			aRenderItemCount++;
 		}
 	}
 	{
@@ -6165,11 +6229,10 @@ void Board::DrawGameObjects(Graphics* g)
 		{
 			if (aLawnMower->mDead)
 				continue;
-			RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+			RenderItem& aRenderItem = AllocRenderItem();
 			aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_MOWER;
 			aRenderItem.mZPos = aLawnMower->mRenderOrder;
 			aRenderItem.mMower = aLawnMower;
-			aRenderItemCount++;
 		}
 	}
 	{
@@ -6179,11 +6242,10 @@ void Board::DrawGameObjects(Graphics* g)
 				continue;
 			if (!aParticle->mIsAttachment)
 			{
-				RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+				RenderItem& aRenderItem = AllocRenderItem();
 				aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_PARTICLE;
 				aRenderItem.mZPos = aParticle->mRenderOrder;
 				aRenderItem.mParticleSytem = aParticle;
-				aRenderItemCount++;
 			}
 		}
 	}
@@ -6194,11 +6256,10 @@ void Board::DrawGameObjects(Graphics* g)
 				continue;
 			if (!aReanimation->mIsAttachment)
 			{
-				RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+				RenderItem& aRenderItem = AllocRenderItem();
 				aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_REANIMATION;
 				aRenderItem.mZPos = aReanimation->mRenderOrder;
 				aRenderItem.mReanimation = aReanimation;
-				aRenderItemCount++;
 			}
 		}
 	}
@@ -6207,19 +6268,17 @@ void Board::DrawGameObjects(Graphics* g)
 		{
 			if (aGridItem->mDead)
 				continue;
-			RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+			RenderItem& aRenderItem = AllocRenderItem();
 			aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_GRID_ITEM;
 			aRenderItem.mZPos = aGridItem->mRenderOrder;
 			aRenderItem.mGridItem = aGridItem;
-			aRenderItemCount++;
 
 			if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN && aGridItem->mGridItemType == GridItemType::GRIDITEM_STINKY)
 			{
-				RenderItem& aRenderItem = aRenderList[aRenderItemCount];
-				aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_GRID_ITEM_OVERLAY;
-				aRenderItem.mZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, 0, aGridItem->mPosY - 30.0f);
-				aRenderItem.mGridItem = aGridItem;
-				aRenderItemCount++;
+				RenderItem& aOverlayRenderItem = AllocRenderItem();
+				aOverlayRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_GRID_ITEM_OVERLAY;
+				aOverlayRenderItem.mZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, 0, aGridItem->mPosY - 30.0f);
+				aOverlayRenderItem.mGridItem = aGridItem;
 			}
 		}
 	}
@@ -6227,11 +6286,10 @@ void Board::DrawGameObjects(Graphics* g)
 	{
 		if (mIceTimer[i])
 		{
-			RenderItem& aRenderItem = aRenderList[aRenderItemCount];
+			RenderItem& aRenderItem = AllocRenderItem();
 			aRenderItem.mRenderObjectType = RenderObjectType::RENDER_ITEM_ICE;
 			aRenderItem.mBoardGridY = i;
 			aRenderItem.mZPos = GetIceZPos(i);
-			aRenderItemCount++;
 		}
 	}
 	{
@@ -9212,6 +9270,8 @@ void Board::DoFwoosh(int theRow)
 		float aPosX = 750.0f * i / 11.0f + 10.0f;
 		float aPosY = GetPosYBasedOnRow(aPosX + 10.0f, theRow) - 10.0f;
 		Reanimation* aFwoosh = mApp->AddReanimation(aPosX, aPosY, aRenderOrder, ReanimationType::REANIM_JALAPENO_FIRE);
+		if (aFwoosh == nullptr)
+			continue;
 		aFwoosh->SetFramesForLayer("anim_flame");
 		aFwoosh->mLoopType = ReanimLoopType::REANIM_LOOP_FULL_LAST_FRAME;
 		aFwoosh->mAnimRate *= RandRangeFloat(0.7f, 1.3f);

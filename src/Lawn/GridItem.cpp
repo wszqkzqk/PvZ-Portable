@@ -200,7 +200,9 @@ void GridItem::DrawGraveStone(Graphics* g)
 
 void GridItem::DrawStinky(Graphics* g)
 {
-	Reanimation* aStinkyReanim = mApp->ReanimationGet(mGridItemReanimID);
+	Reanimation* aStinkyReanim = mApp->ReanimationTryToGet(mGridItemReanimID);
+	if (aStinkyReanim == nullptr)
+		return;
 	float aOriginalTime = aStinkyReanim->mAnimTime;
 
 	PVZP_ASSERT(mMotionTrailCount <= NUM_MOTION_TRAIL_FRAMES);
@@ -431,8 +433,11 @@ void GridItem::OpenPortal()
 			aReanimType = ReanimationType::REANIM_PORTAL_SQUARE;
 		}
 		aPortalReanim = mApp->AddReanimation(aXPos, aYPos, 0, aReanimType);
-		aPortalReanim->mIsAttachment = true;
-		mGridItemReanimID = mApp->ReanimationGetID(aPortalReanim);
+		if (aPortalReanim)
+		{
+			aPortalReanim->mIsAttachment = true;
+			mGridItemReanimID = mApp->ReanimationGetID(aPortalReanim);
+		}
 	}
 	else
 	{
@@ -446,7 +451,8 @@ void GridItem::OpenPortal()
 		mGridItemParticleID = ParticleSystemID::PARTICLESYSTEMID_NULL;
 	}
 
-	aPortalReanim->PlayReanim("anim_appear", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12.0f);
+	if (aPortalReanim)
+		aPortalReanim->PlayReanim("anim_appear", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12.0f);
 	mApp->PlayFoley(FoleyType::FOLEY_PORTAL);
 }
 
@@ -476,15 +482,15 @@ bool GridItem::IsOpenPortal()
 
 void GridItem::UpdatePortal()
 {
-	Reanimation* aPortalReanim = mApp->ReanimationGet(mGridItemReanimID);
+	Reanimation* aPortalReanim = mApp->ReanimationTryToGet(mGridItemReanimID);
 	if (mGridItemState == GridItemState::GRIDITEM_STATE_PORTAL_CLOSED)
 	{
-		if (aPortalReanim->mLoopCount > 0)
+		if (aPortalReanim == nullptr || aPortalReanim->mLoopCount > 0)
 		{
 			GridItemDie();
 		}
 	}
-	else if (aPortalReanim->mLoopType == ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD && aPortalReanim->mLoopCount > 0)
+	else if (aPortalReanim && aPortalReanim->mLoopType == ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD && aPortalReanim->mLoopCount > 0)
 	{
 		aPortalReanim->PlayReanim("anim_pulse", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
 
@@ -615,8 +621,9 @@ void GridItem::UpdateRake()
 	{
 		if (RakeFindZombie())
 		{
-			Reanimation* aRakeReanim = mApp->ReanimationGet(mGridItemReanimID);
-			aRakeReanim->mAnimRate = 20.0f;
+			Reanimation* aRakeReanim = mApp->ReanimationTryToGet(mGridItemReanimID);
+			if (aRakeReanim)
+				aRakeReanim->mAnimRate = 20.0f;
 			mGridItemCounter = 200;
 			mGridItemState = GridItemState::GRIDITEM_STATE_RAKE_TRIGGERED;
 			mApp->PlayFoley(FoleyType::FOLEY_SWING);
@@ -624,7 +631,7 @@ void GridItem::UpdateRake()
 	}
 	else if (mGridItemState == GridItemState::GRIDITEM_STATE_RAKE_TRIGGERED)
 	{
-		Reanimation* aRakeReanim = mApp->ReanimationGet(mGridItemReanimID);
+		Reanimation* aRakeReanim = mApp->ReanimationTryToGet(mGridItemReanimID);
 		if (aRakeReanim && aRakeReanim->ShouldTriggerTimedEvent(0.8f))
 		{
 			Zombie* aZombie = RakeFindZombie();

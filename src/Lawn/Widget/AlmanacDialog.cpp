@@ -162,7 +162,11 @@ void AlmanacDialog::SetupZombie()
 
 	mZombie = std::make_unique<Zombie>();
 	mZombie->mBoard = nullptr;
-	mZombie->ZombieInitialize(0, mSelectedZombie, false, nullptr, Zombie::ZOMBIE_WAVE_UI);
+	if (!mZombie->ZombieInitialize(0, mSelectedZombie, false, nullptr, Zombie::ZOMBIE_WAVE_UI))
+	{
+		mZombie.reset();
+		return;
+	}
 	mZombie->mPosX = ALMANAC_ZOMBIE_POSITION_X;
 	mZombie->mPosY = ALMANAC_ZOMBIE_POSITION_Y;
 }
@@ -183,9 +187,13 @@ void AlmanacDialog::SetPage(AlmanacPage thePage)
 
 		mZombie = std::make_unique<Zombie>();
 		mZombie->mBoard = nullptr;
-		mZombie->ZombieInitialize(0, ZombieType::ZOMBIE_NORMAL, false, nullptr, Zombie::ZOMBIE_WAVE_UI);
-		mZombie->mPosX = ALMANAC_INDEXZOMBIE_POSITION_X;
-		mZombie->mPosY = ALMANAC_INDEXZOMBIE_POSITION_Y;
+		if (!mZombie->ZombieInitialize(0, ZombieType::ZOMBIE_NORMAL, false, nullptr, Zombie::ZOMBIE_WAVE_UI))
+			mZombie.reset();
+		else
+		{
+			mZombie->mPosX = ALMANAC_INDEXZOMBIE_POSITION_X;
+			mZombie->mPosY = ALMANAC_INDEXZOMBIE_POSITION_Y;
+		}
 
 		mIndexButton->mBtnNoDraw = true;
 		mPlantButton->mBtnNoDraw = false;
@@ -433,8 +441,9 @@ void AlmanacDialog::DrawZombies(Graphics* g)
 		}
 	}
 
-	g->DrawImage(mZombie->mZombieType == ZombieType::ZOMBIE_ZAMBONI || mZombie->mZombieType == ZombieType::ZOMBIE_BOBSLED ?
-		Sexy::IMAGE_ALMANAC_GROUNDICE : Sexy::IMAGE_ALMANAC_GROUNDDAY, 518, 110);
+	if (mZombie)
+		g->DrawImage(mZombie->mZombieType == ZombieType::ZOMBIE_ZAMBONI || mZombie->mZombieType == ZombieType::ZOMBIE_BOBSLED ?
+			Sexy::IMAGE_ALMANAC_GROUNDICE : Sexy::IMAGE_ALMANAC_GROUNDDAY, 518, 110);
 	if (mZombie && !ZombieHasSilhouette(mZombie->mZombieType))
 	{
 		Graphics aZombieGraphics = Graphics(*g);

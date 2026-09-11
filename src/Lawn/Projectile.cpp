@@ -874,9 +874,12 @@ void Projectile::DoImpact(Zombie* theZombie)
 		if (IsSplashDamage(theZombie))
 		{
 			Reanimation* aFireReanim = mApp->AddReanimation(mPosX + 38.0f, mPosY - 20.0f, mRenderOrder + 1, ReanimationType::REANIM_JALAPENO_FIRE);
-			aFireReanim->mAnimTime = 0.25f;
-			aFireReanim->mAnimRate = 24.0f;
-			aFireReanim->OverrideScale(0.7f, 0.4f);
+			if (aFireReanim)
+			{
+				aFireReanim->mAnimTime = 0.25f;
+				aFireReanim->mAnimRate = 24.0f;
+				aFireReanim->OverrideScale(0.7f, 0.4f);
+			}
 		}
 		break;
 	}
@@ -1206,16 +1209,19 @@ void Projectile::ConvertToFireball(int theGridX)
 	float aOffsetX = -25.0f;
 	float aOffsetY = -25.0f;
 	Reanimation* aFirePeaReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_FIRE_PEA);
-	if (mMotionType == ProjectileMotion::MOTION_BACKWARDS)
+	if (aFirePeaReanim)
 	{
-		aFirePeaReanim->OverrideScale(-1.0f, 1.0f);
-		aOffsetX += 80.0f;
-	}
+		if (mMotionType == ProjectileMotion::MOTION_BACKWARDS)
+		{
+			aFirePeaReanim->OverrideScale(-1.0f, 1.0f);
+			aOffsetX += 80.0f;
+		}
 
-	aFirePeaReanim->SetPosition(mPosX + aOffsetX, mPosY + aOffsetY);
-	aFirePeaReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
-	aFirePeaReanim->mAnimRate = RandRangeFloat(50.0f, 80.0f);
-	AttachReanim(mAttachmentID, aFirePeaReanim, aOffsetX, aOffsetY);
+		aFirePeaReanim->SetPosition(mPosX + aOffsetX, mPosY + aOffsetY);
+		aFirePeaReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
+		aFirePeaReanim->mAnimRate = RandRangeFloat(50.0f, 80.0f);
+		AttachReanim(mAttachmentID, aFirePeaReanim, aOffsetX, aOffsetY);
+	}
 }
 
 void Projectile::ConvertToPea(int theGridX)
