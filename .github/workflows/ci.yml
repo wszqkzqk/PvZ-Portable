@@ -804,6 +804,37 @@ jobs:
           build-wasm/pvz-portable.js
           build-wasm/pvz-portable.wasm
 
+    # Staged only when a deployment will actually happen (tag push or manual run)
+    - name: Prepare GitHub Pages Artifact
+      if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+      run: |
+        mkdir -p pages
+        cp build-wasm/pvz-portable.html build-wasm/pvz-portable.js build-wasm/pvz-portable.wasm pages/
+        # Land /PvZ-Portable/ on the game page directly
+        printf '<!doctype html><meta http-equiv="refresh" content="0; url=pvz-portable.html">\n' > pages/index.html
+
+    - name: Upload GitHub Pages Artifact
+      if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+      uses: actions/upload-pages-artifact@v5
+      with:
+        path: pages/
+
+  deploy-wasm-pages:
+    name: Deploy WebAssembly to GitHub Pages
+    needs: build-wasm
+    # Auto-deploy on release tags; manual runs allowed via workflow_dispatch (main only)
+    if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - id: deployment
+      uses: actions/deploy-pages@v5
+
   release:
     name: Release
     needs: ['build-archlinux', 'build-linux-static', 'build-windows-msys2-ucrt64', 'build-windows-msvc-x64', 'build-windows-msvc-x86', 'build-macos', 'build-android', 'build-ios', 'build-wasm']
