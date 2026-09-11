@@ -2539,7 +2539,9 @@ void LawnApp::CrazyDaveStopSound()
 
 void LawnApp::CrazyDaveTalkMessage(const std::string& theMessage)
 {
-	Reanimation* aCrazyDaveReanim = ReanimationGet(mCrazyDaveReanimID);
+	Reanimation* aCrazyDaveReanim = ReanimationTryToGet(mCrazyDaveReanimID);
+	if (aCrazyDaveReanim == nullptr)
+		return;
 
 	bool doHanding = false;
 	if (theMessage.find("{HANDING}") != std::string::npos)

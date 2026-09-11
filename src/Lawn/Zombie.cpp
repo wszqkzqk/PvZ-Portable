@@ -9318,12 +9318,12 @@ void Zombie::UpdateDeath()
 			mApp->PlayFoley(FoleyType::FOLEY_THUMP);
 		}
 
-		if (aBodyReanim->ShouldTriggerTimedEvent(0.99f))
+		if (aHeadReanim && aBodyReanim->ShouldTriggerTimedEvent(0.99f))
 		{
 			aHeadReanim->PlayReanim("anim_flag", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 30.0f);
 		}
 
-		if (aHeadReanim->IsAnimPlaying("anim_flag") && aHeadReanim->mLoopCount > 0)
+		if (aHeadReanim && aHeadReanim->IsAnimPlaying("anim_flag") && aHeadReanim->mLoopCount > 0)
 		{
 			aHeadReanim->PlayReanim("anim_flag_loop", ReanimLoopType::REANIM_LOOP, 20, 17.0f);
 		}
@@ -10127,7 +10127,8 @@ void Zombie::BossHeadSpit()
 	}
 
 	Reanimation* aHeadReanim = mApp->ReanimationTryToGet(mSpecialHeadReanimID);
-	aHeadReanim->PlayReanim("anim_drive", ReanimLoopType::REANIM_LOOP, 20, 36.0f);
+	if (aHeadReanim)
+		aHeadReanim->PlayReanim("anim_drive", ReanimLoopType::REANIM_LOOP, 20, 36.0f);
 }
 
 void Zombie::BossDestroyIceballInRow()
@@ -10528,7 +10529,8 @@ void Zombie::UpdateBoss()
 		if (aBodyReanim->mLoopCount > 0)
 		{
 			aHeadReanim = mApp->ReanimationTryToGet(mSpecialHeadReanimID);
-			aHeadReanim->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 20, 18.0f);
+			if (aHeadReanim)
+				aHeadReanim->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 20, 18.0f);
 			mZombiePhase = ZombiePhase::PHASE_BOSS_HEAD_IDLE_AFTER_SPIT;
 			PlayZombieReanim("anim_head_idle", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
 			mPhaseCounter = 300;
@@ -10707,14 +10709,20 @@ void Zombie::ApplyBossSmokeParticles(bool theEnable)
 		if (aParticle1)
 		{
 			AttachEffect* aAttachEffect = aBodyReanim->AttachParticleToTrack("Boss_head", aParticle1, 120.0f, 30.0f);
-			aAttachEffect->mDontDrawIfParentHidden = true;
-			aAttachEffect->mDontPropogateColor = true;
+			if (aAttachEffect)
+			{
+				aAttachEffect->mDontDrawIfParentHidden = true;
+				aAttachEffect->mDontPropogateColor = true;
+			}
 		}
 		if (aParticle2)
 		{
 			AttachEffect* aAttachEffect = aBodyReanim->AttachParticleToTrack("Boss_head", aParticle2, 205.0f, 58.0f);
-			aAttachEffect->mDontDrawIfParentHidden = true;
-			aAttachEffect->mDontPropogateColor = true;
+			if (aAttachEffect)
+			{
+				aAttachEffect->mDontDrawIfParentHidden = true;
+				aAttachEffect->mDontPropogateColor = true;
+			}
 		}
 
 		if (mBodyHealth < mBodyMaxHealth / BOSS_FLASH_HEALTH_FRACTION)
@@ -10723,8 +10731,11 @@ void Zombie::ApplyBossSmokeParticles(bool theEnable)
 			if (aParticle3)
 			{
 				AttachEffect* aAttachEffect = aBodyReanim->AttachParticleToTrack("Boss_head", aParticle3, 193.0f, 27.0f);
-				aAttachEffect->mDontDrawIfParentHidden = true;
-				aAttachEffect->mDontPropogateColor = true;
+				if (aAttachEffect)
+				{
+					aAttachEffect->mDontDrawIfParentHidden = true;
+					aAttachEffect->mDontPropogateColor = true;
+				}
 			}
 		}
 	}

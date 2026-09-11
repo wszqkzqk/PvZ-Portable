@@ -1325,8 +1325,8 @@ int Challenge::MouseDown(int x, int y, int theClickCount, HitResult* theHitResul
 			}
 
 			Reanimation* aHandleReanim = mApp->ReanimationTryToGet(mReanimChallenge);
-		if (aHandleReanim)
-			aHandleReanim->PlayReanim("anim_pull", REANIM_PLAY_ONCE_AND_HOLD, 0, 36.0f);
+			if (aHandleReanim)
+				aHandleReanim->PlayReanim("anim_pull", REANIM_PLAY_ONCE_AND_HOLD, 0, 36.0f);
 			mChallengeState = STATECHALLENGE_SLOT_MACHINE_ROLLING;
 			mBoard->SetTutorialState(TUTORIAL_SLOT_MACHINE_COMPLETED);
 			mBoard->ClearAdvice(ADVICE_NONE);
@@ -3533,6 +3533,9 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 	}
 	else if (aUpgrade != -1 && !mBeghouledPurcasedUpgrade[aUpgrade])
 	{
+		if (mBoard->ReanimPoolFull() || mBoard->mPlants.mSize + 1 >= mBoard->mPlants.mMaxSize)
+			return;
+
 		mBeghouledPurcasedUpgrade[aUpgrade] = true;
 		const SeedType gUpgradableSeedTypes[3] = { SEED_PEASHOOTER, SEED_PUFFSHROOM, SEED_WALLNUT };
 		SeedType aSeedPrimary = gUpgradableSeedTypes[aUpgrade];
@@ -4346,7 +4349,8 @@ void Challenge::IZombieMouseDownWithZombie(int theX, int theY, int theClickCount
 		{
 			if (CanPlantAt(aGridX, aGridY, aSeedType) == PLANTING_OK)
 			{
-				if (!mBoard->ReanimPoolFull() && (mApp->mEasyPlantingCheat || mBoard->TakeSunMoney(mBoard->GetCurrentPlantCost(aSeedType, SEED_NONE))))
+				if (!mBoard->ReanimPoolFull() && mBoard->mZombies.mSize + 1 < mBoard->mZombies.mMaxSize &&
+					(mApp->mEasyPlantingCheat || mBoard->TakeSunMoney(mBoard->GetCurrentPlantCost(aSeedType, SEED_NONE))))
 				{
 					mBoard->ClearAdvice(ADVICE_I_ZOMBIE_LEFT_OF_LINE);
 					mBoard->ClearAdvice(ADVICE_I_ZOMBIE_NOT_PASSED_LINE);

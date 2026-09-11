@@ -2044,16 +2044,13 @@ void Board::DoPlantingEffects(int theGridX, int theGridY, Plant* thePlant)
 
 	int aXPos = GridToPixelX(theGridX, theGridY) + 41;
 	int aYPos = GridToPixelY(theGridX, theGridY) + 74;
-	if (thePlant)
+	if (thePlant->mSeedType == SeedType::SEED_LILYPAD)
 	{
-		if (thePlant->mSeedType == SeedType::SEED_LILYPAD)
-		{
-			aYPos += 15;
-		}
-		else if (thePlant->mSeedType == SeedType::SEED_FLOWERPOT)
-		{
-			aYPos += 30;
-		}
+		aYPos += 15;
+	}
+	else if (thePlant->mSeedType == SeedType::SEED_FLOWERPOT)
+	{
+		aYPos += 30;
 	}
 
 	if (mBackground == BackgroundType::BACKGROUND_GREENHOUSE)

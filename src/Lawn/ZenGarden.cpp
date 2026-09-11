@@ -488,8 +488,9 @@ void ZenGarden::MouseDownWithMoneySign(Plant* thePlant)
 	aMessageText = PvzpReplaceString(aMessageText, "{PLANT_TYPE}", aPlantName);
 
 	mApp->CrazyDaveTalkMessage(aMessageText);
-	Reanimation* aCrazyDaveReanim = mApp->ReanimationGet(mApp->mCrazyDaveReanimID);
-	aCrazyDaveReanim->PlayReanim("anim_blahblah", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 12.0f);
+	Reanimation* aCrazyDaveReanim = mApp->ReanimationTryToGet(mApp->mCrazyDaveReanimID);
+	if (aCrazyDaveReanim)
+		aCrazyDaveReanim->PlayReanim("anim_blahblah", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 12.0f);
 
 	PlantID aPlantID = (PlantID)mBoard->mPlants.DataArrayGetID(thePlant);
 	Dialog* aDialog = mApp->DoDialog(Dialogs::DIALOG_ZEN_SELL, true, aHeader, aLines, "", Dialog::BUTTONS_YES_NO);
@@ -1654,10 +1655,9 @@ void ZenGarden::StinkyUpdate(GridItem* theStinky)
 			}
 			else if (theStinky->mGridItemState == GridItemState::GRIDITEM_STINKY_WALKING_RIGHT)
 			{
-				Reanimation* aReanim = mApp->ReanimationTryToGet(theStinky->mGridItemReanimID);
 				theStinky->mGridItemState = GridItemState::GRIDITEM_STINKY_TURNING_LEFT;
-				if (aReanim)
-					aReanim->PlayReanim("turn", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 6.0f);
+				if (aStinkyReanim)
+					aStinkyReanim->PlayReanim("turn", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 6.0f);
 				theStinky->mMotionTrailCount = 0;
 				theStinky->mGoalX = theStinky->mPosX;
 				theStinky->mGoalY = theStinky->mPosY;

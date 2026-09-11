@@ -1110,8 +1110,11 @@ void CutScene::AnimateBoard()
 			if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL)
 			{
 				Reanimation* aDaveReanim = mApp->ReanimationTryToGet(mApp->mCrazyDaveReanimID);
-				aDaveReanim->PlayReanim("anim_enterup", REANIM_PLAY_ONCE_AND_HOLD, 0, 12);
-				aDaveReanim->SetPosition(150, 70);
+				if (aDaveReanim)
+				{
+					aDaveReanim->PlayReanim("anim_enterup", REANIM_PLAY_ONCE_AND_HOLD, 0, 12);
+					aDaveReanim->SetPosition(150, 70);
+				}
 			}
 		}
 
@@ -1572,7 +1575,8 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping)
 		if (mApp->IsFinalBossLevel() && mApp->IsAdventureMode())
 		{
 			Reanimation* aCrazyDaveReanim = mApp->ReanimationTryToGet(mApp->mCrazyDaveReanimID);
-			aCrazyDaveReanim->PlayReanim("anim_grab", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f);
+			if (aCrazyDaveReanim)
+				aCrazyDaveReanim->PlayReanim("anim_grab", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f);
 
 			mApp->mMusic->FadeOut(50);
 			if (!theJustSkipping)

@@ -3211,7 +3211,9 @@ void Plant::AnimateNuts()
 
 void Plant::AnimateGarlic()
 {
-	Reanimation* aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+	Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
+	if (aBodyReanim == nullptr)
+		return;
 	Image* aImageOverride = aBodyReanim->GetImageOverride("anim_face");
 
 	if (mPlantHealth < mPlantMaxHealth / 3)
@@ -3237,7 +3239,9 @@ void Plant::AnimateGarlic()
 
 void Plant::AnimatePumpkin()
 {
-	Reanimation* aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+	Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
+	if (aBodyReanim == nullptr)
+		return;
 	Image* aImageOverride = aBodyReanim->GetImageOverride("Pumpkin_front");
 
 	if (mPlantHealth < mPlantMaxHealth / 3)
@@ -4071,11 +4075,14 @@ void Plant::Draw(Graphics* g)
 
 		if (aDrawPumpkinBack)
 		{
-			Reanimation* aPumpkinReanim = mApp->ReanimationGet(aPumpkin->mBodyReanimID);
-			Graphics aPumpkinGraphics(*g);
-			aPumpkinGraphics.mTransX += aPumpkin->mX - mX;
-			aPumpkinGraphics.mTransY += aPumpkin->mY - mY;
-			aPumpkinReanim->DrawRenderGroup(&aPumpkinGraphics, 1);
+			Reanimation* aPumpkinReanim = mApp->ReanimationTryToGet(aPumpkin->mBodyReanimID);
+			if (aPumpkinReanim)
+			{
+				Graphics aPumpkinGraphics(*g);
+				aPumpkinGraphics.mTransX += aPumpkin->mX - mX;
+				aPumpkinGraphics.mTransY += aPumpkin->mY - mY;
+				aPumpkinReanim->DrawRenderGroup(&aPumpkinGraphics, 1);
+			}
 		}
 
 		aOffsetX += mShakeOffsetX;
