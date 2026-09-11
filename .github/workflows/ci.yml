@@ -821,7 +821,7 @@ jobs:
 
   deploy-wasm-pages:
     name: Deploy WebAssembly to GitHub Pages
-    needs: build-wasm
+    needs: ['build-archlinux', 'build-linux-static', 'build-windows-msys2-ucrt64', 'build-windows-msvc-x64', 'build-windows-msvc-x86', 'build-macos', 'build-android', 'build-ios', 'build-wasm']
     # Auto-deploy on release tags; manual runs allowed via workflow_dispatch (main only)
     if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
