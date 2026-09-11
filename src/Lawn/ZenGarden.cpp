@@ -958,6 +958,9 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
 
 	if (aPlantToFeed)
 	{
+		if (mBoard->mGridItems.mSize >= mBoard->mGridItems.mMaxSize)
+			return;
+
 		GridItem* aZenTool = mBoard->mGridItems.DataArrayAlloc();
 		aZenTool->mGridItemType = GridItemType::GRIDITEM_ZEN_TOOL;
 		aZenTool->mGridX = aPlantToFeed->mPlantCol;

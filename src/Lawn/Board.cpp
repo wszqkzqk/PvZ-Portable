@@ -2639,7 +2639,7 @@ Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromW
 	const unsigned int aRequiredSlots = (theZombieType == ZombieType::ZOMBIE_BOBSLED) ? 4U : 1U;
 	if (mZombies.mSize >= mZombies.mMaxSize - aRequiredSlots)
 	{
-		PvzpLogLn("Too many zombies!!");
+		PvzpTraceWithoutSpamming("Too many zombies!!");
 		return nullptr;
 	}
 

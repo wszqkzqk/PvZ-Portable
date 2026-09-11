@@ -5408,6 +5408,9 @@ void Challenge::TreeOfWisdomGrow()
 
 void Challenge::TreeOfWisdomFertilize()
 {
+	if (mBoard->mGridItems.mSize >= mBoard->mGridItems.mMaxSize)
+		return;
+
 	GridItem* aTreeFood = mBoard->mGridItems.DataArrayAlloc();
 	aTreeFood->mPosX = 340.0f;
 	aTreeFood->mPosY = 300.0f;

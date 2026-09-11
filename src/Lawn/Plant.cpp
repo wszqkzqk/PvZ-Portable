@@ -3313,6 +3313,8 @@ void Plant::UpdateShooting()
 			Reanimation* aHeadReanim3 = mApp->ReanimationTryToGet(mHeadReanimID3);
 			Reanimation* aHeadReanim1 = mApp->ReanimationTryToGet(mHeadReanimID);
 
+			// a missing head reanimation counts as ready-to-fire so degraded plants keep shooting
+
 			if (aHeadReanim1 == nullptr || aHeadReanim1->mLoopType == ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD)
 			{
 				Fire(nullptr, rowBelow, PlantWeapon::WEAPON_PRIMARY);
