@@ -207,8 +207,12 @@ void CursorObject::Draw(Graphics* g)
 	}
 
 	case CursorType::CURSOR_TYPE_HAMMER:
-		mApp->ReanimationGet(mReanimCursorID)->Draw(g);
+	{
+		Reanimation* aCursorReanim = mApp->ReanimationTryToGet(mReanimCursorID);
+		if (aCursorReanim)
+			aCursorReanim->Draw(g);
 		break;
+	}
 
 	case CursorType::CURSOR_TYPE_COBCANNON_TARGET:
 	{

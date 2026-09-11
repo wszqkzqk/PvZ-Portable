@@ -2346,6 +2346,12 @@ bool Board::HasValidCobCannonSpot()
 
 Projectile* Board::AddProjectile(int theX, int theY, int theRenderOrder, int theRow, ProjectileType theProjectileType)
 {
+	if (mProjectiles.mSize >= mProjectiles.mMaxSize)
+	{
+		PvzpTraceWithoutSpamming("Projectile pool full, dropping projectile");
+		return nullptr;
+	}
+
 	Projectile* aProjectile = mProjectiles.DataArrayAlloc();
 	aProjectile->ProjectileInitialize(theX, theY, theRenderOrder, theRow, theProjectileType);
 	return aProjectile;

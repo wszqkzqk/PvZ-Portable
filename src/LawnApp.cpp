@@ -2457,6 +2457,8 @@ void LawnApp::CrazyDaveEnter()
 	PVZP_ASSERT(!ReanimationTryToGet(mCrazyDaveReanimID));
 
 	Reanimation* aCrazyDaveReanim = AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_CRAZY_DAVE);
+	if (aCrazyDaveReanim == nullptr)
+		return;
 	aCrazyDaveReanim->mIsAttachment = true;
 	aCrazyDaveReanim->SetBasePoseFromAnim("anim_idle_handing");
 	mCrazyDaveReanimID = ReanimationGetID(aCrazyDaveReanim);

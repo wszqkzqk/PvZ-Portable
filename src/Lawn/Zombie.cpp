@@ -638,9 +638,12 @@ bool Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 		}
 
 		Reanimation* aPropellerReanim = mApp->AddReanimation(0.0f, 0.0f, 0, aZombieDef.mReanimationType);
-		aPropellerReanim->SetFramesForLayer("Propeller");
-		aPropellerReanim->mLoopType = ReanimLoopType::REANIM_LOOP_FULL_LAST_FRAME;
-		aPropellerReanim->AttachToAnotherReanimation(aBodyReanim, "hat");
+		if (aPropellerReanim)
+		{
+			aPropellerReanim->SetFramesForLayer("Propeller");
+			aPropellerReanim->mLoopType = ReanimLoopType::REANIM_LOOP_FULL_LAST_FRAME;
+			aPropellerReanim->AttachToAnotherReanimation(aBodyReanim, "hat");
+		}
 
 		mFlyingHealth = 20;
 		mZombieRect = Rect(36, 30, 42, 115);
@@ -10147,6 +10150,8 @@ void Zombie::BossDestroyFireball()
 		{
 			float aAngle = 2 * PI * i / 6 + PI / 2;
 			Reanimation* aReanim = mApp->AddReanimation(aPosX + 60.0f * sin(aAngle), aPosY + 60.0f * cos(aAngle), 400000, ReanimationType::REANIM_JALAPENO_FIRE);
+			if (aReanim == nullptr)
+				continue;
 			aReanim->mAnimTime = 0.2f;
 			aReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_FULL_LAST_FRAME;
 			aReanim->mAnimRate = RandRangeFloat(20.0f, 25.0f);

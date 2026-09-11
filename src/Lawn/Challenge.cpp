@@ -1207,7 +1207,9 @@ int Challenge::UpdateToolTip(int theX, int theY, const HitResult* theHitResult)
 
 void Challenge::MouseDownWhackAZombie(int theX, int theY)
 {
-	mApp->ReanimationTryToGet(mBoard->mCursorObject->mReanimCursorID)->mAnimTime = 0.2f;
+	Reanimation* aCursorReanim = mApp->ReanimationTryToGet(mBoard->mCursorObject->mReanimCursorID);
+	if (aCursorReanim)
+		aCursorReanim->mAnimTime = 0.2f;
 	mApp->PlayFoley(FOLEY_SWING);
 
 	Zombie* aTopZombie = nullptr;
@@ -1322,7 +1324,9 @@ int Challenge::MouseDown(int x, int y, int theClickCount, HitResult* theHitResul
 				mBoard->mSeedBank->mSeedPackets[i].SlotMachineStart();
 			}
 
-			mApp->ReanimationGet(mReanimChallenge)->PlayReanim("anim_pull", REANIM_PLAY_ONCE_AND_HOLD, 0, 36.0f);
+			Reanimation* aHandleReanim = mApp->ReanimationTryToGet(mReanimChallenge);
+		if (aHandleReanim)
+			aHandleReanim->PlayReanim("anim_pull", REANIM_PLAY_ONCE_AND_HOLD, 0, 36.0f);
 			mChallengeState = STATECHALLENGE_SLOT_MACHINE_ROLLING;
 			mBoard->SetTutorialState(TUTORIAL_SLOT_MACHINE_COMPLETED);
 			mBoard->ClearAdvice(ADVICE_NONE);
@@ -2053,7 +2057,9 @@ void Challenge::UpdateSlotMachine()
 	}
 	else if (mBoard->mSeedBank->mSeedPackets[0].mSlotMachineCountDown <= 0)
 	{
-		mApp->ReanimationGet(mReanimChallenge)->PlayReanim("anim_return", REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
+		Reanimation* aHandleReanim = mApp->ReanimationTryToGet(mReanimChallenge);
+		if (aHandleReanim)
+			aHandleReanim->PlayReanim("anim_return", REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
 		mChallengeState = STATECHALLENGE_NORMAL;
 
 		SeedType aPacket1 = mBoard->mSeedBank->mSeedPackets[0].mPacketType;
@@ -2401,7 +2407,9 @@ void Challenge::DrawSlotMachine(Graphics* g)
 	}
 	gBoardParent.mTransX = mBoard->mSeedBank->mX - mBoard->mX;
 	gBoardParent.mTransY = mBoard->mSeedBank->mY - mBoard->mY;
-	mApp->ReanimationGet(mReanimChallenge)->Draw(&gBoardParent);
+	Reanimation* aHandleReanim = mApp->ReanimationTryToGet(mReanimChallenge);
+	if (aHandleReanim)
+		aHandleReanim->Draw(&gBoardParent);
 }
 
 void Challenge::DrawBackdrop(Graphics* g)
@@ -4055,8 +4063,8 @@ void Challenge::ScaryPotterUpdate()
 {
 	if (mChallengeState == STATECHALLENGE_SCARY_POTTER_MALLETING)
 	{
-		Reanimation* aMalletReanim = mApp->ReanimationGet(mReanimChallenge);
-		if (aMalletReanim->mLoopCount > 0)
+		Reanimation* aMalletReanim = mApp->ReanimationTryToGet(mReanimChallenge);
+		if (aMalletReanim == nullptr || aMalletReanim->mLoopCount > 0)
 		{
 			GridItem* aScaryPot = mBoard->GetGridItemAt(GRIDITEM_SCARY_POT, mChallengeGridX, mChallengeGridY);
 			if (aScaryPot)
@@ -5229,12 +5237,16 @@ void Challenge::TreeOfWisdomDraw(Graphics* g)
 {
 	int aMouseOn = TreeOfWisdomMouseOn(mApp->mWidgetManager->mLastMouseX - mBoard->mX, mApp->mWidgetManager->mLastMouseY - mBoard->mY);
 
-	Reanimation* aReanimTree = mApp->ReanimationGet(mReanimChallenge);
+	Reanimation* aReanimTree = mApp->ReanimationTryToGet(mReanimChallenge);
+	if (aReanimTree == nullptr)
+		return;
 	aReanimTree->mEnableExtraOverlayDraw = false;
 	aReanimTree->DrawRenderGroup(g, 0);  // draw the background
 	for (int i = 0; i < 6; i++)
 	{
-		mApp->ReanimationGet(mReanimClouds[i])->DrawRenderGroup(g, 0);
+		Reanimation* aReanimCloud = mApp->ReanimationTryToGet(mReanimClouds[i]);
+		if (aReanimCloud)
+			aReanimCloud->DrawRenderGroup(g, 0);
 	}
 
 	int aHeight = TreeOfWisdomGetSize();
@@ -5369,7 +5381,9 @@ void Challenge::TreeOfWisdomGrow()
 {
 	mApp->mPlayerInfo->mChallengeRecords[mApp->GetCurrentChallengeIndex()]++;
 	int aTreeSize = TreeOfWisdomGetSize();
-	mApp->ReanimationGet(mReanimChallenge)->PlayReanim(std::format("anim_grow{}", std::clamp(aTreeSize, 1, 51)).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 8.0f);
+	Reanimation* aReanimTree = mApp->ReanimationTryToGet(mReanimChallenge);
+	if (aReanimTree)
+		aReanimTree->PlayReanim(std::format("anim_grow{}", std::clamp(aTreeSize, 1, 51)).c_str(), REANIM_PLAY_ONCE_AND_HOLD, 0, 8.0f);
 	mApp->PlayFoley(FOLEY_PLANTGROW);
 
 	if (aTreeSize > 1)
@@ -5396,6 +5410,11 @@ void Challenge::TreeOfWisdomFertilize()
 	aTreeFood->mGridY = 0;
 	aTreeFood->mRenderOrder = Board::MakeRenderOrder(RENDER_LAYER_ABOVE_UI, 0, 0);
 	Reanimation* aReanim = mApp->AddReanimation(340.0f, 300.0f, 0, REANIM_TREEOFWISDOM_TREEFOOD);
+	if (aReanim == nullptr)
+	{
+		aTreeFood->GridItemDie();
+		return;
+	}
 	aReanim->mLoopType = REANIM_PLAY_ONCE_AND_HOLD;
 	aTreeFood->mGridItemReanimID = mApp->ReanimationGetID(aReanim);
 	aTreeFood->mGridItemState = GRIDITEM_STATE_ZEN_TOOL_FERTILIZER;
@@ -5531,7 +5550,9 @@ void Challenge::TreeOfWisdomUpdate()
 
 	for (int i = 5; i >= 0; i--) // Off by one error!
 	{
-		Reanimation* aReanimCloud = mApp->ReanimationGet(mReanimClouds[i]);
+		Reanimation* aReanimCloud = mApp->ReanimationTryToGet(mReanimClouds[i]);
+		if (aReanimCloud == nullptr)
+			continue;
 		if (mCloudsCounter[i] > 0)
 		{
 			mCloudsCounter[i]--;
