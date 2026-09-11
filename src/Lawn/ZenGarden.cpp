@@ -1343,6 +1343,9 @@ void ZenGarden::AddStinky()
 		mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = aTime;
 	}
 
+	if (mBoard->mGridItems.mSize >= mBoard->mGridItems.mMaxSize)
+		return;
+
 	GridItem* aStinky = mBoard->mGridItems.DataArrayAlloc();
 	aStinky->mGridItemType = GridItemType::GRIDITEM_STINKY;
 	aStinky->mPosX = mApp->mPlayerInfo->mStinkyPosX;
