@@ -1326,7 +1326,9 @@ int Challenge::MouseDown(int x, int y, int theClickCount, HitResult* theHitResul
 
 			Reanimation* aHandleReanim = mApp->ReanimationTryToGet(mReanimChallenge);
 			if (aHandleReanim)
+			{
 				aHandleReanim->PlayReanim("anim_pull", REANIM_PLAY_ONCE_AND_HOLD, 0, 36.0f);
+			}
 			mChallengeState = STATECHALLENGE_SLOT_MACHINE_ROLLING;
 			mBoard->SetTutorialState(TUTORIAL_SLOT_MACHINE_COMPLETED);
 			mBoard->ClearAdvice(ADVICE_NONE);

@@ -6011,7 +6011,7 @@ void Board::AddBossRenderItem(RenderItem* theRenderList, int& theCurRenderItem, 
 	else if (theBossZombie->mZombiePhase == ZombiePhase::PHASE_BOSS_STOMPING)
 	{
 		Reanimation* aBossReanim = mApp->ReanimationTryToGet(theBossZombie->mBodyReanimID);
-		if (aBossReanim->mAnimTime > 0.25f && aBossReanim->mAnimTime < 0.75f)
+		if (aBossReanim && aBossReanim->mAnimTime > 0.25f && aBossReanim->mAnimTime < 0.75f)
 		{
 			if (theBossZombie->mTargetRow == 1)
 			{
