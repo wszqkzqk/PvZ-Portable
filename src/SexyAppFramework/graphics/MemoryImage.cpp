@@ -1150,7 +1150,7 @@ uint32_t* MemoryImage::GetBits()
 				*(aDestPtr++) = (r << 16) | (g << 8) | (b) | (anAlpha << 24);
 			}
 		}
-		else if (mRenderData == nullptr || !mApp->mGLInterface->RecoverBits(this))
+		else if (mRenderData == nullptr || mApp->mPrimaryThreadId != std::this_thread::get_id() || !mApp->mGLInterface->RecoverBits(this))
 		{
 			std::unique_ptr<ImageLib::Image> aLoadedImage;
 			if (!mFilePath.empty())
@@ -1159,7 +1159,10 @@ uint32_t* MemoryImage::GetBits()
 			if (aLoadedImage != nullptr && aLoadedImage->GetWidth() == mWidth && aLoadedImage->GetHeight() == mHeight)
 				memcpy(mBits.get(), aLoadedImage->GetBits(), aSize*sizeof(uint32_t));
 			else
+			{
+				LogErrorLn("failed to recover bits for image '{}'", mFilePath);
 				memset(mBits.get(), 0, aSize*sizeof(uint32_t));
+			}
 		}
 	}
 
