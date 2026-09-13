@@ -113,8 +113,8 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 #endif
 
 	std::string aPakKey = NormalizePakPath(theFileName);
-	auto aRecordItr = mPakRecordMap.emplace(aPakKey, PakRecord()).first;
-	PakRecord* aPakRecord = &aRecordItr->second;
+	auto aEmplaceResult = mPakRecordMap.emplace(aPakKey, PakRecord());
+	PakRecord* aPakRecord = &aEmplaceResult.first->second;
 	aPakRecord->mCollection = aPakCollection;
 	aPakRecord->mFileName = aPakKey;
 	aPakRecord->mStartPos = 0;
@@ -122,7 +122,16 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 
 	PFILE* aFP = FOpen(theFileName.c_str(), "rb");
 	if (aFP == nullptr)
+	{
+#ifdef LOW_MEMORY
+		if (aEmplaceResult.second)
+		{
+			mPakRecordMap.erase(aPakKey);
+			mPakCollectionList.pop_back();
+		}
+#endif
 		return false;
+	}
 
 	uint32_t aMagic = 0;
 	FRead(&aMagic, sizeof(uint32_t), 1, aFP);
@@ -130,6 +139,13 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 	if (aMagic != 0xBAC04AC0)
 	{
 		FClose(aFP);
+#ifdef LOW_MEMORY
+		if (aEmplaceResult.second)
+		{
+			mPakRecordMap.erase(aPakKey);
+			mPakCollectionList.pop_back();
+		}
+#endif
 		return false;
 	}
 
@@ -139,6 +155,13 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 	if (aVersion > 0)
 	{
 		FClose(aFP);
+#ifdef LOW_MEMORY
+		if (aEmplaceResult.second)
+		{
+			mPakRecordMap.erase(aPakKey);
+			mPakCollectionList.pop_back();
+		}
+#endif
 		return false;
 	}
 
@@ -231,6 +254,10 @@ PFILE* PakInterface::FOpen(const char* theFileName, const char* anAccess)
 	aPFP->mRecord = nullptr;
 	aPFP->mPos = 0;
 	aPFP->mFP = aFP;
+#ifdef LOW_MEMORY
+	aPFP->mBufferStart = 0;
+	aPFP->mBufferLen = 0;
+#endif
 	return aPFP;
 }
 

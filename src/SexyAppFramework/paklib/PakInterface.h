@@ -46,7 +46,7 @@ public:
 	PakCollection*			mCollection;			//+0x0
 	std::string				mFileName;				//+0x4: path inside the pak, e.g. sounds\zombie_falling_1.ogg
 	int64_t				mFileTime;				//+0x20: timestamp
-	int						mStartPos;				//+0x28: offset of the file data in mCollection->mDataPtr
+	int						mStartPos;				//+0x28: offset of the file data in the pak file
 	int						mSize;					//+0x2C: size in bytes
 };
 
