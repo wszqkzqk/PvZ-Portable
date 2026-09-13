@@ -314,7 +314,11 @@ intptr_t SDLSoundManager::LoadSound(const std::string& theFilename)
 
 	for (i = MAX_SOURCE_SOUNDS-1; i >= 0; i--)
 	{
+#ifdef LOW_MEMORY
+		if (mSourceSounds[i] == nullptr && mSourceFileNames[i].empty())
+#else
 		if (mSourceSounds[i] == nullptr)
+#endif
 		{
 			if (!LoadSound(i, theFilename))
 				return -1;
