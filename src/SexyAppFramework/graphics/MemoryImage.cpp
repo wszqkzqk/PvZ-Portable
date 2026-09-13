@@ -83,6 +83,7 @@ void MemoryImage::BitsChanged()
 {
 	mBitsChanged = true;
 	mBitsChangedCount++;
+	mFilePath.clear();
 
 	mNativeAlphaData.reset();
 	mRLAlphaData.reset();

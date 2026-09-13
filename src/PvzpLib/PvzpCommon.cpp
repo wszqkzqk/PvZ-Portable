@@ -892,6 +892,8 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	{
 		PvzpLogLn("LOADING:Long sanding '{}' {} ms on {}", theImage->mFilePath, aDuration, LawnGetCurrentLevelName());
 	}
+
+	aImage->mFilePath.clear();
 }
 
 void SexyMatrix3Transpose(const SexyMatrix3& m, SexyMatrix3 &r)
