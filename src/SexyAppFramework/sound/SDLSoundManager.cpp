@@ -271,6 +271,7 @@ bool SDLSoundManager::LoadSound(intptr_t theSfxID, const std::string& theFilenam
 		p_fclose(fp);
 		return true;
 	}
+	mSourceFileNames[theSfxID].clear();
 	return false;
 #else
 	return DecodeSound(theSfxID, theFilename);
@@ -406,6 +407,7 @@ void SDLSoundManager::ReleaseSounds()
 			Mix_FreeChunk(mSourceSounds[i]);
 			mSourceSounds[i] = nullptr;
 		}
+		mSourceFileNames[i] = "";
 	}
 }
 
