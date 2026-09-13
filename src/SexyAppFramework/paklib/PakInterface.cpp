@@ -274,6 +274,15 @@ int PakInterface::FTell(PFILE* theFile)
 static size_t ReadRecordBytes(PFILE* theFile, void* thePtr, int theSize)
 {
 #ifdef LOW_MEMORY
+	if (theSize >= PFILE::BUFFER_SIZE)
+	{
+		int aSizeBytes = std::min(theSize, theFile->mRecord->mSize - theFile->mPos);
+		size_t aRead = theFile->mRecord->mCollection->ReadAt(thePtr, theFile->mRecord->mStartPos + theFile->mPos, aSizeBytes);
+		theFile->mPos += (int) aRead;
+		theFile->mBufferLen = 0;
+		return aRead;
+	}
+
 	auto* aDest = static_cast<uint8_t*>(thePtr);
 	size_t aDone = 0;
 	while (aDone < static_cast<size_t>(theSize))
@@ -285,13 +294,13 @@ static size_t ReadRecordBytes(PFILE* theFile, void* thePtr, int theSize)
 			if (aFill <= 0)
 				break;
 			theFile->mBufferStart = theFile->mPos;
-			theFile->mBufferLen = (int) theFile->mRecord->mCollection->ReadAt(theFile->mBuffer, theFile->mRecord->mStartPos + theFile->mPos, aFill);
+			theFile->mBufferLen = (int) theFile->mRecord->mCollection->ReadAt(theFile->mBuffer.data(), theFile->mRecord->mStartPos + theFile->mPos, aFill);
 			if (theFile->mBufferLen == 0)
 				break;
 			aBufOffset = 0;
 		}
 		int aChunk = std::min(theFile->mBufferLen - aBufOffset, (int) (theSize - aDone));
-		memcpy(aDest + aDone, theFile->mBuffer + aBufOffset, aChunk);
+		memcpy(aDest + aDone, theFile->mBuffer.data() + aBufOffset, aChunk);
 		theFile->mPos += aChunk;
 		aDone += aChunk;
 	}

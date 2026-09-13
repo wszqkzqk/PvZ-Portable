@@ -372,9 +372,8 @@ void ReanimationCreateAtlas(ReanimatorDefinition* theDefinition, ReanimationType
 #ifdef LOW_MEMORY
 	for (ReanimAtlasImage& aImage : aAtlas->mImageArray)
 	{
-		MemoryImage* aMemoryImage = dynamic_cast<MemoryImage*>(aImage.mOriginalImage);
-		if (aMemoryImage != nullptr && !aImage.mOriginalImage->mFilePath.empty())
-			aMemoryImage->mBits.reset();
+		if (!aImage.mOriginalImage->mFilePath.empty())
+			static_cast<MemoryImage*>(aImage.mOriginalImage)->mBits.reset();
 	}
 #endif
 

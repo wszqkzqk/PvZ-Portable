@@ -55,7 +55,7 @@ protected:
 protected:
 	int						FindFreeChannel();
 	bool					LoadAUSound(intptr_t theSfxID, const std::string& theFilename);
-	bool					DecodeSound(intptr_t theSfxID);
+	bool					DecodeSound(intptr_t theSfxID, const std::string& theFilename);
 	void					ReleaseFreeChannels();
 
 public:

@@ -32,6 +32,8 @@
 #include <cstdint>
 #include <cstdio>
 #include <mutex>
+#include <array>
+#include <span>
 
 class PakCollection;
 
@@ -50,7 +52,7 @@ public:
 
 typedef std::map<std::string, PakRecord> PakRecordMap;
 
-// a PakCollection holds one pak file's data in memory
+// a PakCollection represents one pak file's storage
 class PakCollection
 {
 public:
@@ -68,9 +70,8 @@ public:
 		if (fseek(mFileHandle, theOffset, SEEK_SET) != 0)
 			return 0;
 		size_t aRead = fread(thePtr, 1, theSize, mFileHandle);
-		auto* aBytes = static_cast<unsigned char*>(thePtr);
-		for (size_t i = 0; i < aRead; i++)
-			aBytes[i] ^= 0xF7;
+		for (auto& aByte : std::span{static_cast<uint8_t*>(thePtr), aRead})
+			aByte ^= 0xF7;
 		return aRead;
 	}
 #else
@@ -91,7 +92,7 @@ struct PFILE
 	FILE*					mFP;
 #ifdef LOW_MEMORY
 	static constexpr int	BUFFER_SIZE = 8192;
-	uint8_t					mBuffer[BUFFER_SIZE];
+	std::array<uint8_t, BUFFER_SIZE>	mBuffer;
 	int						mBufferStart;
 	int						mBufferLen;
 #endif

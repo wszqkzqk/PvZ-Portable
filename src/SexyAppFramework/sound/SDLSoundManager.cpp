@@ -258,16 +258,16 @@ bool SDLSoundManager::LoadSound(intptr_t theSfxID, const std::string& theFilenam
 #ifdef LOW_MEMORY
 	return true;
 #else
-	return DecodeSound(theSfxID);
+	return DecodeSound(theSfxID, theFilename);
 #endif
 }
 
-bool SDLSoundManager::DecodeSound(intptr_t theSfxID)
+bool SDLSoundManager::DecodeSound(intptr_t theSfxID, const std::string& theFilename)
 {
-	const char* formats[] = {".wav", ".mp3", ".ogg"};
-	for (int i=0; i<3; i++)
+	constexpr const char* formats[] = {".wav", ".mp3", ".ogg"};
+	for (const char* aFormat : formats)
 	{
-		std::string aFilename = mSourceFileNames[theSfxID] + formats[i];
+		std::string aFilename = theFilename + aFormat;
 
 		PFILE *fp = p_fopen(aFilename.c_str(), "rb");
 		if (!fp)
@@ -286,7 +286,7 @@ bool SDLSoundManager::DecodeSound(intptr_t theSfxID)
 	}
 
 	if (!mSourceSounds[theSfxID])
-		LoadAUSound(theSfxID, mSourceFileNames[theSfxID] + ".au");
+		LoadAUSound(theSfxID, theFilename + ".au");
 
 	return !!mSourceSounds[theSfxID];
 }
@@ -364,7 +364,7 @@ SoundInstance* SDLSoundManager::GetSoundInstance(intptr_t theSfxID)
 	if (mSourceSounds[theSfxID] == nullptr)
 	{
 #ifdef LOW_MEMORY
-		if (mSourceFileNames[theSfxID].empty() || !DecodeSound(theSfxID))
+		if (mSourceFileNames[theSfxID].empty() || !DecodeSound(theSfxID, mSourceFileNames[theSfxID]))
 			return nullptr;
 #else
 		return nullptr;
