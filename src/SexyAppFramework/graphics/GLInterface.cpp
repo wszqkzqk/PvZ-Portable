@@ -692,7 +692,11 @@ void TextureData::CheckCreateTextures(MemoryImage *theImage)
 		|| theImage->mWidth != mWidth || theImage->mHeight != mHeight
 		|| theImage->mBitsChangedCount != mBitsChangedCount
 		|| (theImage->mRenderFlags & RenderImageFlag_TextureMask) != mImageFlags)
+	{
 		CreateTextures(theImage);
+		if (theImage->mPurgeBits)
+			theImage->PurgeBits();
+	}
 }
 
 GLuint& TextureData::GetTexture(int x, int y, int &width, int &height,
@@ -1289,11 +1293,9 @@ void GLInterface::Flush()
 
 bool GLInterface::CreateImageTexture(MemoryImage *theImage)
 {
-	bool wantPurge = false;
 	if (theImage->mRenderData == nullptr)
 	{
 		theImage->mRenderData = new TextureData();
-		wantPurge = theImage->mPurgeBits;
 		std::scoped_lock lk(mCritSect);
 		mImageSet.insert(theImage);
 	}
@@ -1301,8 +1303,6 @@ bool GLInterface::CreateImageTexture(MemoryImage *theImage)
 	TextureData *data = (TextureData*)theImage->mRenderData;
 	data->CheckCreateTextures(theImage);
 
-	if (wantPurge)
-		theImage->PurgeBits();
 	return data->mPixelFormat != PixelFormat_Unknown;
 }
 

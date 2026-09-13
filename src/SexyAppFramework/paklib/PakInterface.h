@@ -30,6 +30,8 @@
 #include <string>
 #include <string_view>
 #include <cstdint>
+#include <cstdio>
+#include <mutex>
 
 class PakCollection;
 
@@ -52,11 +54,32 @@ typedef std::map<std::string, PakRecord> PakRecordMap;
 class PakCollection
 {
 public:
+#ifdef LOW_MEMORY
+	FILE*						mFileHandle;
+	std::mutex					mFileMutex;
+
+	explicit PakCollection(FILE* theFileHandle) : mFileHandle(theFileHandle) {}
+
+	~PakCollection() { fclose(mFileHandle); }
+
+	size_t ReadAt(void* thePtr, int theOffset, int theSize)
+	{
+		std::scoped_lock aLock(mFileMutex);
+		if (fseek(mFileHandle, theOffset, SEEK_SET) != 0)
+			return 0;
+		size_t aRead = fread(thePtr, 1, theSize, mFileHandle);
+		auto* aBytes = static_cast<unsigned char*>(thePtr);
+		for (size_t i = 0; i < aRead; i++)
+			aBytes[i] ^= 0xF7;
+		return aRead;
+	}
+#else
 	void*						mDataPtr;				//+0x8: raw bytes of the whole pak
 
 	explicit PakCollection(size_t size) { mDataPtr = malloc(size); }
 
 	~PakCollection() { free(mDataPtr); }
+#endif
 };
 
 typedef std::list<PakCollection> PakCollectionList;
@@ -66,6 +89,12 @@ struct PFILE
 	PakRecord*				mRecord;
 	int						mPos;
 	FILE*					mFP;
+#ifdef LOW_MEMORY
+	static constexpr int	BUFFER_SIZE = 8192;
+	uint8_t					mBuffer[BUFFER_SIZE];
+	int						mBufferStart;
+	int						mBufferLen;
+#endif
 };
 
 class PakInterfaceBase

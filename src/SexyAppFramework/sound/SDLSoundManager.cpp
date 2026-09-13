@@ -254,10 +254,20 @@ bool SDLSoundManager::LoadSound(intptr_t theSfxID, const std::string& theFilenam
 		return true;
 
 	mSourceFileNames[theSfxID] = theFilename;
+
+#ifdef LOW_MEMORY
+	return true;
+#else
+	return DecodeSound(theSfxID);
+#endif
+}
+
+bool SDLSoundManager::DecodeSound(intptr_t theSfxID)
+{
 	const char* formats[] = {".wav", ".mp3", ".ogg"};
 	for (int i=0; i<3; i++)
 	{
-		std::string aFilename = theFilename + formats[i];
+		std::string aFilename = mSourceFileNames[theSfxID] + formats[i];
 
 		PFILE *fp = p_fopen(aFilename.c_str(), "rb");
 		if (!fp)
@@ -276,7 +286,7 @@ bool SDLSoundManager::LoadSound(intptr_t theSfxID, const std::string& theFilenam
 	}
 
 	if (!mSourceSounds[theSfxID])
-		LoadAUSound(theSfxID, theFilename + ".au");
+		LoadAUSound(theSfxID, mSourceFileNames[theSfxID] + ".au");
 
 	return !!mSourceSounds[theSfxID];
 }
@@ -311,8 +321,8 @@ void SDLSoundManager::ReleaseSound(intptr_t theSfxID)
 	{
 		Mix_FreeChunk(mSourceSounds[theSfxID]);
 		mSourceSounds[theSfxID] = nullptr;
-		mSourceFileNames[theSfxID] = "";
 	}
+	mSourceFileNames[theSfxID] = "";
 }
 
 void SDLSoundManager::SetVolume(double theVolume)
@@ -352,7 +362,14 @@ SoundInstance* SDLSoundManager::GetSoundInstance(intptr_t theSfxID)
 		return nullptr;
 
 	if (mSourceSounds[theSfxID] == nullptr)
+	{
+#ifdef LOW_MEMORY
+		if (mSourceFileNames[theSfxID].empty() || !DecodeSound(theSfxID))
+			return nullptr;
+#else
 		return nullptr;
+#endif
+	}
 
 	mPlayingSounds[aFreeChannel] = std::make_unique<SDLSoundInstance>(this, mSourceSounds[theSfxID], aFreeChannel);
 
@@ -412,7 +429,11 @@ intptr_t SDLSoundManager::GetFreeSoundId()
 {
 	for (intptr_t i=0; i<MAX_SOURCE_SOUNDS; i++)
 	{
+#ifdef LOW_MEMORY
+		if (mSourceSounds[i]==nullptr && mSourceFileNames[i].empty())
+#else
 		if (mSourceSounds[i]==nullptr)
+#endif
 			return i;
 	}
 

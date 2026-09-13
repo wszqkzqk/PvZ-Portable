@@ -864,8 +864,7 @@ uint32_t AverageNearByPixels(MemoryImage* theImage, uint32_t* thePixel, int x, i
 void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 {
 	MemoryImage* aImage = (MemoryImage*)theImage;
-	if (aImage->mBits == nullptr)
-		return;
+	uint32_t* aBitsPtr = aImage->GetBits();
 
 	aImage->CommitBits();  // populate mHasTrans and mHasAlpha
 	if (!aImage->mHasTrans)
@@ -874,7 +873,6 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	PerfTimer aTimer;
 	aTimer.Start();
 
-	uint32_t* aBitsPtr = aImage->mBits.get();
 	for (int y = 0; y < theImage->mHeight; y++)
 	{
 		for (int x = 0; x < theImage->mWidth; x++)
