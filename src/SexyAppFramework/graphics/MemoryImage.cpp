@@ -1160,7 +1160,8 @@ uint32_t* MemoryImage::GetBits()
 				memcpy(mBits.get(), aLoadedImage->GetBits(), aSize*sizeof(uint32_t));
 			else
 			{
-				LogErrorLn("failed to recover bits for image '{}'", mFilePath);
+				if (mRenderData != nullptr || !mFilePath.empty())
+					LogErrorLn("failed to recover bits for image '{}'", mFilePath);
 				memset(mBits.get(), 0, aSize*sizeof(uint32_t));
 			}
 		}
