@@ -51,7 +51,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 	src/Lawn/System/*.cpp
 )
 
-set(LOW_MEMORY OFF CACHE BOOL "Enable low memory mode")
+option(LOW_MEMORY "Enable low memory mode" OFF)
 if(NINTENDO_SWITCH)
 	set(VORBIS_LIB vorbisfile vorbis)
 	list(APPEND SOURCES

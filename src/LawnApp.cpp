@@ -2941,10 +2941,6 @@ void LawnApp::DrawCrazyDave(Graphics* g)
 
 int LawnApp::GetNumPreloadingTasks()
 {
-#ifdef LOW_MEMORY
-	return 0;
-#endif
-
 	int aTaskCount = 10;
 	if (mPlayerInfo)
 	{
@@ -2984,7 +2980,6 @@ void LawnApp::PreloadForUser()
 		return;
 	}
 
-#ifndef LOW_MEMORY
 	ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_PUFF, true);
 	ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_LAWN_MOWERED_ZOMBIE, true);
 	ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_READYSETPLANT, true);
@@ -3059,7 +3054,6 @@ void LawnApp::PreloadForUser()
 			}
 		}
 	}
-#endif
 
 	if (mCompletedLoadingThreadTasks != aNumTasks)
 	{

@@ -54,12 +54,13 @@ void PoolEffect::PoolEffectInitialize()
 
 	mCausticGrayscaleImage.resize(256 * 256);
 	MemoryImage* aCausticGrayscaleImage = reinterpret_cast<MemoryImage*>(IMAGE_POOL_CAUSTIC_EFFECT);
+	uint32_t* aCausticBits = aCausticGrayscaleImage->GetBits();
 	int index = 0;
 	for (int x = 0; x < 256; x++)
 	{
 		for (int y = 0; y < 256; y++)
 		{
-			mCausticGrayscaleImage[index] = static_cast<unsigned char>(aCausticGrayscaleImage->mBits[index]);
+			mCausticGrayscaleImage[index] = static_cast<unsigned char>(aCausticBits[index]);
 			index++;
 		}
 	}

@@ -33,6 +33,7 @@
 #include "Quantize.h"
 #include "misc/PerfTimer.h"
 #include "SWTri.h"
+#include "imagelib/ImageLib.h"
 
 #include <math.h>
 
@@ -82,6 +83,7 @@ void MemoryImage::BitsChanged()
 {
 	mBitsChanged = true;
 	mBitsChangedCount++;
+	mFilePath.clear();
 
 	mNativeAlphaData.reset();
 	mRLAlphaData.reset();
@@ -1148,9 +1150,20 @@ uint32_t* MemoryImage::GetBits()
 				*(aDestPtr++) = (r << 16) | (g << 8) | (b) | (anAlpha << 24);
 			}
 		}
-		else if ((mRenderData == nullptr) || (!mApp->mGLInterface->RecoverBits(this)))
+		else if (mRenderData == nullptr || mApp->mPrimaryThreadId != std::this_thread::get_id() || !mApp->mGLInterface->RecoverBits(this))
 		{
-			memset(mBits.get(), 0, aSize*sizeof(uint32_t));
+			std::unique_ptr<ImageLib::Image> aLoadedImage;
+			if (!mFilePath.empty())
+				aLoadedImage.reset(ImageLib::GetImage(mFilePath, true));
+
+			if (aLoadedImage != nullptr && aLoadedImage->GetWidth() == mWidth && aLoadedImage->GetHeight() == mHeight)
+				memcpy(mBits.get(), aLoadedImage->GetBits(), aSize*sizeof(uint32_t));
+			else
+			{
+				if (mRenderData != nullptr || !mFilePath.empty())
+					LogErrorLn("failed to recover bits for image '{}'", mFilePath);
+				memset(mBits.get(), 0, aSize*sizeof(uint32_t));
+			}
 		}
 	}
 

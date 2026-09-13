@@ -243,6 +243,8 @@ bool SDLSoundManager::LoadAUSound(intptr_t theSfxID, const std::string& theFilen
 	return true;
 }
 
+constexpr const char* gSoundFormats[] = {".wav", ".mp3", ".ogg"};
+
 bool SDLSoundManager::LoadSound(intptr_t theSfxID, const std::string& theFilename)
 {
 	if ((theSfxID < 0) || (theSfxID >= MAX_SOURCE_SOUNDS))
@@ -254,10 +256,33 @@ bool SDLSoundManager::LoadSound(intptr_t theSfxID, const std::string& theFilenam
 		return true;
 
 	mSourceFileNames[theSfxID] = theFilename;
-	const char* formats[] = {".wav", ".mp3", ".ogg"};
-	for (int i=0; i<3; i++)
+
+#ifdef LOW_MEMORY
+	for (const char* aFormat : gSoundFormats)
 	{
-		std::string aFilename = theFilename + formats[i];
+		if (PFILE* fp = p_fopen((theFilename + aFormat).c_str(), "rb"))
+		{
+			p_fclose(fp);
+			return true;
+		}
+	}
+	if (PFILE* fp = p_fopen((theFilename + ".au").c_str(), "rb"))
+	{
+		p_fclose(fp);
+		return true;
+	}
+	mSourceFileNames[theSfxID].clear();
+	return false;
+#else
+	return DecodeSound(theSfxID, theFilename);
+#endif
+}
+
+bool SDLSoundManager::DecodeSound(intptr_t theSfxID, const std::string& theFilename)
+{
+	for (const char* aFormat : gSoundFormats)
+	{
+		std::string aFilename = theFilename + aFormat;
 
 		PFILE *fp = p_fopen(aFilename.c_str(), "rb");
 		if (!fp)
@@ -290,7 +315,11 @@ intptr_t SDLSoundManager::LoadSound(const std::string& theFilename)
 
 	for (i = MAX_SOURCE_SOUNDS-1; i >= 0; i--)
 	{
+#ifdef LOW_MEMORY
+		if (mSourceSounds[i] == nullptr && mSourceFileNames[i].empty())
+#else
 		if (mSourceSounds[i] == nullptr)
+#endif
 		{
 			if (!LoadSound(i, theFilename))
 				return -1;
@@ -311,8 +340,8 @@ void SDLSoundManager::ReleaseSound(intptr_t theSfxID)
 	{
 		Mix_FreeChunk(mSourceSounds[theSfxID]);
 		mSourceSounds[theSfxID] = nullptr;
-		mSourceFileNames[theSfxID] = "";
 	}
+	mSourceFileNames[theSfxID] = "";
 }
 
 void SDLSoundManager::SetVolume(double theVolume)
@@ -352,7 +381,14 @@ SoundInstance* SDLSoundManager::GetSoundInstance(intptr_t theSfxID)
 		return nullptr;
 
 	if (mSourceSounds[theSfxID] == nullptr)
+	{
+#ifdef LOW_MEMORY
+		if (mSourceFileNames[theSfxID].empty() || !DecodeSound(theSfxID, mSourceFileNames[theSfxID]))
+			return nullptr;
+#else
 		return nullptr;
+#endif
+	}
 
 	mPlayingSounds[aFreeChannel] = std::make_unique<SDLSoundInstance>(this, mSourceSounds[theSfxID], aFreeChannel);
 
@@ -371,6 +407,7 @@ void SDLSoundManager::ReleaseSounds()
 			Mix_FreeChunk(mSourceSounds[i]);
 			mSourceSounds[i] = nullptr;
 		}
+		mSourceFileNames[i] = "";
 	}
 }
 
@@ -412,7 +449,11 @@ intptr_t SDLSoundManager::GetFreeSoundId()
 {
 	for (intptr_t i=0; i<MAX_SOURCE_SOUNDS; i++)
 	{
+#ifdef LOW_MEMORY
+		if (mSourceSounds[i]==nullptr && mSourceFileNames[i].empty())
+#else
 		if (mSourceSounds[i]==nullptr)
+#endif
 			return i;
 	}
 

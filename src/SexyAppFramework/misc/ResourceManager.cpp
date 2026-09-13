@@ -711,7 +711,9 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 
 	aGLImage->CommitBits();
 	theRes->mImage = aSharedImageRef;
+#ifndef LOW_MEMORY
 	aGLImage->mPurgeBits = theRes->mPurgeBits;
+#endif
 
 	if (theRes->mDDSurface)
 	{

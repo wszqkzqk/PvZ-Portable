@@ -92,9 +92,14 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 	size_t aFileSize = ftell(aFileHandle);
 	fseek(aFileHandle, 0, SEEK_SET);
 
+#ifdef LOW_MEMORY
+	mPakCollectionList.emplace_back(aFileHandle);
+#else
 	mPakCollectionList.emplace_back(aFileSize);
+#endif
 	PakCollection* aPakCollection = &mPakCollectionList.back();
 
+#ifndef LOW_MEMORY
 	if (fread(aPakCollection->mDataPtr, 1, aFileSize, aFileHandle) != aFileSize)
 	{
 		fclose(aFileHandle);
@@ -105,10 +110,11 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 	auto *aDataPtr = static_cast<uint8_t *>(aPakCollection->mDataPtr);
 	for (size_t i = 0; i < aFileSize; i++)
 		*aDataPtr++ ^= 0xF7;
+#endif
 
 	std::string aPakKey = NormalizePakPath(theFileName);
-	auto aRecordItr = mPakRecordMap.emplace(aPakKey, PakRecord()).first;
-	PakRecord* aPakRecord = &aRecordItr->second;
+	auto aEmplaceResult = mPakRecordMap.emplace(aPakKey, PakRecord());
+	PakRecord* aPakRecord = &aEmplaceResult.first->second;
 	aPakRecord->mCollection = aPakCollection;
 	aPakRecord->mFileName = aPakKey;
 	aPakRecord->mStartPos = 0;
@@ -116,7 +122,16 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 
 	PFILE* aFP = FOpen(theFileName.c_str(), "rb");
 	if (aFP == nullptr)
+	{
+#ifdef LOW_MEMORY
+		if (aEmplaceResult.second)
+		{
+			mPakRecordMap.erase(aPakKey);
+			mPakCollectionList.pop_back();
+		}
+#endif
 		return false;
+	}
 
 	uint32_t aMagic = 0;
 	FRead(&aMagic, sizeof(uint32_t), 1, aFP);
@@ -124,6 +139,13 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 	if (aMagic != 0xBAC04AC0)
 	{
 		FClose(aFP);
+#ifdef LOW_MEMORY
+		if (aEmplaceResult.second)
+		{
+			mPakRecordMap.erase(aPakKey);
+			mPakCollectionList.pop_back();
+		}
+#endif
 		return false;
 	}
 
@@ -133,6 +155,13 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 	if (aVersion > 0)
 	{
 		FClose(aFP);
+#ifdef LOW_MEMORY
+		if (aEmplaceResult.second)
+		{
+			mPakRecordMap.erase(aPakKey);
+			mPakCollectionList.pop_back();
+		}
+#endif
 		return false;
 	}
 
@@ -199,6 +228,10 @@ PFILE* PakInterface::FOpen(const char* theFileName, const char* anAccess)
 			aPFP->mRecord = &anItr->second;
 			aPFP->mPos = 0;
 			aPFP->mFP = nullptr;
+#ifdef LOW_MEMORY
+			aPFP->mBufferStart = 0;
+			aPFP->mBufferLen = 0;
+#endif
 			return aPFP;
 		}
 	}
@@ -221,6 +254,10 @@ PFILE* PakInterface::FOpen(const char* theFileName, const char* anAccess)
 	aPFP->mRecord = nullptr;
 	aPFP->mPos = 0;
 	aPFP->mFP = aFP;
+#ifdef LOW_MEMORY
+	aPFP->mBufferStart = 0;
+	aPFP->mBufferLen = 0;
+#endif
 	return aPFP;
 }
 
@@ -244,6 +281,9 @@ int PakInterface::FSeek(PFILE* theFile, long theOffset, int theOrigin)
 			theFile->mPos += theOffset;
 
 		theFile->mPos = std::clamp(theFile->mPos, 0, theFile->mRecord->mSize);
+#ifdef LOW_MEMORY
+		theFile->mBufferLen = 0;
+#endif
 		return 0;
 	}
 	else
@@ -258,18 +298,54 @@ int PakInterface::FTell(PFILE* theFile)
 		return ftell(theFile->mFP);
 }
 
+static size_t ReadRecordBytes(PFILE* theFile, void* thePtr, int theSize)
+{
+#ifdef LOW_MEMORY
+	if (theSize >= PFILE::BUFFER_SIZE)
+	{
+		int aSizeBytes = std::min(theSize, theFile->mRecord->mSize - theFile->mPos);
+		size_t aRead = theFile->mRecord->mCollection->ReadAt(thePtr, theFile->mRecord->mStartPos + theFile->mPos, aSizeBytes);
+		theFile->mPos += (int) aRead;
+		theFile->mBufferLen = 0;
+		return aRead;
+	}
+
+	auto* aDest = static_cast<uint8_t*>(thePtr);
+	size_t aDone = 0;
+	while (aDone < static_cast<size_t>(theSize))
+	{
+		int aBufOffset = theFile->mPos - theFile->mBufferStart;
+		if (aBufOffset < 0 || aBufOffset >= theFile->mBufferLen)
+		{
+			int aFill = std::min(theFile->mRecord->mSize - theFile->mPos, PFILE::BUFFER_SIZE);
+			if (aFill <= 0)
+				break;
+			theFile->mBufferStart = theFile->mPos;
+			theFile->mBufferLen = (int) theFile->mRecord->mCollection->ReadAt(theFile->mBuffer.data(), theFile->mRecord->mStartPos + theFile->mPos, aFill);
+			if (theFile->mBufferLen == 0)
+				break;
+			aBufOffset = 0;
+		}
+		int aChunk = std::min(theFile->mBufferLen - aBufOffset, (int) (theSize - aDone));
+		memcpy(aDest + aDone, theFile->mBuffer.data() + aBufOffset, aChunk);
+		theFile->mPos += aChunk;
+		aDone += aChunk;
+	}
+	return aDone;
+#else
+	int aSizeBytes = std::min(theSize, theFile->mRecord->mSize - theFile->mPos);
+
+	uchar* src = (uchar*) theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos;
+	memcpy(thePtr, src, aSizeBytes);
+	theFile->mPos += aSizeBytes;
+	return aSizeBytes;
+#endif
+}
+
 size_t PakInterface::FRead(void* thePtr, int theElemSize, int theCount, PFILE* theFile)
 {
 	if (theFile->mRecord != nullptr)
-	{
-		int aSizeBytes = std::min(theElemSize*theCount, theFile->mRecord->mSize - theFile->mPos);
-
-		uchar* src = (uchar*) theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos;
-		uchar* dest = (uchar*) thePtr;
-		memcpy(dest, src, aSizeBytes);
-		theFile->mPos += aSizeBytes;
-		return aSizeBytes / theElemSize;
-	}
+		return ReadRecordBytes(theFile, thePtr, theElemSize*theCount) / theElemSize;
 
 	return fread(thePtr, theElemSize, theCount, theFile->mFP);
 }
@@ -282,7 +358,9 @@ int PakInterface::FGetC(PFILE* theFile)
 		{
 			if (theFile->mPos >= theFile->mRecord->mSize)
 				return EOF;
-			char aChar = *((char*) theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos++);
+			char aChar;
+			if (ReadRecordBytes(theFile, &aChar, 1) == 0)
+				return EOF;
 			if (aChar != '\r')
 				return (uchar) aChar;
 		}
@@ -316,7 +394,9 @@ char* PakInterface::FGetS(char* thePtr, int theSize, PFILE* theFile)
 					return nullptr;
 				break;
 			}
-			char aChar = *((char*) theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos++);
+			char aChar;
+			if (ReadRecordBytes(theFile, &aChar, 1) == 0)
+				break;
 			if (aChar != '\r')
 				thePtr[anIdx++] = aChar;
 			if (aChar == '\n')

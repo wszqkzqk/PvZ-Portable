@@ -53,6 +53,9 @@ MemoryImage* ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight)
 	aImage->mHeight = theHeight;
 	aImage->mHasTrans = true;
 	aImage->mHasAlpha = true;
+#ifdef LOW_MEMORY
+	aImage->mPurgeBits = true;
+#endif
 	memset(aImage->mBits.get(), 0, aBitsCount * 4);
 	aImage->mBits[aBitsCount] = Sexy::MEMORYCHECK_ID;
 	return aImage;

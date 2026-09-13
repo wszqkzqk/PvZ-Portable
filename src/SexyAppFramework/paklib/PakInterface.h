@@ -30,6 +30,10 @@
 #include <string>
 #include <string_view>
 #include <cstdint>
+#include <cstdio>
+#include <mutex>
+#include <array>
+#include <span>
 
 class PakCollection;
 
@@ -42,21 +46,41 @@ public:
 	PakCollection*			mCollection;			//+0x0
 	std::string				mFileName;				//+0x4: path inside the pak, e.g. sounds\zombie_falling_1.ogg
 	int64_t				mFileTime;				//+0x20: timestamp
-	int						mStartPos;				//+0x28: offset of the file data in mCollection->mDataPtr
+	int						mStartPos;				//+0x28: offset of the file data in the pak file
 	int						mSize;					//+0x2C: size in bytes
 };
 
 typedef std::map<std::string, PakRecord> PakRecordMap;
 
-// a PakCollection holds one pak file's data in memory
+// a PakCollection represents one pak file's storage
 class PakCollection
 {
 public:
+#ifdef LOW_MEMORY
+	FILE*						mFileHandle;
+	std::mutex					mFileMutex;
+
+	explicit PakCollection(FILE* theFileHandle) : mFileHandle(theFileHandle) {}
+
+	~PakCollection() { fclose(mFileHandle); }
+
+	size_t ReadAt(void* thePtr, int theOffset, int theSize)
+	{
+		std::scoped_lock aLock(mFileMutex);
+		if (fseek(mFileHandle, theOffset, SEEK_SET) != 0)
+			return 0;
+		size_t aRead = fread(thePtr, 1, theSize, mFileHandle);
+		for (auto& aByte : std::span{static_cast<uint8_t*>(thePtr), aRead})
+			aByte ^= 0xF7;
+		return aRead;
+	}
+#else
 	void*						mDataPtr;				//+0x8: raw bytes of the whole pak
 
 	explicit PakCollection(size_t size) { mDataPtr = malloc(size); }
 
 	~PakCollection() { free(mDataPtr); }
+#endif
 };
 
 typedef std::list<PakCollection> PakCollectionList;
@@ -66,6 +90,12 @@ struct PFILE
 	PakRecord*				mRecord;
 	int						mPos;
 	FILE*					mFP;
+#ifdef LOW_MEMORY
+	static constexpr int	BUFFER_SIZE = 8192;
+	std::array<uint8_t, BUFFER_SIZE>	mBuffer;
+	int						mBufferStart;
+	int						mBufferLen;
+#endif
 };
 
 class PakInterfaceBase

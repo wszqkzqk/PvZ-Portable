@@ -864,17 +864,15 @@ uint32_t AverageNearByPixels(MemoryImage* theImage, uint32_t* thePixel, int x, i
 void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 {
 	MemoryImage* aImage = (MemoryImage*)theImage;
-	if (aImage->mBits == nullptr)
-		return;
 
 	aImage->CommitBits();  // populate mHasTrans and mHasAlpha
 	if (!aImage->mHasTrans)
 		return;
 
+	uint32_t* aBitsPtr = aImage->GetBits();
 	PerfTimer aTimer;
 	aTimer.Start();
 
-	uint32_t* aBitsPtr = aImage->mBits.get();
 	for (int y = 0; y < theImage->mHeight; y++)
 	{
 		for (int x = 0; x < theImage->mWidth; x++)
@@ -894,6 +892,8 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	{
 		PvzpLogLn("LOADING:Long sanding '{}' {} ms on {}", theImage->mFilePath, aDuration, LawnGetCurrentLevelName());
 	}
+
+	aImage->mFilePath.clear();
 }
 
 void SexyMatrix3Transpose(const SexyMatrix3& m, SexyMatrix3 &r)

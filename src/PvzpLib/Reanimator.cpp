@@ -369,6 +369,14 @@ void ReanimationCreateAtlas(ReanimatorDefinition* theDefinition, ReanimationType
 	theDefinition->mReanimAtlas = aAtlas;
 	aAtlas->ReanimAtlasCreate(theDefinition);
 
+#ifdef LOW_MEMORY
+	for (ReanimAtlasImage& aImage : aAtlas->mImageArray)
+	{
+		if (!aImage.mOriginalImage->mFilePath.empty())
+			static_cast<MemoryImage*>(aImage.mOriginalImage)->mBits.reset();
+	}
+#endif
+
 	int aDuration = std::max(aTimer.GetDuration(), 0.0);
 	if (aDuration > 20 && theReanimationType != ReanimationType::REANIM_NONE)  // report slow atlas creation
 		PvzpLogLn("LOADING:Long atlas '{}' {} ms on {}", aParam.mReanimFileName, aDuration, LawnGetCurrentLevelName());
@@ -1207,7 +1215,6 @@ void ReanimatorLoadDefinitions(const ReanimationParams* theReanimationParamArray
 	gReanimatorDefCount = theReanimationParamArraySize;
 	gReanimatorDefArray = std::make_unique<ReanimatorDefinition[]>(theReanimationParamArraySize);
 
-#ifndef LOW_MEMORY
 	for (unsigned int i = 0; i < gReanimationParamArraySize; i++)
 	{
 		const ReanimationParams* aReanimationParams = &theReanimationParamArray[i];
@@ -1215,7 +1222,6 @@ void ReanimatorLoadDefinitions(const ReanimationParams* theReanimationParamArray
 		if (DefinitionIsCompiled(aReanimationParams->mReanimFileName))
 			ReanimatorEnsureDefinitionLoaded(aReanimationParams->mReanimationType, true);
 	}
-#endif
 }
 
 void ReanimatorFreeDefinitions()

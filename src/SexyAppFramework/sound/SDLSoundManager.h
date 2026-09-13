@@ -27,6 +27,7 @@
 
 #include "SoundManager.h"
 #include <memory>
+#include <atomic>
 #include <SDL.h>
 #include <SDL_mixer_ext/SDL_mixer_ext.h>
 
@@ -41,7 +42,7 @@ class SDLSoundManager : public SoundManager
 
 protected:
 	bool					mInitializedMixer;
-	Mix_Chunk*				mSourceSounds[MAX_SOURCE_SOUNDS];
+	std::atomic<Mix_Chunk*>		mSourceSounds[MAX_SOURCE_SOUNDS];
 	std::string				mSourceFileNames[MAX_SOURCE_SOUNDS];
 	double					mBaseVolumes[MAX_SOURCE_SOUNDS];
 	int						mBasePans[MAX_SOURCE_SOUNDS];
@@ -55,6 +56,7 @@ protected:
 protected:
 	int						FindFreeChannel();
 	bool					LoadAUSound(intptr_t theSfxID, const std::string& theFilename);
+	bool					DecodeSound(intptr_t theSfxID, const std::string& theFilename);
 	void					ReleaseFreeChannels();
 
 public:
