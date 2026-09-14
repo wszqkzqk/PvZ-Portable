@@ -3,8 +3,7 @@
 #
 # Prerequisites:
 #   - Emscripten SDK (emsdk) installed and activated
-#   - libopenmpt must be pre-built for Emscripten (no Emscripten port exists);
-#     other audio codecs (ogg, vorbis, mpg123) are provided via Emscripten ports.
+#   - libopenmpt must be pre-built for Emscripten (no Emscripten port exists)
 #
 # Usage:
 #   source /path/to/emsdk/emsdk_env.sh

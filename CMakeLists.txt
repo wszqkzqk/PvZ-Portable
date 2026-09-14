@@ -53,7 +53,6 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 
 set(LOW_MEMORY OFF CACHE BOOL "Enable low memory mode")
 if(NINTENDO_SWITCH)
-	set(VORBIS_LIB vorbisfile vorbis)
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/switch/Window.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/switch/Input.cpp
@@ -75,25 +74,34 @@ elseif(EMSCRIPTEN)
 	)
 else()
 	if(VCPKG_TOOLCHAIN)
-		find_package(Vorbis CONFIG REQUIRED)
-		find_package(Ogg CONFIG REQUIRED)
 		find_package(libopenmpt CONFIG REQUIRED)
-		find_package(mpg123 CONFIG REQUIRED)
-		set(VORBIS_LIB Vorbis::vorbis Vorbis::vorbisfile)
-		set(OGG_LIB Ogg::ogg)
 		set(OPENMPT_LIB libopenmpt::libopenmpt)
-		set(MPG123_LIB MPG123::libmpg123)
 	else()
-		find_library(OGG_LIBRARY NAMES ogg libogg REQUIRED)
-		find_library(VORBIS_LIBRARY NAMES vorbis libvorbis REQUIRED)
-		find_library(VORBISFILE_LIBRARY NAMES vorbisfile libvorbisfile REQUIRED)
 		find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
-		find_library(MPG123_LIBRARY NAMES mpg123 libmpg123 REQUIRED)
-
-		set(VORBIS_LIB ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY})
-		set(OGG_LIB ${OGG_LIBRARY})
 		set(OPENMPT_LIB ${OPENMPT_LIBRARY})
-		set(MPG123_LIB ${MPG123_LIBRARY})
+		if(OPENMPT_LIBRARY MATCHES "\\${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+			find_path(OPENMPT_INCLUDE_DIR libopenmpt/libopenmpt.h REQUIRED)
+			include(CheckCXXSourceCompiles)
+			include(CMakePushCheckState)
+			cmake_push_check_state()
+			set(CMAKE_REQUIRED_INCLUDES ${OPENMPT_INCLUDE_DIR})
+			set(CMAKE_REQUIRED_LIBRARIES ${OPENMPT_LIBRARY})
+			check_cxx_source_compiles("#include <libopenmpt/libopenmpt.h>
+int main() {
+	return openmpt_module_create_from_memory2(0, 0, 0, 0, 0, 0, 0, 0, 0) != 0;
+}" OPENMPT_LINKS_STANDALONE)
+			cmake_pop_check_state()
+			if(NOT OPENMPT_LINKS_STANDALONE)
+				find_library(MPG123_LIBRARY NAMES mpg123 libmpg123)
+				find_library(VORBISFILE_LIBRARY NAMES vorbisfile libvorbisfile)
+				find_library(VORBIS_LIBRARY NAMES vorbis libvorbis)
+				find_library(OGG_LIBRARY NAMES ogg libogg)
+				if(NOT MPG123_LIBRARY OR NOT VORBISFILE_LIBRARY OR NOT VORBIS_LIBRARY OR NOT OGG_LIBRARY)
+					message(FATAL_ERROR "Static libopenmpt does not link standalone and some of its dependencies were not found (see the configure log for details)")
+				endif()
+				list(APPEND OPENMPT_LIB ${MPG123_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARY})
+			endif()
+		endif()
 	endif()
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default/Window.cpp
@@ -118,8 +126,8 @@ option(DO_FIX_BUGS "Define DO_FIX_BUGS macro (Community fixes for original game 
 
 if(EMSCRIPTEN)
 	list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -sUSE_OGG=1 -sUSE_VORBIS=1 -sUSE_MPG123=1")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -sUSE_OGG=1 -sUSE_VORBIS=1 -sUSE_MPG123=1 -fexceptions")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -fexceptions")
 else()
 	find_package(Threads REQUIRED)
 	find_package(ZLIB REQUIRED)
@@ -209,9 +217,6 @@ if(EMSCRIPTEN)
 		"SHELL:-sUSE_ZLIB=1"
 		"SHELL:-sUSE_LIBPNG=1"
 		"SHELL:-sUSE_LIBJPEG=1"
-		"SHELL:-sUSE_OGG=1"
-		"SHELL:-sUSE_VORBIS=1"
-		"SHELL:-sUSE_MPG123=1"
 		"SHELL:-fexceptions"
 		"SHELL:-sASYNCIFY"
 		"SHELL:-sALLOW_MEMORY_GROWTH=1"
@@ -228,9 +233,6 @@ else()
 	target_link_libraries(pvz-portable PRIVATE
 		SDL2_mixer_ext_Static 
 		${OPENMPT_LIB} 
-		${MPG123_LIB} 
-		${VORBIS_LIB} 
-		${OGG_LIB} 
 		PNG::PNG
 		JPEG::JPEG
 		ZLIB::ZLIB
