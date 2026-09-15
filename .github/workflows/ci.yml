@@ -484,6 +484,8 @@ jobs:
 
     - name: Set up Android SDK
       uses: android-actions/setup-android@v4
+      with:
+        packages: '' # the build needs no extra SDK packages
 
     - name: Install Android NDK
       run: |
