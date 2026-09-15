@@ -72,7 +72,7 @@ body:
       description: >
         If you compiled from source, list the versions of the key build dependencies.
         Include at least: compiler (GCC/Clang/MSVC), CMake, SDL2, zlib, libjpeg, libpng,
-        libogg, libvorbis, libopenmpt, mpg123.
+        libopenmpt.
         You can get most of these from your package manager or `pkg-config --modversion`.
     validations:
       required: false

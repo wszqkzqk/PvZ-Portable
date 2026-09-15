@@ -11,12 +11,9 @@ depends=(
     glibc
     libgcc
     libjpeg-turbo
-    libogg
     libopenmpt
     libpng
     libstdc++
-    libvorbis
-    mpg123
     sdl2-compat
     zlib
 )
