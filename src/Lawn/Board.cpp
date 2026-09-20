@@ -579,7 +579,7 @@ void Board::PickZombieWaves()
 		}
 		else
 		{
-			mNumWaves = gZombieWaves[std::clamp(mLevel - 1, 0, 49)];
+			mNumWaves = gZombieWaves[std::clamp(mLevel - 1, 0, NUM_LEVELS - 1)];
 			if (!mApp->IsFirstTimeAdventureMode() && !mApp->IsMiniBossLevel())
 			{
 				mNumWaves = mNumWaves < 10 ? 20 : mNumWaves + 10;
@@ -2347,7 +2347,7 @@ bool Board::CanZombieSpawnOnLevel(ZombieType theZombieType, int theLevel)
 	}
 
 	PVZP_ASSERT(gZombieAllowedLevels[theZombieType].mZombieType == theZombieType);
-	return gZombieAllowedLevels[theZombieType].mAllowedOnLevel[std::clamp(theLevel - 1, 0, 49)];
+	return gZombieAllowedLevels[theZombieType].mAllowedOnLevel[std::clamp(theLevel - 1, 0, NUM_LEVELS - 1)];
 }
 
 ZombieType Board::GetIntroducedZombieType()
