@@ -41,13 +41,14 @@ const uint32_t MEMORYCHECK_ID = 0x4BEEFADE;
 
 class NativeDisplay;
 class SexyAppBase;
+struct TextureData;
 
 class MemoryImage : public Image
 {
 public:
 	std::unique_ptr<uint32_t[]>		mBits;
 	int						mBitsChangedCount;
-	void*					mRenderData;
+	TextureData*			mRenderData;
 	uint32_t				mRenderFlags;	// see GLInterface.h for possible values
 
 	std::unique_ptr<uint32_t[]>		mColorTable;

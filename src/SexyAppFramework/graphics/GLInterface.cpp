@@ -1117,7 +1117,7 @@ GLInterface::~GLInterface()
 	Flush();
 	for (auto *img : mImageSet)
 	{
-		delete (TextureData*)img->mRenderData;
+		delete img->mRenderData;
 		img->mRenderData = nullptr;
 	}
 }
@@ -1146,7 +1146,7 @@ void GLInterface::Remove3DData(MemoryImage* theImage)
 {
 	if (theImage->mRenderData)
 	{
-		delete (TextureData*)theImage->mRenderData;
+		delete theImage->mRenderData;
 		theImage->mRenderData = nullptr;
 		std::scoped_lock lk(mCritSect);
 		mImageSet.erase(theImage);
@@ -1302,7 +1302,7 @@ bool GLInterface::CreateImageTexture(MemoryImage *theImage)
 		mImageSet.insert(theImage);
 	}
 
-	TextureData *data = (TextureData*)theImage->mRenderData;
+	TextureData *data = theImage->mRenderData;
 	data->CheckCreateTextures(theImage);
 
 	return data->mPixelFormat != PixelFormat_Unknown;
@@ -1313,7 +1313,7 @@ bool GLInterface::RecoverBits(MemoryImage* theImage)
 	GfxInvalidateTextureCache();
 	if (!theImage->mRenderData) return false;
 
-	TextureData* data = (TextureData*)theImage->mRenderData;
+	TextureData* data = theImage->mRenderData;
 	if (data->mBitsChangedCount != theImage->mBitsChangedCount) return false;
 	if (data->mPixelFormat != PixelFormat_A8R8G8B8 && !theImage->mFilePath.empty()) return false;
 
@@ -1392,7 +1392,7 @@ void GLInterface::Blt(Image* theImage, float theX, float theY,
 
 	SetDrawMode(theDrawMode);
 	SetLinearFilter(linearFilter);
-	((TextureData*)mem->mRenderData)->Blt(theX, theY, theSrcRect, theColor);
+	mem->mRenderData->Blt(theX, theY, theSrcRect, theColor);
 }
 
 void GLInterface::BltClipF(Image* theImage, float theX, float theY,
@@ -1455,7 +1455,7 @@ void GLInterface::BltTransformed(Image* theImage, const Rect* theClipRect,
 
 	SetDrawMode(theDrawMode);
 	SetLinearFilter(linearFilter);
-	TextureData *data = (TextureData*)mem->mRenderData;
+	TextureData *data = mem->mRenderData;
 
 	if (!mTransformStack.empty())
 	{
@@ -1579,7 +1579,7 @@ void GLInterface::DrawTrianglesTex(const TriVertex theVertices[][3], int theNumT
 
 	uint32_t c = theColor.ToGLColor();
 	bool clampUv = (mem->mRenderFlags & RenderImageFlag_Repeat) == 0;
-	((TextureData*)mem->mRenderData)->BltTriangles(theVertices, theNumTriangles, c, tx, ty, clampUv);
+	mem->mRenderData->BltTriangles(theVertices, theNumTriangles, c, tx, ty, clampUv);
 }
 
 void GLInterface::DrawTrianglesTexStrip(const TriVertex theVertices[], int theNumTriangles,
