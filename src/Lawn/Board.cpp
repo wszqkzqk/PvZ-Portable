@@ -72,7 +72,7 @@ bool gShownMoreSunTutorial = false;
 Board::Board(LawnApp* theApp)
 {
 	mApp = theApp;
-	mApp->mBoard = this;
+	mApp->mActiveBoard = this;
 
 	mZombies.DataArrayInitialize(1024U, "zombies");
 	mPlants.DataArrayInitialize(1024U, "plants");

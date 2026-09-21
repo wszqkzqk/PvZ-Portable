@@ -42,7 +42,7 @@ GridItem::GridItem()
 	mApp = (LawnApp*)gSexyAppBase;
 	mPosX = 0.0f;
 	mPosY = 0.0f;
-	mBoard = mApp->mBoard;
+	mBoard = mApp->mActiveBoard;
 	mGoalX = 0.0f;
 	mGoalY = 0.0f;
 	mGridItemType = GridItemType::GRIDITEM_NONE;

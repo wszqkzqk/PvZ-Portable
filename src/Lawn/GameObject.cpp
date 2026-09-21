@@ -25,7 +25,7 @@
 GameObject::GameObject()
 {
 	mApp = gLawnApp;
-	mBoard = gLawnApp->mBoard;
+	mBoard = gLawnApp->mActiveBoard;
 	mX = 0;
 	mY = 0;
 	mWidth = 0;

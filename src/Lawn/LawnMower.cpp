@@ -32,7 +32,7 @@ void LawnMower::LawnMowerInitialize(int theRow)
 	mApp = (LawnApp*)gSexyAppBase;
 	mRow = theRow;
 	mPosX = -160.0f;
-	mBoard = mApp->mBoard;
+	mBoard = mApp->mActiveBoard;
 	mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_LAWN_MOWER, theRow, 0);
 	mPosY = mBoard->GetPosYBasedOnRow(mPosX + 40.0f, theRow) + 23.0f;
 	mDead = false;

@@ -116,7 +116,7 @@ LawnApp::LawnApp()
 	// Replace the base-class resource manager with the PvZP-capable subclass.
 	mResourceManager = std::make_unique<PvzpResourceManager>(this);
 
-	mBoard = nullptr;
+	mActiveBoard = nullptr;
 	mMustacheMode = false;
 	mSuperMowerMode = false;
 	mFutureMode = false;
@@ -268,9 +268,9 @@ void LawnApp::KillBoard()
 		}
 
 		mBoard->DisposeBoard();
-		mWidgetManager->RemoveWidget(mBoard);
-		SafeDeleteWidget(mBoard);
-		mBoard = nullptr;
+		mWidgetManager->RemoveWidget(mBoard.get());
+		SafeDeleteWidget(std::move(mBoard));
+		mActiveBoard = nullptr;
 	}
 
 	SetCursor(CURSOR_POINTER);
@@ -356,11 +356,11 @@ void LawnApp::PreNewGame(GameMode theGameMode, bool theLookForSavedGame)
 void LawnApp::MakeNewBoard()
 {
 	KillBoard();
-	mBoard = new Board(this);
+	mBoard = std::make_unique<Board>(this);
 	mBoard->Resize(0, 0, mWidth, mHeight);
-	mWidgetManager->AddWidget(mBoard);
-	mWidgetManager->BringToBack(mBoard);
-	mWidgetManager->SetFocus(mBoard);
+	mWidgetManager->AddWidget(mBoard.get());
+	mWidgetManager->BringToBack(mBoard.get());
+	mWidgetManager->SetFocus(mBoard.get());
 }
 
 void LawnApp::StartPlaying()
@@ -404,7 +404,7 @@ bool LawnApp::TryLoadGame()
 		MakeNewBoard();
 		if (mBoard->LoadGame(aLegacySaveName))
 		{
-			if (LawnSaveGame(mBoard, aSaveName))
+			if (LawnSaveGame(mBoard.get(), aSaveName))
 			{
 				EraseFile(aLegacySaveName);
 			}
@@ -441,7 +441,7 @@ void LawnApp::ShowGameSelector()
 	if (mGameSelector)
 	{
 		mWidgetManager->RemoveWidget(mGameSelector.get());
-		SafeDeleteWidget(mGameSelector.release());
+		SafeDeleteWidget(std::move(mGameSelector));
 	}
 
 	mGameScene = GameScenes::SCENE_MENU;
@@ -462,7 +462,7 @@ void LawnApp::KillGameSelector()
 	if (mGameSelector)
 	{
 		mWidgetManager->RemoveWidget(mGameSelector.get());
-		SafeDeleteWidget(mGameSelector.release());
+		SafeDeleteWidget(std::move(mGameSelector));
 	}
 }
 
@@ -481,7 +481,7 @@ void LawnApp::KillAwardScreen()
 	if (mAwardScreen)
 	{
 		mWidgetManager->RemoveWidget(mAwardScreen.get());
-		SafeDeleteWidget(mAwardScreen.release());
+		SafeDeleteWidget(std::move(mAwardScreen));
 	}
 }
 
@@ -499,7 +499,7 @@ void LawnApp::KillCreditScreen()
 	if (mCreditScreen)
 	{
 		mWidgetManager->RemoveWidget(mCreditScreen.get());
-		SafeDeleteWidget(mCreditScreen.release());
+		SafeDeleteWidget(std::move(mCreditScreen));
 	}
 }
 
@@ -518,7 +518,7 @@ void LawnApp::KillChallengeScreen()
 	if (mChallengeScreen)
 	{
 		mWidgetManager->RemoveWidget(mChallengeScreen.get());
-		SafeDeleteWidget(mChallengeScreen.release());
+		SafeDeleteWidget(std::move(mChallengeScreen));
 	}
 }
 
@@ -558,7 +558,7 @@ void LawnApp::KillSeedChooserScreen()
 	if (mSeedChooserScreen)
 	{
 		mWidgetManager->RemoveWidget(mSeedChooserScreen.get());
-		SafeDeleteWidget(mSeedChooserScreen.release());
+		SafeDeleteWidget(std::move(mSeedChooserScreen));
 	}
 }
 
@@ -1121,7 +1121,7 @@ bool LawnApp::KillDialog(int theDialogId)
 		{
 			if (mBoard)
 			{
-				mWidgetManager->SetFocus(mBoard);
+				mWidgetManager->SetFocus(mBoard.get());
 			}
 			else if (mGameSelector)
 			{
@@ -1712,7 +1712,7 @@ void LawnApp::FastLoad(GameMode theGameMode)
 	if (!mShutdown)
 	{
 		mWidgetManager->RemoveWidget(mTitleScreen.get());
-		SafeDeleteWidget(mTitleScreen.release());
+		SafeDeleteWidget(std::move(mTitleScreen));
 
 		PreNewGame(theGameMode, false);
 	}
@@ -1725,7 +1725,7 @@ void LawnApp::LoadingThreadCompleted()
 void LawnApp::LoadingCompleted()
 {
 	mWidgetManager->RemoveWidget(mTitleScreen.get());
-	SafeDeleteWidget(mTitleScreen.release());
+	SafeDeleteWidget(std::move(mTitleScreen));
 
 	mResourceManager->DeleteImage("IMAGE_TITLESCREEN");
 
