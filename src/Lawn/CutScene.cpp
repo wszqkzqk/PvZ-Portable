@@ -99,7 +99,7 @@ static const int	TimeLawnMowerStart[6]			= { 6300, 6250, 6200, 6150, 6100, 6050 
 CutScene::CutScene()
 {
 	mApp = (LawnApp*)gSexyAppBase;
-	mBoard = mApp->mBoard;
+	mBoard = mApp->mActiveBoard;
 	mCutsceneTime = 0;
 	mSodTime = 0;
 	mFogTime = 0;

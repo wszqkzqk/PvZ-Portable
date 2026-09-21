@@ -68,7 +68,7 @@ constexpr const int STORM_FLASH_TIME = 150;
 Challenge::Challenge()
 {
 	mApp = (LawnApp*)gSexyAppBase;
-	mBoard = mApp->mBoard;
+	mBoard = mApp->mActiveBoard;
 	mBeghouledMouseCapture = false;
 	mBeghouledMouseDownX = 0;
 	mBeghouledMouseDownY = 0;
@@ -93,7 +93,7 @@ Challenge::Challenge()
 	for (int i = 0; i < static_cast<int>(BeghouledUpgrade::NUM_BEGHOULED_UPGRADES); i++)
 		mBeghouledPurcasedUpgrade[i] = false;
 
-	if (mApp->mBoard && mApp->mGameMode == GAMEMODE_CHALLENGE_SLOT_MACHINE)
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_SLOT_MACHINE)
 	{
 		Rect aHandleRect = SlotMachineGetHandleRect();
 		ReanimatorEnsureDefinitionLoaded(REANIM_SLOT_MACHINE_HANDLE, true);

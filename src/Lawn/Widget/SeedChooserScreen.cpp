@@ -45,7 +45,7 @@
 SeedChooserScreen::SeedChooserScreen()
 {
 	mApp = (LawnApp*)gSexyAppBase;
-	mBoard = mApp->mBoard;
+	mBoard = mApp->mActiveBoard;
 	mClip = false;
 	// mSeedChooserAge is deliberately not initialized here
 	mSeedsInFlight = 0;
