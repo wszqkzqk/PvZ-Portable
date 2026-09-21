@@ -116,7 +116,6 @@ LawnApp::LawnApp()
 	// Replace the base-class resource manager with the PvZP-capable subclass.
 	mResourceManager = std::make_unique<PvzpResourceManager>(this);
 
-	mActiveBoard = nullptr;
 	mMustacheMode = false;
 	mSuperMowerMode = false;
 	mFutureMode = false;
@@ -270,7 +269,6 @@ void LawnApp::KillBoard()
 		mBoard->DisposeBoard();
 		mWidgetManager->RemoveWidget(mBoard.get());
 		SafeDeleteWidget(std::move(mBoard));
-		mActiveBoard = nullptr;
 	}
 
 	SetCursor(CURSOR_POINTER);

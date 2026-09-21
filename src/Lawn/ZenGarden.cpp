@@ -285,7 +285,7 @@ PottedPlant* ZenGarden::PottedPlantFromIndex(intptr_t thePottedPlantIndex)
 
 void ZenGarden::ZenGardenInitLevel()
 {
-	mBoard = mApp->mActiveBoard;
+	mBoard = mApp->mBoard.get();
 	mNowTime = mApp->GetNowTime();
 	mNowTM = mApp->GetLocalTime(mNowTime);
 
