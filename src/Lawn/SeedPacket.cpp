@@ -916,8 +916,11 @@ bool SeedPacket::MouseHitTest(int theX, int theY, HitResult* theHitResult)
 	return false;
 }
 
-SeedBank::SeedBank()
+SeedBank::SeedBank(Board* theBoard)
 {
+	mBoard = theBoard;
+	for (int i = 0; i < SEEDBANK_MAX; i++)
+		mSeedPackets[i].mBoard = theBoard;
 	mWidth = IMAGE_SEEDBANK->GetWidth();
 	mHeight = IMAGE_SEEDBANK->GetHeight();
 
