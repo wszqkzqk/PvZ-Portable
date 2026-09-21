@@ -73,7 +73,6 @@ class LawnApp : public SexyApp
 {
 public:
 	std::unique_ptr<Board>			mBoard;
-	Board*							mActiveBoard;	// non-owning, valid from Board's constructor on
 	std::unique_ptr<TitleScreen>	mTitleScreen;
 	std::unique_ptr<GameSelector>	mGameSelector;
 	std::unique_ptr<SeedChooserScreen>	mSeedChooserScreen;

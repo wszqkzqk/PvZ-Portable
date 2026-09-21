@@ -97,7 +97,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mHatchOpen = true;
 	mEasyBuyingCheat = false;
 	mWaitForDialog = false;
-	mCoins.DataArrayInitialize(1024U, "coins");
+	mCoins.DataArrayInitialize(1024U, "coins", [board = mApp->mBoard.get()](Coin* theCoin) { theCoin->mBoard = board; });
 	mLoadedResourceNames.push_back("DelayLoad_Store");
 	for (std::string& resource : mLoadedResourceNames)
 		PvzpLoadResources(resource.c_str());

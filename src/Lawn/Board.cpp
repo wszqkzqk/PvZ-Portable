@@ -72,14 +72,14 @@ bool gShownMoreSunTutorial = false;
 Board::Board(LawnApp* theApp)
 {
 	mApp = theApp;
-	mApp->mActiveBoard = this;
 
-	mZombies.DataArrayInitialize(1024U, "zombies");
-	mPlants.DataArrayInitialize(1024U, "plants");
-	mProjectiles.DataArrayInitialize(1024U, "projectiles");
-	mCoins.DataArrayInitialize(1024U, "coins");
-	mLawnMowers.DataArrayInitialize(32U, "lawnmowers");
-	mGridItems.DataArrayInitialize(128U, "griditems");
+	auto aSetBoard = [this](auto* theItem) { theItem->mBoard = this; };
+	mZombies.DataArrayInitialize(1024U, "zombies", aSetBoard);
+	mPlants.DataArrayInitialize(1024U, "plants", aSetBoard);
+	mProjectiles.DataArrayInitialize(1024U, "projectiles", aSetBoard);
+	mCoins.DataArrayInitialize(1024U, "coins", aSetBoard);
+	mLawnMowers.DataArrayInitialize(32U, "lawnmowers", aSetBoard);
+	mGridItems.DataArrayInitialize(128U, "griditems", aSetBoard);
 
 	mApp->mEffectSystem->EffectSystemFreeAll();
 	mBoardRandSeed = mApp->mAppRandSeed;
