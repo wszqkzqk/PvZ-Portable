@@ -28,8 +28,9 @@
 #include "../PvzpLib/Reanimator.h"
 #include "widget/WidgetManager.h"
 
-CursorObject::CursorObject()
+CursorObject::CursorObject(Board* theBoard)
 {
+	mBoard = theBoard;
 	mType = SeedType::SEED_NONE;
 	mImitaterType = SeedType::SEED_NONE;
 	mSeedBankIndex = -1;
@@ -224,8 +225,9 @@ void CursorObject::Draw(Graphics* g)
 	}
 }
 
-CursorPreview::CursorPreview()
+CursorPreview::CursorPreview(Board* theBoard)
 {
+	mBoard = theBoard;
 	mX = 0;
 	mY = 0;
 	mGridX = 0;

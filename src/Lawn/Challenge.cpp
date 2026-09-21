@@ -65,10 +65,10 @@ constexpr const int MAX_SQUIRRELS = 7;
 constexpr const int MAX_SCARY_POTS = 54;
 constexpr const int STORM_FLASH_TIME = 150;
 
-Challenge::Challenge()
+Challenge::Challenge(Board* theBoard)
 {
 	mApp = (LawnApp*)gSexyAppBase;
-	mBoard = mApp->mActiveBoard;
+	mBoard = theBoard;
 	mBeghouledMouseCapture = false;
 	mBeghouledMouseDownX = 0;
 	mBeghouledMouseDownY = 0;

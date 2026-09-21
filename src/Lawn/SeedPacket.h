@@ -70,7 +70,7 @@ public:
 	int32_t			    mConveyorBeltCounter;
 
 public:
-	SeedBank();
+	SeedBank(Board* theBoard);
 
 	void			    Draw(Graphics* g);
 	bool			    MouseHitTest(int x, int y, HitResult* theHitResult);

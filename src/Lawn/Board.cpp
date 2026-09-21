@@ -89,10 +89,10 @@ Board::Board(LawnApp* theApp)
 	}
 	mCoinBankFadeCount = 0;
 	mLevel = 0;
-	mCursorObject = std::make_unique<CursorObject>();
-	mCursorPreview = std::make_unique<CursorPreview>();
-	mSeedBank = std::make_unique<SeedBank>();
-	mCutScene = std::make_unique<CutScene>();
+	mCursorObject = std::make_unique<CursorObject>(this);
+	mCursorPreview = std::make_unique<CursorPreview>(this);
+	mSeedBank = std::make_unique<SeedBank>(this);
+	mCutScene = std::make_unique<CutScene>(this);
 	mSpecialGraveStoneX = -1;
 	mSpecialGraveStoneY = -1;
 	for (int i = 0; i < MAX_GRID_SIZE_X; i++)
@@ -189,7 +189,7 @@ Board::Board(LawnApp* theApp)
 	mTutorialState = TutorialState::TUTORIAL_OFF;
 	mTutorialTimer = -1;
 	mTutorialParticleID = ParticleSystemID::PARTICLESYSTEMID_NULL;
-	mChallenge = std::make_unique<Challenge>();
+	mChallenge = std::make_unique<Challenge>(this);
 	mClip = false;
 	mDebugTextMode = DebugTextMode::DEBUG_TEXT_NONE;
 	mMenuButton = std::make_unique<GameButton>(0);
