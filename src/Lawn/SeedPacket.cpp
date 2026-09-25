@@ -283,7 +283,7 @@ void SeedPacketDrawSeed(Graphics* g, float x, float y, SeedType theSeedType, See
 	}
 }
 
-void DrawSeedPacket(Graphics* g, float x, float y, SeedType theSeedType, SeedType theImitaterType, float thePercentDark, int theGrayness, bool theDrawCost, bool theUseCurrentCost)
+void DrawSeedPacket(Graphics* g, Board* theBoard, float x, float y, SeedType theSeedType, SeedType theImitaterType, float thePercentDark, int theGrayness, bool theDrawCost, bool theUseCurrentCost)
 {
 	SeedType aSeedType = theSeedType;
 	if (aSeedType == SeedType::SEED_IMITATER && theImitaterType != SeedType::SEED_NONE)
@@ -564,11 +564,11 @@ void DrawSeedPacket(Graphics* g, float x, float y, SeedType theSeedType, SeedTyp
 	if (theDrawCost)
 	{
 		std::string aCostStr;
-		if (gLawnApp->mBoard && gLawnApp->mBoard->PlantUsesAcceleratedPricing(aSeedType))
+		if (theBoard && theBoard->PlantUsesAcceleratedPricing(aSeedType))
 		{
 			if (theUseCurrentCost)
 			{
-				aCostStr = std::to_string(gLawnApp->mBoard->GetCurrentPlantCost(theSeedType, theImitaterType));
+				aCostStr = std::to_string(theBoard->GetCurrentPlantCost(theSeedType, theImitaterType));
 			}
 			else
 			{
@@ -625,8 +625,8 @@ void SeedPacket::Draw(Graphics* g)
 		Graphics aClipG(*g);
 		aClipG.ClipRect(0, 0, mWidth, mHeight);
 
-		DrawSeedPacket(&aClipG, 0.0f, aOffsetY, mPacketType, SeedType::SEED_NONE, 0.0f, 128, false, false);
-		DrawSeedPacket(&aClipG, 0.0f, mHeight + aOffsetY, mSlotMachiningNextSeed, SeedType::SEED_NONE, 0.0f, 128, false, false);
+		DrawSeedPacket(&aClipG, mBoard, 0.0f, aOffsetY, mPacketType, SeedType::SEED_NONE, 0.0f, 128, false, false);
+		DrawSeedPacket(&aClipG, mBoard, 0.0f, mHeight + aOffsetY, mSlotMachiningNextSeed, SeedType::SEED_NONE, 0.0f, 128, false, false);
 	}
 	else
 	{
@@ -679,7 +679,7 @@ void SeedPacket::Draw(Graphics* g)
 			aGrayness = 128;
 		}
 
-		DrawSeedPacket(g, mOffsetX, 0.0f, mPacketType, mImitaterType, aPercentDark, aGrayness, aDrawCost, true);
+		DrawSeedPacket(g, mBoard, mOffsetX, 0.0f, mPacketType, mImitaterType, aPercentDark, aGrayness, aDrawCost, true);
 	}
 }
 

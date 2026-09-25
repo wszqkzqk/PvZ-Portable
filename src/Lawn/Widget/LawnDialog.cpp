@@ -38,6 +38,7 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const std::stri
 	Dialog(nullptr, nullptr, theId, isModal, theDialogHeader, theDialogLines, "", BUTTONS_NONE)
 {
 	mApp = theApp;
+	mBoard = theApp->mBoard.get();
 	mButtonDelay = -1;
 	mReanimation = std::make_unique<ReanimationWidget>();
 	mReanimation->mLawnDialog = this;
@@ -213,9 +214,9 @@ void LawnDialog::CheckboxChecked()
 
 void LawnDialog::KeyDown(KeyCode theKey)
 {
-	if (mId == DIALOG_PAUSED && mApp->mBoard)
+	if (mId == DIALOG_PAUSED && mBoard)
 	{
-		mApp->mBoard->DoTypingCheck(theKey);
+		mBoard->DoTypingCheck(theKey);
 	}
 
 	if (mId != DIALOG_ALMANAC)
@@ -469,8 +470,8 @@ GameOverDialog::GameOverDialog(const std::string& theMessage, bool theShowChalle
 	mMenuButton = MakeButton(1, this, "[MAIN_MENU_BUTTON]");
 	mMenuButton->Resize(635 - mX, -10 - mY, 163, 46);
 
-	gLawnApp->mBoard->mShowShovel = false;
-	gLawnApp->mBoard->mMenuButton->mBtnNoDraw = true;
+	mBoard->mShowShovel = false;
+	mBoard->mMenuButton->mBtnNoDraw = true;
 }
 
 GameOverDialog::~GameOverDialog() = default;

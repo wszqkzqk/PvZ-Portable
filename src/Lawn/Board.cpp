@@ -182,7 +182,7 @@ Board::Board(LawnApp* theApp)
 	mSukhbirMode = mApp->mSukhbirMode;
 	mShowShovel = false;
 	mToolTip = std::make_unique<ToolTipWidget>();
-	mAdvice = std::make_unique<MessageWidget>(mApp);
+	mAdvice = std::make_unique<MessageWidget>(mApp, this);
 	mBackground = BackgroundType::BACKGROUND_1_DAY;
 	mMainCounter = 0;
 	mBoardUpdateCounter = 0;

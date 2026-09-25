@@ -364,7 +364,7 @@ void SeedChooserScreen::Draw(Graphics* g)
 			ChosenSeed& aChosenSeed = mChosenSeeds[aSeedShadow];
 			if (aChosenSeed.mSeedState != SEED_IN_CHOOSER)
 			{
-				DrawSeedPacket(g, x, y, aSeedShadow, SEED_NONE, 0, 55, true, false);
+				DrawSeedPacket(g, mBoard, x, y, aSeedShadow, SEED_NONE, 0, 55, true, false);
 			}
 		}
 		else
@@ -403,7 +403,7 @@ void SeedChooserScreen::Draw(Graphics* g)
 				aPosX -= mX;
 				aPosY -= mY;
 			}
-			DrawSeedPacket(g, aPosX, aPosY, aChosenSeed.mSeedType, aChosenSeed.mImitaterType, 0, aGrayed ? 115 : 255, true, false);
+			DrawSeedPacket(g, mBoard, aPosX, aPosY, aChosenSeed.mSeedType, aChosenSeed.mImitaterType, 0, aGrayed ? 115 : 255, true, false);
 		}
 	}
 
@@ -414,7 +414,7 @@ void SeedChooserScreen::Draw(Graphics* g)
 		ChosenSeedState aSeedState = aChosenSeed.mSeedState;
 		if (mApp->HasSeedType(aSeedType) && (aSeedState == SEED_FLYING_TO_BANK || aSeedState == SEED_FLYING_TO_CHOOSER))
 		{
-			DrawSeedPacket(g, aChosenSeed.mX, aChosenSeed.mY, aChosenSeed.mSeedType, aChosenSeed.mImitaterType, 0, 255, true, false);
+			DrawSeedPacket(g, mBoard, aChosenSeed.mX, aChosenSeed.mY, aChosenSeed.mSeedType, aChosenSeed.mImitaterType, 0, 255, true, false);
 		}
 	}
 

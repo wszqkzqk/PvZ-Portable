@@ -1070,15 +1070,15 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType)
 		{
 			if (AllPlantsHaveBeenFertilized())
 			{
-				mApp->mBoard->mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_COMPLETED;
-				mApp->mBoard->DisplayAdvice("[ADVICE_ZEN_GARDEN_CONTINUE_ADVENTURE]", MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST, AdviceType::ADVICE_NONE);
+				mBoard->mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_COMPLETED;
+				mBoard->DisplayAdvice("[ADVICE_ZEN_GARDEN_CONTINUE_ADVENTURE]", MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST, AdviceType::ADVICE_NONE);
 				mBoard->mMenuButton->mDisabled = false;
 				mBoard->mMenuButton->mBtnNoDraw = false;
 			}
 			else if (mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_FERTILIZER] == PURCHASE_COUNT_OFFSET)
 			{
 				mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_FERTILIZER] = PURCHASE_COUNT_OFFSET + 5;
-				mApp->mBoard->DisplayAdvice("[ADVICE_ZEN_GARDEN_NEED_MORE_FERTILIZER]", MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST, AdviceType::ADVICE_NONE);
+				mBoard->DisplayAdvice("[ADVICE_ZEN_GARDEN_NEED_MORE_FERTILIZER]", MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST, AdviceType::ADVICE_NONE);
 			}
 		}
 	}
@@ -1458,7 +1458,7 @@ void ZenGarden::StinkyFinishFallingAsleep(GridItem* theStinky, int theBlendTime)
 	theStinky->mGridItemState = GridItemState::GRIDITEM_STINKY_SLEEPING;
 	if (!gLawnApp->mPlayerInfo->mHasWokenStinky)
 	{
-		mApp->mBoard->DisplayAdvice("[ADVICE_STINKY_SLEEPING]", MessageStyle::MESSAGE_STYLE_HINT_LONG, AdviceType::ADVICE_STINKY_SLEEPING);
+		mBoard->DisplayAdvice("[ADVICE_STINKY_SLEEPING]", MessageStyle::MESSAGE_STYLE_HINT_LONG, AdviceType::ADVICE_STINKY_SLEEPING);
 	}
 }
 
@@ -1757,7 +1757,7 @@ void ZenGarden::ZenGardenUpdate()
 		mBoard->mChallenge->mChallengeState = ChallengeState::STATECHALLENGE_NORMAL;
 		mBoard->mChallenge->mChallengeStateCounter = 3000;
 	}
-	else if (mApp->mBoard->mTutorialState == TutorialState::TUTORIAL_OFF)
+	else if (mBoard->mTutorialState == TutorialState::TUTORIAL_OFF)
 	{
 		if (mBoard->mChallenge->mChallengeStateCounter > 0)
 		{
