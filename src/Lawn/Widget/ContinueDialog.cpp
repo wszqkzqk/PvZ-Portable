@@ -141,7 +141,7 @@ void ContinueDialog::RestartLoopingSounds()
 		mApp->PlayFoley(FoleyType::FOLEY_RAIN);
 	}
 
-	for (Zombie* aZombie : mApp->mBoard->mZombies)
+	for (Zombie* aZombie : mBoard->mZombies)
 	{
 		if (aZombie->mDead)
 			continue;

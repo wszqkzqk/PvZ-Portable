@@ -28,6 +28,7 @@
 using namespace Sexy;
 
 class LawnApp;
+class Board;
 class GameButton;
 
 class AchievementScreenItem {
@@ -53,6 +54,7 @@ public:
 	std::unique_ptr<GameButton>		mStartButton;
 	std::unique_ptr<GameButton>		mMenuButton;
 	LawnApp*							mApp;
+	Board*								mBoard;
 	int									mFadeInCounter;
 	AwardType							mAwardType;				//+0xB8
 	std::unique_ptr<GameButton>		mContinueButton;		//+0xA8
