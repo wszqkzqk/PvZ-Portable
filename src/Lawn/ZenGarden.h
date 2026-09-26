@@ -57,7 +57,6 @@ class ZenGarden
 {
 public:
 	LawnApp*                mApp;
-	Board*                  mBoard;
 	GardenType              mGardenType;
 	std::vector<std::string> mLoadedResourceNames;
 	time_t                  mNowTime;       // cached per-frame
@@ -148,6 +147,7 @@ public:
 	bool         IsStinkyHighOnChocolate();
 	void                    StinkyAnimRateUpdate(GridItem* theStinky);
 	bool         PlantCanBeWatered(Plant* thePlant);
+	Board*                  GetSessionBoard();
 };
 
 #endif
