@@ -2224,6 +2224,7 @@ static void FixBoardAfterLoad(Board* theBoard)
 	}
 
 	theBoard->mAdvice->mApp = theBoard->mApp;
+	theBoard->mAdvice->mBoard = theBoard;
 	theBoard->mCursorObject->mApp = theBoard->mApp;
 	theBoard->mCursorObject->mBoard = theBoard;
 	theBoard->mCursorPreview->mApp = theBoard->mApp;
