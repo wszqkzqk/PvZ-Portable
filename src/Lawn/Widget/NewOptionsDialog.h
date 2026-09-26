@@ -28,7 +28,6 @@
 #include <memory>
 
 class LawnApp;
-class Board;
 class LawnStoneButton;
 class NewLawnButton;
 namespace Sexy
@@ -54,7 +53,6 @@ protected:
 
 public:
 	LawnApp*							mApp;
-	Board*								mBoard;
 	std::unique_ptr<Sexy::Slider>		mMusicVolumeSlider;
 	std::unique_ptr<Sexy::Slider>		mSfxVolumeSlider;
 	std::unique_ptr<Sexy::Checkbox>		mFullscreenCheckbox;

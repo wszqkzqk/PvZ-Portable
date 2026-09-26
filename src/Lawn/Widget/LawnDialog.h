@@ -27,7 +27,6 @@
 #include <memory>
 
 class LawnApp;
-class Board;
 class LawnDialog;
 class Reanimation;
 class LawnStoneButton;
@@ -65,7 +64,6 @@ class LawnDialog : public Dialog
 {
 public:
 	LawnApp*				mApp;
-	Board*					mBoard;
 	int						mButtonDelay;
 	std::unique_ptr<ReanimationWidget>	mReanimation;
 	bool					mDrawStandardBack;

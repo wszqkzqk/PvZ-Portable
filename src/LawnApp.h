@@ -141,6 +141,7 @@ public:
 	LawnApp();
 	~LawnApp() override;
 
+	Board*							GetBoard() const { return mBoard.get(); }
 	bool							KillNewOptionsDialog();
 	void							GotFocus() override;
 	void							LostFocus() override;
