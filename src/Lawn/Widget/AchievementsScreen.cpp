@@ -234,8 +234,8 @@ void ReportAchievement::GiveAchievement(LawnApp* theApp, int theAchievement, boo
 	std::string aAchievementName = theApp->GetString(gAchievementList[theAchievement].name, gAchievementList[theAchievement].name);
 	std::string aMessage = theApp->GetFormattedString("%s Achievement!", "%s Achievement!", aAchievementName.c_str());
 
-	if (theApp->mBoard) {
-		theApp->mBoard->DisplayAdvice(aMessage, MESSAGE_STYLE_ACHIEVEMENT, AdviceType::ADVICE_NONE);
+	if (theApp->GetBoard()) {
+		theApp->GetBoard()->DisplayAdvice(aMessage, MESSAGE_STYLE_ACHIEVEMENT, AdviceType::ADVICE_NONE);
 		theApp->mPlayerInfo->mShownAchievements[theAchievement] = true;
 		theApp->PlaySample(SOUND_ACHIEVEMENT);
 	}

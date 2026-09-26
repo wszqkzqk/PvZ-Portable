@@ -35,7 +35,6 @@ constexpr const int MAX_PURCHASES = 80;
 
 class Coin;
 class LawnApp;
-class Board;
 class NewLawnButton;
 
 class StoreScreen : public Dialog
@@ -50,7 +49,6 @@ private:
 
 public:
 	LawnApp*                    mApp;
-	Board*                      mBoard;
 	std::unique_ptr<NewLawnButton>  mBackButton;
 	std::unique_ptr<NewLawnButton>  mPrevButton;
 	std::unique_ptr<NewLawnButton>  mNextButton;

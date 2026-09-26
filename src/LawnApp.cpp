@@ -3159,18 +3159,18 @@ std::string LawnGetCurrentLevelName()
 	{
 		return "Credits";
 	}
-	if (gLawnApp->mBoard == nullptr)
+	if (gLawnApp->GetBoard() == nullptr)
 	{
 		return "Not Playing";
 	}
 
 	if (gLawnApp->IsFirstTimeAdventureMode())
 	{
-		return gLawnApp->GetStageString(gLawnApp->mBoard->mLevel);
+		return gLawnApp->GetStageString(gLawnApp->GetBoard()->mLevel);
 	}
 	if (gLawnApp->IsAdventureMode())
 	{
-		return std::format("F{}", gLawnApp->GetStageString(gLawnApp->mBoard->mLevel));
+		return std::format("F{}", gLawnApp->GetStageString(gLawnApp->GetBoard()->mLevel));
 	}
 
 	return gLawnApp->GetCurrentChallengeDef().mChallengeName;

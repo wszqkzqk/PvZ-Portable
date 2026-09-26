@@ -40,7 +40,6 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 	Dialog(nullptr, nullptr, Dialogs::DIALOG_NEWOPTIONS, true, "Options", "", "", Dialog::BUTTONS_NONE)
 {
 	mApp = theApp;
-	mBoard = theApp->mBoard.get();
 	mFromGameSelector = theFromGameSelector;
 	SetButtonTextColor(Color(255, 255, 100));
 	mAlmanacButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Almanac, this, "[VIEW_ALMANAC_BUTTON]");
@@ -98,7 +97,7 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 	{
 		mRestartButton->SetVisible(false);
 	}
-	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && !mBoard->mCutScene->IsSurvivalRepick())
+	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && !mApp->GetBoard()->mCutScene->IsSurvivalRepick())
 	{
 		mRestartButton->SetVisible(false);
 	}
@@ -283,9 +282,9 @@ void NewOptionsDialog::CheckboxChecked(int theId, bool checked)
 
 void NewOptionsDialog::KeyDown(Sexy::KeyCode theKey)
 {
-	if (mBoard)
+	if (mApp->GetBoard())
 	{
-		mBoard->DoTypingCheck(theKey);
+		mApp->GetBoard()->DoTypingCheck(theKey);
 	}
 
 	if (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN)
@@ -324,11 +323,11 @@ void NewOptionsDialog::ButtonDepress(int theId)
 			mApp->KillGameSelector();
 			mApp->ShowAwardScreen(AwardType::AWARD_CREDITS_ZOMBIENOTE, false);
 		}
-		else if (mBoard && mBoard->NeedSaveGame())
+		else if (mApp->GetBoard() && mApp->GetBoard()->NeedSaveGame())
 		{
 			mApp->DoConfirmBackToMain();
 		}
-		else if (mBoard && mBoard->mCutScene && mBoard->mCutScene->IsSurvivalRepick())
+		else if (mApp->GetBoard() && mApp->GetBoard()->mCutScene && mApp->GetBoard()->mCutScene->IsSurvivalRepick())
 		{
 			mApp->DoConfirmBackToMain();
 		}
@@ -342,7 +341,7 @@ void NewOptionsDialog::ButtonDepress(int theId)
 
 	case NewOptionsDialog::NewOptionsDialog_Restart:
 	{
-		if (mBoard)
+		if (mApp->GetBoard())
 		{
 			std::string aDialogTitle;
 			std::string aDialogMessage;
@@ -377,7 +376,7 @@ void NewOptionsDialog::ButtonDepress(int theId)
 				mApp->mSoundSystem->CancelPausedFoley();
 				mApp->KillNewOptionsDialog();
 				mApp->mBoardResult = BoardResult::BOARDRESULT_RESTART;
-				mApp->mSawYeti = mBoard->mKilledYeti;
+				mApp->mSawYeti = mApp->GetBoard()->mKilledYeti;
 				mApp->PreNewGame(mApp->mGameMode, false);
 			}
 		}
