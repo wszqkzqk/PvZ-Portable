@@ -65,10 +65,10 @@ constexpr const int MAX_SQUIRRELS = 7;
 constexpr const int MAX_SCARY_POTS = 54;
 constexpr const int STORM_FLASH_TIME = 150;
 
-Challenge::Challenge()
+Challenge::Challenge(Board* theBoard)
 {
 	mApp = (LawnApp*)gSexyAppBase;
-	mBoard = mApp->mBoard;
+	mBoard = theBoard;
 	mBeghouledMouseCapture = false;
 	mBeghouledMouseDownX = 0;
 	mBeghouledMouseDownY = 0;
@@ -93,7 +93,7 @@ Challenge::Challenge()
 	for (int i = 0; i < static_cast<int>(BeghouledUpgrade::NUM_BEGHOULED_UPGRADES); i++)
 		mBeghouledPurcasedUpgrade[i] = false;
 
-	if (mApp->mBoard && mApp->mGameMode == GAMEMODE_CHALLENGE_SLOT_MACHINE)
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_SLOT_MACHINE)
 	{
 		Rect aHandleRect = SlotMachineGetHandleRect();
 		ReanimatorEnsureDefinitionLoaded(REANIM_SLOT_MACHINE_HANDLE, true);

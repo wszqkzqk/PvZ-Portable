@@ -42,7 +42,6 @@ GridItem::GridItem()
 	mApp = (LawnApp*)gSexyAppBase;
 	mPosX = 0.0f;
 	mPosY = 0.0f;
-	mBoard = mApp->mBoard;
 	mGoalX = 0.0f;
 	mGoalY = 0.0f;
 	mGridItemType = GridItemType::GRIDITEM_NONE;
@@ -329,7 +328,7 @@ void GridItem::DrawScaryPot(Graphics* g)
 		{
 			aInsideGraphics.mScaleX = 0.7f;
 			aInsideGraphics.mScaleY = 0.7f;
-			DrawSeedPacket(&aInsideGraphics, aXPos + 23.0f, aYPos + 33.0f, mSeedType, SeedType::SEED_NONE, 0.0f, 255, false, false);
+			DrawSeedPacket(&aInsideGraphics, mBoard, aXPos + 23.0f, aYPos + 33.0f, mSeedType, SeedType::SEED_NONE, 0.0f, 255, false, false);
 		}
 		else if (mScaryPotType == ScaryPotType::SCARYPOT_ZOMBIE)
 		{

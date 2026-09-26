@@ -99,7 +99,7 @@ AlmanacDialog::AlmanacDialog(LawnApp* theApp) : LawnDialog(theApp, DIALOG_ALMANA
 	mZombieButton->mParentWidget = this;
 
 	SetPage(ALMANAC_PAGE_INDEX);
-	if (!mApp->mBoard || !mApp->mBoard->mPaused)
+	if (!mApp->GetBoard() || !mApp->GetBoard()->mPaused)
 		mApp->mMusic->MakeSureMusicIsPlaying(MUSIC_TUNE_CHOOSE_YOUR_SEEDS);
 }
 
@@ -293,7 +293,7 @@ void AlmanacDialog::DrawPlants(Graphics* g)
 			}
 			else
 			{
-				DrawSeedPacket(g, aPosX, aPosY, aSeedType, SeedType::SEED_NONE, 0, 255, true, false);
+				DrawSeedPacket(g, mApp->GetBoard(), aPosX, aPosY, aSeedType, SeedType::SEED_NONE, 0, 255, true, false);
 				if (aSeedType == aSeedMouseOn)
 					g->DrawImage(Sexy::IMAGE_SEEDPACKETFLASH, aPosX, aPosY);
 			}

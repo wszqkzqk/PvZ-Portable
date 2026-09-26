@@ -406,13 +406,8 @@ SexyAppBase::~SexyAppBase()
 
 	WaitForLoadingThread();
 
-	DialogMap::iterator aDialogItr = mDialogMap.begin();
-	while (aDialogItr != mDialogMap.end())
-	{
-		mWidgetManager->RemoveWidget(aDialogItr->second);
-		delete aDialogItr->second;
-		++aDialogItr;
-	}
+	for (const auto& [anId, aDialog] : mDialogMap)
+		mWidgetManager->RemoveWidget(aDialog.get());
 	mDialogMap.clear();
 	mDialogList.clear();
 
@@ -824,7 +819,7 @@ Dialog*	SexyAppBase::GetDialog(int theDialogId)
 	DialogMap::iterator anItr = mDialogMap.find(theDialogId);
 
 	if (anItr != mDialogMap.end())
-		return anItr->second;
+		return anItr->second.get();
 
 	return nullptr;
 }
@@ -835,7 +830,8 @@ bool SexyAppBase::KillDialog(int theDialogId, bool removeWidget, bool deleteWidg
 
 	if (anItr != mDialogMap.end())
 	{
-		Dialog* aDialog = anItr->second;
+		std::unique_ptr<Dialog> aDialogOwned = std::move(anItr->second);
+		Dialog* aDialog = aDialogOwned.get();
 
 		// set the result to something else so DoMainLoop knows that the dialog is gone
 		// in case nobody else sets mResult
@@ -861,7 +857,12 @@ bool SexyAppBase::KillDialog(int theDialogId, bool removeWidget, bool deleteWidg
 
 		if (deleteWidget)
 		{
-			SafeDeleteWidget(aDialog);
+			SafeDeleteWidget(std::move(aDialogOwned));
+		}
+		else
+		{
+			// Caller takes over ownership of the dialog
+			aDialogOwned.release();
 		}
 
 		return true;
@@ -896,7 +897,7 @@ void SexyAppBase::AddDialog(int theDialogId, Dialog* theDialog)
 		theDialog->Resize((mWidth - aWidth)/2, mHeight / 5, aWidth, theDialog->GetPreferredHeight(aWidth));
 	}
 
-	mDialogMap.insert(DialogMap::value_type(theDialogId, theDialog));
+	mDialogMap.emplace(theDialogId, theDialog);
 	mDialogList.push_back(theDialog);
 
 	mWidgetManager->AddWidget(theDialog);
@@ -1945,12 +1946,9 @@ void SexyAppBase::Popup(const std::string& theString)
 }
 
 
-void SexyAppBase::SafeDeleteWidget(Widget* theWidget)
+void SexyAppBase::SafeDeleteWidget(std::unique_ptr<Widget> theWidget)
 {
-	WidgetSafeDeleteInfo aWidgetSafeDeleteInfo;
-	aWidgetSafeDeleteInfo.mUpdateAppDepth = mUpdateAppDepth;
-	aWidgetSafeDeleteInfo.mWidget = theWidget;
-	mSafeDeleteList.push_back(aWidgetSafeDeleteInfo);
+	mSafeDeleteList.push_back({mUpdateAppDepth, std::move(theWidget)});
 }
 
 
@@ -2484,12 +2482,7 @@ void SexyAppBase::ProcessSafeDeleteList()
 	MTAutoDisallowRand aDisallowRand;
 
 	std::erase_if(mSafeDeleteList, [&](const WidgetSafeDeleteInfo& theInfo) {
-		if (mUpdateAppDepth <= theInfo.mUpdateAppDepth)
-		{
-			delete theInfo.mWidget;
-			return true;
-		}
-		return false;
+		return mUpdateAppDepth <= theInfo.mUpdateAppDepth;
 	});
 }
 

@@ -31,9 +31,10 @@
 #include <algorithm>
 #include <SDL.h>
 
-MessageWidget::MessageWidget(LawnApp* theApp)
+MessageWidget::MessageWidget(LawnApp* theApp, Board* theBoard)
 {
 	mApp = theApp;
+	mBoard = theBoard;
 	mDuration = 0;
 	mDisplayTime = 0;
 	mLabel[0] = '\0';
@@ -237,7 +238,7 @@ void MessageWidget::LayoutReanimText()
 
 void MessageWidget::Update()
 {
-	if (!mApp->mBoard || mApp->mBoard->mPaused)
+	if (mBoard->mPaused)
 		return;
 
 	// count down the remaining time and switch to the next message
@@ -465,7 +466,7 @@ void MessageWidget::Draw(Graphics* g)
 	{
 		if (aMinAlpha != 255)
 		{
-			aColor.mAlpha = PvzpAnimateCurve(75, 0, mApp->mBoard->mMainCounter % 75, aMinAlpha, 255, PvzpCurves::CURVE_BOUNCE_SLOW_MIDDLE);
+			aColor.mAlpha = PvzpAnimateCurve(75, 0, mBoard->mMainCounter % 75, aMinAlpha, 255, PvzpCurves::CURVE_BOUNCE_SLOW_MIDDLE);
 			aOutlineColor.mAlpha = aColor.mAlpha;
 		}
 		if (aFadeOut)
@@ -486,7 +487,7 @@ void MessageWidget::Draw(Graphics* g)
 		}
 		else
 		{
-			Rect aRect(aPosX - mApp->mBoard->mX - BOARD_WIDTH / 2, aPosY - aFont->mAscent, BOARD_WIDTH, BOARD_HEIGHT);
+			Rect aRect(aPosX - mBoard->mX - BOARD_WIDTH / 2, aPosY - aFont->mAscent, BOARD_WIDTH, BOARD_HEIGHT);
 			if (aOutlineFont)
 			{
 				PvzpDrawStringWrapped(g, mLabel, aRect, aOutlineFont, aOutlineColor, DrawStringJustification::DS_ALIGN_CENTER);
@@ -497,9 +498,9 @@ void MessageWidget::Draw(Graphics* g)
 		if (mMessageStyle == MessageStyle::MESSAGE_STYLE_HOUSE_NAME)
 		{
 			std::string aSubStr;
-			if (mApp->IsSurvivalMode() && mApp->mBoard->mChallenge->mSurvivalStage > 0)
+			if (mApp->IsSurvivalMode() && mBoard->mChallenge->mSurvivalStage > 0)
 			{
-				int aFlags = mApp->mBoard->GetNumWavesPerSurvivalStage() * mApp->mBoard->mChallenge->mSurvivalStage / mApp->mBoard->GetNumWavesPerFlag();
+				int aFlags = mBoard->GetNumWavesPerSurvivalStage() * mBoard->mChallenge->mSurvivalStage / mBoard->GetNumWavesPerFlag();
 				std::string aFlagStr = mApp->Pluralize(aFlags, "[ONE_FLAG]", "[COUNT_FLAGS]");
 				aSubStr = PvzpReplaceString("[FLAGS_COMPLETED]", "{FLAGS}", aFlagStr);
 			}
@@ -509,7 +510,7 @@ void MessageWidget::Draw(Graphics* g)
 				PvzpDrawString(
 					g,
 					aSubStr,
-					BOARD_WIDTH / 2 - mApp->mBoard->mX,
+					BOARD_WIDTH / 2 - mBoard->mX,
 					aPosY + 26,
 					Sexy::FONT_HOUSEOFTERROR16,
 					Color(224, 187, 62, aColor.mAlpha),
