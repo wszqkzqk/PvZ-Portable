@@ -749,7 +749,7 @@ void ZenGarden::AddHappyEffect(Plant* thePlant)
 	}
 	else
 	{
-		aFlowerPot->AddAttachedParticle(aFlowerPot->mX + 40, aFlowerPot->mY + 63, aFlowerPot->mRenderOrder - 1, ParticleEffect::PARTICLE_POTTED_ZEN_GLOW);
+		aFlowerPot->AddAttachedParticle(aFlowerPot->mX + 40, aFlowerPot->mY + 63, aFlowerPot->mRenderOrder - 1, ParticleEffect::PARTICLE_POTTED_PLANT_GLOW);
 	}
 }
 
