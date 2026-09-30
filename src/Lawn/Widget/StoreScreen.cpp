@@ -97,7 +97,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 	mHatchOpen = true;
 	mEasyBuyingCheat = false;
 	mWaitForDialog = false;
-	mCoins.DataArrayInitialize(1024U, "coins");
+	mCoins.DataArrayInitialize(1024U, "coins", [this](Coin* theCoin) { theCoin->mBoard = mApp->GetBoard(); });
 	mLoadedResourceNames.push_back("DelayLoad_Store");
 	for (std::string& resource : mLoadedResourceNames)
 		PvzpLoadResources(resource.c_str());
@@ -401,7 +401,7 @@ void StoreScreen::DrawItemIcon(Graphics* g, int theItemPosition, StoreItem theIt
 	}
 	else
 	{
-		DrawSeedPacket(g, aPosX, aPosY, (SeedType)(theItemType + 40), SEED_NONE, 0, 255, false, false);
+		DrawSeedPacket(g, mApp->GetBoard(), aPosX, aPosY, (SeedType)(theItemType + 40), SEED_NONE, 0, 255, false, false);
 	}
 
 	g->SetDrawMode(Graphics::DRAWMODE_NORMAL);
@@ -974,9 +974,9 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
 				aDialog->WaitForResult(true);
 				mWaitForDialog = false;
 
-				if (mApp->mBoard)
+				if (mApp->GetBoard())
 				{
-					mApp->mBoard->mSeedBank->UpdateWidth();
+					mApp->GetBoard()->mSeedBank->UpdateWidth();
 				}
 			}
 			else if (theStoreItem == STORE_ITEM_BONUS_LAWN_MOWER)

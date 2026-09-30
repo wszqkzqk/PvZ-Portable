@@ -283,7 +283,7 @@ void AwardScreen::DrawAwardSeed(Graphics* g)
 	DrawBottom(g, "[NEW_PLANT]", aAward, aMessage);
 
 	g->SetScale(2, 2, 350, 129);
-	DrawSeedPacket(g, 350, 129, aSeedType, SEED_NONE, 0, 255, true, false);
+	DrawSeedPacket(g, mApp->GetBoard(), 350, 129, aSeedType, SEED_NONE, 0, 255, true, false);
 	g->SetScale(1, 1, 0, 0);
 }
 
@@ -540,7 +540,7 @@ void AwardScreen::StartButtonPressed()
 					mApp->PreNewGame(GAMEMODE_UPSELL, false);
 					if (!mApp->mPlayerInfo->mHasSeenUpsell)
 					{
-						mApp->mBoard->mStoreButton->mBtnNoDraw = true;
+						mApp->GetBoard()->mStoreButton->mBtnNoDraw = true;
 						mApp->mPlayerInfo->mHasSeenUpsell = true;
 					}
 					return;

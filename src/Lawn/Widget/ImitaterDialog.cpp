@@ -101,7 +101,7 @@ void ImitaterDialog::Draw(Graphics* g)
 			int aSeedX, aSeedY;
 			GetSeedPosition(aSeedType, aSeedX, aSeedY);
 			bool aGrayed = mApp->mSeedChooserScreen->SeedNotAllowedToPick(aSeedType) || mApp->mSeedChooserScreen->SeedNotRecommendedToPick(aSeedType);
-			DrawSeedPacket(g, aSeedX, aSeedY, SeedType::SEED_IMITATER, aSeedType, 0, aGrayed ? 115 : 255, true, false);
+			DrawSeedPacket(g, mApp->GetBoard(), aSeedX, aSeedY, SeedType::SEED_IMITATER, aSeedType, 0, aGrayed ? 115 : 255, true, false);
 		}
 	}
 	mToolTip->Draw(g);
