@@ -173,7 +173,7 @@ public:
 
 	void Blt(float theX, float theY, const Rect& theSrcRect, const Color& theColor);
 	void BltTransformed(const SexyMatrix3 &theTrans, const Rect& theSrcRect, const Color& theColor, const Rect *theClipRect = nullptr, float theX = 0, float theY = 0, bool center = false);
-	void BltTriangles(const TriVertex theVertices[][3], int theNumTriangles, unsigned int theColor, float tx = 0, float ty = 0, bool clampUv = true);
+	void BltTriangles(const TriVertex theVertices[][3], int theNumTriangles, unsigned int theColor, float tx = 0, float ty = 0, bool clampUv = true, const uint8_t* theDrawModes = nullptr);
 };
 
 class GLInterface : public NativeDisplay
@@ -244,6 +244,7 @@ public:
 	void					DrawTriangle(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor, int theDrawMode);
 	void					DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor, int theDrawMode, Image *theTexture, bool blend = true);
 	void					DrawTrianglesTex(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor, int theDrawMode, Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
+	void					DrawTrianglesTexMixed(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor, Image *theTexture, const uint8_t* theDrawModes, float tx = 0, float ty = 0, bool blend = true);
 	void					DrawTrianglesTexStrip(const TriVertex theVertices[], int theNumTriangles, const Color &theColor, int theDrawMode, Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
 	void					FillPoly(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode, int tx, int ty);
 };
