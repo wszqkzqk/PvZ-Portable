@@ -355,11 +355,32 @@ bool gPvzpTriangleDrawAdditive = false;
 
 #include "PvzpDrawTriangleInc.inc"
 
+// Mixed blending preserves screen RGB but not destination alpha. Offscreen targets may be sampled later.
+static bool CanMixTriangleDrawModes(Graphics* g)
+{
+	if (!GLImage::Check3D(g->mDestImage))
+		return false;
+	GLImage* anImage = (GLImage*)g->mDestImage;
+	return anImage == anImage->mGLInterface->GetScreenImage();
+}
+
 PvzpTriangleGroup::PvzpTriangleGroup()
 {
 	mImage = nullptr;
 	mTriangleCount = 0;
 	mDrawMode = Graphics::DRAWMODE_NORMAL;
+	mHasMixedDrawModes = false;
+}
+
+int PvzpTriangleGroup::AppendTriangleDrawMode(int theDrawMode)
+{
+	PVZP_ASSERT(mTriangleCount < MAX_TRIANGLES);
+	const int aTriangleIndex = mTriangleCount++;
+	if (aTriangleIndex > 0 && mDrawMode != theDrawMode)
+		mHasMixedDrawModes = true;
+	mTriangleDrawModes[aTriangleIndex] = static_cast<uint8_t>(theDrawMode);
+	mDrawMode = theDrawMode;
+	return aTriangleIndex;
 }
 
 void PvzpTriangleGroup::DrawGroup(Graphics* g)
@@ -375,7 +396,10 @@ void PvzpTriangleGroup::DrawGroup(Graphics* g)
 		{
 			GLImage* anImage = (GLImage*)g->mDestImage;
 			mImage->mDrawn = true;
-			anImage->mGLInterface->DrawTrianglesTex(mVertArray, mTriangleCount, Color::White, mDrawMode, mImage, 0.0f, 0.0f, g->mLinearBlend);
+			if (mHasMixedDrawModes)
+				anImage->mGLInterface->DrawTrianglesTexMixed(mVertArray, mTriangleCount, Color::White, mImage, mTriangleDrawModes, 0.0f, 0.0f, g->mLinearBlend);
+			else
+				anImage->mGLInterface->DrawTrianglesTex(mVertArray, mTriangleCount, Color::White, mDrawMode, mImage, 0.0f, 0.0f, g->mLinearBlend);
 		}
 		else
 		{
@@ -383,6 +407,7 @@ void PvzpTriangleGroup::DrawGroup(Graphics* g)
 		}
 
 		mTriangleCount = 0;
+		mHasMixedDrawModes = false;
 		gPvzpTriangleDrawAdditive = false;
 	}
 }
@@ -391,10 +416,11 @@ void PvzpTriangleGroup::AddTriangle(Graphics* g, Image* theImage, const SexyMatr
 {
 	PVZP_ASSERT(theImage != nullptr);
 
-	if (mTriangleCount > 0 && (mDrawMode != theDrawMode || mImage != theImage))
+	if (mTriangleCount > 0 && mImage != theImage)
+		DrawGroup(g);
+	if (mTriangleCount > 0 && mDrawMode != theDrawMode && !CanMixTriangleDrawModes(g))
 		DrawGroup(g);
 	mImage = theImage;
-	mDrawMode = theDrawMode;
 
 	SexyVector2 p[4];
 	float x = -theSrcRect.mWidth * 0.5f;
@@ -446,7 +472,8 @@ void PvzpTriangleGroup::AddTriangle(Graphics* g, Image* theImage, const SexyMatr
 		{
 			aNoClipping = true;
 			aTriRef = &mVertArray[mTriangleCount];
-			mTriangleCount += 2;
+			AppendTriangleDrawMode(theDrawMode);
+			AppendTriangleDrawMode(theDrawMode);
 		}
 	}
 
@@ -502,7 +529,7 @@ void PvzpTriangleGroup::AddTriangle(Graphics* g, Image* theImage, const SexyMatr
 				if (mTriangleCount == MAX_TRIANGLES)
 					DrawGroup(g);
 
-				TriVertex* pVert = mVertArray[mTriangleCount];
+				TriVertex* pVert = mVertArray[AppendTriangleDrawMode(theDrawMode)];
 				pVert[0].x = clipped[0]->x;
 				pVert[0].y = clipped[0]->y;
 				pVert[0].u = clipped[0]->u;
@@ -518,7 +545,7 @@ void PvzpTriangleGroup::AddTriangle(Graphics* g, Image* theImage, const SexyMatr
 				pVert[2].u = clipped[j + 2]->u;
 				pVert[2].v = clipped[j + 2]->v;
 				pVert[2].color = clipped[j + 2]->color;
-				if (++mTriangleCount == MAX_TRIANGLES)
+				if (mTriangleCount == MAX_TRIANGLES)
 					DrawGroup(g);
 			}
 		}

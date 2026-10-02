@@ -22,6 +22,7 @@
 #ifndef __EFFECTSYSTEM_H__
 #define __EFFECTSYSTEM_H__
 
+#include <cstdint>
 #include <memory>
 
 #include "DataArray.h"
@@ -47,12 +48,15 @@ class PvzpTriangleGroup
 public:
 	Image*                      mImage;
 	TriVertex                   mVertArray[MAX_TRIANGLES][3];
+	uint8_t                     mTriangleDrawModes[MAX_TRIANGLES];
 	int                         mTriangleCount;
 	int                         mDrawMode;
+	bool                        mHasMixedDrawModes;
 
 	PvzpTriangleGroup();
 	void                        DrawGroup(Graphics* g);
 	void                        AddTriangle(Graphics* g, Image* theImage, const SexyMatrix3& theMatrix, const Rect& theClipRect, const Color& theColor, int theDrawMode, const Rect& theSrcRect);
+	int                         AppendTriangleDrawMode(int theDrawMode);
 };
 
 extern bool gPvzpTriangleDrawAdditive;
