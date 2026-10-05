@@ -129,7 +129,15 @@ You can also [download the WASM build](https://github.com/wszqkzqk/PvZ-Portable/
 
 ## Game Version Compatibility
 
-This project is designed and tested against Plants vs. Zombies **GOTY Edition 1.2.0.1073** EN (the standalone PopCap release). **Non-English GOTY editions** (1.2.0.1093 DE/ES/FR/IT or 1.1.0.1056 ZH based on 1.2.0.1073) and the **Steam GOTY Edition 1.2.0.1096** are also fully playable — all game mechanics work correctly. The only differences are minor cosmetic UI text issues caused by renamed string keys across versions, and these can be **easily fixed** by the user via a custom `properties/default.xml` (see below).
+This project is designed and tested against Plants vs. Zombies **GOTY Edition 1.2.0.1073** EN (the standalone PopCap release). **Non-English GOTY editions** (1.2.0.1093 DE/ES/FR/IT or 1.1.0.1056 ZH based on 1.2.0.1073) and the **Steam GOTY Edition 1.2.0.1096** are also fully playable — all game mechanics work correctly. The only differences are minor cosmetic UI text issues caused by renamed string keys across versions, and these can be **easily fixed** by the user via a custom `properties/pvz-portable.xml`.
+
+For **1.2.0.1096** and **non-English GOTY editions**, generate compatibility and translation overrides with:
+
+```bash
+python3 scripts/make-compat-overrides.py "/path/to/main.pak"
+```
+
+The script writes `pvz-portable.xml` to the `properties/` directory beside `main.pak`. Use `-o` to choose a different output path or `--force` to overwrite an existing file.
 
 **Recommendation:** use the **1.2.0.1073 EN** asset package for the best **out-of-box** experience.
 
@@ -142,15 +150,7 @@ This project is designed and tested against Plants vs. Zombies **GOTY Edition 1.
 | **"Restart" button label missing** | The key `[RESTART_LEVEL]` (used for the button label) was renamed to `[RESTART_LEVEL_BUTTON]` in 1.2.0.1096. |
 | **Unencountered zombie shows `???`** instead of `(not encountered yet)` | The string `[NOT_ENCOUNTERED_YET]` changed its value to `???` in 1.2.0.1096; the old text was moved to a new key `[NOT_ENCOUNTERED_YET_DESCRIPTION]`. |
 | **Crazy Dave's plant sell price shows 1/10 of the correct value** | In 1.2.0.1073, the string template `[CRAZY_DAVE_1700]` contains a trailing `0` after `{SELL_PRICE}` (i.e. `${SELL_PRICE}0`) because the engine passes the price divided by 10. In 1.2.0.1096 the trailing `0` was removed, so the displayed price becomes 1/10 of the intended amount. |
-
-All of the above can be resolved by adding the missing or corrected string entries to a `properties/default.xml` file placed alongside the game data.
 </details>
-
-### Multilingual Support
-
-PvZ-Portable supports game resource data from **non-English versions** of Plants vs. Zombies **GOTY Edition**. The engine handles BOM-encoded text files and converts legacy Windows-1252 encodings to UTF-8, so localized files will be loaded correctly. If `properties/default.xml` and/or `properties/Layout.xml` exist in the game data, they are loaded **after** `LawnStrings.txt` and can override any string value. Both files are optional; when absent, built-in English defaults are used.
-
-Since `default.xml` takes priority over `LawnStrings.txt`, users can also **create or edit their own `properties/default.xml`** to add or override any string key, making it easy to fix version-specific display issues without modifying the engine.
 
 ## Dependencies
 
@@ -298,15 +298,15 @@ There's a Python script `scripts/pvzp-v4-converter.py` to inspect and modify `.v
 ```bash
 # Modify these paths as needed
 # View basic info
-python scripts/pvzp-v4-converter.py info ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
+python3 scripts/pvzp-v4-converter.py info ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
 
 # Export to YAML for editing
-python scripts/pvzp-v4-converter.py export ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4 level.yaml
+python3 scripts/pvzp-v4-converter.py export ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4 level.yaml
 
 # Import back to savegame
 # **BACKUP** your original .v4 file fist!
 mv ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4 ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4.bak
-python scripts/pvzp-v4-converter.py import level.yaml ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
+python3 scripts/pvzp-v4-converter.py import level.yaml ~/.local/io.github.wszqkzqk/PvZPortable/userdata/game1_13.v4
 ```
 
 ## Recording and Playing Back Gameplay
