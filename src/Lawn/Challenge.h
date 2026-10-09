@@ -87,7 +87,7 @@ public:
 	int32_t                 mTreeOfWisdomTalkIndex;
 
 public:
-	Challenge();
+	Challenge(Board* theBoard);
 
 	void                    StartLevel();
 	void                    BeghouledPopulateBoard();

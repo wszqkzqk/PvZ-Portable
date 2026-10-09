@@ -402,7 +402,7 @@ void Music::FadeOut(int theFadeOutDuration)
 
 void Music::UpdateMusicBurst()
 {
-	if (mApp->mBoard == nullptr)
+	if (mApp->GetBoard() == nullptr)
 		return;
 	if (mApp->mGameMode == GameMode::GAMEMODE_INTRO)
 		return;
@@ -428,7 +428,7 @@ void Music::UpdateMusicBurst()
 	switch (mMusicBurstState)
 	{
 		case MusicBurstState::MUSIC_BURST_OFF:
-			if (mApp->mBoard->CountZombiesOnScreen() >= 10 || mBurstOverride == 1)
+			if (mApp->GetBoard()->CountZombiesOnScreen() >= 10 || mBurstOverride == 1)
 				StartBurst();
 			break;
 		case MusicBurstState::MUSIC_BURST_STARTING:
@@ -471,7 +471,7 @@ void Music::UpdateMusicBurst()
 			aFadeTrackVolume = 1.0f;
 			if (aBurstScheme == 2)
 				aMainTrackVolume = 0.0f;
-			if (mBurstStateCounter == 0 && ((mApp->mBoard->CountZombiesOnScreen() < 4 && mBurstOverride == -1) || mBurstOverride == 2))
+			if (mBurstStateCounter == 0 && ((mApp->GetBoard()->CountZombiesOnScreen() < 4 && mBurstOverride == -1) || mBurstOverride == 2))
 			{
 				if (aBurstScheme == 1)
 				{
@@ -573,7 +573,7 @@ void Music::MusicUpdate()
 		}
 	}
 
-	if (mApp->mBoard == nullptr || !mApp->mBoard->mPaused)
+	if (mApp->GetBoard() == nullptr || !mApp->GetBoard()->mPaused)
 	{
 		UpdateMusicBurst();
 	}
@@ -590,7 +590,7 @@ void Music::MakeSureMusicIsPlaying(MusicTune theMusicTune)
 
 void Music::StartGameMusic()
 {
-	PVZP_ASSERT(mApp->mBoard);
+	PVZP_ASSERT(mApp->GetBoard());
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN || mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM)
 		MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_ZEN_GARDEN);
@@ -606,16 +606,16 @@ void Music::StartGameMusic()
 		StopAllMusic();
 	else if (mApp->IsScaryPotterLevel() || mApp->IsIZombieLevel())
 		MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_PUZZLE_CEREBRAWL);
-	else if (mApp->mBoard->StageIsNight())
+	else if (mApp->GetBoard()->StageIsNight())
 	{
-		if (mApp->mBoard->StageHasPool())
+		if (mApp->GetBoard()->StageHasPool())
 			MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_FOG_RIGORMORMIST);
 		else
 			MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_NIGHT_MOONGRAINS);
 	}
-	else if (mApp->mBoard->StageHas6Rows())
+	else if (mApp->GetBoard()->StageHas6Rows())
 		MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_POOL_WATERYGRAVES);
-	else if (mApp->mBoard->StageHasRoof())
+	else if (mApp->GetBoard()->StageHasRoof())
 		MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_ROOF_GRAZETHEROOF);
 	else
 		MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_DAY_GRASSWALK);

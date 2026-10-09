@@ -40,7 +40,7 @@ public:
 	ReanimationID			mReanimCursorID;
 
 public:
-	CursorObject();
+	CursorObject(Board* theBoard);
 
 	void					Update();
 	void					Draw(Graphics* g);
@@ -54,7 +54,7 @@ public:
 	int32_t					mGridY;
 
 public:
-	CursorPreview();
+	CursorPreview(Board* theBoard);
 
 	void					Update();
 	void					Draw(Graphics* g);

@@ -68,13 +68,13 @@ class WidgetSafeDeleteInfo
 {
 public:
 	int						mUpdateAppDepth;
-	Widget*					mWidget;
+	std::unique_ptr<Widget>	mWidget;
 };
 
 
 typedef std::list<WidgetSafeDeleteInfo> WidgetSafeDeleteList;
 typedef std::set<MemoryImage*> MemoryImageSet;
-typedef std::map<int, Dialog*> DialogMap;
+typedef std::map<int, std::unique_ptr<Dialog>> DialogMap;
 typedef std::list<Dialog*> DialogList;
 
 typedef std::map<std::string, bool, std::less<>> StringBoolMap;
@@ -441,7 +441,7 @@ public:
 	virtual int				MsgBox(const std::string &theText, const std::string &theTitle = "Message", int theFlags = 0);
 	virtual void			Popup(const std::string& theString);
 	virtual void			LogScreenSaverError(const std::string &theError);
-	virtual void			SafeDeleteWidget(Widget* theWidget);
+	virtual void			SafeDeleteWidget(std::unique_ptr<Widget> theWidget);
 
 	virtual void			URLOpenFailed(const std::string& theURL);
 	virtual void			URLOpenSucceeded(const std::string& theURL);

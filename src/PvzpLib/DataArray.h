@@ -22,6 +22,7 @@
 #ifndef __DATAARRAY_H__
 #define __DATAARRAY_H__
 
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <new>
@@ -52,6 +53,7 @@ public:
 	unsigned int			mSize = 0U;
 	unsigned int			mNextKey = 1U;
 	const char*				mName = nullptr;
+	std::function<void(T*)>	mPostAllocCallback = nullptr;
 
 public:
 	DataArray() = default;
@@ -61,7 +63,7 @@ public:
 		DataArrayDispose();
 	}
 
-	void DataArrayInitialize(unsigned int theMaxSize, const char* theName)
+	void DataArrayInitialize(unsigned int theMaxSize, const char* theName, std::function<void(T*)> thePostAllocCallback = nullptr)
 	{
 		PVZP_ASSERT(mItems == nullptr);
 		mItems = std::make_unique<DataArrayItem[]>(theMaxSize);
@@ -69,6 +71,7 @@ public:
 		mMaxSize = theMaxSize;
 		mNextKey = 1001U;
 		mName = theName;
+		mPostAllocCallback = std::move(thePostAllocCallback);
 	}
 
 	void DataArrayDispose()
@@ -170,6 +173,9 @@ public:
 		mItemIds[aNext] = (mNextKey++ << DATA_ARRAY_KEY_SHIFT) | aNext;
 		if (mNextKey == DATA_ARRAY_MAX_SIZE) mNextKey = 1;
 		mSize++;
+
+		if (mPostAllocCallback)
+			mPostAllocCallback(&aNewItem);
 
 		return &aNewItem;
 	}
