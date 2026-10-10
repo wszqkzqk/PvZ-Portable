@@ -358,7 +358,7 @@ public:
 	void                            UpdateMowered();
 	void                            DropFlag();
 	void                            SetupZombatarFlagReanim(int theRecordIndex);
-	void                            ApplyZombatarHead(const unsigned char* theRecord);
+	void                            ApplyZombatarHead(const uint8_t* theRecord);
 	void                            DropPole();
 	void                            DrawBossBackArm(Graphics* g, const ZombieDrawPosition& theDrawPos);
 	static void                     PreloadZombieResources(ZombieType theZombieType);

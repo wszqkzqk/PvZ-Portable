@@ -126,7 +126,7 @@ private:
 	void						DrawCreate(Graphics* g);
 	void						DrawConfirm(Graphics* g);
 	void						DrawTransition(Graphics* g);
-	void						DrawAvatar(Graphics* g, int theX, int theY, const unsigned char* theRecord);
+	void						DrawAvatar(Graphics* g, int theX, int theY, const uint8_t* theRecord);
 	void						DrawDraftAvatar(Graphics* g, int theX, int theY);
 	void						DrawColorSwatches(Graphics* g, int thePaletteBase, int theCount, int theSavedColor);
 	void						CreatePreviewZombie();
@@ -146,8 +146,8 @@ private:
 	Image*						GetPartMaskImage(ZombatarPage thePage, int theIndex) const;
 	Image*						GetBackgroundImage(int theIndex) const;
 	void						DrawPartImage(Graphics* g, ZombatarPage thePage, int theIndex, int theX, int theY, int theColorIndex);
-	void						DecodeRecord(const unsigned char* theRecord, int* thePart, int* theColor) const;
-	void						EncodeRecord(unsigned char* theRecord) const;
+	void						DecodeRecord(const uint8_t* theRecord, int* thePart, int* theColor) const;
+	void						EncodeRecord(uint8_t* theRecord) const;
 	void						BackToSelector();
 	void						ShowMaxHeadsMessage();
 	void						HandleGridClick(int theX, int theY);

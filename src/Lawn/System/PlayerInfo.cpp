@@ -164,7 +164,7 @@ void PlayerInfo::SyncDetails(DataSync& theSync)
 				theSync.SyncBytes(mZombatarData.data(), static_cast<uint32_t>(mZombatarData.size()));
 			}
 			{
-				unsigned char aMiniGameFlags[0x14]; // consumed and discarded: derived from mChallengeRecords on save
+				uint8_t aMiniGameFlags[0x14]; // consumed and discarded: derived from mChallengeRecords on save
 				theSync.SyncBytes(aMiniGameFlags, sizeof(aMiniGameFlags));
 			}
 
@@ -199,7 +199,7 @@ void PlayerInfo::SyncDetails(DataSync& theSync)
 		theSync.SyncBytes(mZombatarData.data(), aZombatarDataBytes);
 	}
 	{
-		unsigned char aMiniGameFlags[0x14] = {};
+		uint8_t aMiniGameFlags[0x14] = {};
 		for (int i = 0; i < 20; i++)
 		{
 			aMiniGameFlags[i] = mChallengeRecords[i + 0x0F] > 0 ? 1 : 0;

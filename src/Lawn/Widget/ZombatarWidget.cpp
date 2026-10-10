@@ -487,7 +487,7 @@ void ZombatarWidget::ClampCurrentIndex()
 	}
 }
 
-void ZombatarWidget::DecodeRecord(const unsigned char* theRecord, int* thePart, int* theColor) const
+void ZombatarWidget::DecodeRecord(const uint8_t* theRecord, int* thePart, int* theColor) const
 {
 	for (int i = 0; i < NUM_ZOMBATAR_PAGES; i++)
 	{
@@ -522,7 +522,7 @@ void ZombatarWidget::DecodeRecord(const unsigned char* theRecord, int* thePart, 
 	}
 }
 
-void ZombatarWidget::EncodeRecord(unsigned char* theRecord) const
+void ZombatarWidget::EncodeRecord(uint8_t* theRecord) const
 {
 	memset(theRecord, 0, ZOMBATAR_RECORD_SIZE);
 	ZombatarWriteRecordSlot(theRecord, ZOMBATAR_SLOT_SKIN_PART, ZOMBATAR_COLOR_NONE);
@@ -545,7 +545,7 @@ void ZombatarWidget::LoadCurrentToDraft()
 	}
 
 	ClampCurrentIndex();
-	const unsigned char* aRecord = mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE;
+	const uint8_t* aRecord = mApp->mPlayerInfo->mZombatarData.data() + mCurrentIndex * ZOMBATAR_RECORD_SIZE;
 	DecodeRecord(aRecord, mPart, mColor);
 }
 
@@ -577,7 +577,7 @@ void ZombatarWidget::DeleteCurrent()
 		return;
 
 	ClampCurrentIndex();
-	unsigned char* aData = aPlayerInfo->mZombatarData.data();
+	uint8_t* aData = aPlayerInfo->mZombatarData.data();
 	size_t aOffset = static_cast<size_t>(mCurrentIndex) * ZOMBATAR_RECORD_SIZE;
 	size_t aTailOffset = aOffset + ZOMBATAR_RECORD_SIZE;
 	size_t aTailBytes = aPlayerInfo->mZombatarData.size() - aTailOffset;
@@ -834,7 +834,7 @@ void ZombatarWidget::DrawPartImage(Graphics* g, ZombatarPage thePage, int theInd
 	}
 }
 
-void ZombatarWidget::DrawAvatar(Graphics* g, int theX, int theY, const unsigned char* theRecord)
+void ZombatarWidget::DrawAvatar(Graphics* g, int theX, int theY, const uint8_t* theRecord)
 {
 	int aPart[NUM_ZOMBATAR_PAGES];
 	int aColor[NUM_ZOMBATAR_PAGES];
@@ -879,7 +879,7 @@ void ZombatarWidget::DrawAvatar(Graphics* g, int theX, int theY, const unsigned 
 
 void ZombatarWidget::DrawDraftAvatar(Graphics* g, int theX, int theY)
 {
-	unsigned char aRecord[ZOMBATAR_RECORD_SIZE];
+	uint8_t aRecord[ZOMBATAR_RECORD_SIZE];
 	EncodeRecord(aRecord);
 	DrawAvatar(g, theX, theY, aRecord);
 }
@@ -934,8 +934,8 @@ void ZombatarWidget::DrawAvatarBox(Graphics* g)
 	if (!mPreviewZombie)
 		return;
 
-	const unsigned char* aRecord = nullptr;
-	unsigned char aDraft[ZOMBATAR_RECORD_SIZE];
+	const uint8_t* aRecord = nullptr;
+	uint8_t aDraft[ZOMBATAR_RECORD_SIZE];
 	if (mState == ZOMBATAR_STATE_LIST)
 	{
 		if (GetHeadCount() <= 0)

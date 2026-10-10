@@ -30,10 +30,10 @@ class DataReader
 {
 protected:
 	FILE*					mFile;
-	const char*				mData;
+	const uint8_t*			mData;
 	uint32_t				mDataLen;
 	uint32_t				mDataPos;
-	std::unique_ptr<char[]>	mOwnedData;
+	std::unique_ptr<uint8_t[]>	mOwnedData;
 
 public:
 	DataReader();
@@ -63,7 +63,7 @@ class DataWriter
 {
 protected:
 	FILE*					mFile;
-	std::vector<char>			mData;
+	std::vector<uint8_t>		mData;
 
 public:
 	DataWriter();
@@ -113,7 +113,7 @@ public:
 	void					SyncUInt32(char& theNum);
 	void					SyncUInt32(short& theNum);
 	void					SyncUInt32(long& theNum);
-	void					SyncUInt32(unsigned char& theNum);
+	void					SyncUInt32(uint8_t& theNum);
 	void					SyncUInt32(unsigned short& theNum);
 	void					SyncUInt32(uint32_t& theNum);
 	void					SyncUInt32(int32_t& theNum);
@@ -122,7 +122,7 @@ public:
 	void					SyncUInt16(char& theNum);
 	void					SyncUInt16(short& theNum);
 	void					SyncUInt16(long& theNum);
-	void					SyncUInt16(unsigned char& theNum);
+	void					SyncUInt16(uint8_t& theNum);
 	void					SyncUInt16(uint16_t& theNum);
 	void					SyncUInt16(uint32_t& theNum);
 	void					SyncUInt16(int32_t& theNum);

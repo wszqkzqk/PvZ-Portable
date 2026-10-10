@@ -28,10 +28,6 @@
 #include "PakInterface.h"
 #include "fcaseopen/fcaseopen.h"
 
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned long ulong;
-
 enum
 {
 	FILEFLAGS_END = 0x80
@@ -77,7 +73,7 @@ std::string PakInterface::NormalizePakPath(std::string_view theFileName)
 		aResult = aResult.substr(2);
 
 	std::transform(aResult.begin(), aResult.end(), aResult.begin(),
-				   [](unsigned char c) { return std::toupper(c); });
+				   [](uint8_t c) { return std::toupper(c); });
 
 	return aResult;
 }
@@ -168,12 +164,12 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 	int aPos = 0;
 	for (;;)
 	{
-		uchar aFlags = 0;
+		uint8_t aFlags = 0;
 		int aCount = FRead(&aFlags, 1, 1, aFP);
 		if ((aFlags & FILEFLAGS_END) || (aCount == 0))
 			break;
 
-		uchar aNameWidth = 0;
+		uint8_t aNameWidth = 0;
 		char aName[256];
 		FRead(&aNameWidth, 1, 1, aFP);
 		FRead(aName, 1, aNameWidth, aFP);
@@ -335,7 +331,7 @@ static size_t ReadRecordBytes(PFILE* theFile, void* thePtr, int theSize)
 #else
 	int aSizeBytes = std::min(theSize, theFile->mRecord->mSize - theFile->mPos);
 
-	uchar* src = (uchar*) theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos;
+	uint8_t* src = (uint8_t*) theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos;
 	memcpy(thePtr, src, aSizeBytes);
 	theFile->mPos += aSizeBytes;
 	return aSizeBytes;
@@ -362,7 +358,7 @@ int PakInterface::FGetC(PFILE* theFile)
 			if (ReadRecordBytes(theFile, &aChar, 1) == 0)
 				return EOF;
 			if (aChar != '\r')
-				return (uchar) aChar;
+				return (uint8_t) aChar;
 		}
 	}
 

@@ -255,11 +255,11 @@ Image* GetTGAImage(const std::string& theFileName)
 	return anImage;
 }
 
-int ReadBlobBlock(PFILE* fp, char* data)
+int ReadBlobBlock(PFILE* fp, uint8_t* data)
 {
-	unsigned char aCount = 0;
-	p_fread(&aCount, sizeof(char), 1, fp);
-	p_fread(data, sizeof(char), aCount, fp);
+	uint8_t aCount = 0;
+	p_fread(&aCount, sizeof(uint8_t), 1, fp);
+	p_fread(data, sizeof(uint8_t), aCount, fp);
 	return aCount;
 }
 
@@ -273,16 +273,16 @@ Image* GetGIFImage(const std::string& theFileName)
 
 	int i;
 
-	unsigned char *p;
+	uint8_t *p;
 
-	unsigned char
+	uint8_t
 		background,			// background color index in the global colormap
 		c,
 		flag,				// packed flag byte
 		header[1664],
 		magick[12];
 
-	std::unique_ptr<unsigned char[]> global_colormap;
+	std::unique_ptr<uint8_t[]> global_colormap;
 
 	unsigned int
 		global_colors;
@@ -298,7 +298,7 @@ Image* GetGIFImage(const std::string& theFileName)
 	/*
 	Determine if this is a GIF file.
 	*/
-	p_fread(magick, sizeof(char), 6, fp.get());
+	p_fread(magick, sizeof(uint8_t), 6, fp.get());
 
 	// a valid GIF file starts with a "GIF87" or "GIF89" signature
 	if (((strncmp((char*)magick, "GIF87", 5) != 0) && (strncmp((char*)magick, "GIF89", 5) != 0)))
@@ -314,9 +314,9 @@ Image* GetGIFImage(const std::string& theFileName)
 	p_fread(&ph, sizeof(short), 1, fp.get());
 	pw = Sexy::FromLE16(pw);
 	ph = Sexy::FromLE16(ph);
-	p_fread(&flag, sizeof(char), 1, fp.get());
-	p_fread(&background, sizeof(char), 1, fp.get());  // only meaningful when a global colormap exists
-	p_fread(&c, sizeof(char), 1, fp.get());  // pixel aspect ratio
+	p_fread(&flag, sizeof(uint8_t), 1, fp.get());
+	p_fread(&background, sizeof(uint8_t), 1, fp.get());  // only meaningful when a global colormap exists
+	p_fread(&c, sizeof(uint8_t), 1, fp.get());  // pixel aspect ratio
 
 	if (BitSet(flag, 0x80))  // global colormap present
 	{
@@ -324,16 +324,16 @@ Image* GetGIFImage(const std::string& theFileName)
 		opacity global colormap.
 		*/
 		global_colors = 1 << ((flag & 0x07) + 1);  // lowest 3 bits give N; table size = 2^(N+1)
-		global_colormap = std::make_unique<unsigned char[]>(3 * global_colors);  // 3 bytes per color, RGB
+		global_colormap = std::make_unique<uint8_t[]>(3 * global_colors);  // 3 bytes per color, RGB
 
-		p_fread(global_colormap.get(), sizeof(char), 3 * global_colors, fp.get());
+		p_fread(global_colormap.get(), sizeof(uint8_t), 3 * global_colors, fp.get());
 	}
 
 	opacity = (-1);
 
 	for (; ; )
 	{
-		if (p_fread(&c, sizeof(char), 1, fp.get()) == 0)
+		if (p_fread(&c, sizeof(uint8_t), 1, fp.get()) == 0)
 			break;  // on read error or EOF, bail out and return nullptr
 
 		if (c == ';')
@@ -343,7 +343,7 @@ Image* GetGIFImage(const std::string& theFileName)
 			/*
 			GIF Extension block.
 			*/
-			p_fread(&c, sizeof(char), 1, fp.get());  // read the extension label
+			p_fread(&c, sizeof(uint8_t), 1, fp.get());  // read the extension label
 
 			switch (c)
 			{
@@ -352,7 +352,7 @@ Image* GetGIFImage(const std::string& theFileName)
 				/*
 				Read Graphics Control extension.
 				*/
-				while (ReadBlobBlock(fp.get(), (char*)header) > 0);
+				while (ReadBlobBlock(fp.get(), header) > 0);
 
 				if ((header[0] & 0x01) == 1)
 					opacity = header[3];
@@ -363,7 +363,7 @@ Image* GetGIFImage(const std::string& theFileName)
 				/*
 				Read/Discard Comment extension.
 				*/
-				while (ReadBlobBlock(fp.get(), (char*)header) > 0);
+				while (ReadBlobBlock(fp.get(), header) > 0);
 				break;
 			}
 			case 0xff:
@@ -371,13 +371,13 @@ Image* GetGIFImage(const std::string& theFileName)
 				/*
 				Read Netscape Loop extension.
 				*/
-				ReadBlobBlock(fp.get(), (char*)header);
-				while (ReadBlobBlock(fp.get(), (char*)header) > 0);
+				ReadBlobBlock(fp.get(), header);
+				while (ReadBlobBlock(fp.get(), header) > 0);
 				break;
 			}
 			default:
 			{
-				while (ReadBlobBlock(fp.get(), (char*)header) > 0);
+				while (ReadBlobBlock(fp.get(), header) > 0);
 				break;
 			}
 			}
@@ -401,7 +401,7 @@ Image* GetGIFImage(const std::string& theFileName)
 		pagey = Sexy::FromLE16(pagey);
 		width = Sexy::FromLE16(width);
 		height = Sexy::FromLE16(height);
-		p_fread(&flag, sizeof(char), 1, fp.get());
+		p_fread(&flag, sizeof(uint8_t), 1, fp.get());
 
 		colors = !BitSet(flag, 0x80) ? global_colors : 1 << ((flag & 0x07) + 1);  // use the local colormap if present, else the global one
 		auto colortable = std::make_unique<uint32_t[]>(colors);
@@ -430,11 +430,11 @@ Image* GetGIFImage(const std::string& theFileName)
 			/*
 			Read local colormap.
 			*/
-			auto colormap = std::make_unique<unsigned char[]>(3 * colors);
+			auto colormap = std::make_unique<uint8_t[]>(3 * colors);
 
 			[[maybe_unused]] int pos = p_ftell(fp.get());
 
-			p_fread(colormap.get(), sizeof(char), 3 * colors, fp.get());
+			p_fread(colormap.get(), sizeof(uint8_t), 3 * colors, fp.get());
 
 			p = colormap.get();
 			for (i = 0; i < (int)colors; i++)
@@ -475,12 +475,12 @@ constexpr const int NullCode = -1;
 
 		std::unique_ptr<short[]> prefix;
 
-		unsigned char
+		uint8_t
 			data_size,
 			first,
 			* top_stack;
 
-		std::unique_ptr<unsigned char[]>
+		std::unique_ptr<uint8_t[]>
 			packet,
 			pixel_stack,
 			suffix;
@@ -489,15 +489,15 @@ constexpr const int NullCode = -1;
 		Allocate decoder tables.
 		*/
 
-		packet = std::make_unique<unsigned char[]>(256);
+		packet = std::make_unique<uint8_t[]>(256);
 		prefix = std::make_unique<short[]>(MaxStackSize);
-		suffix = std::make_unique<unsigned char[]>(MaxStackSize);
-		pixel_stack = std::make_unique<unsigned char[]>(MaxStackSize + 1);
+		suffix = std::make_unique<uint8_t[]>(MaxStackSize);
+		pixel_stack = std::make_unique<uint8_t[]>(MaxStackSize + 1);
 
 		/*
 		Initialize GIF data stream decoder.
 		*/
-		p_fread(&data_size, sizeof(char), 1, fp.get());
+		p_fread(&data_size, sizeof(uint8_t), 1, fp.get());
 		if (data_size < 2 || data_size > 11)
 			return nullptr;
 		clear = 1 << data_size;
@@ -509,7 +509,7 @@ constexpr const int NullCode = -1;
 		for (code = 0; code < clear; code++)
 		{
 			prefix[code] = 0;
-			suffix[code] = (unsigned char)code;
+			suffix[code] = (uint8_t)code;
 		}
 		/*
 		Decode GIF pixel stream.
@@ -525,7 +525,7 @@ constexpr const int NullCode = -1;
 
 		uint32_t* aBits = new uint32_t[width * height];
 
-		unsigned char* c = nullptr;
+		uint8_t* c = nullptr;
 
 		for (y = 0; y < (int)height; y++)
 		{
@@ -549,7 +549,7 @@ constexpr const int NullCode = -1;
 							*/
 							[[maybe_unused]] int pos = p_ftell(fp.get());
 
-							count = ReadBlobBlock(fp.get(), (char*)packet.get());
+							count = ReadBlobBlock(fp.get(), packet.get());
 							if (count <= 0)
 								break;
 							c = packet.get();
@@ -586,7 +586,7 @@ constexpr const int NullCode = -1;
 					{
 						*top_stack++ = suffix[code];
 						old_code = code;
-						first = (unsigned char)code;
+						first = (uint8_t)code;
 						continue;
 					}
 					in_code = code;
@@ -733,7 +733,7 @@ bool ImageLib::WriteJPEGImage(const std::string& theFileName, Image* theImage)
 	jerr.pub.error_exit = my_error_exit;
 
 	// must be volatile: assigned after setjmp, read in the error path after longjmp
-	unsigned char* volatile aTempBuffer = nullptr;
+	uint8_t* volatile aTempBuffer = nullptr;
 
 	if (setjmp(jerr.setjmp_buffer))
 	{
@@ -741,7 +741,7 @@ bool ImageLib::WriteJPEGImage(const std::string& theFileName, Image* theImage)
 		 * We need to clean up the JPEG object, close the input file, and return.
 		 */
 		jpeg_destroy_compress(&cinfo);
-		delete[] (unsigned char*)aTempBuffer;
+		delete[] (uint8_t*)aTempBuffer;
 		fclose(fp);
 		return false;
 	}
@@ -762,13 +762,13 @@ bool ImageLib::WriteJPEGImage(const std::string& theFileName, Image* theImage)
 
 	int row_stride = theImage->GetWidth() * 3;
 
-	aTempBuffer = new unsigned char[row_stride];
+	aTempBuffer = new uint8_t[row_stride];
 
 	uint32_t* aSrcPtr = theImage->mBits.get();
 
 	for (int aRow = 0; aRow < theImage->mHeight; aRow++)
 	{
-		unsigned char* aDest = aTempBuffer;
+		uint8_t* aDest = aTempBuffer;
 
 		for (int aCol = 0; aCol < theImage->mWidth; aCol++)
 		{
@@ -779,7 +779,7 @@ bool ImageLib::WriteJPEGImage(const std::string& theFileName, Image* theImage)
 			*aDest++ = (src      ) & 0xFF;
 		}
 
-		unsigned char* aRowBuffer = aTempBuffer;
+		uint8_t* aRowBuffer = aTempBuffer;
 		jpeg_write_scanlines(&cinfo, &aRowBuffer, 1);
 	}
 
@@ -1065,7 +1065,7 @@ Image* GetJPEGImage(const std::string& theFileName)
 	jpeg_start_decompress(&cinfo);
 	int row_stride = cinfo.output_width * cinfo.output_components;
 
-	unsigned char** buffer = (*cinfo.mem->alloc_sarray)
+	uint8_t** buffer = (*cinfo.mem->alloc_sarray)
 		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
 	aBits = new uint32_t[cinfo.output_width*cinfo.output_height];
@@ -1077,7 +1077,7 @@ Image* GetJPEGImage(const std::string& theFileName)
 		{
 			jpeg_read_scanlines(&cinfo, buffer, 1);
 
-			unsigned char* p = *buffer;
+			uint8_t* p = *buffer;
 			for (unsigned int i = 0; i < cinfo.output_width; i++)
 			{
 				int r = *p++;
@@ -1091,7 +1091,7 @@ Image* GetJPEGImage(const std::string& theFileName)
 		{
 			jpeg_read_scanlines(&cinfo, buffer, 1);
 
-			unsigned char* p = *buffer;
+			uint8_t* p = *buffer;
 			for (unsigned int i = 0; i < cinfo.output_width; i++)
 			{
 				int r = *p++;
@@ -1137,8 +1137,8 @@ static bool EqualsIgnoreCase(std::string_view theLeft, std::string_view theRight
 
 	for (size_t i = 0; i < theLeft.size(); i++)
 	{
-		const unsigned char aLeftChar = static_cast<unsigned char>(theLeft[i]);
-		const unsigned char aRightChar = static_cast<unsigned char>(theRight[i]);
+		const uint8_t aLeftChar = static_cast<uint8_t>(theLeft[i]);
+		const uint8_t aRightChar = static_cast<uint8_t>(theRight[i]);
 		if (std::tolower(aLeftChar) != std::tolower(aRightChar))
 			return false;
 	}

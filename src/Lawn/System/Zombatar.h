@@ -51,14 +51,14 @@ enum ZombatarRecordSlot
 	ZOMBATAR_SLOT_BACKGROUND_COLOR = 17
 };
 
-inline uint32_t ZombatarReadRecordSlot(const unsigned char* theRecord, int theSlot)
+inline uint32_t ZombatarReadRecordSlot(const uint8_t* theRecord, int theSlot)
 {
 	uint32_t aValue = 0;
 	memcpy(&aValue, theRecord + theSlot * 4, sizeof(aValue));
 	return Sexy::FromLE32(aValue);
 }
 
-inline int ZombatarReadSignedRecordSlot(const unsigned char* theRecord, int theSlot)
+inline int ZombatarReadSignedRecordSlot(const uint8_t* theRecord, int theSlot)
 {
 	uint32_t aValue = ZombatarReadRecordSlot(theRecord, theSlot);
 	if (aValue > static_cast<uint32_t>(INT32_MAX))
@@ -66,7 +66,7 @@ inline int ZombatarReadSignedRecordSlot(const unsigned char* theRecord, int theS
 	return static_cast<int>(aValue);
 }
 
-inline void ZombatarWriteRecordSlot(unsigned char* theRecord, int theSlot, int theValue)
+inline void ZombatarWriteRecordSlot(uint8_t* theRecord, int theSlot, int theValue)
 {
 	uint32_t aValue = Sexy::ToLE32(static_cast<uint32_t>(theValue));
 	memcpy(theRecord + theSlot * 4, &aValue, sizeof(aValue));

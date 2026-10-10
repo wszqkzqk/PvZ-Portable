@@ -101,11 +101,11 @@ public:
 	PottedPlant         mPottedPlant[MAX_POTTED_PLANTS];    //+0x358
 	bool                mEarnedAchievements[20];            //+0x24
 	bool                mShownAchievements[20];
-	unsigned char       mZombatarAccepted;                  //+0x28
+	uint8_t             mZombatarAccepted;                  //+0x28
 	uint32_t            mZombatarHeadCount;                 //+0x29
-	std::vector<unsigned char> mZombatarData;               // raw 0x48 * count
+	std::vector<uint8_t> mZombatarData;                     // raw 0x48 * count
 	// mini-game completion flags (20 bytes in the save after the Zombatar records) are derived from mChallengeRecords at save time; no runtime field
-	unsigned char       mZombatarCreatedBefore;             // created at least one Zombatar (0/1)
+	uint8_t             mZombatarCreatedBefore;             // created at least one Zombatar (0/1)
 
 public:
 	PlayerInfo();

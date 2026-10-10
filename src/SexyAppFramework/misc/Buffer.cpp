@@ -79,7 +79,7 @@ static constexpr std::array<uint32_t, 256> crc_table = GenerateCRCTable();
 
 // Update the CRC on the data block one byte at a time.
 static uint32_t UpdateCRC(uint32_t crc_accum,
-						const char *data_blk_ptr,
+						const uint8_t *data_blk_ptr,
 						int data_blk_size)
 {
 	int i, j;
@@ -240,7 +240,7 @@ void Buffer::FromWebString(std::string_view theString)
 	int aNumBitsLeft = aSizeBits;
 	while (aNumBitsLeft > 0)
 	{
-		uchar aChar = theString[aCharIdx++];
+		uint8_t aChar = theString[aCharIdx++];
 		int aVal = WEB_DECODE_MAP[aChar];
 		int aNumBits = std::min(aNumBitsLeft, 6);
 		WriteNumBits(aVal, aNumBits);
@@ -263,15 +263,15 @@ void Buffer::Clear()
 	mData.clear();
 }
 
-void Buffer::WriteByte(uchar theByte)
+void Buffer::WriteByte(uint8_t theByte)
 {
 	if (mWriteBitPos % 8 == 0)
-		mData.push_back((char) theByte);
+		mData.push_back(theByte);
 	else
 	{
 		int anOfs = mWriteBitPos  % 8;
 		mData[mWriteBitPos /8] |= theByte << anOfs;
-		mData.push_back((char) (theByte >> (8-anOfs)));
+		mData.push_back(theByte >> (8-anOfs));
 	}
 
 	mWriteBitPos += 8;
@@ -314,16 +314,16 @@ void Buffer::WriteBoolean(bool theBool)
 
 void Buffer::WriteShort(short theShort)
 {
-	WriteByte((uchar)theShort);
-	WriteByte((uchar)(theShort >> 8));
+	WriteByte((uint8_t)theShort);
+	WriteByte((uint8_t)(theShort >> 8));
 }
 
 void Buffer::WriteUInt32(uint32_t theValue)
 {
-	WriteByte(static_cast<uchar>(theValue));
-	WriteByte(static_cast<uchar>(theValue >> 8));
-	WriteByte(static_cast<uchar>(theValue >> 16));
-	WriteByte(static_cast<uchar>(theValue >> 24));
+	WriteByte(static_cast<uint8_t>(theValue));
+	WriteByte(static_cast<uint8_t>(theValue >> 8));
+	WriteByte(static_cast<uint8_t>(theValue >> 16));
+	WriteByte(static_cast<uint8_t>(theValue >> 24));
 }
 
 void Buffer::WriteInt32(int32_t theValue)
@@ -340,17 +340,17 @@ void Buffer::WriteString(const std::string& theString)
 
 void Buffer::WriteLine(const std::string& theString)
 {
-	WriteBytes((const uchar*) (theString + "\r\n").c_str(), (int) theString.length() + 2);
+	WriteBytes((const uint8_t*) (theString + "\r\n").c_str(), (int) theString.length() + 2);
 }
 
 void Buffer::WriteBuffer(const ByteVector& theBuffer)
 {
 	WriteUInt32(static_cast<uint32_t>(theBuffer.size()));
-	for (uchar aByte : theBuffer)
+	for (uint8_t aByte : theBuffer)
 		WriteByte(aByte);
 }
 
-void Buffer::WriteBytes(const uchar* theByte, int theCount)
+void Buffer::WriteBytes(const uint8_t* theByte, int theCount)
 {
 	for (int i = 0; i < theCount; i++)
 		WriteByte(theByte[i]);
@@ -362,14 +362,14 @@ void Buffer::SetData(const ByteVector& theBuffer)
 	mDataBitSize = mData.size() * 8;
 }
 
-void Buffer::SetData(uchar* thePtr, int theCount)
+void Buffer::SetData(uint8_t* thePtr, int theCount)
 {
 	mData.clear();
 	mData.insert(mData.begin(), thePtr, thePtr + theCount);
 	mDataBitSize = mData.size() * 8;
 }
 
-uchar Buffer::ReadByte() const
+uint8_t Buffer::ReadByte() const
 {
 	if ((mReadBitPos + 7)/8 >= (int)mData.size())
 	{
@@ -378,7 +378,7 @@ uchar Buffer::ReadByte() const
 
 	if (mReadBitPos % 8 == 0)
 	{
-		uchar b = mData[mReadBitPos/8];
+		uint8_t b = mData[mReadBitPos/8];
 		mReadBitPos += 8;
 		return b;
 	}
@@ -386,7 +386,7 @@ uchar Buffer::ReadByte() const
 	{
 		int anOfs = mReadBitPos % 8;
 
-		uchar b = 0;
+		uint8_t b = 0;
 
 		b = mData[mReadBitPos/8] >> anOfs;
 		b |= mData[(mReadBitPos/8)+1] << (8 - anOfs);
@@ -479,7 +479,7 @@ std::string Buffer::ReadLine() const
 	return aString;
 }
 
-void Buffer::ReadBytes(uchar* theData, int theLen) const
+void Buffer::ReadBytes(uint8_t* theData, int theLen) const
 {
 	for (int i = 0; i < theLen; i++)
 		theData[i] = ReadByte();
@@ -494,7 +494,7 @@ void Buffer::ReadBuffer(ByteVector* theByteVector) const
 	ReadBytes(theByteVector->data(), static_cast<int>(aLength));
 }
 
-const uchar* Buffer::GetDataPtr() const
+const uint8_t* Buffer::GetDataPtr() const
 {
 	if (mData.size() == 0)
 		return nullptr;
@@ -514,7 +514,7 @@ int Buffer::GetDataLenBits() const
 uint32_t Buffer::GetCRC32(uint32_t theSeed) const
 {
 	uint32_t aCRC = theSeed;
-	aCRC = UpdateCRC(aCRC, (const char*) &mData[0], (int) mData.size());
+	aCRC = UpdateCRC(aCRC, mData.data(), static_cast<int>(mData.size()));
 	return aCRC;
 }
 

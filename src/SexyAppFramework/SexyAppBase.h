@@ -183,7 +183,7 @@ public:
 
 	bool					mOnlyAllowOneCopyToRun;
 	unsigned int			mNotifyGameMessage;
-	uchar					mAdd8BitMaxTable[512];
+	uint8_t					mAdd8BitMaxTable[512];
 	std::unique_ptr<WidgetManager>	mWidgetManager;
 	DialogMap				mDialogMap;
 	DialogList				mDialogList;
@@ -388,9 +388,9 @@ protected:
 	void					ShowMemoryUsage();
 
 	// Registry helpers
-	bool					RegistryRead(const std::string& theValueName, uint32_t* theType, uchar* theValue, uint32_t* theLength);
-	bool					RegistryReadKey(const std::string& theValueName, uint32_t* theType, uchar* theValue, uint32_t* theLength);
-	bool					RegistryWrite(const std::string& theValueName, uint32_t theType, const uchar* theValue, uint32_t theLength);
+	bool					RegistryRead(const std::string& theValueName, uint32_t* theType, uint8_t* theValue, uint32_t* theLength);
+	bool					RegistryReadKey(const std::string& theValueName, uint32_t* theType, uint8_t* theValue, uint32_t* theLength);
+	bool					RegistryWrite(const std::string& theValueName, uint32_t theType, const uint8_t* theValue, uint32_t theLength);
 
 	// Demo recording helpers
 	void					ProcessDemo();
@@ -595,11 +595,11 @@ public:
 	bool					RegistryReadString(const std::string& theValueName, std::string* theString);
 	bool					RegistryReadInteger(const std::string& theValueName, int* theValue);
 	bool					RegistryReadBoolean(const std::string& theValueName, bool* theValue);
-	bool					RegistryReadData(const std::string& theValueName, uchar* theValue, uint32_t* theLength);
+	bool					RegistryReadData(const std::string& theValueName, uint8_t* theValue, uint32_t* theLength);
 	bool					RegistryWriteString(const std::string& theValueName, const std::string& theString);
 	bool					RegistryWriteInteger(const std::string& theValueName, int theValue);
 	bool					RegistryWriteBoolean(const std::string& theValueName, bool theValue);
-	bool					RegistryWriteData(const std::string& theValueName, const uchar* theValue, uint32_t theLength);
+	bool					RegistryWriteData(const std::string& theValueName, const uint8_t* theValue, uint32_t theLength);
 	bool					RegistryEraseKey(const std::string& theKeyName);
 	void					RegistryEraseValue(const std::string& theValueName);
 

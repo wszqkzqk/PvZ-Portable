@@ -91,7 +91,7 @@ bool Music::PvzpLoadMusic(MusicFile theMusicFile, std::string_view theFileName)
 	int aSize = p_ftell(pFile);
 	p_fseek(pFile, 0, SEEK_SET);
 	void* aData = operator new[](aSize);
-	p_fread(aData, sizeof(char), aSize, pFile);
+	p_fread(aData, sizeof(uint8_t), aSize, pFile);
 	p_fclose(pFile);
 
 	aHMusic = Mix_LoadMUS_RW(SDL_RWFromMem(aData, aSize), 1);

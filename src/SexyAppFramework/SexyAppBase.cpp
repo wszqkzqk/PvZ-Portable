@@ -1005,7 +1005,7 @@ double SexyAppBase::GetLoadingThreadProgress()
 	return std::min(mCompletedLoadingThreadTasks / static_cast<double>(mNumLoadingThreadTasks), 1.0);
 }
 
-bool SexyAppBase::RegistryWrite(const std::string& theValueName, uint32_t theType, const uchar* theValue, uint32_t theLength)
+bool SexyAppBase::RegistryWrite(const std::string& theValueName, uint32_t theType, const uint8_t* theValue, uint32_t theLength)
 {
 	if (mRegKey.length() == 0)
 		return false;
@@ -1064,21 +1064,21 @@ bool SexyAppBase::RegistryWrite(const std::string& theValueName, uint32_t theTyp
 
 bool SexyAppBase::RegistryWriteString(const std::string& theValueName, const std::string& theString)
 {
-	return RegistryWrite(theValueName, regemu::REGEMU_SZ, reinterpret_cast<const uchar*>(theString.c_str()), theString.length());
+	return RegistryWrite(theValueName, regemu::REGEMU_SZ, reinterpret_cast<const uint8_t*>(theString.c_str()), theString.length());
 }
 
 bool SexyAppBase::RegistryWriteInteger(const std::string& theValueName, int theValue)
 {
-	return RegistryWrite(theValueName, regemu::REGEMU_DWORD, reinterpret_cast<const uchar*>(&theValue), sizeof(int));
+	return RegistryWrite(theValueName, regemu::REGEMU_DWORD, reinterpret_cast<const uint8_t*>(&theValue), sizeof(int));
 }
 
 bool SexyAppBase::RegistryWriteBoolean(const std::string& theValueName, bool theValue)
 {
 	int aValue = theValue ? 1 : 0;
-	return RegistryWrite(theValueName, regemu::REGEMU_DWORD, reinterpret_cast<const uchar*>(&aValue), sizeof(int));
+	return RegistryWrite(theValueName, regemu::REGEMU_DWORD, reinterpret_cast<const uint8_t*>(&aValue), sizeof(int));
 }
 
-bool SexyAppBase::RegistryWriteData(const std::string& theValueName, const uchar* theValue, uint32_t theLength)
+bool SexyAppBase::RegistryWriteData(const std::string& theValueName, const uint8_t* theValue, uint32_t theLength)
 {
 	return RegistryWrite(theValueName, regemu::REGEMU_BINARY, theValue, theLength);
 }
@@ -1165,12 +1165,12 @@ void SexyAppBase::RegistryEraseValue(const std::string& _theValueName)
 	regemu::RegistryEraseValue(aKeyName, aValueName);
 }
 
-bool SexyAppBase::RegistryRead(const std::string& theValueName, uint32_t* theType, uchar* theValue, uint32_t* theLength)
+bool SexyAppBase::RegistryRead(const std::string& theValueName, uint32_t* theType, uint8_t* theValue, uint32_t* theLength)
 {
 	return RegistryReadKey(theValueName, theType, theValue, theLength);
 }
 
-bool SexyAppBase::RegistryReadKey(const std::string& theValueName, uint32_t* theType, uchar* theValue, uint32_t* theLength)
+bool SexyAppBase::RegistryReadKey(const std::string& theValueName, uint32_t* theType, uint8_t* theValue, uint32_t* theLength)
 {
 	if (mRegKey.length() == 0)
 		return false;
@@ -1271,7 +1271,7 @@ bool SexyAppBase::RegistryReadString(const std::string& theKey, std::string* the
 
 	uint32_t aType;
 	uint32_t aLen = sizeof(aStr) - 1;
-	if (!RegistryRead(theKey, &aType, (uchar*) aStr, &aLen))
+	if (!RegistryRead(theKey, &aType, (uint8_t*) aStr, &aLen))
 		return false;
 
 	if (aType != regemu::REGEMU_SZ)
@@ -1288,7 +1288,7 @@ bool SexyAppBase::RegistryReadInteger(const std::string& theKey, int* theValue)
 	uint32_t aType;
 	uint32_t aLong;
 	uint32_t aLen = 4;
-	if (!RegistryRead(theKey, &aType, (uchar*) &aLong, &aLen))
+	if (!RegistryRead(theKey, &aType, (uint8_t*) &aLong, &aLen))
 		return false;
 
 	if (aType != regemu::REGEMU_DWORD)
@@ -1308,10 +1308,10 @@ bool SexyAppBase::RegistryReadBoolean(const std::string& theKey, bool* theValue)
 	return true;
 }
 
-bool SexyAppBase::RegistryReadData(const std::string& theKey, uchar* theValue, uint32_t* theLength)
+bool SexyAppBase::RegistryReadData(const std::string& theKey, uint8_t* theValue, uint32_t* theLength)
 {
 	uint32_t aType;
-	if (!RegistryRead(theKey, &aType, (uchar*) theValue, theLength))
+	if (!RegistryRead(theKey, &aType, (uint8_t*) theValue, theLength))
 		return false;
 
 	if (aType != regemu::REGEMU_BINARY)
@@ -3732,7 +3732,7 @@ GLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
 		aDestBits = anImage->mColorTable.get();
 		aNumColors = 256;
 
-		anImage->mColorIndices = std::make_unique<uchar[]>(anImage->mWidth*theImage->mHeight);
+		anImage->mColorIndices = std::make_unique<uint8_t[]>(anImage->mWidth*theImage->mHeight);
 		memcpy(anImage->mColorIndices.get(), aSrcMemoryImage->mColorIndices.get(), anImage->mWidth*theImage->mHeight);
 	}
 
@@ -4145,7 +4145,7 @@ void SexyAppBase::DemoSyncRefreshRate()
 		mDemoBuffer.WriteNumBits(0, 1);
 		mDemoBuffer.WriteNumBits(DEMO_VIDEO_DATA, 5);
 		mDemoBuffer.WriteBoolean(mIsWindowed);
-		uchar aByte = static_cast<uchar>(mSyncRefreshRate);
+		uint8_t aByte = static_cast<uint8_t>(mSyncRefreshRate);
 		mDemoBuffer.WriteByte(aByte);
 	}
 }

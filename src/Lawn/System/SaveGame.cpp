@@ -94,23 +94,23 @@ enum SaveChunkTypeV4
 
 static constexpr const uint32_t SAVE4_CHUNK_VERSION = 1U;
 
-static void AppendU32LE(std::vector<unsigned char>& theOut, uint32_t theValue)
+static void AppendU32LE(std::vector<uint8_t>& theOut, uint32_t theValue)
 {
-	unsigned char aBytes[4];
-	aBytes[0] = static_cast<unsigned char>(theValue & 0xFF);
-	aBytes[1] = static_cast<unsigned char>((theValue >> 8) & 0xFF);
-	aBytes[2] = static_cast<unsigned char>((theValue >> 16) & 0xFF);
-	aBytes[3] = static_cast<unsigned char>((theValue >> 24) & 0xFF);
+	uint8_t aBytes[4];
+	aBytes[0] = static_cast<uint8_t>(theValue & 0xFF);
+	aBytes[1] = static_cast<uint8_t>((theValue >> 8) & 0xFF);
+	aBytes[2] = static_cast<uint8_t>((theValue >> 16) & 0xFF);
+	aBytes[3] = static_cast<uint8_t>((theValue >> 24) & 0xFF);
 	theOut.insert(theOut.end(), aBytes, aBytes + 4);
 }
 
-static void AppendBytes(std::vector<unsigned char>& theOut, const void* theData, size_t theLen)
+static void AppendBytes(std::vector<uint8_t>& theOut, const void* theData, size_t theLen)
 {
-	const unsigned char* aBytes = reinterpret_cast<const unsigned char*>(theData);
+	const uint8_t* aBytes = reinterpret_cast<const uint8_t*>(theData);
 	theOut.insert(theOut.end(), aBytes, aBytes + theLen);
 }
 
-static void AppendChunk(std::vector<unsigned char>& theOut, uint32_t theChunkType, const std::vector<unsigned char>& theChunkData)
+static void AppendChunk(std::vector<uint8_t>& theOut, uint32_t theChunkType, const std::vector<uint8_t>& theChunkData)
 {
 	AppendU32LE(theOut, theChunkType);
 	AppendU32LE(theOut, static_cast<uint32_t>(theChunkData.size()));
@@ -120,13 +120,13 @@ static void AppendChunk(std::vector<unsigned char>& theOut, uint32_t theChunkTyp
 class TLVReader
 {
 public:
-	const unsigned char* mData;
+	const uint8_t* mData;
 	size_t mSize;
 	size_t mPos;
 	bool mOk;
 
 public:
-	TLVReader(const unsigned char* theData, size_t theSize)
+	TLVReader(const uint8_t* theData, size_t theSize)
 		: mData(theData), mSize(theSize), mPos(0), mOk(true)
 	{
 	}
@@ -147,7 +147,7 @@ public:
 		return true;
 	}
 
-	bool ReadBytes(const unsigned char*& thePtr, size_t theLen)
+	bool ReadBytes(const uint8_t*& thePtr, size_t theLen)
 	{
 		if (mPos + theLen > mSize)
 		{
@@ -1008,7 +1008,7 @@ static void SyncGridItemTailPortable(PortableSaveContext& theContext, GridItem& 
 }
 
 template <typename TWriterFn>
-static void AppendFieldWithSync(std::vector<unsigned char>& theOut, uint32_t theFieldId, TWriterFn theWriterFn)
+static void AppendFieldWithSync(std::vector<uint8_t>& theOut, uint32_t theFieldId, TWriterFn theWriterFn)
 {
 	DataWriter aWriter;
 	aWriter.OpenMemory(0x100);
@@ -1017,7 +1017,7 @@ static void AppendFieldWithSync(std::vector<unsigned char>& theOut, uint32_t the
 	if (aContext.mFailed)
 		return;
 
-	std::vector<unsigned char> aFieldData;
+	std::vector<uint8_t> aFieldData;
 	aFieldData.resize(aWriter.GetDataLen());
 	memcpy(aFieldData.data(), aWriter.GetDataPtr(), aWriter.GetDataLen());
 	AppendU32LE(theOut, theFieldId);
@@ -1026,7 +1026,7 @@ static void AppendFieldWithSync(std::vector<unsigned char>& theOut, uint32_t the
 }
 
 template <typename TReaderFn>
-static bool ApplyFieldWithSync(const unsigned char* theData, size_t theSize, TReaderFn theReaderFn)
+static bool ApplyFieldWithSync(const uint8_t* theData, size_t theSize, TReaderFn theReaderFn)
 {
 	DataReader aReader;
 	aReader.OpenMemory(theData, static_cast<uint32_t>(theSize), false);
@@ -1035,7 +1035,7 @@ static bool ApplyFieldWithSync(const unsigned char* theData, size_t theSize, TRe
 	return !aContext.mFailed;
 }
 
-static void WriteGameObjectField(std::vector<unsigned char>& theOut, uint32_t theFieldId, GameObject& theObject)
+static void WriteGameObjectField(std::vector<uint8_t>& theOut, uint32_t theFieldId, GameObject& theObject)
 {
 	AppendFieldWithSync(theOut, theFieldId, [&](PortableSaveContext& aContext)
 	{
@@ -1043,7 +1043,7 @@ static void WriteGameObjectField(std::vector<unsigned char>& theOut, uint32_t th
 	});
 }
 
-static bool ReadGameObjectField(const unsigned char* theData, size_t theSize, GameObject& theObject)
+static bool ReadGameObjectField(const uint8_t* theData, size_t theSize, GameObject& theObject)
 {
 	return ApplyFieldWithSync(theData, theSize, [&](PortableSaveContext& aContext)
 	{
@@ -1051,7 +1051,7 @@ static bool ReadGameObjectField(const unsigned char* theData, size_t theSize, Ga
 	});
 }
 
-static void WriteTLVBlob(PortableSaveContext& theContext, const std::vector<unsigned char>& theBlob)
+static void WriteTLVBlob(PortableSaveContext& theContext, const std::vector<uint8_t>& theBlob)
 {
 	uint32_t aSize = static_cast<uint32_t>(theBlob.size());
 	theContext.SyncUInt32(aSize);
@@ -1059,7 +1059,7 @@ static void WriteTLVBlob(PortableSaveContext& theContext, const std::vector<unsi
 		theContext.SyncBytes(theBlob.data(), aSize);
 }
 
-static bool ReadTLVBlob(PortableSaveContext& theContext, std::vector<unsigned char>& theBlob)
+static bool ReadTLVBlob(PortableSaveContext& theContext, std::vector<uint8_t>& theBlob)
 {
 	uint32_t aSize = 0;
 	theContext.SyncUInt32(aSize);
@@ -1078,7 +1078,7 @@ static void SyncSingleObjectTLV(PortableSaveContext& theContext, TObject& theObj
 	static constexpr bool HAS_GAME_OBJECT_FIELD = std::is_base_of_v<GameObject, TObject>;
 	if (theContext.mReading)
 	{
-		std::vector<unsigned char> aBlob;
+		std::vector<uint8_t> aBlob;
 		if (!ReadTLVBlob(theContext, aBlob))
 			return;
 		TLVReader aReader(aBlob.data(), aBlob.size());
@@ -1088,7 +1088,7 @@ static void SyncSingleObjectTLV(PortableSaveContext& theContext, TObject& theObj
 			uint32_t aFieldSize = 0;
 			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
 				break;
-			const unsigned char* aFieldData = nullptr;
+			const uint8_t* aFieldData = nullptr;
 			if (!aReader.ReadBytes(aFieldData, aFieldSize))
 				break;
 			switch (aFieldId)
@@ -1106,7 +1106,7 @@ static void SyncSingleObjectTLV(PortableSaveContext& theContext, TObject& theObj
 	}
 	else
 	{
-		std::vector<unsigned char> aBlob;
+		std::vector<uint8_t> aBlob;
 		if constexpr (HAS_GAME_OBJECT_FIELD)
 			WriteGameObjectField(aBlob, 1U, theObject);
 		AppendFieldWithSync(aBlob, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ theTailSync(c, theObject); });
@@ -1423,7 +1423,7 @@ static void SyncDataArrayPortableTLV(PortableSaveContext& theContext, DataArray<
 			uint32_t aItemSize = 0;
 			theContext.SyncUInt32(aItemSize);
 			T& anItem = theDataArray.DataArrayResetItemAt(i);
-			std::vector<unsigned char> aItemData;
+			std::vector<uint8_t> aItemData;
 			aItemData.resize(aItemSize);
 			if (aItemSize > 0)
 				theContext.SyncBytes(aItemData.data(), aItemSize);
@@ -1434,7 +1434,7 @@ static void SyncDataArrayPortableTLV(PortableSaveContext& theContext, DataArray<
 				uint32_t aFieldSize = 0;
 				if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
 					break;
-				const unsigned char* aFieldData = nullptr;
+				const uint8_t* aFieldData = nullptr;
 				if (!aReader.ReadBytes(aFieldData, aFieldSize))
 					break;
 				theReadFn(aFieldId, aFieldData, aFieldSize, anItem);
@@ -1444,7 +1444,7 @@ static void SyncDataArrayPortableTLV(PortableSaveContext& theContext, DataArray<
 		{
 			bool aActive = (theDataArray.DataArrayGetIDAt(i) & DATA_ARRAY_KEY_MASK) != 0;
 			uint32_t aItemSize = 0;
-			std::vector<unsigned char> aItemData;
+			std::vector<uint8_t> aItemData;
 			if (aActive)
 			{
 				theWriteFn(aItemData, theDataArray.DataArrayGetItemAt(i));
@@ -1462,13 +1462,13 @@ template <typename T, typename TTailSync>
 static void SyncDataArrayObjectsTLV(PortableSaveContext& theContext, DataArray<T>& theDataArray, TTailSync theTailSync)
 {
 	SyncDataArrayPortableTLV(theContext, theDataArray,
-		[&](std::vector<unsigned char>& aOut, T& anItem)
+		[&](std::vector<uint8_t>& aOut, T& anItem)
 		{
 			if constexpr (std::is_base_of_v<GameObject, T>)
 				WriteGameObjectField(aOut, 1U, anItem);
 			AppendFieldWithSync(aOut, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ theTailSync(c, anItem); });
 		},
-		[&](uint32_t aFieldId, const unsigned char* aData, size_t aSize, T& anItem)
+		[&](uint32_t aFieldId, const uint8_t* aData, size_t aSize, T& anItem)
 		{
 			switch (aFieldId)
 			{
@@ -1720,7 +1720,7 @@ static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoa
 {
 	if (theContext.mReading)
 	{
-		std::vector<unsigned char> aBlob;
+		std::vector<uint8_t> aBlob;
 		if (!ReadTLVBlob(theContext, aBlob))
 			return;
 		TLVReader aReader(aBlob.data(), aBlob.size());
@@ -1730,7 +1730,7 @@ static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoa
 			uint32_t aFieldSize = 0;
 			if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
 				break;
-			const unsigned char* aFieldData = nullptr;
+			const uint8_t* aFieldData = nullptr;
 			if (!aReader.ReadBytes(aFieldData, aFieldSize))
 				break;
 			if (aFieldId >= 1 && aFieldId <= sizeof(gBoardBaseFields) / sizeof(gBoardBaseFields[0]))
@@ -1742,7 +1742,7 @@ static void SyncBoardBasePortable(PortableSaveContext& theContext, Board* theBoa
 	}
 	else
 	{
-		std::vector<unsigned char> aBlob;
+		std::vector<uint8_t> aBlob;
 		for (const BoardBaseFieldEntry& aField : gBoardBaseFields)
 			AppendFieldWithSync(aBlob, aField.mFieldId, [&](PortableSaveContext& c){ aField.mSync(c, theBoard); });
 		WriteTLVBlob(theContext, aBlob);
@@ -1792,14 +1792,14 @@ static void SyncParticlesPortable(PortableSaveContext& theContext, Board* theBoa
 static void SyncParticleSystemsPortable(PortableSaveContext& theContext, Board* theBoard)
 {
 	SyncDataArrayPortableTLV(theContext, theBoard->mApp->mEffectSystem->mParticleHolder->mParticleSystems,
-		[theBoard](std::vector<unsigned char>& aOut, PvzpParticleSystem& theSystem)
+		[theBoard](std::vector<uint8_t>& aOut, PvzpParticleSystem& theSystem)
 		{
 			AppendFieldWithSync(aOut, 1U, [&](PortableSaveContext& aContext)
 			{
 				SyncParticleSystemPortable(theBoard, &theSystem, aContext);
 			});
 		},
-		[theBoard](uint32_t aFieldId, const unsigned char* aData, size_t aSize, PvzpParticleSystem& theSystem)
+		[theBoard](uint32_t aFieldId, const uint8_t* aData, size_t aSize, PvzpParticleSystem& theSystem)
 		{
 			if (aFieldId == 1U)
 			{
@@ -1814,14 +1814,14 @@ static void SyncParticleSystemsPortable(PortableSaveContext& theContext, Board* 
 static void SyncReanimationsPortable(PortableSaveContext& theContext, Board* theBoard)
 {
 	SyncDataArrayPortableTLV(theContext, theBoard->mApp->mEffectSystem->mReanimationHolder->mReanimations,
-		[theBoard](std::vector<unsigned char>& aOut, Reanimation& theReanimation)
+		[theBoard](std::vector<uint8_t>& aOut, Reanimation& theReanimation)
 		{
 			AppendFieldWithSync(aOut, 1U, [&](PortableSaveContext& aContext)
 			{
 				SyncReanimationPortable(theBoard, &theReanimation, aContext);
 			});
 		},
-		[theBoard](uint32_t aFieldId, const unsigned char* aData, size_t aSize, Reanimation& theReanimation)
+		[theBoard](uint32_t aFieldId, const uint8_t* aData, size_t aSize, Reanimation& theReanimation)
 		{
 			if (aFieldId == 1U)
 			{
@@ -1836,14 +1836,14 @@ static void SyncReanimationsPortable(PortableSaveContext& theContext, Board* the
 static void SyncTrailsPortable(PortableSaveContext& theContext, Board* theBoard)
 {
 	SyncDataArrayPortableTLV(theContext, theBoard->mApp->mEffectSystem->mTrailHolder->mTrails,
-		[theBoard](std::vector<unsigned char>& aOut, Trail& theTrail)
+		[theBoard](std::vector<uint8_t>& aOut, Trail& theTrail)
 		{
 			AppendFieldWithSync(aOut, 1U, [&](PortableSaveContext& aContext)
 			{
 				SyncTrailPortable(theBoard, &theTrail, aContext);
 			});
 		},
-		[theBoard](uint32_t aFieldId, const unsigned char* aData, size_t aSize, Trail& theTrail)
+		[theBoard](uint32_t aFieldId, const uint8_t* aData, size_t aSize, Trail& theTrail)
 		{
 			if (aFieldId == 1U)
 			{
@@ -1890,7 +1890,7 @@ static void SyncSeedPacketsPortable(PortableSaveContext& theContext, Board* theB
 		{
 			uint32_t aItemSize = 0;
 			theContext.SyncUInt32(aItemSize);
-			std::vector<unsigned char> aItemData;
+			std::vector<uint8_t> aItemData;
 			aItemData.resize(aItemSize);
 			if (aItemSize > 0)
 				theContext.SyncBytes(aItemData.data(), aItemSize);
@@ -1901,7 +1901,7 @@ static void SyncSeedPacketsPortable(PortableSaveContext& theContext, Board* theB
 				uint32_t aFieldSize = 0;
 				if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
 					break;
-				const unsigned char* aFieldData = nullptr;
+				const uint8_t* aFieldData = nullptr;
 				if (!aReader.ReadBytes(aFieldData, aFieldSize))
 					break;
 				switch (aFieldId)
@@ -1914,7 +1914,7 @@ static void SyncSeedPacketsPortable(PortableSaveContext& theContext, Board* theB
 		}
 		else
 		{
-			std::vector<unsigned char> aItemData;
+			std::vector<uint8_t> aItemData;
 			WriteGameObjectField(aItemData, 1U, theBoard->mSeedBank->mSeedPackets[i]);
 			AppendFieldWithSync(aItemData, PORTABLE_FIELD_TAIL, [&](PortableSaveContext& c){ SyncSeedPacketTailPortable(c, theBoard->mSeedBank->mSeedPackets[i]); });
 			uint32_t aItemSize = static_cast<uint32_t>(aItemData.size());
@@ -2011,7 +2011,7 @@ static ChunkSyncFn GetChunkSyncFn(uint32_t theChunkType)
 	}
 }
 
-static bool WriteChunkV4(std::vector<unsigned char>& thePayload, uint32_t theChunkType, Board* theBoard)
+static bool WriteChunkV4(std::vector<uint8_t>& thePayload, uint32_t theChunkType, Board* theBoard)
 {
 	ChunkSyncFn aSyncFn = GetChunkSyncFn(theChunkType);
 	if (!aSyncFn)
@@ -2031,14 +2031,14 @@ static bool WriteChunkV4(std::vector<unsigned char>& thePayload, uint32_t theChu
 	aChunkWriter.WriteUInt32(aFieldWriter.GetDataLen());
 	aChunkWriter.WriteBytes(aFieldWriter.GetDataPtr(), aFieldWriter.GetDataLen());
 
-	std::vector<unsigned char> aChunk;
+	std::vector<uint8_t> aChunk;
 	aChunk.resize(aChunkWriter.GetDataLen());
 	memcpy(aChunk.data(), aChunkWriter.GetDataPtr(), aChunkWriter.GetDataLen());
 	AppendChunk(thePayload, theChunkType, aChunk);
 	return true;
 }
 
-static bool ReadChunkV4(uint32_t theChunkType, const unsigned char* theData, size_t theSize, Board* theBoard)
+static bool ReadChunkV4(uint32_t theChunkType, const uint8_t* theData, size_t theSize, Board* theBoard)
 {
 	ChunkSyncFn aSyncFn = GetChunkSyncFn(theChunkType);
 	if (!aSyncFn)
@@ -2060,7 +2060,7 @@ static bool ReadChunkV4(uint32_t theChunkType, const unsigned char* theData, siz
 		uint32_t aFieldSize = 0;
 		if (!aReader.ReadU32(aFieldId) || !aReader.ReadU32(aFieldSize))
 			break;
-		const unsigned char* aFieldData = nullptr;
+		const uint8_t* aFieldData = nullptr;
 		if (!aReader.ReadBytes(aFieldData, aFieldSize))
 			break;
 
@@ -2261,7 +2261,7 @@ static bool LawnLoadGameV4(Board* theBoard, const std::string& theFilePath)
 	if (aHeader.mPayloadSize > static_cast<uint32_t>(aBuffer.GetDataLen()) - sizeof(SaveFileHeaderV4))
 		return false;
 
-	unsigned char* aPayload = (unsigned char*)aBuffer.GetDataPtr() + sizeof(SaveFileHeaderV4);
+	uint8_t* aPayload = (uint8_t*)aBuffer.GetDataPtr() + sizeof(SaveFileHeaderV4);
 	uint32_t aCrc = crc32(0, (Bytef*)aPayload, aHeader.mPayloadSize);
 	if (aCrc != aHeader.mPayloadCrc)
 		return false;
@@ -2274,7 +2274,7 @@ static bool LawnLoadGameV4(Board* theBoard, const std::string& theFilePath)
 		uint32_t aChunkSize = 0;
 		if (!aReader.ReadU32(aChunkType) || !aReader.ReadU32(aChunkSize))
 			break;
-		const unsigned char* aChunkData = nullptr;
+		const uint8_t* aChunkData = nullptr;
 		if (!aReader.ReadBytes(aChunkData, aChunkSize))
 			break;
 
@@ -2348,12 +2348,12 @@ void SaveGameContext::SyncBytes(void* theDest, int theReadSize)
 		}
 		else
 		{
-			mBuffer.ReadBytes((uchar*)theDest, theReadSize);
+			mBuffer.ReadBytes((uint8_t*)theDest, theReadSize);
 		}
 	}
 	else
 	{
-		mBuffer.WriteBytes((uchar*)theDest, theReadSize);
+		mBuffer.WriteBytes((uint8_t*)theDest, theReadSize);
 	}
 }
 
@@ -2661,7 +2661,7 @@ static void SyncTrail(Board* theBoard, Trail* theTrail, SaveGameContext& theCont
 template <typename T>
 struct LegacyDataArrayItem
 {
-	alignas(T) unsigned char mItem[sizeof(T)];
+	alignas(T) uint8_t mItem[sizeof(T)];
 	unsigned int mID;
 };
 
@@ -2676,7 +2676,7 @@ template <typename T> inline static void SyncDataArray(SaveGameContext& theConte
 		for (uint32_t i = 0; i < theDataArray.mMaxUsedCount; i++)
 		{
 			auto& aSlot = aBlock[i];
-			std::copy_n(reinterpret_cast<unsigned char*>(&theDataArray.DataArrayGetItemAt(i)), sizeof(T), aSlot.mItem);
+			std::copy_n(reinterpret_cast<uint8_t*>(&theDataArray.DataArrayGetItemAt(i)), sizeof(T), aSlot.mItem);
 			aSlot.mID = theDataArray.DataArrayGetIDAt(i);
 		}
 	}
@@ -2689,7 +2689,7 @@ template <typename T> inline static void SyncDataArray(SaveGameContext& theConte
 		auto& aSlot = aBlock[i];
 		theDataArray.DataArrayGetIDAt(i) = aSlot.mID;
 		if (aSlot.mID & DATA_ARRAY_KEY_MASK)
-			std::copy_n(aSlot.mItem, sizeof(T), reinterpret_cast<unsigned char*>(&theDataArray.DataArrayGetItemAt(i)));
+			std::copy_n(aSlot.mItem, sizeof(T), reinterpret_cast<uint8_t*>(&theDataArray.DataArrayGetItemAt(i)));
 	}
 }
 
@@ -2792,7 +2792,7 @@ bool LawnLoadGame(Board* theBoard, const std::string& theFilePath)
 
 bool LawnSaveGame(Board* theBoard, const std::string& theFilePath)
 {
-	std::vector<unsigned char> aPayload;
+	std::vector<uint8_t> aPayload;
 	if (!WriteChunkV4(aPayload, SAVE4_CHUNK_BOARD_BASE, theBoard)) return false;
 	if (!WriteChunkV4(aPayload, SAVE4_CHUNK_ZOMBIES, theBoard)) return false;
 	if (!WriteChunkV4(aPayload, SAVE4_CHUNK_PLANTS, theBoard)) return false;
@@ -2820,7 +2820,7 @@ bool LawnSaveGame(Board* theBoard, const std::string& theFilePath)
 	aHeader.mPayloadSize = ToLE32(static_cast<uint32_t>(aPayload.size()));
 	aHeader.mPayloadCrc = ToLE32(crc32(0, reinterpret_cast<Bytef*>(aPayload.data()), static_cast<uint32_t>(aPayload.size())));
 
-	std::vector<unsigned char> aOutBuffer;
+	std::vector<uint8_t> aOutBuffer;
 	aOutBuffer.resize(sizeof(aHeader) + aPayload.size());
 	memcpy(aOutBuffer.data(), &aHeader, sizeof(aHeader));
 	memcpy(aOutBuffer.data() + sizeof(aHeader), aPayload.data(), aPayload.size());

@@ -3382,7 +3382,7 @@ void Zombie::DropFlag()
 	OverrideParticleScale(aParticle);
 }
 
-void Zombie::ApplyZombatarHead(const unsigned char* theRecord)
+void Zombie::ApplyZombatarHead(const uint8_t* theRecord)
 {
 	Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
 	if (!aBodyReanim)
@@ -3471,7 +3471,7 @@ void Zombie::SetupZombatarFlagReanim(int theRecordIndex)
 	if (!aPlayerInfo || aPlayerInfo->mZombatarData.empty())
 		return;
 
-	const unsigned char* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(theRecordIndex) * ZOMBATAR_RECORD_SIZE;
+	const uint8_t* aRecord = aPlayerInfo->mZombatarData.data() + static_cast<size_t>(theRecordIndex) * ZOMBATAR_RECORD_SIZE;
 	ApplyZombatarHead(aRecord);
 }
 

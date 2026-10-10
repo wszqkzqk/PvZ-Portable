@@ -31,7 +31,7 @@
 namespace Sexy
 {
 
-typedef std::vector<uchar> ByteVector;
+typedef std::vector<uint8_t> ByteVector;
 
 class Buffer
 {
@@ -49,7 +49,7 @@ public:
 	void					Clear();
 
 	void					FromWebString(std::string_view theString);
-	void					WriteByte(uchar theByte);
+	void					WriteByte(uint8_t theByte);
 	void					WriteNumBits(int theNum, int theBits);
 	static int				GetBitsRequired(int theNum, bool isSigned);
 	void					WriteBoolean(bool theBool);
@@ -59,13 +59,13 @@ public:
 	void					WriteString(const std::string& theString);
 	void					WriteLine(const std::string& theString);
 	void					WriteBuffer(const ByteVector& theBuffer);
-	void					WriteBytes(const uchar* theByte, int theCount);
+	void					WriteBytes(const uint8_t* theByte, int theCount);
 	void					SetData(const ByteVector& theBuffer);
-	void					SetData(uchar* thePtr, int theCount);
+	void					SetData(uint8_t* thePtr, int theCount);
 
 	std::string				ToWebString() const;
 	bool					ToUTF8String(std::string* theString) const;
-	uchar					ReadByte() const;
+	uint8_t					ReadByte() const;
 	int						ReadNumBits(int theBits, bool isSigned) const;
 	bool					ReadBoolean() const;
 	short					ReadShort() const;
@@ -73,10 +73,10 @@ public:
 	int32_t					ReadInt32() const;
 	std::string				ReadString() const;
 	std::string				ReadLine() const;
-	void					ReadBytes(uchar* theData, int theLen) const;
+	void					ReadBytes(uint8_t* theData, int theLen) const;
 	void					ReadBuffer(ByteVector* theByteVector) const;
 
-	const uchar*			GetDataPtr() const;
+	const uint8_t*			GetDataPtr() const;
 	int						GetDataLen() const;
 	int						GetDataLenBits() const;
 	uint32_t					GetCRC32(uint32_t theSeed = 0) const;
