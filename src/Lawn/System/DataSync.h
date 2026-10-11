@@ -110,31 +110,37 @@ public:
 	inline DataWriter*		GetWriter() { return mWriter; }
 	void					SyncBytes(void* theData, uint32_t theDataLen);
 	void					SyncUInt64(uint64_t& theNum);
-	void					SyncUInt32(char& theNum);
-	void					SyncUInt32(short& theNum);
-	void					SyncUInt32(long& theNum);
-	void					SyncUInt32(uint8_t& theNum);
-	void					SyncUInt32(unsigned short& theNum);
 	void					SyncUInt32(uint32_t& theNum);
-	void					SyncUInt32(int32_t& theNum);
+	template <typename T, std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, int> = 0>
+	void					SyncUInt32(T& theNum)
+	{
+		uint32_t aNum = static_cast<uint32_t>(static_cast<std::make_unsigned_t<T>>(theNum));
+		SyncUInt32(aNum);
+		if (mReader)
+			theNum = static_cast<T>(aNum);
+	}
 	template<typename E, std::enable_if_t<std::is_enum_v<E>, int> = 0>
 	void					SyncUInt32(E& theEnum) { SyncUInt32(reinterpret_cast<std::underlying_type_t<E>&>(theEnum)); }
-	void					SyncUInt16(char& theNum);
-	void					SyncUInt16(short& theNum);
-	void					SyncUInt16(long& theNum);
-	void					SyncUInt16(uint8_t& theNum);
 	void					SyncUInt16(uint16_t& theNum);
-	void					SyncUInt16(uint32_t& theNum);
-	void					SyncUInt16(int32_t& theNum);
+	template <typename T, std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, int> = 0>
+	void					SyncUInt16(T& theNum)
+	{
+		uint16_t aNum = static_cast<uint16_t>(static_cast<std::make_unsigned_t<T>>(theNum));
+		SyncUInt16(aNum);
+		if (mReader)
+			theNum = static_cast<T>(aNum);
+	}
 	template<typename E, std::enable_if_t<std::is_enum_v<E>, int> = 0>
 	void					SyncUInt16(E& theEnum) { SyncUInt16(reinterpret_cast<std::underlying_type_t<E>&>(theEnum)); }
 	void					SyncUInt8(uint8_t& theChar);
-	void					SyncUInt8(char& theChar);
-	void					SyncUInt8(short& theChar);
-	void					SyncUInt8(long& theChar);
-	void					SyncUInt8(unsigned short& theChar);
-	void					SyncUInt8(uint32_t& theChar);
-	void					SyncUInt8(int32_t& theChar);
+	template <typename T, std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, int> = 0>
+	void					SyncUInt8(T& theChar)
+	{
+		uint8_t aChar = static_cast<uint8_t>(static_cast<std::make_unsigned_t<T>>(theChar));
+		SyncUInt8(aChar);
+		if (mReader)
+			theChar = static_cast<T>(aChar);
+	}
 	template<typename E, std::enable_if_t<std::is_enum_v<E>, int> = 0>
 	void					SyncUInt8(E& theEnum) { SyncUInt8(reinterpret_cast<std::underlying_type_t<E>&>(theEnum)); }
 	void					SyncBool(bool& theBool);
