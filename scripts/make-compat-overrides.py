@@ -68,11 +68,13 @@ def build_overrides(strings):
     sell_price = strings["CRAZY_DAVE_1700"]
     if "{SELL_PRICE}" not in sell_price:
         raise ValueError("CRAZY_DAVE_1700 does not contain {SELL_PRICE}")
+    if "{SELL_PRICE}0" not in sell_price:
+        sell_price = sell_price.replace("{SELL_PRICE}", "{SELL_PRICE}0", 1)
 
     overrides = {
         "RESTART_LEVEL": strings["RESTART_LEVEL_BUTTON"],
         "NOT_ENCOUNTERED_YET": strings["NOT_ENCOUNTERED_YET_DESCRIPTION"],
-        "CRAZY_DAVE_1700": sell_price.replace("{SELL_PRICE}", "{SELL_PRICE}0", 1),
+        "CRAZY_DAVE_1700": sell_price,
     }
 
     header_keys = sorted(key for key in strings if key.endswith("_DESCRIPTION_HEADER"))
