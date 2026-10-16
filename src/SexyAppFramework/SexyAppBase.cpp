@@ -837,7 +837,7 @@ bool SexyAppBase::KillDialog(int theDialogId, bool removeWidget, bool deleteWidg
 		}
 		else
 		{
-			// Caller takes over ownership of the dialog
+
 			aDialogOwned.release();
 		}
 
