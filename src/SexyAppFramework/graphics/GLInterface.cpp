@@ -113,13 +113,22 @@ static void SetMixedBlendMode(bool theEnabled)
 	gMixedBlend = anEnabled;
 }
 
+static int gUseTexture = -1;
+
+static void SetUseTexture(bool theEnabled)
+{
+	int anEnabled = theEnabled ? 1 : 0;
+	if (gUseTexture == anEnabled) return;
+	glUniform1i(gUfUseTexture, anEnabled);
+	gUseTexture = anEnabled;
+}
+
 static void GfxEnd()
 {
 	if (gVertexMode == (GLenum)-1) return;
 
 	if (gNumVertices > 0)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, gVbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLVertex) * gNumVertices, gVertices.data(), GL_DYNAMIC_DRAW);
 		glDrawArrays(gVertexMode, 0, gNumVertices);
 	}
@@ -786,11 +795,18 @@ static void GfxBindTexture(GLuint tex, const float *uvBounds = kDefaultUvBounds,
 		&& memcmp(gTextureCache.uvBounds, uvBounds, sizeof(gTextureCache.uvBounds)) == 0)
 		return;
 
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, f);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, f);
-	glUniform1i(gUfClampUvEnabled, c);
-	glUniform4fv(gUfUvBounds, 1, uvBounds);
+	bool aTextureChanged = !gTextureCache.valid || gTextureCache.tex != tex;
+	if (aTextureChanged)
+		glBindTexture(GL_TEXTURE_2D, tex);
+	if (aTextureChanged || gTextureCache.filter != f)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, f);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, f);
+	}
+	if (!gTextureCache.valid || gTextureCache.clampUv != c)
+		glUniform1i(gUfClampUvEnabled, c);
+	if (!gTextureCache.valid || memcmp(gTextureCache.uvBounds, uvBounds, sizeof(gTextureCache.uvBounds)) != 0)
+		glUniform4fv(gUfUvBounds, 1, uvBounds);
 
 	gTextureCache.tex = tex;
 	gTextureCache.filter = f;
@@ -808,8 +824,7 @@ void TextureData::Blt(float theX, float theY, const Rect& theSrcRect, const Colo
 	if (srcLeft >= srcRight || srcTop >= srcBottom) return;
 
 	uint32_t aColor = theColor.ToGLColor();
-	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(gUfUseTexture, 1);
+	SetUseTexture(true);
 
 	int srcX, srcY;
 	float dstX, dstY;
@@ -957,8 +972,7 @@ void TextureData::BltTransformed(const SexyMatrix3 &theTrans, const Rect& theSrc
 	}
 
 	uint32_t aColor = theColor.ToGLColor();
-	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(gUfUseTexture, 1);
+	SetUseTexture(true);
 
 	int srcX, srcY;
 	float dstX, dstY;
@@ -1026,7 +1040,7 @@ void TextureData::BltTransformed(const SexyMatrix3 &theTrans, const Rect& theSrc
 void TextureData::BltTriangles(const TriVertex theVertices[][3], int theNumTriangles,
 							   unsigned int theColor, float tx, float ty, bool clampUv, const uint8_t* theDrawModes)
 {
-	glUniform1i(gUfUseTexture, 1);
+	SetUseTexture(true);
 	if (mMaxTotalU <= 1.0 && mMaxTotalV <= 1.0)
 	{
 		// Single-texture fast path
@@ -1041,7 +1055,6 @@ void TextureData::BltTriangles(const TriVertex theVertices[][3], int theNumTrian
 			std::max(mMaxTotalU - halfU, midU),
 			std::max(mMaxTotalV - halfV, midV)
 		};
-		glActiveTexture(GL_TEXTURE0);
 		GfxBindTexture(piece.mTexture, uvb, clampUv);
 
 		GfxBegin(GL_TRIANGLES);
@@ -1252,6 +1265,9 @@ int GLInterface::Init(bool IsWindowed)
 	gLinearFilter = false;
 
 	glUseProgram(gProgram);
+	glActiveTexture(GL_TEXTURE0);
+	gUseTexture = -1;
+	SetUseTexture(false);
 	float ortho[16];
 	MakeOrthoMatrix(0, (float)mWidth, (float)mHeight, 0, -10, 10, ortho);
 	glUniformMatrix4fv(gUfViewProjMtx, 1, GL_FALSE, ortho);
@@ -1353,7 +1369,6 @@ bool GLInterface::RecoverBits(MemoryImage* theImage)
 			int w = std::min(theImage->mWidth  - offx, piece.mWidth);
 			int h = std::min(theImage->mHeight - offy, piece.mHeight);
 
-			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, piece.mTexture);
 
 			// FBO readback (ES 2.0 has no glGetTexImage)
@@ -1521,7 +1536,7 @@ void GLInterface::DrawLine(double x1, double y1, double x2, double y2,
 		fx1 = p1.x; fy1 = p1.y; fx2 = p2.x; fy2 = p2.y;
 	}
 
-	glUniform1i(gUfUseTexture, 0);
+	SetUseTexture(false);
 	uint32_t c = theColor.ToGLColor();
 	GLVertex v[3] = {
 		{ fx1, fy1, 0, c, 0, 0 },
@@ -1560,7 +1575,7 @@ void GLInterface::FillRect(const Rect& theRect, const Color& theColor, int theDr
 		}
 	}
 
-	glUniform1i(gUfUseTexture, 0);
+	SetUseTexture(false);
 	GfxBegin(GL_TRIANGLE_STRIP);
 	GfxAddVertices(v, 4);
 	GfxEnd();
@@ -1573,7 +1588,7 @@ void GLInterface::DrawTriangle(const TriVertex &p1, const TriVertex &p2, const T
 	SetDrawMode(theDrawMode);
 
 	uint32_t c = theColor.ToGLColor();
-	glUniform1i(gUfUseTexture, 0);
+	SetUseTexture(false);
 
 	GLVertex v[3] = {
 		{ p1.x, p1.y, 0, GetColorFromTriVertex(p1, c), 0, 0 },
@@ -1655,7 +1670,7 @@ void GLInterface::FillPoly(const Point theVertices[], int theNumVertices,
 	SetDrawMode(theDrawMode);
 
 	uint32_t c = theColor.ToGLColor();
-	glUniform1i(gUfUseTexture, 0);
+	SetUseTexture(false);
 
 	VertexList vl;
 	for (int i = 0; i < theNumVertices; i++)
