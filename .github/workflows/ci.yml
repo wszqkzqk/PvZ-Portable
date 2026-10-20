@@ -637,9 +637,6 @@ jobs:
   build-harmonyos:
     name: Build for HarmonyOS (arm64-v8a)
     runs-on: ubuntu-latest
-    env:
-      DEVECO_SDK_HOME: ${{ runner.temp }}/command-line-tools/sdk
-      OHOS_NATIVE_HOME: ${{ runner.temp }}/command-line-tools/sdk/default/openharmony/native
     steps:
     - uses: actions/checkout@v6
       with:
@@ -647,6 +644,11 @@ jobs:
 
     - name: Set up HarmonyOS command line tools
       uses: libsdl-org/SDL/.github/actions/setup-harmonyos-toolchain@c17963b8ff64ebd51cbc0bac7389dd48a57c1786
+
+    - name: Configure HarmonyOS SDK environment
+      run: |
+        echo "DEVECO_SDK_HOME=$RUNNER_TEMP/command-line-tools/sdk" >> "$GITHUB_ENV"
+        echo "OHOS_NATIVE_HOME=$RUNNER_TEMP/command-line-tools/sdk/default/openharmony/native" >> "$GITHUB_ENV"
 
     - name: Build Native Dependencies
       run: harmony/build-deps.sh arm64-v8a
