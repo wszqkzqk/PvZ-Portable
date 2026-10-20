@@ -33,7 +33,18 @@
               "ohos.want.action.home"
             ]
           }
-        ],
+        ]
+      },
+      {
+        "name": "DataManagerAbility",
+        "orientation": "auto_rotation_landscape",
+        "srcEntry": "./ets/entryability/DataManagerAbility.ets",
+        "description": "$string:module_desc",
+        "icon": "$media:app_icon",
+        "label": "$string:shortcut_manage_data",
+        "startWindowIcon": "$media:app_icon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
         "metadata": [
           {
             "name": "ohos.ability.shortcuts",

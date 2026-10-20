@@ -8,10 +8,7 @@
         {
           "bundleName": "io.github.wszqkzqk.pvzportable",
           "moduleName": "entry",
-          "abilityName": "EntryAbility",
-          "parameters": {
-            "manageData": "true"
-          }
+          "abilityName": "DataManagerAbility"
         }
       ]
     }
