@@ -1,0 +1,23 @@
+{
+  "string": [
+    { "name": "module_desc", "value": "PvZ Portable" },
+    { "name": "EntryAbility_desc", "value": "PvZ Portable" },
+    { "name": "EntryAbility_label", "value": "PvZ Portable" },
+    { "name": "status_ready", "value": "Game resources found. Ready to play!" },
+    { "name": "status_missing", "value": "Game resources not found.\nPlease import main.pak + properties/ to continue." },
+    { "name": "status_working", "value": "Working..." },
+    { "name": "section_import_resources", "value": "Import Game Resources" },
+    { "name": "import_help", "value": "Select a ZIP file that contains a legally purchased copy of main.pak and the properties/ directory." },
+    { "name": "btn_pick_zip", "value": "Select ZIP File" },
+    { "name": "section_save_data", "value": "Import/Export Save Data (Optional)" },
+    { "name": "btn_export_save", "value": "Export Save Data" },
+    { "name": "btn_import_save_zip", "value": "Import Save ZIP" },
+    { "name": "btn_launch_game", "value": "Start Game" },
+    { "name": "shortcut_manage_data", "value": "Manage Data" },
+    { "name": "import_success", "value": "Import completed successfully!" },
+    { "name": "import_failed", "value": "Import failed: " },
+    { "name": "import_no_resources", "value": "The ZIP doesn't contain main.pak." },
+    { "name": "export_success", "value": "Save data exported successfully!" },
+    { "name": "export_failed", "value": "Export failed: " }
+  ]
+}

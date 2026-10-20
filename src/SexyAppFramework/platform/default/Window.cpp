@@ -61,13 +61,21 @@ void SexyAppBase::MakeWindow()
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
+#ifdef __OHOS__
+		// The XComponent's native window requires an RGBA8888 EGL configuration.
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+#endif
+
 		SDLWindowPtr window(SDL_CreateWindow(mTitle.c_str(), mWidth, mHeight, winFlags), &SDL_DestroyWindow);
 		SDLGLContextPtr context(nullptr, &SDL_GL_DestroyContext);
 
 		if (window)
 			context.reset(SDL_GL_CreateContext(window.get()));
 
-#if defined(__ANDROID__) || defined(__IPHONEOS__)
+#if defined(__ANDROID__) || defined(__IPHONEOS__) || defined(__OHOS__)
 		// EGL/EAGL surface may be transiently unavailable on mobile
 		for (int retry = 0; !context && window && retry < 20; retry++)
 		{

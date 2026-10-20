@@ -1,0 +1,8 @@
+{
+  "modelVersion": "6.1.1",
+  "description": "PvZ Portable for HarmonyOS",
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
