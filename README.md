@@ -128,11 +128,11 @@ The HarmonyOS port is a native app built from the DevEco Studio project in `harm
 
 #### Importing Game Resources
 
-When no resources are found, the app shows a data management screen: select a **ZIP file** containing `main.pak` and `properties/` (at the ZIP root or inside one wrapper directory). Save data can be exported to, or imported from, a ZIP on the same screen. Everything is stored in the app sandbox.
+When no resources are found, the app shows a data management screen: import `main.pak` and `properties/` from a ZIP file or a folder. Save data can be imported from a ZIP or folder and exported as a ZIP. Everything is stored in the app sandbox.
 
 #### Managing Data Later
 
-Long-press the app icon and choose **Manage Data** to open the same screen without starting the game. Close or force-stop the game first: the shortcut only selects the startup page and intentionally does not replace an active SDL instance.
+Long-press the app icon and choose **Manage Data** to re-import resources, export saves, or import saves.
 
 #### Notes
 
