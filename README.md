@@ -124,11 +124,7 @@ The app's Documents folder is exposed via iTunes/Finder file sharing and the iOS
 
 ### Special Instructions for HarmonyOS (Experimental)
 
-The HarmonyOS port is a native app built from the DevEco Studio project in `harmony/`.
-
-#### Building
-
-See `harmony/README.md` for detailed build instructions.
+The HarmonyOS port is a native app built from the DevEco Studio project in `harmony/`. See `harmony/README.md` for build instructions.
 
 #### Importing Game Resources
 
