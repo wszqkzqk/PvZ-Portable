@@ -128,20 +128,7 @@ The HarmonyOS port is a native app built from the DevEco Studio project in `harm
 
 #### Building
 
-1. Install [DevEco Studio](https://developer.huawei.com/consumer/en/download/) (or the HarmonyOS command line tools).
-2. Build the native dependencies for each ABI you need:
-   ```bash
-   harmony/build-deps.sh arm64-v8a        # add x86_64 as another argument for the emulator
-   ```
-   Set `OHOS_NATIVE_HOME` to `<sdk>/default/openharmony/native` if the SDK isn't found automatically. To package x86_64 as well, also add it to `abiFilters` in `harmony/entry/build-profile.json5`.
-3. Open `harmony/` in DevEco Studio, generate a signature under **File > Project Structure > Signing Configs**, then build and run.
-
-   With the command line tools instead, run this in `harmony/` (without a signing config it produces `entry/build/default/outputs/default/entry-default-unsigned.hap`):
-   ```bash
-   export DEVECO_SDK_HOME=<command-line-tools>/sdk
-   ohpm install --all
-   hvigorw assembleHap --mode module -p product=default -p buildMode=release
-   ```
+See `harmony/README.md` for detailed build instructions.
 
 #### Importing Game Resources
 
