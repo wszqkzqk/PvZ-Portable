@@ -34,6 +34,10 @@ using namespace Sexy;
 #include <emscripten.h>
 #endif
 
+#ifdef __OHOS__
+#include "OhosBridge.h"
+#endif
+
 int main(int argc, char** argv)
 {
 #ifdef __SWITCH__
@@ -51,6 +55,10 @@ int main(int argc, char** argv)
 	delete gLawnApp;
 	gLawnApp = nullptr;
 	SDL_Quit();
+#endif
+
+#ifdef __OHOS__
+	PvzpOhosTerminateApp();
 #endif
 
 	return 0;
