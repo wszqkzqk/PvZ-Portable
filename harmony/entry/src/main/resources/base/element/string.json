@@ -7,17 +7,20 @@
     { "name": "status_missing", "value": "Game resources not found.\nPlease import main.pak + properties/ to continue." },
     { "name": "status_working", "value": "Working..." },
     { "name": "section_import_resources", "value": "Import Game Resources" },
-    { "name": "import_help", "value": "Select a ZIP file that contains a legally purchased copy of main.pak and the properties/ directory." },
+    { "name": "import_help", "value": "Import main.pak and properties/ from a ZIP file or a folder." },
     { "name": "btn_pick_zip", "value": "Select ZIP File" },
+    { "name": "btn_pick_dir", "value": "Select Resource Folder" },
     { "name": "section_save_data", "value": "Import/Export Save Data (Optional)" },
     { "name": "btn_export_save", "value": "Export Save Data" },
     { "name": "btn_import_save_zip", "value": "Import Save ZIP" },
+    { "name": "btn_import_save_dir", "value": "Import Save Folder" },
     { "name": "btn_launch_game", "value": "Start Game" },
     { "name": "shortcut_manage_data", "value": "Manage Data" },
     { "name": "import_success", "value": "Import completed successfully!" },
     { "name": "import_failed", "value": "Import failed: " },
     { "name": "import_no_resources", "value": "The ZIP doesn't contain main.pak." },
     { "name": "export_success", "value": "Save data exported successfully!" },
-    { "name": "export_failed", "value": "Export failed: " }
+    { "name": "export_failed", "value": "Export failed: " },
+    { "name": "launch_failed", "value": "Unable to start the game." }
   ]
 }

@@ -1,5 +1,5 @@
 import { common } from '@kit.AbilityKit';
-import { fileIo as fs, picker } from '@kit.CoreFileKit';
+import { fileIo as fs, fileUri, picker } from '@kit.CoreFileKit';
 import { zlib } from '@kit.BasicServicesKit';
 
 const SAVE_DIR_NAME = 'userdata';
@@ -43,17 +43,21 @@ export class GameData {
     }
     const extracted = await this.extractToTemp(uri);
     try {
-      const root = findResourceRoot(extracted);
-      if (root === undefined) {
-        throw new Error('main.pak and properties/ not found');
-      }
-      // Only import known resource entries. Writable data such as userdata/ and registry.regemu is never touched.
-      for (const name of RESOURCE_ENTRIES) {
-        const source = root + '/' + name;
-        if (fs.accessSync(source)) {
-          await copyPath(source, this.gameDir + '/' + name);
-        }
-      }
+      await this.importResourcesFrom(extracted);
+    } finally {
+      await removePath(extracted);
+    }
+    return true;
+  }
+
+  async importResourcesFolder(): Promise<boolean> {
+    const uri = await this.pickFolder();
+    if (uri === undefined) {
+      return false;
+    }
+    const extracted = await this.copyDirectoryToTemp(uri);
+    try {
+      await this.importResourcesFrom(extracted);
     } finally {
       await removePath(extracted);
     }
@@ -67,16 +71,48 @@ export class GameData {
     }
     const extracted = await this.extractToTemp(uri);
     try {
-      const saveRoot = findSaveRoot(extracted);
-      if (saveRoot === undefined) {
-        throw new Error('users.dat not found in save ZIP');
-      }
-      // Like Android, merge files into userdata instead of deleting the existing directory first.
-      await copyPath(saveRoot, this.gameDir + '/' + SAVE_DIR_NAME);
+      await this.importSaveFrom(extracted);
     } finally {
       await removePath(extracted);
     }
     return true;
+  }
+
+  async importSaveFolder(): Promise<boolean> {
+    const uri = await this.pickFolder();
+    if (uri === undefined) {
+      return false;
+    }
+    const extracted = await this.copyDirectoryToTemp(uri);
+    try {
+      await this.importSaveFrom(extracted);
+    } finally {
+      await removePath(extracted);
+    }
+    return true;
+  }
+
+  private async importResourcesFrom(dir: string): Promise<void> {
+    const root = findResourceRoot(dir);
+    if (root === undefined) {
+      throw new Error('main.pak and properties/ not found');
+    }
+    // Only import known resource entries. Writable data such as userdata/ and registry.regemu is never touched.
+    for (const name of RESOURCE_ENTRIES) {
+      const source = root + '/' + name;
+      if (fs.accessSync(source)) {
+        await copyPath(source, this.gameDir + '/' + name);
+      }
+    }
+  }
+
+  private async importSaveFrom(dir: string): Promise<void> {
+    const saveRoot = findSaveRoot(dir);
+    if (saveRoot === undefined) {
+      throw new Error('users.dat not found in selected save data');
+    }
+    // Like Android, merge files into userdata instead of deleting the existing directory first.
+    await copyPath(saveRoot, this.gameDir + '/' + SAVE_DIR_NAME);
   }
 
   async exportSaveZip(): Promise<boolean> {
@@ -119,6 +155,15 @@ export class GameData {
     return uris.length > 0 ? uris[0] : undefined;
   }
 
+  private async pickFolder(): Promise<string | undefined> {
+    const documentPicker = new picker.DocumentViewPicker(this.context);
+    const selectOptions = new picker.DocumentSelectOptions();
+    selectOptions.maxSelectNumber = 1;
+    selectOptions.selectMode = picker.DocumentSelectMode.FOLDER;
+    const uris = await documentPicker.select(selectOptions);
+    return uris.length > 0 ? uris[0] : undefined;
+  }
+
   // Copies the picked document into the sandbox and unpacks it; returns the extraction directory.
   private async extractToTemp(uri: string): Promise<string> {
     const tempZip = this.cacheDir + '/import.zip';
@@ -146,6 +191,19 @@ export class GameData {
       throw e as Error;
     } finally {
       await removePath(tempZip);
+    }
+    return tempDir;
+  }
+
+  private async copyDirectoryToTemp(uri: string): Promise<string> {
+    const tempDir = this.cacheDir + '/import';
+    await removePath(tempDir);
+    fs.mkdirSync(tempDir, true);
+    try {
+      await fs.copy(uri, fileUri.getUriFromPath(tempDir));
+    } catch (e) {
+      await removePath(tempDir);
+      throw e as Error;
     }
     return tempDir;
   }
@@ -181,19 +239,19 @@ function isSaveRoot(dir: string): boolean {
 }
 
 function findSaveRoot(dir: string): string | undefined {
-  if (isSaveRoot(dir)) {
-    return dir;
-  }
   if (isSaveRoot(dir + '/' + SAVE_DIR_NAME)) {
     return dir + '/' + SAVE_DIR_NAME;
   }
+  if (isSaveRoot(dir)) {
+    return dir;
+  }
   const subdir = onlySubdirectory(dir);
   if (subdir !== undefined) {
-    if (isSaveRoot(subdir)) {
-      return subdir;
-    }
     if (isSaveRoot(subdir + '/' + SAVE_DIR_NAME)) {
       return subdir + '/' + SAVE_DIR_NAME;
+    }
+    if (isSaveRoot(subdir)) {
+      return subdir;
     }
   }
   return undefined;
