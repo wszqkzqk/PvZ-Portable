@@ -634,6 +634,42 @@ jobs:
         name: pvz-portable-android
         path: dist/
 
+  build-harmonyos:
+    name: Build for HarmonyOS (arm64-v8a)
+    runs-on: ubuntu-latest
+    env:
+      DEVECO_SDK_HOME: ${{ runner.temp }}/command-line-tools/sdk
+      OHOS_NATIVE_HOME: ${{ runner.temp }}/command-line-tools/sdk/default/openharmony/native
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Set up HarmonyOS command line tools
+      uses: libsdl-org/SDL/.github/actions/setup-harmonyos-toolchain@c17963b8ff64ebd51cbc0bac7389dd48a57c1786
+
+    - name: Build Native Dependencies
+      run: harmony/build-deps.sh arm64-v8a
+
+    - name: Install ArkTS Dependencies
+      working-directory: harmony
+      run: ohpm install --all
+
+    - name: Build Unsigned HAP
+      working-directory: harmony
+      run: hvigorw assembleHap --mode module -p product=default -p buildMode=release
+
+    - name: Copy HAP
+      run: |
+        mkdir -p dist
+        cp harmony/entry/build/default/outputs/default/entry-default-unsigned.hap dist/pvz-portable-harmonyos-arm64-v8a.hap
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: pvz-portable-harmonyos
+        path: dist/
+
   build-ios:
     name: Build for iOS (arm64)
     runs-on: macos-latest

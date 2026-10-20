@@ -1,0 +1,11 @@
+{
+  "app": {
+    "bundleName": "io.github.wszqkzqk.pvzportable",
+    "vendor": "wszqkzqk",
+    // Fallbacks for source archives without Git metadata; hvigorfile.ts overrides these during normal builds.
+    "versionCode": 1,
+    "versionName": "0.1",
+    "icon": "$media:app_icon",
+    "label": "$string:app_name"
+  }
+}
