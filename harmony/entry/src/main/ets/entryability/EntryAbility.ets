@@ -11,15 +11,11 @@ const DOMAIN = 0x0000;
 
 // SDL3 monkey-patches this ability from native code, so keep ArkTS lifecycle code here minimal.
 export default class EntryAbility extends UIAbility {
+  private openDataManager: boolean = false;
+
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     if (!new GameData(this.context).hasResources()) {
-      this.context.startAbility({
-        bundleName: BUNDLE_NAME,
-        moduleName: 'entry',
-        abilityName: DATA_ABILITY_NAME
-      }).then(() => this.context.terminateSelf()).catch((e: Error) => {
-        hilog.error(DOMAIN, 'PvZPortable', 'Failed to open data manager: %{public}s', e.message);
-      });
+      this.openDataManager = true;
       return;
     }
 
@@ -32,5 +28,19 @@ export default class EntryAbility extends UIAbility {
     } catch (e) {
       hilog.error(DOMAIN, 'PvZPortable', '%{public}s', 'SDL rejected provideArkTSObjects; the app will not start.');
     }
+  }
+
+  onForeground(): void {
+    if (!this.openDataManager) {
+      return;
+    }
+    this.openDataManager = false;
+    this.context.startAbility({
+      bundleName: BUNDLE_NAME,
+      moduleName: 'entry',
+      abilityName: DATA_ABILITY_NAME
+    }).then(() => this.context.terminateSelf()).catch((e: Error) => {
+      hilog.error(DOMAIN, 'PvZPortable', 'Failed to open data manager: %{public}s', e.message);
+    });
   }
 }
