@@ -824,7 +824,7 @@ jobs:
 
   release:
     name: Release
-    needs: ['build-archlinux', 'build-linux-static', 'build-windows-msys2-ucrt64', 'build-windows-msvc-x64', 'build-windows-msvc-x86', 'build-macos', 'build-android', 'build-ios', 'build-wasm']
+    needs: ['build-archlinux', 'build-linux-static', 'build-windows-msys2-ucrt64', 'build-windows-msvc-x64', 'build-windows-msvc-x86', 'build-macos', 'build-android', 'build-harmonyos', 'build-ios', 'build-wasm']
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
@@ -864,6 +864,9 @@ jobs:
 
         echo "Preparing Android file..."
         mv artifacts/pvz-portable-android/pvz-portable-android-arm64-v8a.apk release_files/pvz-portable-android-arm64-v8a.apk
+
+        echo "Preparing HarmonyOS file..."
+        mv artifacts/pvz-portable-harmonyos/pvz-portable-harmonyos-arm64-v8a.hap release_files/
 
         echo "Preparing iOS file..."
         mv artifacts/pvz-portable-ios/pvz-portable-ios-arm64.ipa release_files/pvz-portable-ios-arm64.ipa
