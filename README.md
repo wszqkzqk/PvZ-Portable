@@ -124,7 +124,7 @@ The app's Documents folder is exposed via iTunes/Finder file sharing and the iOS
 
 ### Special Instructions for HarmonyOS (Experimental)
 
-The HarmonyOS port is a native app built from the DevEco Studio project in `harmony/`. See `harmony/README.md` for build instructions.
+Download the unsigned HAP from the [Releases](https://github.com/wszqkzqk/PvZ-Portable/releases) page or build it yourself. To sideload it, sign it with your own debug certificate and profile, then install it with `hdc` on a device included in that profile. The HarmonyOS port is built from the DevEco Studio project in `harmony/`. See `harmony/README.md` for build and signing instructions.
 
 #### Importing Game Resources
 
