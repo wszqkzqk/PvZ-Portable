@@ -236,6 +236,7 @@ enum ParticleTracks : int32_t
 	NUM_PARTICLE_TRACKS
 };
 
+// Cached values depend only on the seed, not on the particle occupying the slot.
 struct PvzpParticleShakeCache
 {
 	unsigned int mSeed = 0;
@@ -269,12 +270,6 @@ public:
 	PvzpParticleShakeCache& GetShakeCache(const PvzpParticle* theParticle)
 	{
 		return mShakeCache[mParticles.DataArrayGetIndex(theParticle)];
-	}
-
-	void ResetShakeCache()
-	{
-		for (unsigned int i = 0; i < mParticles.mMaxSize; i++)
-			mShakeCache[i] = {};
 	}
 };
 

@@ -332,7 +332,6 @@ PvzpParticle* PvzpParticleEmitter::SpawnParticle(int theIndex, int theSpawnCount
 	}
 
 	PvzpParticle* aParticle = aDataArray.DataArrayAlloc();
-	mParticleSystem->mParticleHolder->GetShakeCache(aParticle).mValid = false;
 	PVZP_ASSERT(mEmitterDef->mParticleFields.count <= MAX_PARTICLE_FIELDS);
 	for (int i = 0; i < mEmitterDef->mParticleFields.count; i++)
 	{
