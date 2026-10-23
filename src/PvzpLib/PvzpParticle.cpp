@@ -332,6 +332,7 @@ PvzpParticle* PvzpParticleEmitter::SpawnParticle(int theIndex, int theSpawnCount
 	}
 
 	PvzpParticle* aParticle = aDataArray.DataArrayAlloc();
+	mParticleSystem->mParticleHolder->GetShakeCache(aParticle).mValid = false;
 	PVZP_ASSERT(mEmitterDef->mParticleFields.count <= MAX_PARTICLE_FIELDS);
 	for (int i = 0; i < mEmitterDef->mParticleFields.count; i++)
 	{
@@ -539,13 +540,34 @@ void PvzpParticleEmitter::UpdateParticleField(PvzpParticle* theParticle, Particl
 		int aLastRandSeed = theParticle->mParticleAge - 1;
 		if (aLastRandSeed == -1)
 			aLastRandSeed = theParticle->mParticleDuration - 1;
-		srand(aLastRandSeed * reinterpret_cast<uintptr_t>(theParticle));
-		theParticle->mPosition.x -= aLastX * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
-		theParticle->mPosition.y -= aLastY * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		const unsigned int aLastSeed = static_cast<unsigned int>(aLastRandSeed * reinterpret_cast<uintptr_t>(theParticle));
+		PvzpParticleShakeCache& aShakeCache = mParticleSystem->mParticleHolder->GetShakeCache(theParticle);
+		int aLastRandomX;
+		int aLastRandomY;
+		if (aShakeCache.mValid && aShakeCache.mSeed == aLastSeed)
+		{
+			aLastRandomX = aShakeCache.mRandomX;
+			aLastRandomY = aShakeCache.mRandomY;
+		}
+		else
+		{
+			srand(aLastSeed);
+			aLastRandomX = rand();
+			aLastRandomY = rand();
+		}
+		theParticle->mPosition.x -= aLastX * (static_cast<float>(aLastRandomX) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		theParticle->mPosition.y -= aLastY * (static_cast<float>(aLastRandomY) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
 		// apply this frame's random shake offset
-		srand(theParticle->mParticleAge * reinterpret_cast<uintptr_t>(theParticle));
-		theParticle->mPosition.x += x * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
-		theParticle->mPosition.y += y * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		const unsigned int aCurrentSeed = static_cast<unsigned int>(theParticle->mParticleAge * reinterpret_cast<uintptr_t>(theParticle));
+		srand(aCurrentSeed);
+		const int aCurrentRandomX = rand();
+		const int aCurrentRandomY = rand();
+		theParticle->mPosition.x += x * (static_cast<float>(aCurrentRandomX) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		theParticle->mPosition.y += y * (static_cast<float>(aCurrentRandomY) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		aShakeCache.mSeed = aCurrentSeed;
+		aShakeCache.mRandomX = aCurrentRandomX;
+		aShakeCache.mRandomY = aCurrentRandomY;
+		aShakeCache.mValid = true;
 		break;
 	}
 	case ParticleFieldType::FIELD_CIRCLE:
@@ -1231,6 +1253,7 @@ void PvzpParticleHolder::InitializeHolder()
 	mParticleSystems.DataArrayInitialize(1024U, "particle systems");
 	mEmitters.DataArrayInitialize(1024U, "emitters");
 	mParticles.DataArrayInitialize(1024U, "particles");
+	mShakeCache = std::make_unique<PvzpParticleShakeCache[]>(mParticles.mMaxSize);
 	mParticleListNodeAllocator.Initialize(1024, sizeof(PvzpListNode<ParticleID>));
 	mEmitterListNodeAllocator.Initialize(1024, sizeof(PvzpListNode<ParticleEmitterID>));
 }
@@ -1240,6 +1263,7 @@ void PvzpParticleHolder::DisposeHolder()
 	mParticleSystems.DataArrayDispose();
 	mEmitters.DataArrayDispose();
 	mParticles.DataArrayDispose();
+	mShakeCache.reset();
 	mParticleListNodeAllocator.FreeAll();
 	mEmitterListNodeAllocator.FreeAll();
 }

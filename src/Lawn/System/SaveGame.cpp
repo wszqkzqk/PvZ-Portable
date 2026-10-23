@@ -2081,6 +2081,7 @@ static bool ReadChunkV4(uint32_t theChunkType, const uint8_t* theData, size_t th
 
 static void FixBoardAfterLoad(Board* theBoard)
 {
+	theBoard->mApp->mEffectSystem->mParticleHolder->ResetShakeCache();
 	{
 		for (Plant* aPlant : theBoard->mPlants)
 		{

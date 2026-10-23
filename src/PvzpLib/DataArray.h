@@ -85,7 +85,7 @@ public:
 
 	void DataArrayFree(T* theItem)
 	{
-		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
+		unsigned int anIndex = DataArrayGetIndex(theItem);
 		PVZP_ASSERT(DataArrayGet(mItemIds[anIndex]) == theItem, "Failed: DataArrayFree({:p}) in {}", (void*)theItem, mName);
 		DataArrayResetItemAt(anIndex);
 		mItemIds[anIndex] = mFreeListHead;
@@ -102,9 +102,14 @@ public:
 		mMaxUsedCount = 0U;
 	}
 
+	unsigned int DataArrayGetIndex(const T* theItem) const
+	{
+		return static_cast<unsigned int>(static_cast<const DataArrayItem*>(theItem) - mItems.get());
+	}
+
 	inline unsigned int DataArrayGetID(T* theItem)
 	{
-		unsigned int anIndex = static_cast<unsigned int>(static_cast<DataArrayItem*>(theItem) - mItems.get());
+		unsigned int anIndex = DataArrayGetIndex(theItem);
 		unsigned int anId = mItemIds[anIndex];
 		PVZP_ASSERT(DataArrayGet(anId) == theItem, "Failed: DataArrayGetID({:p}) for {}", (void*)theItem, mName);
 		return anId;

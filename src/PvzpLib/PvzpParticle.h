@@ -236,6 +236,14 @@ enum ParticleTracks : int32_t
 	NUM_PARTICLE_TRACKS
 };
 
+struct PvzpParticleShakeCache
+{
+	unsigned int mSeed = 0;
+	int mRandomX = 0;
+	int mRandomY = 0;
+	bool mValid = false;
+};
+
 class PvzpParticleSystem;
 class PvzpParticleEmitter;
 class PvzpParticle;
@@ -247,6 +255,7 @@ public:
 	DataArray<PvzpParticle>			mParticles;
 	PvzpAllocator					mParticleListNodeAllocator;
 	PvzpAllocator					mEmitterListNodeAllocator;
+	std::unique_ptr<PvzpParticleShakeCache[]>	mShakeCache;
 
 public:
 	~PvzpParticleHolder();
@@ -256,6 +265,17 @@ public:
 	PvzpParticleSystem*				AllocParticleSystemFromDef(float theX, float theY, int theRenderOrder, PvzpParticleDefinition* theDefinition, ParticleEffect theParticleEffect);
 	PvzpParticleSystem*				AllocParticleSystem(float theX, float theY, int theRenderOrder, ParticleEffect theParticleEffect);
 	bool					IsOverLoaded();
+
+	PvzpParticleShakeCache& GetShakeCache(const PvzpParticle* theParticle)
+	{
+		return mShakeCache[mParticles.DataArrayGetIndex(theParticle)];
+	}
+
+	void ResetShakeCache()
+	{
+		for (unsigned int i = 0; i < mParticles.mMaxSize; i++)
+			mShakeCache[i] = {};
+	}
 };
 
 class ParticleRenderParams
