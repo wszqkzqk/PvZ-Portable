@@ -60,6 +60,7 @@ This project supports the following platforms (including but not limited to):
 | Haiku           | Executable dir (resources); per-user app-data for writable files | Partially works: no music                                                              |
 | Android         | `Android/data/io.github.wszqkzqk.pvzportable/files/` | Works                                                                                  |
 | iOS / iPadOS    | App Documents directory (Files app) | Works (sideload only; unsigned IPA)                                                    |
+| HarmonyOS       | App sandbox (`files/PvZPortable/`) | Experimental (HarmonyOS 5.0.4+)                                                       |
 | Web (WASM)      | Browser IndexedDB (saves); resources uploaded at runtime    | Works (requires a HTTP server) |
 | Nintendo Switch | sdmc:/switch/PvZPortable | Works on real hardware. Kenji-NX crashes on boot.                           |
 
@@ -119,6 +120,24 @@ The app's Documents folder is exposed via iTunes/Finder file sharing and the iOS
 
 - Requires iOS 16.4+ (arm64).
 - Free Apple ID signatures expire after 7 days; TrollStore installs are permanent.
+- Same touch-to-mouse mapping and aspect ratio behavior as the Android port.
+
+### Special Instructions for HarmonyOS (Experimental)
+
+Download the unsigned HAP from the [Releases](https://github.com/wszqkzqk/PvZ-Portable/releases) page or build it yourself. To sideload it, sign it with your own debug certificate and profile, then install it with `hdc` on a device included in that profile. The HarmonyOS port is built from the DevEco Studio project in `harmony/`. See `harmony/README.md` for build and signing instructions.
+
+#### Importing Game Resources
+
+When no resources are found, the app shows a data management screen: import `main.pak` and `properties/` from a ZIP file or a folder. Save data can be imported from a ZIP or folder and exported as a ZIP. Everything is stored in the app sandbox.
+
+#### Managing Data Later
+
+Long-press the app icon and choose **Manage Data** to re-import resources, export saves, or import saves.
+
+#### Notes
+
+- Requires HarmonyOS 5.0.4 (API 16) or later, the oldest version SDL3 supports.
+- The system back gesture is forwarded to the game as Escape, like on Android.
 - Same touch-to-mouse mapping and aspect ratio behavior as the Android port.
 
 ### Play in Your Browser (WebAssembly)

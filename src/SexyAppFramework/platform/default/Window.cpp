@@ -50,7 +50,7 @@ void SexyAppBase::MakeWindow()
 		// For Wayland's icon support on the game window
 		SDL_SetHint(SDL_HINT_APP_ID, "io.github.wszqkzqk.pvz-portable");
 
-#if (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__IPHONEOS__)
+#if (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__IPHONEOS__) || defined(__OHOS__)
 		SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 #endif
 
@@ -67,6 +67,15 @@ void SexyAppBase::MakeWindow()
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
+#ifdef __OHOS__
+		// sdl2-compat resets the color sizes to SDL2's 3/3/2/0 in SDL_Init, so EGL picks an alpha-less
+		// RGB888 config, which the XComponent's RGBA8888 native window rejects with EGL_BAD_MATCH.
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+#endif
+
 		WindowPtr window(SDL_CreateWindow(
 			mTitle.c_str(),
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -76,7 +85,7 @@ void SexyAppBase::MakeWindow()
 		if (window)
 			context.reset(SDL_GL_CreateContext(window.get()));
 
-#if defined(__ANDROID__) || defined(__IPHONEOS__)
+#if defined(__ANDROID__) || defined(__IPHONEOS__) || defined(__OHOS__)
 		// EGL/EAGL surface may be transiently unavailable on mobile
 		for (int retry = 0; !context && window && retry < 20; retry++)
 		{

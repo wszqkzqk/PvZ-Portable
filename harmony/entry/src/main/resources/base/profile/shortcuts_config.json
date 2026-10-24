@@ -1,0 +1,16 @@
+{
+  "shortcuts": [
+    {
+      "shortcutId": "manage_data",
+      "label": "$string:shortcut_manage_data",
+      "icon": "$media:app_icon",
+      "wants": [
+        {
+          "bundleName": "io.github.wszqkzqk.pvzportable",
+          "moduleName": "entry",
+          "abilityName": "DataManagerAbility"
+        }
+      ]
+    }
+  ]
+}
