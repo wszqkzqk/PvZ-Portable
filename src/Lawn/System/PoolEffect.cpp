@@ -88,6 +88,12 @@ unsigned int PoolEffect::BilinearLookupFixedPoint(unsigned int u, unsigned int v
 
 void PoolEffect::UpdateWaterEffect()
 {
+	const unsigned int aTimePool0 = mPoolCounter << 16;
+	const unsigned int aTimePool1 = ((mPoolCounter & 65535u) + 1u) << 16;
+	const unsigned int aTimePool1Over6 = aTimePool1 / 6;
+	const unsigned int aTimePool0Over8 = aTimePool0 / 8;
+	const unsigned int aTimePool0Over10 = aTimePool0 / 10;
+
 	int idx = 0;
 	for (int y = 0; y < CAUSTIC_IMAGE_HEIGHT; y++)
 	{
@@ -99,10 +105,8 @@ void PoolEffect::UpdateWaterEffect()
 			uint32_t* pix = &mCausticImage->mBits[idx];
 
 			unsigned int timeU = x << 17;
-			unsigned int timePool0 = mPoolCounter << 16;
-			unsigned int timePool1 = ((mPoolCounter & 65535u) + 1u) << 16;
-			int a1 = static_cast<unsigned char>(BilinearLookupFixedPoint(timeU - timePool1 / 6, timeV1 + timePool0 / 8)); //scroll speed
-			int a0 = static_cast<unsigned char>(BilinearLookupFixedPoint(timeU + timePool0 / 10, timeV0)); //scroll speed
+			int a1 = static_cast<unsigned char>(BilinearLookupFixedPoint(timeU - aTimePool1Over6, timeV1 + aTimePool0Over8)); //scroll speed
+			int a0 = static_cast<unsigned char>(BilinearLookupFixedPoint(timeU + aTimePool0Over10, timeV0)); //scroll speed
 			unsigned char a = static_cast<unsigned char>((a0 + a1) / 2);
 
 			unsigned char alpha;
@@ -145,6 +149,32 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
 	//pool background
 	float aGridSquareX = IMAGE_POOL->GetWidth() / 15.0f;
 	float aGridSquareY = IMAGE_POOL->GetHeight() / 5.0f;
+
+	constexpr unsigned int POOL_PHASE_PERIOD = 316800u; // LCM of all sin wave effective periods (1600, 300, 1800, 220, 3200/3, 200, 720, 640, 88)
+	float aPoolPhase = (mPoolCounter % POOL_PHASE_PERIOD) * PI; //speed, * 2 is default
+	float aWaveTime1 = aPoolPhase / 800.0;
+	float aWaveTime2 = aPoolPhase / 150.0;
+	float aWaveTime3 = aPoolPhase / 900.0;
+	float aWaveTime4 = aPoolPhase / 800.0;
+	float aWaveTime5 = aPoolPhase / 110.0;
+
+	float aWaveOffsetU[3][6];
+	float aWaveOffsetV[3][16];
+	for (int y = 1; y < 5; y++)
+	{
+		float yPhase = y * 3.0f * 2 * PI / 5.0f; //more speed options, 5.0f
+		aWaveOffsetU[0][y] = sin(yPhase + aWaveTime2) * 0.002f + sin(yPhase + aWaveTime1) * 0.005f;
+		aWaveOffsetU[1][y] = sin(yPhase * 0.2f + aWaveTime2) * 0.015f + sin(yPhase * 0.2f + aWaveTime1) * 0.012f;
+		aWaveOffsetU[2][y] = sin(yPhase + aWaveTime1 * 1.5f) * 0.004f + sin(yPhase + aWaveTime2 * 1.5f) * 0.005f;
+	}
+	for (int x = 1; x < 15; x++)
+	{
+		float xPhase = x * 3.0f * 2 * PI / 15.0f; //15.0f
+		aWaveOffsetV[0][x] = sin(xPhase + aWaveTime5) * 0.01f + sin(xPhase + aWaveTime3) * 0.015f + sin(xPhase + aWaveTime4) * 0.005f;
+		aWaveOffsetV[1][x] = sin(xPhase * 0.2f + aWaveTime5) * 0.005f + sin(xPhase * 0.2f + aWaveTime3) * 0.015f + sin(xPhase * 0.2f + aWaveTime4) * 0.02f;
+		aWaveOffsetV[2][x] = sin(xPhase * 4.0f + aWaveTime5 * 2.5f) * 0.005f + sin(xPhase * 2.0f + aWaveTime3 * 2.5f) * 0.04f + sin(xPhase * 3.0f + aWaveTime4 * 2.5f) * 0.02f;
+	}
+
 	float aOffsetArray[3][16][6][2] = {{{{ 0 }}}};
 	for (int x = 0; x <= 15; x++)
 	{
@@ -154,22 +184,13 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
 			aOffsetArray[2][x][y][1] = y / 5.0f;
 			if (x != 0 && x != 15 && y != 0 && y != 5)
 			{
-				constexpr unsigned int POOL_PHASE_PERIOD = 316800u; // LCM of all sin wave effective periods (1600, 300, 1800, 220, 3200/3, 200, 720, 640, 88)
-				float aPoolPhase = (mPoolCounter % POOL_PHASE_PERIOD) * PI; //speed, * 2 is default
-				float aWaveTime1 = aPoolPhase / 800.0;
-				float aWaveTime2 = aPoolPhase / 150.0;
-				float aWaveTime3 = aPoolPhase / 900.0;
-				float aWaveTime4 = aPoolPhase / 800.0;
-				float aWaveTime5 = aPoolPhase / 110.0;
-				float xPhase = x * 3.0f * 2 * PI / 15.0f; //15.0f
-				float yPhase = y * 3.0f * 2 * PI / 5.0f; //more speed options, 5.0f
 				//verticies for rendering, dividing by 1 gives interesting results
-				aOffsetArray[0][x][y][0] = sin(yPhase + aWaveTime2) * 0.002f + sin(yPhase + aWaveTime1) * 0.005f;
-				aOffsetArray[0][x][y][1] = sin(xPhase + aWaveTime5) * 0.01f + sin(xPhase + aWaveTime3) * 0.015f + sin(xPhase + aWaveTime4) * 0.005f;
-				aOffsetArray[1][x][y][0] = sin(yPhase * 0.2f + aWaveTime2) * 0.015f + sin(yPhase * 0.2f + aWaveTime1) * 0.012f;
-				aOffsetArray[1][x][y][1] = sin(xPhase * 0.2f + aWaveTime5) * 0.005f + sin(xPhase * 0.2f + aWaveTime3) * 0.015f + sin(xPhase * 0.2f + aWaveTime4) * 0.02f;
-				aOffsetArray[2][x][y][0] += sin(yPhase + aWaveTime1 * 1.5f) * 0.004f + sin(yPhase + aWaveTime2 * 1.5f) * 0.005f;
-				aOffsetArray[2][x][y][1] += sin(xPhase * 4.0f + aWaveTime5 * 2.5f) * 0.005f + sin(xPhase * 2.0f + aWaveTime3 * 2.5f) * 0.04f + sin(xPhase * 3.0f + aWaveTime4 * 2.5f) * 0.02f;
+				aOffsetArray[0][x][y][0] = aWaveOffsetU[0][y];
+				aOffsetArray[0][x][y][1] = aWaveOffsetV[0][x];
+				aOffsetArray[1][x][y][0] = aWaveOffsetU[1][y];
+				aOffsetArray[1][x][y][1] = aWaveOffsetV[1][x];
+				aOffsetArray[2][x][y][0] += aWaveOffsetU[2][y];
+				aOffsetArray[2][x][y][1] += aWaveOffsetV[2][x];
 			}
 			else
 			{
