@@ -636,7 +636,7 @@ jobs:
 
   build-harmonyos:
     name: Build for HarmonyOS (arm64-v8a)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
       with:
