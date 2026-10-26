@@ -206,6 +206,8 @@ cmake -G Ninja -B build
 cmake --build build
 ```
 
+On macOS, `scripts/make-macos-app.sh` then packs the build into `dist/PvZ Portable.app` with its libraries bundled. Pass a folder with `main.pak` and `properties/` as the second argument to copy them into the app (`scripts/make-macos-app.sh dist /path/to/game-data`), or put them next to the `.app`.
+
 ### Performance Optimization
 
 It is recommended to use the **Release** build type for the best performance, as it usually implies compiler optimizations:
