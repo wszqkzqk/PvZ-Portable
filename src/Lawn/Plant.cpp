@@ -1122,7 +1122,7 @@ void Plant::UpdateGraveBuster()
 			mBoard->mGravesCleared++;
 		}
 
-		mApp->AddPvzpParticle(mX + 40, mY + 40, mRenderOrder + 4, ParticleEffect::PARTICLE_GRAVE_BUSTER_DIE);
+		mApp->AddPvzpParticle(mX + 40, mY + 80, mRenderOrder + 4, ParticleEffect::PARTICLE_GRAVE_BUSTER_DIE);
 		Die();
 		mBoard->DropLootPiece(mX + 40, mY, 12);
 	}
