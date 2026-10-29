@@ -547,6 +547,10 @@ async function startGame() {
         lastSaveSyncAt = Date.now();
         startSaveAutosync();
         Module.callMain([]);
+
+        collectedFiles.clear();
+        fileInput.value = '';
+        resourceZipInput.value = '';
     } catch (e) {
         console.error('Failed to start game:', e);
         loadStatus.textContent = 'Error: ' + (e.message || e);
