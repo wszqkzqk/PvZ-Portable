@@ -65,7 +65,6 @@ public:
 	~ChallengeScreen() override;
 	void                        SetUnlockChallengeIndex(ChallengePage thePage, bool theIsIZombie = false);
 	int                         MoreTrophiesNeeded(int theChallengeIndex);
-	bool             ShowPageButtons();
 	void                        UpdateButtons();
 	int                         AccomplishmentsNeeded(int theChallengeIndex);
 	void                        DrawButton(Graphics* g, int theChallengeIndex);
