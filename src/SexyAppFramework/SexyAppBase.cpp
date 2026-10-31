@@ -199,6 +199,18 @@ SexyAppBase::SexyAppBase()
 			mResourceDir = "";
 		}
 	}
+#elif defined(__OHOS__)
+	// HarmonyOS: SDL_GetBasePath() is "assets://", which fopen() can't open; resources are imported into the sandbox pref dir.
+	char* aPrefPath = SDL_GetPrefPath("io.github.wszqkzqk", "PvZPortable");
+	if (aPrefPath)
+	{
+		mResourceDir = aPrefPath;
+		SDL_free(aPrefPath);
+	}
+	else
+	{
+		mResourceDir = "";
+	}
 #elif defined(__EMSCRIPTEN__)
 	mResourceDir = "/";
 #else
@@ -225,7 +237,7 @@ SexyAppBase::SexyAppBase()
 	mWidth = 640;
 	mHeight = 480;
 	mFullscreenBits = 16;
-#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__)
+#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__OHOS__) || defined(__SWITCH__)
 	mIsWindowed = false;
 #else
 	mIsWindowed = true;
@@ -278,7 +290,7 @@ SexyAppBase::SexyAppBase()
 	mLastDrawTick = SDL_GetTicks();
 	mNextDrawTick = SDL_GetTicks();
 	mSysCursor = true;
-#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__)
+#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__OHOS__) || defined(__SWITCH__)
 	mForceFullscreen = true;
 #else
 	mForceFullscreen = false;
@@ -1343,7 +1355,7 @@ void SexyAppBase::ReadFromRegistry()
 	// The read must happen on every platform to keep the demo command stream in sync
 	if (RegistryReadInteger("ScreenMode", &anInt))
 	{
-#if !defined(__IPHONEOS__) && (!defined(__ANDROID__) || defined(__TERMUX__)) && !defined(__SWITCH__) && !defined(__EMSCRIPTEN__)
+#if !defined(__IPHONEOS__) && (!defined(__ANDROID__) || defined(__TERMUX__)) && !defined(__OHOS__) && !defined(__SWITCH__) && !defined(__EMSCRIPTEN__)
 		mIsWindowed = anInt == 0;
 #endif
 	}
@@ -1642,7 +1654,7 @@ void SexyAppBase::DoExit([[maybe_unused]] int theCode)
 			if (typeof window.onGameExit === 'function') window.onGameExit();
 		);
 	}
-#elif (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__IPHONEOS__)
+#elif (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__IPHONEOS__) || defined(__OHOS__)
 	Shutdown();
 #else
 	exit(theCode);
@@ -2345,7 +2357,7 @@ void SexyAppBase::StartCursorThread()
 
 void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
 {
-#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__SWITCH__)
+#if defined(__IPHONEOS__) || (defined(__ANDROID__) && !defined(__TERMUX__)) || defined(__OHOS__) || defined(__SWITCH__)
 	// Mobile/console platforms are always fullscreen; skip mode switching entirely.
 	Set3DAcclerated(is3d);
 	return;
