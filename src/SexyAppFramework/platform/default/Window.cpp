@@ -25,7 +25,7 @@
 #include <SDL.h>
 
 #include <memory>
-#include <type_traits>
+#include <utility>
 
 #include "SexyAppBase.h"
 #include "graphics/GLInterface.h"
@@ -43,7 +43,7 @@ void SexyAppBase::MakeWindow()
 {
 	if (mWindow)
 	{
-		SDL_SetWindowFullscreen((SDL_Window*)mWindow, (!mIsWindowed ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+		SDL_SetWindowFullscreen(mWindow.get(), (!mIsWindowed ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 	}
 	else
 	{
@@ -59,19 +59,16 @@ void SexyAppBase::MakeWindow()
 		Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
 			| (!mIsWindowed ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
-		using WindowPtr = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
-		using GLContextPtr = std::unique_ptr<std::remove_pointer_t<SDL_GLContext>, decltype(&SDL_GL_DeleteContext)>;
-
 		// Try OpenGL ES 2.0 first (Linux, most Windows drivers, ANGLE, etc.)
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-		WindowPtr window(SDL_CreateWindow(
+		SDLWindowPtr window(SDL_CreateWindow(
 			mTitle.c_str(),
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			mWidth, mHeight, winFlags), &SDL_DestroyWindow);
-		GLContextPtr context(nullptr, &SDL_GL_DeleteContext);
+		SDLGLContextPtr context(nullptr, &SDL_GL_DeleteContext);
 
 		if (window)
 			context.reset(SDL_GL_CreateContext(window.get()));
@@ -120,8 +117,8 @@ void SexyAppBase::MakeWindow()
 
 		SDL_GL_SetSwapInterval(1);
 
-		mWindow = (void*)window.release();
-		mContext = (void*)context.release();
+		mWindow = std::move(window);
+		mContext = std::move(context);
 	}
 
 	if (mGLInterface == nullptr)
@@ -135,7 +132,7 @@ void SexyAppBase::MakeWindow()
 	}
 
 	bool isActive = mActive;
-	mActive = !!(SDL_GetWindowFlags((SDL_Window*)mWindow) & SDL_WINDOW_INPUT_FOCUS);
+	mActive = !!(SDL_GetWindowFlags(mWindow.get()) & SDL_WINDOW_INPUT_FOCUS);
 
 	mPhysMinimized = false;
 	if (mMinimized)

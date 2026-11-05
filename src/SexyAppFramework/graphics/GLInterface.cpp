@@ -1230,7 +1230,7 @@ void GLInterface::UpdateViewport()
 	int width = 1280, height = 720;
 #else
 	int width, height;
-	SDL_GL_GetDrawableSize((SDL_Window*)mApp->mWindow, &width, &height);
+	SDL_GL_GetDrawableSize(mApp->mWindow.get(), &width, &height);
 #endif
 
 	vw = width; vh = height;
@@ -1359,7 +1359,7 @@ void GLInterface::Flush()
 #ifdef __SWITCH__
 	eglSwapBuffers(mApp->mWindow, mApp->mSurface);
 #else
-	SDL_GL_SwapWindow((SDL_Window*)mApp->mWindow);
+	SDL_GL_SwapWindow(mApp->mWindow.get());
 #endif
 #ifndef __EMSCRIPTEN__
 	// Clear back buffer after swap (content undefined)

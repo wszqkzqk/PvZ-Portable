@@ -341,10 +341,6 @@ SexyAppBase::SexyAppBase()
 	mWindowAspect.Set(4, 3);
 	mIsWideWindow = false;
 
-	mWindow = 0;
-	mContext = 0;
-	mSurface = 0;
-
 	int i;
 
 	for (i = 0; i < NUM_CURSORS; i++)
