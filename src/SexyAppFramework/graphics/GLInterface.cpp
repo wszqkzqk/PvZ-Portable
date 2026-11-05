@@ -1254,33 +1254,28 @@ void GLInterface::UpdateViewport()
 int GLInterface::Init(bool IsWindowed)
 {
 	GfxFlush();
-	static bool inited = false;
-	if (!inited)
-	{
-		inited = true;
-		PlatformGLInit();
+	PlatformGLInit();
 
-		gProgram = shaderLoad(SHADER_CODE);
-		if (gProgram == 0)
-			return 0;
-		gUfViewProjMtx = glGetUniformLocation(gProgram, "u_viewProj");
-		gUfTexture     = glGetUniformLocation(gProgram, "u_texture");
-		gUfUseTexture  = glGetUniformLocation(gProgram, "u_useTexture");
-		gUfUvBounds    = glGetUniformLocation(gProgram, "u_uvBounds");
-		gUfClampUvEnabled = glGetUniformLocation(gProgram, "u_clampUvEnabled");
-		gUfMixedBlend  = glGetUniformLocation(gProgram, "u_mixedBlend");
+	gProgram = shaderLoad(SHADER_CODE);
+	if (gProgram == 0)
+		return 0;
+	gUfViewProjMtx = glGetUniformLocation(gProgram, "u_viewProj");
+	gUfTexture     = glGetUniformLocation(gProgram, "u_texture");
+	gUfUseTexture  = glGetUniformLocation(gProgram, "u_useTexture");
+	gUfUvBounds    = glGetUniformLocation(gProgram, "u_uvBounds");
+	gUfClampUvEnabled = glGetUniformLocation(gProgram, "u_clampUvEnabled");
+	gUfMixedBlend  = glGetUniformLocation(gProgram, "u_mixedBlend");
 
-		glGenBuffers(1, &gVbo);
-		glBindBuffer(GL_ARRAY_BUFFER, gVbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLVertex) * MAX_VERTICES, nullptr, GL_DYNAMIC_DRAW);
+	glGenBuffers(1, &gVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, gVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLVertex) * MAX_VERTICES, nullptr, GL_DYNAMIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT,         GL_FALSE, sizeof(GLVertex), (const void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE,  GL_TRUE,  sizeof(GLVertex), (const void*)(sizeof(float)*3));
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 2, GL_FLOAT,         GL_FALSE, sizeof(GLVertex), (const void*)(sizeof(float)*3 + sizeof(uint32_t)));
-		glEnableVertexAttribArray(2);
-	}
+	glVertexAttribPointer(0, 3, GL_FLOAT,         GL_FALSE, sizeof(GLVertex), (const void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE,  GL_TRUE,  sizeof(GLVertex), (const void*)(sizeof(float)*3));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT,         GL_FALSE, sizeof(GLVertex), (const void*)(sizeof(float)*3 + sizeof(uint32_t)));
+	glEnableVertexAttribArray(2);
 
 	int aMaxSize;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &aMaxSize);
