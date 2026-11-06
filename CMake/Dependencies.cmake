@@ -79,6 +79,10 @@ if(NOT TARGET SDL3_mixer::SDL3_mixer)
 	set(SDLMIXER_VORBIS_STB ON CACHE BOOL "" FORCE)
 	set(SDLMIXER_VORBIS_VORBISFILE OFF CACHE BOOL "" FORCE)
 	set(SDLMIXER_VORBIS_TREMOR OFF CACHE BOOL "" FORCE)
+	if(EMSCRIPTEN)
+		set(SDLMIXER_VORBIS_STB OFF CACHE BOOL "" FORCE)
+		set(SDLMIXER_VORBIS_VORBISFILE ON CACHE BOOL "" FORCE)
+	endif()
 	pvz_latest_stable_release(https://github.com/libsdl-org/SDL_mixer.git PVZP_SDL3_MIXER_VERSION "3.2.4")
 	FetchContent_Declare(SDL3_mixer
 		URL "https://github.com/libsdl-org/SDL_mixer/releases/download/release-${PVZP_SDL3_MIXER_VERSION}/SDL3_mixer-${PVZP_SDL3_MIXER_VERSION}.tar.gz"
