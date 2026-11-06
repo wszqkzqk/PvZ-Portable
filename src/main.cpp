@@ -22,6 +22,7 @@
 #include "LawnApp.h"
 #include "Resources.h"
 #include "PvzpLib/PvzpStringFile.h"
+#include <SDL.h>
 #include <cstdlib>
 #include <vector>
 using namespace Sexy;
@@ -101,6 +102,8 @@ int main(int argc, char** argv)
 #ifndef __EMSCRIPTEN__
 	gLawnApp->Shutdown();
 	delete gLawnApp;
+	gLawnApp = nullptr;
+	SDL_Quit();
 #endif
 
 	return 0;

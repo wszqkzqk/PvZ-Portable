@@ -26,6 +26,7 @@
 #define __SEXYAPPBASE_H__
 
 #include "Common.h"
+#include <SDL.h>
 #include "misc/Rect.h"
 #include "graphics/Color.h"
 #include "widget/ButtonListener.h"
@@ -40,8 +41,7 @@
 #include "misc/Ratio.h"
 #include <atomic>
 #include <memory>
-
-struct SDL_Cursor;
+#include <type_traits>
 
 namespace ImageLib
 {
@@ -81,6 +81,8 @@ typedef std::map<std::string, bool, std::less<>> StringBoolMap;
 typedef std::map<std::string, int, std::less<>> StringIntMap;
 typedef std::map<std::string, double, std::less<>> StringDoubleMap;
 typedef std::map<std::string, std::vector<std::string>, std::less<>> StringStringVectorMap;
+using SDLWindowPtr = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
+using SDLGLContextPtr = std::unique_ptr<std::remove_pointer_t<SDL_GLContext>, decltype(&SDL_GL_DeleteContext)>;
 
 enum
 {
@@ -147,9 +149,14 @@ enum
 class SexyAppBase : public ButtonListener, public DialogListener
 {
 public:
-	void*					mWindow;
-	void*					mContext;
-	void*					mSurface; // for EGL
+#ifdef __SWITCH__
+	void*					mWindow = nullptr;
+	void*					mContext = nullptr;
+#else
+	SDLWindowPtr			mWindow{nullptr, &SDL_DestroyWindow};
+	SDLGLContextPtr			mContext{nullptr, &SDL_GL_DeleteContext};
+#endif
+	void*					mSurface = nullptr; // for EGL
 
 	uint32_t				mRandSeed;
 
@@ -208,6 +215,7 @@ public:
 	MemoryImageSet			mMemoryImageSet; // must outlive mGLInterface: ~GLImage -> RemoveMemoryImage()
 	std::unique_ptr<GLInterface>	mGLInterface;
 	bool					mAlphaDisabled;
+	std::unique_ptr<SoundManager>	mSoundManager; // mMusicInterface must be destroyed before this
 	std::unique_ptr<MusicInterface>	mMusicInterface;
 	bool					mReadFromRegistry;
 	std::string				mRegisterLink;
@@ -260,7 +268,6 @@ public:
 	SDL_Cursor*				mCustomCursor;
 	Image*					mCustomCursorImage;
 	int						mCustomCursorImageNum;
-	std::unique_ptr<SoundManager>	mSoundManager;
 	std::atomic<_Font*>		mDefaultFont = nullptr; // app-injected fallback for widgets without an explicit font
 	WidgetSafeDeleteList	mSafeDeleteList;
 	bool					mMouseIn;

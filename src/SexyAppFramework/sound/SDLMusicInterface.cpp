@@ -43,7 +43,7 @@ SDLMusicInterface::SDLMusicInterface()
 
 SDLMusicInterface::~SDLMusicInterface()
 {
-	Mix_HaltMusic();
+	UnloadAllMusic();
 }
 
 bool SDLMusicInterface::LoadMusic(int theSongId, const std::string& theFileName)

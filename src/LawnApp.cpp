@@ -1817,10 +1817,7 @@ void LawnApp::ButtonDepress(int theId)
 
 		case Dialogs::DIALOG_QUIT:
 			KillDialog(Dialogs::DIALOG_QUIT);
-#if defined(__ANDROID__) && !defined(__TERMUX__)
-			// Android should move the task to the background instead of forcing a quit.
-			SDL_MinimizeWindow(static_cast<SDL_Window*>(mWindow));
-#elif !defined(__IPHONEOS__) // iOS apps must not quit or programmatically return to the Home screen.
+#if !defined(__IPHONEOS__) // iOS apps must not quit or programmatically return to the Home screen.
 			CloseRequestAsync();
 #endif
 			return;
