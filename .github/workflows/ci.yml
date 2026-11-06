@@ -87,6 +87,7 @@ jobs:
           libXcursor-devel \
           libXext-devel \
           libXi-devel \
+          libvorbis-devel \
           libXrandr-devel \
           libXScrnSaver-devel \
           libXtst-devel \
