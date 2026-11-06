@@ -124,21 +124,11 @@ The app's Documents folder is exposed via iTunes/Finder file sharing and the iOS
 
 ### Special Instructions for HarmonyOS (Experimental)
 
-Download the unsigned HAP from the [Releases](https://github.com/wszqkzqk/PvZ-Portable/releases) page or build it yourself. To sideload it, sign it with your own debug certificate and profile, then install it with `hdc` on a device included in that profile. The HarmonyOS port is built from the DevEco Studio project in `harmony/`. See `harmony/README.md` for build and signing instructions.
+Requires HarmonyOS 5.0.4 (API 16) or later. Download the unsigned HAP from [Releases](https://github.com/wszqkzqk/PvZ-Portable/releases), sign it with your own debug certificate and profile, then install it with `hdc` on a device listed in that profile. Build and signing instructions are in `harmony/README.md`.
 
-#### Importing Game Resources
+If you do not want to handle signing and sideloading, use the Android APK (including through 卓易通 on supported devices) or the [WebAssembly version](#play-in-your-browser-webassembly) instead.
 
-When no resources are found, the app shows a data management screen: import `main.pak` and `properties/` from a ZIP file or a folder. Save data can be imported from a ZIP or folder and exported as a ZIP. Everything is stored in the app sandbox.
-
-#### Managing Data Later
-
-Long-press the app icon and choose **Manage Data** to re-import resources, export saves, or import saves.
-
-#### Notes
-
-- Requires HarmonyOS 5.0.4 (API 16) or later, the oldest version SDL3 supports.
-- The system back gesture is forwarded to the game as Escape, like on Android.
-- Same touch-to-mouse mapping and aspect ratio behavior as the Android port.
+When no resources are found, import `main.pak` and `properties/` from a ZIP file or a folder. Long-press the app icon and choose **Manage Data** to re-import resources or import/export save data. Back gestures and touch behavior match the Android port.
 
 ### Play in Your Browser (WebAssembly)
 
