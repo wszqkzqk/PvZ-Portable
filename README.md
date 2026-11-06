@@ -17,7 +17,7 @@ A **cross-platform** community-driven reimplementation of Plants vs. Zombies: Ga
 **⚠️ Notice:**
 
 * This repository does **NOT** contain any copyrighted game assets (such as images, music, or fonts) owned by PopCap Games or Electronic Arts. Users must provide their own `main.pak` and `properties/` folder from a **legally purchased copy** of Plants vs. Zombies: GOTY Edition.
-* The codebase is a manual reimplementation derived from community research (such as [植物大战僵尸吧](https://tieba.baidu.com/f?ie=utf-8&kw=%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8), [PVZ Wiki](https://wiki.pvz1.com/doku.php?id=home) and [PvZ Tools](https://pvz.tools/memory/)). It is written to utilize portable backends like SDL2 and OpenGL ES 2.0 (with desktop OpenGL 2.1 fallback). The author (wszqkzqk) **NEVER reverse engineered** the program; the author wrote it solely based on publicly available information and game testing. Also, code generated directly through reverse engineering will **not be accepted**.
+* The codebase is a manual reimplementation derived from community research (such as [植物大战僵尸吧](https://tieba.baidu.com/f?ie=utf-8&kw=%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8), [PVZ Wiki](https://wiki.pvz1.com/doku.php?id=home) and [PvZ Tools](https://pvz.tools/memory/)). It is written to utilize portable backends like SDL3 and OpenGL ES 2.0 (with desktop OpenGL 2.1 fallback). The author (wszqkzqk) **NEVER reverse engineered** the program; the author wrote it solely based on publicly available information and game testing. Also, code generated directly through reverse engineering will **not be accepted**.
 * This project is intended solely for **educational purposes**, focusing on **cross-platform porting techniques**, engine modernization, and learning how classic game logic can be adapted to various hardware architectures.
 * Non-Commercial: This project is not affiliated with, authorized, or endorsed by PopCap Games or Electronic Arts.
 * Project icons and platform-specific logos are created by me (wszqkzqk) with the help of AI image generation tools and are not official assets of PopCap/EA.
@@ -105,7 +105,7 @@ Long-press the app icon on your launcher to access the **Manage Data** shortcut,
 - Requires Android 7.0+. The prebuilt APK is arm64-v8a only, but **you can build for other architectures** if needed.
 - All data is stored in `Android/data/io.github.wszqkzqk.pvzportable/files/`. No extra storage permissions are needed — the app uses the **Storage Access Framework (SAF)** for all imports and exports.
 - Save data is interchangeable with desktop versions. See the [save data section](#save-data-compatibility-user-data-and-mid-level-saves) chapter for details.
-- The Android port is part of this project's **cross-platform porting research**. It preserves the original game's 4:3 aspect ratio and mouse-based input model — **no touch-screen-specific UI optimizations have been made**. SDL2 automatically maps touch events to mouse input, so the game is playable but not designed for mobile ergonomics.
+- The Android port is part of this project's **cross-platform porting research**. It preserves the original game's 4:3 aspect ratio and mouse-based input model — **no touch-screen-specific UI optimizations have been made**. SDL3 automatically maps touch events to mouse input, so the game is playable but not designed for mobile ergonomics.
 
 ### Special Instructions for iOS / iPadOS
 
@@ -157,17 +157,17 @@ The script writes `pvz-portable.xml` to the `properties/` directory beside `main
 Before building on PC, ensure you have the necessary dependencies installed:
 
 - **Build Tools**: `CMake`, `Ninja`, A C/C++ compiler (e.g., `gcc`, `clang`, `MSVC`) supporting **C++20** (Also need a standard library implementation like `libstdc++`, `libc++` or MSVC STL that supports C++20)
-- **Graphics**: `OpenGL ES 2.0` or `OpenGL 2.1+` (auto-detected at runtime via SDL2)
-- **Audio**: `libopenmpt`
+- **Graphics**: `OpenGL ES 2.0` or `OpenGL 2.1+` (auto-detected at runtime via SDL3)
+- **Audio**: `SDL3_mixer`, `libopenmpt`
 - **Image**: `libpng`, `libjpeg-turbo`
-- **Windowing/Input**: `SDL2`
+- **Windowing/Input**: `SDL3`
 
 ### Arch Linux
 
 You can install the required dependencies using the following command:
 
 ```bash
-sudo pacman -S --needed base-devel cmake libjpeg-turbo libopenmpt libpng ninja sdl2-compat
+sudo pacman -S --needed base-devel cmake libjpeg-turbo libopenmpt libpng ninja sdl3 sdl3_mixer
 ```
 
 ### Debian/Ubuntu
@@ -175,7 +175,7 @@ sudo pacman -S --needed base-devel cmake libjpeg-turbo libopenmpt libpng ninja s
 You can install the required dependencies using the following command:
 
 ```bash
-sudo apt install cmake ninja-build libjpeg-dev libopenmpt-dev libpng-dev libsdl2-dev
+sudo apt install cmake ninja-build libjpeg-dev libopenmpt-dev libpng-dev libsdl3-dev libsdl3-mixer-dev
 ```
 
 ### Windows (MSYS2 UCRT64)
@@ -183,7 +183,7 @@ sudo apt install cmake ninja-build libjpeg-dev libopenmpt-dev libpng-dev libsdl2
 You can install the required dependencies using the following command:
 
 ```bash
-pacman -S --needed base-devel mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-libjpeg-turbo mingw-w64-ucrt-x86_64-libopenmpt mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-SDL2
+pacman -S --needed base-devel mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-libjpeg-turbo mingw-w64-ucrt-x86_64-libopenmpt mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-SDL3 mingw-w64-ucrt-x86_64-SDL3_mixer
 ```
 
 ### macOS (Homebrew)
@@ -191,7 +191,7 @@ pacman -S --needed base-devel mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-
 You can install the required dependencies using [Homebrew](https://brew.sh/) with the following command:
 
 ```bash
-brew install cmake dylibbundler jpeg-turbo libopenmpt libpng ninja sdl2
+brew install cmake dylibbundler jpeg-turbo libopenmpt libpng ninja sdl3 sdl3_mixer
 ```
 
 ## Build Instructions

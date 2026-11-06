@@ -35,7 +35,8 @@ jobs:
           libopenmpt \
           libpng \
           ninja \
-          sdl2-compat \
+          sdl3 \
+          sdl3_mixer \
           sudo
 
     - name: Create Builder User
@@ -102,12 +103,12 @@ jobs:
 
     - name: Resolve Dep Versions
       run: |
-        SDL2_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-2.*' \
+        SDL3_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-3.*' \
           | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
-        if [ -z "$SDL2_TAG" ]; then
-          SDL2_TAG="2.32.10" # Fallback to a known stable version if tag retrieval fails
+        if [ -z "$SDL3_TAG" ]; then
+          SDL3_TAG="3.4.20" # Fallback to a known stable version if tag retrieval fails
         fi
-        echo "SDL2_TAG=$SDL2_TAG" >> "$GITHUB_ENV"
+        echo "SDL3_TAG=$SDL3_TAG" >> "$GITHUB_ENV"
 
         OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
           | sed 's|.*refs/tags/libopenmpt-||' \
@@ -131,7 +132,7 @@ jobs:
         fi
         echo "JPEG_TURBO_VERSION=$JPEG_TURBO_VERSION" >> "$GITHUB_ENV"
 
-        echo "Using SDL2 $SDL2_TAG, libopenmpt $OPENMPT_TAG,"
+        echo "Using SDL3 $SDL3_TAG, libopenmpt $OPENMPT_TAG,"
         echo "libpng $LIBPNG_VERSION, libjpeg-turbo $JPEG_TURBO_VERSION"
 
     - name: Restore Source-Built Deps Cache
@@ -140,31 +141,30 @@ jobs:
       with:
         path: ~/pvz-deps
         # Bump the -vN suffix when the dep build recipe changes
-        key: linux-static-deps-v4-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
+        key: linux-static-deps-v4-${{ env.SDL3_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
 
-    - name: Build SDL2 (static)
+    - name: Build SDL3 (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
       run: |
-        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_TAG}/SDL2-${SDL2_TAG}.tar.gz"
-        tar xf "SDL2-${SDL2_TAG}.tar.gz"
+        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_TAG}/SDL3-${SDL3_TAG}.tar.gz"
+        tar xf "SDL3-${SDL3_TAG}.tar.gz"
         # Use SDL's built-in iconv for wider glibc compatibility, including glibc installs without iconv
-        cmake -G Ninja -B build-sdl2 \
+        cmake -G Ninja -B build-sdl3 \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
           -DSDL_SHARED=OFF \
           -DSDL_STATIC=ON \
-          -DSDL_TEST=OFF \
+          -DSDL_TESTS=OFF \
           -DSDL_KMSDRM=OFF \
           -DSDL_JACK=OFF \
           -DSDL_SNDIO=OFF \
           -DSDL_DBUS=OFF \
           -DSDL_IBUS=OFF \
           -DSDL_LIBUDEV=OFF \
-          -DSDL_LIBSAMPLERATE=OFF \
           -DSDL_SYSTEM_ICONV=OFF \
-          "SDL2-${SDL2_TAG}"
-        cmake --build build-sdl2 -j$(nproc)
-        cmake --install build-sdl2
+          "SDL3-${SDL3_TAG}"
+        cmake --build build-sdl3 -j$(nproc)
+        cmake --install build-sdl3
 
     - name: Build libopenmpt (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
@@ -213,7 +213,7 @@ jobs:
       uses: actions/cache/save@v6
       with:
         path: ~/pvz-deps
-        key: linux-static-deps-v4-${{ env.SDL2_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
+        key: linux-static-deps-v4-${{ env.SDL3_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
 
     - name: Build PvZ-Portable
       run: |
@@ -254,7 +254,8 @@ jobs:
           mingw-w64-ucrt-x86_64-libopenmpt
           mingw-w64-ucrt-x86_64-libpng
           mingw-w64-ucrt-x86_64-ninja
-          mingw-w64-ucrt-x86_64-SDL2
+          mingw-w64-ucrt-x86_64-SDL3
+          mingw-w64-ucrt-x86_64-SDL3_mixer
 
     - name: Compile PvZ-Portable for Windows
       shell: msys2 {0}
@@ -438,7 +439,8 @@ jobs:
           libopenmpt \
           libpng \
           ninja \
-          sdl2
+          sdl3 \
+          sdl3_mixer
 
     - name: Build PvZ-Portable
       run: |
@@ -453,10 +455,6 @@ jobs:
 
         echo "Bundling dependencies..."
         dylibbundler -of -b -x dist/pvz-portable -d dist/libs -p @executable_path/libs/
-
-        # Homebrew's SDL2 formula is sdl2-compat, which loads SDL3 at runtime.
-        # dylibbundler cannot discover libraries loaded with dlopen(), so bundle it explicitly.
-        install -m 755 "$(brew --prefix sdl3)/lib/libSDL3.dylib" dist/libs/libSDL3.dylib
 
         codesign --force --deep -s - dist/pvz-portable
 
@@ -502,17 +500,17 @@ jobs:
           echo "ANDROID_NDK_HOME=${NDK_DIR%/}" >> "$GITHUB_ENV"
         fi
 
-    - name: Download SDL2 Source
+    - name: Download SDL3 Source
       run: |
-        SDL2_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-2.*' \
+        SDL3_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-3.*' \
           | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
-        if [ -z "$SDL2_TAG" ]; then
-          SDL2_TAG="2.32.10" # Fallback to a known stable version if tag retrieval fails
+        if [ -z "$SDL3_TAG" ]; then
+          SDL3_TAG="3.4.20" # Fallback to a known stable version if tag retrieval fails
         fi
-        echo "Using SDL2 version: $SDL2_TAG"
-        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_TAG}/SDL2-${SDL2_TAG}.tar.gz"
-        tar xf "SDL2-${SDL2_TAG}.tar.gz"
-        mv "SDL2-${SDL2_TAG}" sdl2-src
+        echo "Using SDL3 version: $SDL3_TAG"
+        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_TAG}/SDL3-${SDL3_TAG}.tar.gz"
+        tar xf "SDL3-${SDL3_TAG}.tar.gz"
+        mv "SDL3-${SDL3_TAG}" sdl3-src
 
     # Key tracks the NDK version (compiler + chainload toolchain are in vcpkg's ABI hash) but not the system CMake version: vcpkg builds ports with its own pinned CMake.
     - name: Get toolchain ID for cache key
@@ -534,27 +532,27 @@ jobs:
       with:
         vcpkgJsonGlob: vcpkg.json
 
-    - name: Build SDL2 Shared Library
+    - name: Build SDL3 Shared Library
       run: |
-        # On Android, SDL2 MUST be a shared library because the Java-side
-        # SDLActivity loads it via System.loadLibrary("SDL2").
-        cmake -B build-sdl2 \
+        # On Android, SDL3 MUST be a shared library because the Java-side
+        # SDLActivity loads it via System.loadLibrary("SDL3").
+        cmake -B build-sdl3 \
           -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
           -DANDROID_ABI=arm64-v8a \
           -DANDROID_PLATFORM=android-$ANDROID_API \
           -DSDL_SHARED=ON \
           -DSDL_STATIC=OFF \
-          -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/sdl2-android \
+          -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/sdl3-android \
           -DCMAKE_BUILD_TYPE=Release \
-          sdl2-src
-        cmake --build build-sdl2 -j$(nproc)
-        cmake --install build-sdl2
+          sdl3-src
+        cmake --build build-sdl3 -j$(nproc)
+        cmake --install build-sdl3
 
     - name: Build Native Library with CMake
       run: |
         ABI=arm64-v8a
         BUILD_DIR=build-android-$ABI
-        SDL2_PREFIX=$GITHUB_WORKSPACE/sdl2-android
+        SDL3_PREFIX=$GITHUB_WORKSPACE/sdl3-android
 
         cmake -B $BUILD_DIR \
           -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
@@ -563,7 +561,7 @@ jobs:
           -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
           -DANDROID_ABI=$ABI \
           -DANDROID_PLATFORM=android-$ANDROID_API \
-          -DSDL2_DIR=$SDL2_PREFIX/lib/cmake/SDL2 \
+          -DSDL3_DIR=$SDL3_PREFIX/lib/cmake/SDL3 \
           -DCMAKE_BUILD_TYPE=Release
 
         cmake --build $BUILD_DIR -j$(nproc)
@@ -573,8 +571,9 @@ jobs:
         mkdir -p $JNILIBS
         cp -L $BUILD_DIR/libmain.so $JNILIBS/
 
-        # Copy SDL2 shared library
-        cp -L $SDL2_PREFIX/lib/libSDL2*.so $JNILIBS/
+        # Copy SDL3 shared libraries
+        cp -L $SDL3_PREFIX/lib/libSDL3*.so $JNILIBS/
+        cp -L $BUILD_DIR/_deps/sdl3_mixer-build/libSDL3_mixer*.so $JNILIBS/
 
         # Copy any .so dependencies from vcpkg (manifest mode installs into build dir)
         VCPKG_LIB=$BUILD_DIR/vcpkg_installed/arm64-android/lib
@@ -607,7 +606,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v6
       with:
-        # sdl2-src ships its own wrapper jar, which is not in Gradle's known checksum database
+        # sdl3-src ships its own wrapper jar, which is not in Gradle's known checksum database
         validate-wrappers: false
 
     - name: Build APK with Gradle

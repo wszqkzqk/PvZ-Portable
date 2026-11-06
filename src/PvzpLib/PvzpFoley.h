@@ -175,7 +175,7 @@ class PvzpDSoundInstance : public SDLSoundInstance
 	friend class PvzpFoley;
 
 public:
-	PvzpDSoundInstance(SDLSoundManager* theSoundManager, Mix_Chunk* theSourceSound) : SDLSoundInstance(theSoundManager, theSourceSound) { }
+	PvzpDSoundInstance(SDLSoundManager* theSoundManager, MIX_Audio* theSourceSound) : SDLSoundInstance(theSoundManager, theSourceSound) { }
 
 	int      GetSoundPosition();
 	void     SetSoundPosition(int thePosition);

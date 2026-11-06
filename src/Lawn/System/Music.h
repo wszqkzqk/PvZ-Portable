@@ -25,7 +25,6 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
-#include <SDL_mixer_ext/SDL_mixer_ext.h>
 
 class LawnApp;
 namespace Sexy
@@ -79,13 +78,6 @@ enum MusicDrumsState : int32_t
 	MUSIC_DRUMS_FADING
 };
 
-class MusicFileData
-{
-public:
-	unsigned int*				mFileData;
-};
-extern MusicFileData gMusicFileData[MusicFile::NUM_MUSIC_FILES];
-
 class Music
 {
 public:
@@ -120,7 +112,6 @@ public:
 	void						MusicUpdate();
 	void						StopAllMusic();
 	void				PlayMusic(MusicTune theMusicTune, int theOffset = -1, int theDrumsOffset = -1);
-	Mix_Music*		GetMusicHandle(MusicFile theMusicFile);
 	void						StartGameMusic();
 	void				LoadSong(MusicFile theMusicFile, std::string_view theFileName);
 	void						UpdateMusicBurst();

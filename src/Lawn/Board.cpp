@@ -21,7 +21,7 @@
 
 #include <time.h>
 #include <algorithm>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <format>
 #include "ZenGarden.h"
 #include "BoardInclude.h"

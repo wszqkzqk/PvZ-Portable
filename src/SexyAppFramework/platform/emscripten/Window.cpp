@@ -1,10 +1,7 @@
 /*
- * Portions of this file are based on the PopCap Games Framework
- * Copyright (C) 2005-2009 PopCap Games, Inc.
- *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
- * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
+ * SPDX-License-Identifier: LGPL-3.0-or-later
  *
  * This file is part of PvZ-Portable.
  *
@@ -22,7 +19,7 @@
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
@@ -48,9 +45,13 @@ void SexyAppBase::MakeWindow()
 	}
 	else
 	{
-		SDL_Init(SDL_INIT_VIDEO);
+		if (!SDL_Init(SDL_INIT_VIDEO))
+		{
+			Sexy::LogErrorLn("Failed to initialize SDL video: {}", SDL_GetError());
+			return;
+		}
 
-		Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+		SDL_WindowFlags winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -59,18 +60,15 @@ void SexyAppBase::MakeWindow()
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 
-		SDLWindowPtr window(SDL_CreateWindow(
-			mTitle.c_str(),
-			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			mWidth, mHeight, winFlags), &SDL_DestroyWindow);
-		SDLGLContextPtr context(nullptr, &SDL_GL_DeleteContext);
+		SDLWindowPtr window(SDL_CreateWindow(mTitle.c_str(), mWidth, mHeight, winFlags), &SDL_DestroyWindow);
+		SDLGLContextPtr context(nullptr, &SDL_GL_DestroyContext);
 
 		if (window)
 			context.reset(SDL_GL_CreateContext(window.get()));
 
 		if (!context)
 		{
-			Sexy::LogErrorLn("Failed to create WebGL context.");
+			Sexy::LogErrorLn("Failed to create WebGL context: {}", SDL_GetError());
 			return;
 		}
 

@@ -26,7 +26,7 @@
 #include <format>
 #include <map>
 #include <set>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 using namespace Sexy;
 
