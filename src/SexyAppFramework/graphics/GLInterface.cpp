@@ -1,10 +1,7 @@
 /*
- * Portions of this file are based on the PopCap Games Framework
- * Copyright (C) 2005-2009 PopCap Games, Inc.
- *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
- * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
+ * SPDX-License-Identifier: LGPL-3.0-or-later
  *
  * This file is part of PvZ-Portable.
  *
@@ -25,7 +22,7 @@
 #define GLAD_GLES2_IMPLEMENTATION
 #include "graphics/GLPlatform.h"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "graphics/GLInterface.h"
 #include "graphics/GLImage.h"
@@ -1230,8 +1227,17 @@ void GLInterface::UpdateViewport()
 	int width = 1280, height = 720;
 #else
 	int width, height;
-	SDL_GL_GetDrawableSize(mApp->mWindow.get(), &width, &height);
+	SDL_GetWindowSizeInPixels(mApp->mWindow.get(), &width, &height);
 #endif
+	if (width <= 0 || height <= 0)
+		return;
+
+	int windowWidth = width, windowHeight = height;
+#ifndef __SWITCH__
+	SDL_GetWindowSize(mApp->mWindow.get(), &windowWidth, &windowHeight);
+#endif
+	if (windowWidth <= 0 || windowHeight <= 0)
+		return;
 
 	vw = width; vh = height;
 
@@ -1248,7 +1254,11 @@ void GLInterface::UpdateViewport()
 	}
 
 	glViewport(vx, vy, vw, vh);
-	mPresentationRect = Rect(vx, vy, vw, vh);
+	mPresentationRect = Rect(
+		windowWidth * vx / width,
+		windowHeight * vy / height,
+		windowWidth * vw / width,
+		windowHeight * vh / height);
 }
 
 int GLInterface::Init(bool IsWindowed)

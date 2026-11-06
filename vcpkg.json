@@ -4,7 +4,11 @@
     "libopenmpt",
     "libpng",
     {
-      "name": "sdl2",
+      "name": "sdl3",
+      "platform": "!android"
+    },
+    {
+      "name": "sdl3-mixer",
       "platform": "!android"
     },
     "zlib"

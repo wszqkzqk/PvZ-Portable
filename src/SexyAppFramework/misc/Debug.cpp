@@ -29,7 +29,7 @@
 #include <mutex>
 
 #include <time.h>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "memmgr.h"
 

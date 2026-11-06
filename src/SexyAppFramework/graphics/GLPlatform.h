@@ -1,10 +1,7 @@
 /*
- * Portions of this file are based on the PopCap Games Framework
- * Copyright (C) 2005-2009 PopCap Games, Inc.
- *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
- * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
+ * SPDX-License-Identifier: LGPL-3.0-or-later
  *
  * This file is part of PvZ-Portable.
  *
@@ -42,7 +39,7 @@
 #pragma warning(pop)
 #endif
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 // Shared macro definitions — identical keywords in GLSL ES 1.00 and GLSL 1.20
 #define GLSL_VERT_MACROS \

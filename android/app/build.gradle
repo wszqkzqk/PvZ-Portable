@@ -96,7 +96,7 @@ android {
         main {
             java.srcDirs = [
                 'src/main/java',
-                "${project.rootDir}/../sdl2-src/android-project/app/src/main/java"
+                "${project.rootDir}/../sdl3-src/android-project/app/src/main/java"
             ]
         }
     }

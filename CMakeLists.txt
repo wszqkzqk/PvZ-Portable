@@ -125,56 +125,15 @@ option(CONSOLE "Show console on Windows" ${WIN_CONSOLE_DEFAULT})
 option(DO_FIX_BUGS "Define DO_FIX_BUGS macro (Community fixes for original game bugs of 1.2.0.1073 GOTY Edition)" OFF)
 
 if(EMSCRIPTEN)
-	list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -fexceptions")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -fexceptions")
 else()
 	find_package(Threads REQUIRED)
 	find_package(ZLIB REQUIRED)
 	find_package(JPEG REQUIRED)
 	find_package(PNG REQUIRED)
-	find_package(SDL2 REQUIRED)
 endif()
-
-function(_pvz_patch_sdl2_iface_libs target)
-	get_target_property(_libs ${target} INTERFACE_LINK_LIBRARIES)
-	if(NOT _libs)
-		return()
-	endif()
-	set(_patched)
-	foreach(_lib IN LISTS _libs)
-		if(_lib STREQUAL "SDL2::SDL2")
-			list(APPEND _patched SDL2::SDL2-static)
-		else()
-			list(APPEND _patched "${_lib}")
-		endif()
-	endforeach()
-	set_target_properties(${target} PROPERTIES INTERFACE_LINK_LIBRARIES "${_patched}")
-endfunction()
-
-if(BUILD_STATIC AND TARGET SDL2::SDL2-static)
-	if(TARGET SDL2::SDL2main)
-		_pvz_patch_sdl2_iface_libs(SDL2::SDL2main)
-	endif()
-	set(SDL2_LINK_TARGET SDL2::SDL2-static)
-else()
-	set(SDL2_LINK_TARGET SDL2::SDL2)
-endif()
-
-set(SDL_MIXER_X_STATIC ON CACHE BOOL "Build static library of SDL Mixer X")
-set(SDL_MIXER_X_SHARED OFF CACHE BOOL "Build shared library of SDL Mixer X")
-set(USE_MIDI OFF CACHE BOOL "SDL Mixer X midi")
-set(USE_MODPLUG OFF CACHE BOOL "SDL Mixer X modplug")
-set(USE_XMP OFF CACHE BOOL "SDL Mixer X xmp")
-set(USE_OPUS OFF CACHE BOOL "SDL Mixer X opus")
-set(USE_DRFLAC OFF CACHE BOOL "SDL Mixer X flac")
-set(USE_PXTONE OFF CACHE BOOL "SDL Mixer X pxtone")
-add_subdirectory(src/SexyAppFramework/sound/SDL-Mixer-X)
-
-# Patch SDL-Mixer-X's transitive SDL2 dep without touching vendored CMake files
-if(BUILD_STATIC AND TARGET SDL2::SDL2-static)
-	_pvz_patch_sdl2_iface_libs(SDL2_mixer_ext_Static)
-endif()
+include(CMake/Dependencies.cmake)
 
 # Android requires a shared library loaded by SDLActivity; other platforms use an executable.
 if(ANDROID)
@@ -190,8 +149,6 @@ target_include_directories(pvz-portable PRIVATE
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/src/SexyAppFramework
-	${PROJECT_SOURCE_DIR}/src/SexyAppFramework/sound/SDL-Mixer-X/include
-	${SDL2_INCLUDE_DIRS}
 )
 target_compile_definitions(pvz-portable PRIVATE
 	$<$<BOOL:${PVZ_DEBUG}>:PVZ_DEBUG>
@@ -204,16 +161,17 @@ if (LOW_MEMORY)
 	target_compile_definitions(pvz-portable PRIVATE LOW_MEMORY)
 endif()
 
+target_link_libraries(pvz-portable PRIVATE
+	SDL3::SDL3
+	SDL3_mixer::SDL3_mixer
+	${OPENMPT_LIB}
+)
+
 if(EMSCRIPTEN)
 	set_property(TARGET pvz-portable APPEND PROPERTY LINK_DEPENDS
 		"${CMAKE_CURRENT_SOURCE_DIR}/wasm/shell.html"
 	)
-	target_link_libraries(pvz-portable PRIVATE
-		SDL2_mixer_ext_Static
-		${OPENMPT_LIB}
-	)
 	target_link_options(pvz-portable PRIVATE
-		"SHELL:-sUSE_SDL=2"
 		"SHELL:-sUSE_ZLIB=1"
 		"SHELL:-sUSE_LIBPNG=1"
 		"SHELL:-sUSE_LIBJPEG=1"
@@ -231,13 +189,9 @@ if(EMSCRIPTEN)
 	set_target_properties(pvz-portable PROPERTIES SUFFIX ".html")
 else()
 	target_link_libraries(pvz-portable PRIVATE
-		SDL2_mixer_ext_Static 
-		${OPENMPT_LIB} 
 		PNG::PNG
 		JPEG::JPEG
 		ZLIB::ZLIB
-		SDL2::SDL2main
-		${SDL2_LINK_TARGET}
 		Threads::Threads
 	)
 endif()
