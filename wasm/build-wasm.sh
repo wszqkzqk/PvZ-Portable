@@ -4,7 +4,7 @@
 # Usage:
 #   source /path/to/emsdk/emsdk_env.sh
 #   ./wasm/build-wasm.sh            # use dependencies already in build-wasm
-#   ./wasm/build-wasm.sh --deps     # also build libopenmpt and SDL3_mixer
+#   ./wasm/build-wasm.sh --deps     # also build libopenmpt and fetch SDL3_mixer
 #
 # Output:
 #   build-wasm/pvz-portable.html  — the main page
@@ -29,47 +29,10 @@ fi
 
 NPROC="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 OPENMPT_PREFIX="${BUILD_DIR}/openmpt-prefix"
-MIXER_PREFIX="${BUILD_DIR}/mixer-prefix"
+MIXER_SRC="${BUILD_DIR}/SDL_mixer-src"
+SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
 
 embuilder build sdl3 vorbis
-
-SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
-SDL3_CMAKE_DIR="${BUILD_DIR}/sdl3-cmake"
-mkdir -p "${SDL3_CMAKE_DIR}"
-SDL3_VERSION=$(sed -n "s/^VERSION = '\([^']*\)'.*/\1/p" "$(em-config EMSCRIPTEN_ROOT)/tools/ports/sdl3.py")
-if [ -z "${SDL3_VERSION}" ]; then
-    echo "Could not determine the SDL3 version from the Emscripten port." >&2
-    exit 1
-fi
-
-cat > "${SDL3_CMAKE_DIR}/SDL3Config.cmake" <<'EOF'
-if(NOT TARGET SDL3::SDL3)
-  add_library(SDL3::Headers INTERFACE IMPORTED)
-  set_target_properties(SDL3::Headers PROPERTIES
-    INTERFACE_COMPILE_OPTIONS "-sUSE_SDL=3"
-  )
-
-  add_library(SDL3::SDL3-static INTERFACE IMPORTED)
-  set_target_properties(SDL3::SDL3-static PROPERTIES
-    INTERFACE_COMPILE_OPTIONS "-sUSE_SDL=3"
-    INTERFACE_LINK_LIBRARIES "-sUSE_SDL=3"
-  )
-
-  add_library(SDL3::SDL3 INTERFACE IMPORTED)
-  set_target_properties(SDL3::SDL3 PROPERTIES
-    INTERFACE_COMPILE_OPTIONS "-sUSE_SDL=3"
-    INTERFACE_LINK_LIBRARIES "-sUSE_SDL=3"
-  )
-endif()
-EOF
-
-cat > "${SDL3_CMAKE_DIR}/SDL3ConfigVersion.cmake" <<EOF
-set(PACKAGE_VERSION "${SDL3_VERSION}")
-set(PACKAGE_VERSION_COMPATIBLE FALSE)
-if(NOT PACKAGE_FIND_VERSION VERSION_GREATER PACKAGE_VERSION AND PACKAGE_FIND_VERSION_MAJOR STREQUAL "3")
-    set(PACKAGE_VERSION_COMPATIBLE TRUE)
-endif()
-EOF
 
 if [[ "${1:-}" == "--deps" ]]; then
     if [ ! -f "${OPENMPT_PREFIX}/lib/libopenmpt.a" ]; then
@@ -98,43 +61,32 @@ if [[ "${1:-}" == "--deps" ]]; then
             PREFIX="${OPENMPT_PREFIX}" install
     fi
 
-    if [ ! -f "${MIXER_PREFIX}/lib/libSDL3_mixer.a" ]; then
-        echo "Building SDL3_mixer for Emscripten..."
-        MIXER_SRC="${BUILD_DIR}/SDL_mixer-src"
-        MIXER_BUILD="${BUILD_DIR}/SDL_mixer-build"
+    if [ ! -d "${MIXER_SRC}" ]; then
+        echo "Fetching SDL3_mixer for Emscripten..."
         MIXER_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL_mixer.git 'refs/tags/release-*' \
             | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
         if [ -z "$MIXER_TAG" ]; then
             MIXER_TAG="3.2.4"
         fi
         echo "Using SDL3_mixer version: $MIXER_TAG"
-        if [ ! -d "${MIXER_SRC}" ]; then
-            git clone --depth=1 --branch "release-${MIXER_TAG}" https://github.com/libsdl-org/SDL_mixer.git "${MIXER_SRC}"
-        fi
-        emcmake cmake -S "${MIXER_SRC}" -B "${MIXER_BUILD}" -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX="${MIXER_PREFIX}" \
-            -DSDL3_DIR="${SDL3_CMAKE_DIR}" \
-            -DSDLMIXER_VENDORED=OFF \
-            -DSDLMIXER_TESTS=OFF \
-            -DSDLMIXER_EXAMPLES=OFF \
-            -DSDLMIXER_AIFF=OFF -DSDLMIXER_VOC=OFF \
-            -DSDLMIXER_FLAC=OFF -DSDLMIXER_GME=OFF \
-            -DSDLMIXER_MOD=OFF -DSDLMIXER_MIDI=OFF \
-            -DSDLMIXER_OPUS=OFF -DSDLMIXER_WAVPACK=OFF \
-            -DSDLMIXER_MP3_MPG123=OFF \
-            -DSDLMIXER_VORBIS_STB=ON \
-            -DSDLMIXER_VORBIS_VORBISFILE=OFF
-        cmake --build "${MIXER_BUILD}" -j"${NPROC}"
-        cmake --install "${MIXER_BUILD}"
+        git clone --depth=1 --branch "release-${MIXER_TAG}" https://github.com/libsdl-org/SDL_mixer.git "${MIXER_SRC}"
     fi
 fi
 
 emcmake cmake -S "${PROJECT_DIR}" -B "${BUILD_DIR}" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_FIND_ROOT_PATH="${OPENMPT_PREFIX};${MIXER_PREFIX};${SYSROOT}" \
-    -DCMAKE_PREFIX_PATH="${MIXER_PREFIX}" \
-    -DSDL3_DIR="${SDL3_CMAKE_DIR}"
+    -DCMAKE_FIND_ROOT_PATH="${OPENMPT_PREFIX};${SYSROOT}" \
+    -DPVZP_SDL3_MIXER_SOURCE_DIR="${MIXER_SRC}" \
+    -DSDLMIXER_VENDORED=OFF \
+    -DSDLMIXER_TESTS=OFF \
+    -DSDLMIXER_EXAMPLES=OFF \
+    -DSDLMIXER_AIFF=OFF -DSDLMIXER_VOC=OFF \
+    -DSDLMIXER_FLAC=OFF -DSDLMIXER_GME=OFF \
+    -DSDLMIXER_MOD=OFF -DSDLMIXER_MIDI=OFF \
+    -DSDLMIXER_OPUS=OFF -DSDLMIXER_WAVPACK=OFF \
+    -DSDLMIXER_MP3_MPG123=OFF \
+    -DSDLMIXER_VORBIS_STB=ON \
+    -DSDLMIXER_VORBIS_VORBISFILE=OFF
 
 cmake --build "${BUILD_DIR}" -j"${NPROC}"
 
