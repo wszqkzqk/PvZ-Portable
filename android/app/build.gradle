@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id 'com.android.application'
 }
@@ -8,26 +10,32 @@ configurations.all {
     exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
 }
 
-// -PusePrebuiltLibs=true packages prebuilt jniLibs (CI); otherwise build via CMake.
+// -PusePrebuiltLibs=true packages prebuilt native libraries; otherwise build via CMake.
 def prebuilt = project.hasProperty('usePrebuiltLibs') && project.usePrebuiltLibs.toBoolean()
 def vcpkgRoot = System.getenv('VCPKG_ROOT')
 def androidNdk = System.getenv('ANDROID_NDK') ?: System.getenv('ANDROID_NDK_HOME') ?: System.getenv('ANDROID_NDK_ROOT')
 def sdlJavaDir = layout.buildDirectory.dir('sdl3-src/android-project/app/src/main/java').get().asFile
+def sdlVersionFile = new File(sdlJavaDir, '.pvz-version')
 
 tasks.register('downloadSdl3Java') {
-    onlyIf { !sdlJavaDir.exists() }
-    doFirst {
+    def config = new JsonSlurper().parseText(file("${rootDir}/../vcpkg-configuration.json").text)
+    def version = { ->
         if (!vcpkgRoot) {
             throw new GradleException('Set VCPKG_ROOT before building Android.')
         }
         def output = providers.exec {
-            commandLine "${vcpkgRoot}/vcpkg${System.getProperty('os.name').toLowerCase().startsWith('windows') ? '.exe' : ''}", 'search', 'sdl3'
+            commandLine 'git', '-C', vcpkgRoot, 'show', "${config['default-registry'].baseline}:ports/sdl3/vcpkg.json"
         }.standardOutput.asText.get()
-        def matcher = output =~ /(?m)^sdl3\s+(\S+)/
-        if (!matcher.find()) {
-            throw new GradleException('Could not determine the SDL3 version from vcpkg.')
+        def versionLine = output.readLines().find { it.trim().startsWith('"version":') }
+        if (!versionLine) {
+            throw new GradleException('Could not determine SDL3 version from the vcpkg baseline.')
         }
-        def version = matcher.group(1).replaceFirst(/#.*$/, '')
+        return versionLine.split(':')[1].trim().replaceAll('[",]', '')
+    }()
+    inputs.property('sdlVersion', version)
+    onlyIf { !sdlJavaDir.exists() || !sdlVersionFile.exists() || sdlVersionFile.text.trim() != version }
+    doFirst {
+        delete sdlJavaDir
         def archive = new File(temporaryDir, "SDL3-${version}.tar.gz")
         ant.get(src: "https://github.com/libsdl-org/SDL/releases/download/release-${version}/SDL3-${version}.tar.gz", dest: archive)
         ant.untar(src: archive, compression: 'gzip', dest: temporaryDir)
@@ -35,6 +43,7 @@ tasks.register('downloadSdl3Java') {
             from("${temporaryDir}/SDL3-${version}/android-project/app/src/main/java")
             into sdlJavaDir
         }
+        sdlVersionFile.text = version
     }
 }
 
