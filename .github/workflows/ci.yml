@@ -427,38 +427,113 @@ jobs:
   #       with:
   #         fetch-depth: 0
 
-  #     - name: Compile libopenmpt for Switch
-  #       shell: bash
+  #     - name: Install Dependencies
+  #       run: |
+  #         dkp-pacman -Sy --noconfirm --needed \
+  #           wget \
+  #           switch-mesa \
+  #           switch-libdrm_nouveau \
+  #           switch-libpng \
+  #           switch-libjpeg-turbo \
+  #           switch-zlib \
+  #           switch-libvorbis \
+  #           switch-pkg-config
+
+  #     - name: Build SDL3 for Switch
+  #       run: |
+  #         source $DEVKITPRO/switchvars.sh
+  #         SDL3_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-3.*' \
+  #           | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
+  #         if [ -z "$SDL3_TAG" ]; then
+  #           SDL3_TAG="3.4.20"
+  #         fi
+  #         SDL3_SWITCH_COMMIT="182e511214d7600e4bdab8606d7caf0ef744afd6"
+  #         wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_TAG}/SDL3-${SDL3_TAG}.tar.gz"
+  #         wget -q "https://raw.githubusercontent.com/neomody77/sdl3-switch/${SDL3_SWITCH_COMMIT}/sdl3-switch.patch"
+  #         echo "9f694599723d78b08c09d99f8203ddea52ee5178575a807263fe79f8ab1f28dc  sdl3-switch.patch" | sha256sum -c -
+  #         tar xf "SDL3-${SDL3_TAG}.tar.gz"
+  #         (
+  #           cd "SDL3-${SDL3_TAG}"
+  #           git apply -p3 ../sdl3-switch.patch
+  #         )
+  #         aarch64-none-elf-cmake -G "Unix Makefiles" -S "SDL3-${SDL3_TAG}" -B build-sdl3 \
+  #           -DCMAKE_BUILD_TYPE=Release \
+  #           -DCMAKE_INSTALL_PREFIX="$PORTLIBS_PREFIX" \
+  #           -DSDL_SHARED=OFF \
+  #           -DSDL_STATIC=ON \
+  #           -DSDL_VIDEO=OFF \
+  #           -DSDL_JOYSTICK=OFF \
+  #           -DSDL_TESTS=OFF \
+  #           -DSDL_EXAMPLES=OFF
+  #         cmake --build build-sdl3 -j$(nproc)
+  #         cmake --install build-sdl3
+
+  #     - name: Build SDL3_mixer for Switch
+  #       run: |
+  #         source $DEVKITPRO/switchvars.sh
+  #         SDL3_MIXER_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL_mixer.git 'refs/tags/release-3.*' \
+  #           | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
+  #         if [ -z "$SDL3_MIXER_TAG" ]; then
+  #           SDL3_MIXER_TAG="3.2.4"
+  #         fi
+  #         wget -q "https://github.com/libsdl-org/SDL_mixer/releases/download/release-${SDL3_MIXER_TAG}/SDL3_mixer-${SDL3_MIXER_TAG}.tar.gz"
+  #         tar xf "SDL3_mixer-${SDL3_MIXER_TAG}.tar.gz"
+  #         aarch64-none-elf-cmake -G "Unix Makefiles" -S "SDL3_mixer-${SDL3_MIXER_TAG}" -B build-sdl3-mixer \
+  #           -DCMAKE_BUILD_TYPE=Release \
+  #           -DCMAKE_INSTALL_PREFIX="$PORTLIBS_PREFIX" \
+  #           -DCMAKE_PREFIX_PATH="$PORTLIBS_PREFIX" \
+  #           -DBUILD_SHARED_LIBS=OFF \
+  #           -DSDLMIXER_VENDORED=OFF \
+  #           -DSDLMIXER_DEPS_SHARED=OFF \
+  #           -DSDLMIXER_TESTS=OFF \
+  #           -DSDLMIXER_EXAMPLES=OFF \
+  #           -DSDLMIXER_AIFF=OFF -DSDLMIXER_VOC=OFF \
+  #           -DSDLMIXER_FLAC=OFF -DSDLMIXER_GME=OFF \
+  #           -DSDLMIXER_MOD=OFF -DSDLMIXER_MIDI=OFF \
+  #           -DSDLMIXER_OPUS=OFF -DSDLMIXER_WAVPACK=OFF \
+  #           -DSDLMIXER_MP3_MPG123=OFF \
+  #           -DSDLMIXER_VORBIS_STB=OFF \
+  #           -DSDLMIXER_VORBIS_VORBISFILE=ON
+  #         cmake --build build-sdl3-mixer -j$(nproc)
+  #         cmake --install build-sdl3-mixer
+
+  #     - name: Build libopenmpt for Switch
   #       run: |
   #         source $DEVKITPRO/switchvars.sh
   #         OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
   #           | sed 's|.*refs/tags/libopenmpt-||' \
   #           | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
   #         if [ -z "$OPENMPT_TAG" ]; then
-  #           OPENMPT_TAG="0.8.4" # Fallback to a known stable version if tag retrieval fails
+  #           OPENMPT_TAG="0.8.4"
   #         fi
   #         git clone --depth=1 --branch "libopenmpt-${OPENMPT_TAG}" https://github.com/OpenMPT/openmpt.git openmpt
   #         cd openmpt
-  #         make CONFIG=gcc SHARED_LIB=0 DYNLINK=0 EXAMPLES=0 OPENMPT123=0 TEST=0 -j$(nproc)
-  #         make CONFIG=gcc SHARED_LIB=0 DYNLINK=0 EXAMPLES=0 OPENMPT123=0 TEST=0 PREFIX=$PORTLIBS_PREFIX install
+  #         make CONFIG=gcc STATIC_LIB=1 SHARED_LIB=0 DYNLINK=0 \
+  #           EXAMPLES=0 OPENMPT123=0 TEST=0 \
+  #           NO_ZLIB=1 NO_MPG123=1 NO_OGG=1 NO_VORBIS=1 NO_VORBISFILE=1 \
+  #           NO_PORTAUDIO=1 NO_PORTAUDIOCPP=1 NO_PULSEAUDIO=1 \
+  #           NO_SDL2=1 NO_FLAC=1 NO_SNDFILE=1 \
+  #           -j$(nproc)
+  #         make CONFIG=gcc STATIC_LIB=1 SHARED_LIB=0 DYNLINK=0 \
+  #           EXAMPLES=0 OPENMPT123=0 TEST=0 PREFIX=$PORTLIBS_PREFIX install
 
-  #     - name: Compile PvZ-Portable for Switch
-  #       shell: bash
+  #     - name: Build PvZ-Portable for Switch
   #       run: |
   #         source $DEVKITPRO/switchvars.sh
-  #         mkdir build
-  #         cd build
-  #         aarch64-none-elf-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=-O2
-  #         make -j$(nproc)
-  #         aarch64-none-elf-strip pvz-portable.elf
+  #         aarch64-none-elf-cmake -G "Unix Makefiles" -S . -B build \
+  #           -DCMAKE_BUILD_TYPE=Release \
+  #           -DCMAKE_CXX_FLAGS_RELEASE=-O2 \
+  #           -DCMAKE_PREFIX_PATH="$PORTLIBS_PREFIX"
+  #         cmake --build build -j$(nproc)
+  #         aarch64-none-elf-strip build/pvz-portable.elf
 
   #     - name: Upload Artifact
   #       uses: actions/upload-artifact@v7
   #       with:
   #         name: pvz-portable-switch
   #         path: |
-  #           ./build/pvz-portable.nro
-  #           ./build/pvz-portable.elf
+  #           build/pvz-portable.nro
+  #           build/pvz-portable.elf
 
   build-macos:
     name: Build for macOS (aarch64)
