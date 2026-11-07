@@ -138,6 +138,17 @@ else()
 	find_package(SDL3_mixer CONFIG REQUIRED)
 endif()
 
+set(PVZP_SDL3_TARGET SDL3::SDL3)
+set(PVZP_SDL3_MIXER_TARGET SDL3_mixer::SDL3_mixer)
+if(BUILD_STATIC)
+	if(TARGET SDL3::SDL3-static)
+		set(PVZP_SDL3_TARGET SDL3::SDL3-static)
+	endif()
+	if(TARGET SDL3_mixer::SDL3_mixer-static)
+		set(PVZP_SDL3_MIXER_TARGET SDL3_mixer::SDL3_mixer-static)
+	endif()
+endif()
+
 # Android requires a shared library loaded by SDLActivity; other platforms use an executable.
 if(ANDROID)
 	add_library(pvz-portable SHARED ${SOURCES})
@@ -166,8 +177,8 @@ if (LOW_MEMORY)
 endif()
 
 target_link_libraries(pvz-portable PRIVATE
-	SDL3::SDL3
-	SDL3_mixer::SDL3_mixer
+	${PVZP_SDL3_TARGET}
+	${PVZP_SDL3_MIXER_TARGET}
 	${OPENMPT_LIB}
 )
 
