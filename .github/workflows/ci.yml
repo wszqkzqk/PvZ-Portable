@@ -694,9 +694,6 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v6
-      with:
-        # sdl3-src ships its own wrapper jar, which is not in Gradle's known checksum database
-        validate-wrappers: false
 
     - name: Build APK with Gradle
       env:
