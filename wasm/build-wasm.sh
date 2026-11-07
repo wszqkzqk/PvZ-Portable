@@ -33,6 +33,20 @@ MIXER_PREFIX="${BUILD_DIR}/mixer-prefix"
 
 embuilder build sdl3 vorbis
 
+SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
+SDL3_CONFIG_VERSION="${SYSROOT}/lib/cmake/SDL3/sdl3-config-version.cmake"
+if [ ! -f "${SDL3_CONFIG_VERSION}" ]; then
+    SDL3_VERSION=$(awk '/^#define SDL_(MAJOR|MINOR|MICRO)_VERSION / { printf "%s%s", separator, $3; separator="." }' \
+        "${SYSROOT}/include/SDL3/SDL_version.h")
+    cat > "${SDL3_CONFIG_VERSION}" <<EOF
+set(PACKAGE_VERSION "${SDL3_VERSION}")
+set(PACKAGE_VERSION_COMPATIBLE FALSE)
+if(NOT PACKAGE_FIND_VERSION VERSION_GREATER PACKAGE_VERSION AND PACKAGE_FIND_VERSION_MAJOR STREQUAL "3")
+    set(PACKAGE_VERSION_COMPATIBLE TRUE)
+endif()
+EOF
+fi
+
 if [[ "${1:-}" == "--deps" ]]; then
     if [ ! -f "${OPENMPT_PREFIX}/lib/libopenmpt.a" ]; then
         echo "Building libopenmpt for Emscripten..."
