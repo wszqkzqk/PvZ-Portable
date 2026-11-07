@@ -1,0 +1,2 @@
+include("${VCPKG_ROOT_DIR}/triplets/arm64-android.cmake")
+list(APPEND VCPKG_CMAKE_CONFIGURE_OPTIONS -DSDL_SYSTEM_ICONV=OFF)
