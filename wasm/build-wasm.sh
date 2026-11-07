@@ -36,8 +36,7 @@ embuilder build sdl3 vorbis
 SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
 SDL3_CONFIG_VERSION="${SYSROOT}/lib/cmake/SDL3/sdl3-config-version.cmake"
 if [ ! -f "${SDL3_CONFIG_VERSION}" ]; then
-    SDL3_VERSION=$(awk '/^#define SDL_(MAJOR|MINOR|MICRO)_VERSION / { printf "%s%s", separator, $3; separator="." }' \
-        "${SYSROOT}/include/SDL3/SDL_version.h")
+    SDL3_VERSION=$(PKG_CONFIG_PATH="${SYSROOT}/lib/pkgconfig" pkg-config --modversion sdl3)
     cat > "${SDL3_CONFIG_VERSION}" <<EOF
 set(PACKAGE_VERSION "${SDL3_VERSION}")
 set(PACKAGE_VERSION_COMPATIBLE FALSE)
