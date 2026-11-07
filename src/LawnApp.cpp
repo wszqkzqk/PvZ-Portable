@@ -269,7 +269,7 @@ void LawnApp::KillBoard()
 
 		mBoard->DisposeBoard();
 		mWidgetManager->RemoveWidget(mBoard);
-		SafeDeleteWidget(mBoard);
+		SafeDeleteWidget(std::unique_ptr<Board>(mBoard));
 		mBoard = nullptr;
 	}
 
@@ -441,7 +441,7 @@ void LawnApp::ShowGameSelector()
 	if (mGameSelector)
 	{
 		mWidgetManager->RemoveWidget(mGameSelector.get());
-		SafeDeleteWidget(mGameSelector.release());
+		SafeDeleteWidget(std::move(mGameSelector));
 	}
 
 	mGameScene = GameScenes::SCENE_MENU;
@@ -462,7 +462,7 @@ void LawnApp::KillGameSelector()
 	if (mGameSelector)
 	{
 		mWidgetManager->RemoveWidget(mGameSelector.get());
-		SafeDeleteWidget(mGameSelector.release());
+		SafeDeleteWidget(std::move(mGameSelector));
 	}
 }
 
@@ -481,7 +481,7 @@ void LawnApp::KillAwardScreen()
 	if (mAwardScreen)
 	{
 		mWidgetManager->RemoveWidget(mAwardScreen.get());
-		SafeDeleteWidget(mAwardScreen.release());
+		SafeDeleteWidget(std::move(mAwardScreen));
 	}
 }
 
@@ -499,7 +499,7 @@ void LawnApp::KillCreditScreen()
 	if (mCreditScreen)
 	{
 		mWidgetManager->RemoveWidget(mCreditScreen.get());
-		SafeDeleteWidget(mCreditScreen.release());
+		SafeDeleteWidget(std::move(mCreditScreen));
 	}
 }
 
@@ -518,7 +518,7 @@ void LawnApp::KillChallengeScreen()
 	if (mChallengeScreen)
 	{
 		mWidgetManager->RemoveWidget(mChallengeScreen.get());
-		SafeDeleteWidget(mChallengeScreen.release());
+		SafeDeleteWidget(std::move(mChallengeScreen));
 	}
 }
 
@@ -558,7 +558,7 @@ void LawnApp::KillSeedChooserScreen()
 	if (mSeedChooserScreen)
 	{
 		mWidgetManager->RemoveWidget(mSeedChooserScreen.get());
-		SafeDeleteWidget(mSeedChooserScreen.release());
+		SafeDeleteWidget(std::move(mSeedChooserScreen));
 	}
 }
 
@@ -1713,7 +1713,7 @@ void LawnApp::FastLoad(GameMode theGameMode)
 	if (!mShutdown)
 	{
 		mWidgetManager->RemoveWidget(mTitleScreen.get());
-		SafeDeleteWidget(mTitleScreen.release());
+		SafeDeleteWidget(std::move(mTitleScreen));
 
 		PreNewGame(theGameMode, false);
 	}
@@ -1726,7 +1726,7 @@ void LawnApp::LoadingThreadCompleted()
 void LawnApp::LoadingCompleted()
 {
 	mWidgetManager->RemoveWidget(mTitleScreen.get());
-	SafeDeleteWidget(mTitleScreen.release());
+	SafeDeleteWidget(std::move(mTitleScreen));
 
 	mResourceManager->DeleteImage("IMAGE_TITLESCREEN");
 
