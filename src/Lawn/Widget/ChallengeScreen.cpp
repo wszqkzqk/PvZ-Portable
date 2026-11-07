@@ -154,8 +154,6 @@ ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 		aPageButton->SetLabelColor(Color(255, 240, 0));
 		aPageButton->SetLabelHiliteColor(Color(220, 220, 0));
 		aPageButton->Resize(200 + 100 * aPageIdx, 540, 100, 75);
-		if (!ShowPageButtons() || aPageIdx == CHALLENGE_PAGE_SURVIVAL || aPageIdx == CHALLENGE_PAGE_PUZZLE)
-			aPageButton->mVisible = false;
 	}
 
 	for (int aChallengeMode = 0; aChallengeMode < NUM_CHALLENGE_MODES; aChallengeMode++)
@@ -354,32 +352,32 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex)
 	unreachable();
 }
 
-bool ChallengeScreen::ShowPageButtons()
-{
-	return mApp->mCheatKeys && mPageIndex != CHALLENGE_PAGE_SURVIVAL && mPageIndex != CHALLENGE_PAGE_PUZZLE;
-}
-
 void ChallengeScreen::UpdateButtons()
 {
 	for (int aChallengeMode = 0; aChallengeMode < NUM_CHALLENGE_MODES; aChallengeMode++)
-		mChallengeButtons[aChallengeMode]->mVisible = GetChallengeDefinition(aChallengeMode).mPage == mPageIndex;
+	{
+		mChallengeButtons[aChallengeMode]->SetVisible(
+			GetChallengeDefinition(aChallengeMode).mPage == mPageIndex);
+	}
+
+	const bool aCheatPagingEnabled =
+		mApp->mCheatKeys &&
+		(mPageIndex == CHALLENGE_PAGE_CHALLENGE ||
+		 mPageIndex == CHALLENGE_PAGE_LIMBO);
+
 	for (int aPage = 0; aPage < MAX_CHALLANGE_PAGES; aPage++)
 	{
 		ButtonWidget* aPageButton = mPageButton[aPage].get();
+		const bool aIsCurrentPage = aPage == mPageIndex;
 
-		if (mLimboPageUnlocked && aPage == CHALLENGE_PAGE_LIMBO)
-			aPageButton->mVisible = true;
+		aPageButton->SetVisible(
+			(aPage == CHALLENGE_PAGE_CHALLENGE && aCheatPagingEnabled) ||
+			(aPage == CHALLENGE_PAGE_LIMBO &&
+			 (aCheatPagingEnabled || mLimboPageUnlocked)));
 
-		if (aPage == mPageIndex)
-		{
-			aPageButton->SetLabelColor(Color(64, 64, 64));
-			aPageButton->mDisabled = true;
-		}
-		else
-		{
-			aPageButton->SetLabelColor(Color(255, 240, 0));
-			aPageButton->mDisabled = false;
-		}
+		aPageButton->SetDisabled(aIsCurrentPage);
+		aPageButton->SetLabelColor(
+			aIsCurrentPage ? Color(64, 64, 64) : Color(255, 240, 0));
 	}
 }
 
@@ -659,7 +657,7 @@ void ChallengeScreen::ButtonDepress(int theId)
 	}
 
 	int aPageIndex = theId - ChallengeScreen::ChallengeScreen_Page;
-	if (aPageIndex >= 0 && aPageIndex < 4)
+	if (aPageIndex >= 0 && aPageIndex < MAX_CHALLANGE_PAGES)
 	{
 		mPageIndex = (ChallengePage)aPageIndex;
 		UpdateButtons();
