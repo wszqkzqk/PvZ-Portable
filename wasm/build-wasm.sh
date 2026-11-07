@@ -93,6 +93,9 @@ if [[ "${1:-}" == "--deps" ]]; then
             -DCMAKE_INSTALL_PREFIX="${MIXER_PREFIX}" \
             -DCMAKE_C_FLAGS="-sUSE_VORBIS=1" \
             -DCMAKE_EXE_LINKER_FLAGS="-sUSE_VORBIS=1" \
+            -DVorbis_vorbisfile_LIBRARY="${SYSROOT}/lib/libvorbis.a" \
+            -DVorbis_vorbisfile_INCLUDE_PATH="${SYSROOT}/include" \
+            -DVorbis_vorbisfile_LINK_OPTIONS="-sUSE_OGG=1" \
             -DSDLMIXER_VENDORED=OFF \
             -DSDLMIXER_TESTS=OFF \
             -DSDLMIXER_EXAMPLES=OFF \
@@ -110,7 +113,7 @@ fi
 
 emcmake cmake -S "${PROJECT_DIR}" -B "${BUILD_DIR}" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_FIND_ROOT_PATH="${OPENMPT_PREFIX}" \
+    -DCMAKE_FIND_ROOT_PATH="${OPENMPT_PREFIX};${MIXER_PREFIX};${SYSROOT}" \
     -DCMAKE_PREFIX_PATH="${MIXER_PREFIX}"
 
 cmake --build "${BUILD_DIR}" -j"${NPROC}"

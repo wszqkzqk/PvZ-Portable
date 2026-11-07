@@ -62,6 +62,7 @@ if(NINTENDO_SWITCH)
 	)
 elseif(EMSCRIPTEN)
 	find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
+	find_path(OPENMPT_INCLUDE_DIR libopenmpt/libopenmpt.h REQUIRED)
 	set(OPENMPT_LIB ${OPENMPT_LIBRARY})
 
 	list(APPEND SOURCES
@@ -146,6 +147,7 @@ endif()
 
 target_include_directories(pvz-portable PRIVATE
 	${PLAT_INCLUDES}
+	${OPENMPT_INCLUDE_DIR}
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/src/SexyAppFramework
