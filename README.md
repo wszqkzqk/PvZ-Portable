@@ -60,6 +60,7 @@ This project supports the following platforms (including but not limited to):
 | Haiku           | Executable dir (resources); per-user app-data for writable files | Partially works: no music                                                              |
 | Android         | `Android/data/io.github.wszqkzqk.pvzportable/files/` | Works                                                                                  |
 | iOS / iPadOS    | App Documents directory (Files app) | Works (sideload only; unsigned IPA)                                                    |
+| HarmonyOS       | App sandbox (`files/PvZPortable/`) | Experimental (HarmonyOS 5.0.4+)                                                       |
 | Web (WASM)      | Browser IndexedDB (saves); resources uploaded at runtime    | Works (requires a HTTP server) |
 | Nintendo Switch | sdmc:/switch/PvZPortable | Works on real hardware. Kenji-NX crashes on boot.                           |
 
@@ -120,6 +121,14 @@ The app's Documents folder is exposed via iTunes/Finder file sharing and the iOS
 - Requires iOS 16.4+ (arm64).
 - Free Apple ID signatures expire after 7 days; TrollStore installs are permanent.
 - Same touch-to-mouse mapping and aspect ratio behavior as the Android port.
+
+### Special Instructions for HarmonyOS (Experimental)
+
+Requires HarmonyOS 5.0.4 (API 16) or later. Download the unsigned HAP from [Releases](https://github.com/wszqkzqk/PvZ-Portable/releases), sign it with your own debug certificate and profile, then install it with `hdc` on a device listed in that profile. Build and signing instructions are in `harmony/README.md`.
+
+If you do not want to handle signing and sideloading, use the Android APK (including through 卓易通 on supported devices) or the [WebAssembly version](#play-in-your-browser-webassembly) instead.
+
+When no resources are found, import `main.pak` and `properties/` from a ZIP file or a folder. Long-press the app icon and choose **Manage Data** to re-import resources or import/export save data. Back gestures and touch behavior match the Android port.
 
 ### Play in Your Browser (WebAssembly)
 

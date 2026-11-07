@@ -40,6 +40,11 @@ using namespace Sexy;
 #include <emscripten.h>
 #endif
 
+#ifdef __OHOS__
+#include <SDL_main.h>
+#include "OhosBridge.h"
+#endif
+
 #ifdef _WIN32
 static std::vector<std::string> gUtf8ArgsStorage;
 static std::vector<char*> gUtf8Argv;
@@ -104,6 +109,10 @@ int main(int argc, char** argv)
 	delete gLawnApp;
 	gLawnApp = nullptr;
 	SDL_Quit();
+#endif
+
+#ifdef __OHOS__
+	PvzpOhosTerminateApp();
 #endif
 
 	return 0;
