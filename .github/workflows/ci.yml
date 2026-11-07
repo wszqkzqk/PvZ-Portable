@@ -617,8 +617,6 @@ jobs:
   build-android:
     name: Build for Android (arm64-v8a)
     runs-on: ubuntu-latest
-    env:
-      ANDROID_API: "24"
     steps:
     - uses: actions/checkout@v6
       with:
