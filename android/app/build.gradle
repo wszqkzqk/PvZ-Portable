@@ -10,6 +10,38 @@ configurations.all {
 
 // -PusePrebuiltLibs=true packages prebuilt jniLibs (CI); otherwise build via CMake.
 def prebuilt = project.hasProperty('usePrebuiltLibs') && project.usePrebuiltLibs.toBoolean()
+def vcpkgRoot = System.getenv('VCPKG_ROOT')
+def sdlJavaDir = layout.buildDirectory.dir('sdl3-src/android-project/app/src/main/java').get().asFile
+
+tasks.register('downloadSdl3Java') {
+    onlyIf { !sdlJavaDir.exists() }
+    doFirst {
+        if (!vcpkgRoot) {
+            throw new GradleException('Set VCPKG_ROOT before building Android.')
+        }
+        def output = providers.exec {
+            commandLine "${vcpkgRoot}/vcpkg${System.getProperty('os.name').toLowerCase().startsWith('windows') ? '.exe' : ''}", 'search', 'sdl3'
+        }.standardOutput.asText.get()
+        def matcher = output =~ /(?m)^sdl3\s+(\S+)/
+        if (!matcher.find()) {
+            throw new GradleException('Could not determine the SDL3 version from vcpkg.')
+        }
+        def version = matcher.group(1).replaceFirst(/#.*$/, '')
+        def archive = new File(temporaryDir, "SDL3-${version}.tar.gz")
+        ant.get(src: "https://github.com/libsdl-org/SDL/releases/download/release-${version}/SDL3-${version}.tar.gz", dest: archive)
+        ant.untar(src: archive, compression: 'gzip', dest: temporaryDir)
+        copy {
+            from("${temporaryDir}/SDL3-${version}/android-project/app/src/main/java")
+            into sdlJavaDir
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.named('preBuild') {
+        dependsOn('downloadSdl3Java')
+    }
+}
 
 // Version from git, mirroring archlinux/PKGBUILD's pkgver(); fall back to 0.1/1 without git or tags.
 def gitVersionName = {
@@ -54,6 +86,13 @@ android {
             externalNativeBuild {
                 cmake {
                     def args = ["-DCMAKE_BUILD_TYPE=Release"]
+                    if (vcpkgRoot) {
+                        args.add("-DCMAKE_TOOLCHAIN_FILE=${vcpkgRoot}/scripts/buildsystems/vcpkg.cmake")
+                        args.add("-DVCPKG_OVERLAY_TRIPLETS=${rootDir}/../CMake/triplets")
+                        args.add("-DVCPKG_TARGET_TRIPLET=arm64-android")
+                        args.add("-DVCPKG_CMAKE_SYSTEM_VERSION=${minSdk}")
+                        args.add("-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${android.ndkDirectory}/build/cmake/android.toolchain.cmake")
+                    }
                     if (project.hasProperty('cmakeArgs')) {
                         args.addAll(project.cmakeArgs.split(','))
                     }
@@ -96,7 +135,7 @@ android {
         main {
             java.srcDirs = [
                 'src/main/java',
-                "${project.rootDir}/../sdl3-src/android-project/app/src/main/java"
+                sdlJavaDir
             ]
         }
     }
