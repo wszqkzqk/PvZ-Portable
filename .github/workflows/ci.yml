@@ -670,18 +670,6 @@ jobs:
       with:
         vcpkgJsonGlob: vcpkg.json
 
-    - name: Download SDL3 Android Sources
-      run: |
-        SDL3_TAG=$("$VCPKG_ROOT/vcpkg" search sdl3 2>/dev/null | awk '$1 == "sdl3" { print $2; exit }')
-        SDL3_TAG=${SDL3_TAG%%#*}
-        if [ -z "$SDL3_TAG" ]; then
-          SDL3_TAG="3.4.20"
-        fi
-        echo "Using SDL3 version: $SDL3_TAG"
-        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_TAG}/SDL3-${SDL3_TAG}.tar.gz"
-        tar xf "SDL3-${SDL3_TAG}.tar.gz"
-        mv "SDL3-${SDL3_TAG}" sdl3-src
-
     - name: Build Native Library with CMake
       run: |
         ABI=arm64-v8a
@@ -703,6 +691,16 @@ jobs:
         mkdir -p $JNILIBS
         cp $BUILD_DIR/libmain.so $JNILIBS/
         $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded $JNILIBS/libmain.so
+
+    - name: Download SDL3 Android Java Sources
+      run: |
+        SDL3_TAG=$("$VCPKG_ROOT/vcpkg" list --x-install-root="$BUILD_DIR/vcpkg_installed" | awk '$1 == "sdl3:arm64-android" { print $2; exit }')
+        SDL3_TAG=${SDL3_TAG%%#*}
+        test -n "$SDL3_TAG"
+        echo "Using SDL3 version: $SDL3_TAG"
+        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_TAG}/SDL3-${SDL3_TAG}.tar.gz"
+        tar xf "SDL3-${SDL3_TAG}.tar.gz"
+        mv "SDL3-${SDL3_TAG}" sdl3-src
 
     - name: Decode release keystore
       env:
