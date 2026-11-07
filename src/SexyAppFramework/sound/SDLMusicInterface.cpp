@@ -72,7 +72,7 @@ static bool ReadMusicFile(const std::string& theFileName, std::vector<uint8_t>& 
 SDLMusicInterface::SDLMusicInterface(SDLSoundManager* theSoundManager)
 {
 	mMixer = theSoundManager->GetMixer();
-	mGlobalVolume = 0.8f;
+	mGlobalVolume = 1.0f;
 }
 
 SDLMusicInterface::~SDLMusicInterface()
@@ -311,7 +311,7 @@ bool SDLMusicInterface::IsPlaying(int theSongId)
 void SDLMusicInterface::SetVolume(double theVolume)
 {
 	std::scoped_lock anAutoCrit(mMusicMapMutex);
-	mGlobalVolume = static_cast<float>(theVolume * 0.8);
+	mGlobalVolume = static_cast<float>(theVolume);
 	for (auto& [aId, aMusicInfo] : mMusicMap)
 		ApplyMusicGain(aMusicInfo, mGlobalVolume);
 }
