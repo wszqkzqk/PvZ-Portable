@@ -52,6 +52,37 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 option(LOW_MEMORY "Enable low memory mode" OFF)
+if(VCPKG_TOOLCHAIN)
+	find_package(libopenmpt CONFIG REQUIRED)
+	set(OPENMPT_LIB libopenmpt::libopenmpt)
+else()
+	find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
+	find_path(OPENMPT_INCLUDE_DIR libopenmpt/libopenmpt.h REQUIRED)
+	set(OPENMPT_LIB ${OPENMPT_LIBRARY})
+	if(NOT EMSCRIPTEN AND NOT NINTENDO_SWITCH AND OPENMPT_LIBRARY MATCHES "\\${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+		include(CheckCXXSourceCompiles)
+		include(CMakePushCheckState)
+		cmake_push_check_state()
+		set(CMAKE_REQUIRED_INCLUDES ${OPENMPT_INCLUDE_DIR})
+		set(CMAKE_REQUIRED_LIBRARIES ${OPENMPT_LIBRARY})
+		check_cxx_source_compiles("#include <libopenmpt/libopenmpt.h>
+int main() {
+	return openmpt_module_create_from_memory2(0, 0, 0, 0, 0, 0, 0, 0, 0) != 0;
+}" OPENMPT_LINKS_STANDALONE)
+		cmake_pop_check_state()
+		if(NOT OPENMPT_LINKS_STANDALONE)
+			find_library(MPG123_LIBRARY NAMES mpg123 libmpg123)
+			find_library(VORBISFILE_LIBRARY NAMES vorbisfile libvorbisfile)
+			find_library(VORBIS_LIBRARY NAMES vorbis libvorbis)
+			find_library(OGG_LIBRARY NAMES ogg libogg)
+			if(NOT MPG123_LIBRARY OR NOT VORBISFILE_LIBRARY OR NOT VORBIS_LIBRARY OR NOT OGG_LIBRARY)
+				message(FATAL_ERROR "Static libopenmpt does not link standalone and some of its dependencies were not found (see the configure log for details)")
+			endif()
+			list(APPEND OPENMPT_LIB ${MPG123_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARY})
+		endif()
+	endif()
+endif()
+
 if(NINTENDO_SWITCH)
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/switch/Window.cpp
@@ -61,10 +92,6 @@ if(NINTENDO_SWITCH)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/switch
 	)
 elseif(EMSCRIPTEN)
-	find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
-	find_path(OPENMPT_INCLUDE_DIR libopenmpt/libopenmpt.h REQUIRED)
-	set(OPENMPT_LIB ${OPENMPT_LIBRARY})
-
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/Window.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default/Input.cpp
@@ -73,36 +100,6 @@ elseif(EMSCRIPTEN)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten
 	)
 else()
-	if(VCPKG_TOOLCHAIN)
-		find_package(libopenmpt CONFIG REQUIRED)
-		set(OPENMPT_LIB libopenmpt::libopenmpt)
-	else()
-		find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
-		set(OPENMPT_LIB ${OPENMPT_LIBRARY})
-		if(OPENMPT_LIBRARY MATCHES "\\${CMAKE_STATIC_LIBRARY_SUFFIX}$")
-			find_path(OPENMPT_INCLUDE_DIR libopenmpt/libopenmpt.h REQUIRED)
-			include(CheckCXXSourceCompiles)
-			include(CMakePushCheckState)
-			cmake_push_check_state()
-			set(CMAKE_REQUIRED_INCLUDES ${OPENMPT_INCLUDE_DIR})
-			set(CMAKE_REQUIRED_LIBRARIES ${OPENMPT_LIBRARY})
-			check_cxx_source_compiles("#include <libopenmpt/libopenmpt.h>
-int main() {
-	return openmpt_module_create_from_memory2(0, 0, 0, 0, 0, 0, 0, 0, 0) != 0;
-}" OPENMPT_LINKS_STANDALONE)
-			cmake_pop_check_state()
-			if(NOT OPENMPT_LINKS_STANDALONE)
-				find_library(MPG123_LIBRARY NAMES mpg123 libmpg123)
-				find_library(VORBISFILE_LIBRARY NAMES vorbisfile libvorbisfile)
-				find_library(VORBIS_LIBRARY NAMES vorbis libvorbis)
-				find_library(OGG_LIBRARY NAMES ogg libogg)
-				if(NOT MPG123_LIBRARY OR NOT VORBISFILE_LIBRARY OR NOT VORBIS_LIBRARY OR NOT OGG_LIBRARY)
-					message(FATAL_ERROR "Static libopenmpt does not link standalone and some of its dependencies were not found (see the configure log for details)")
-				endif()
-				list(APPEND OPENMPT_LIB ${MPG123_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARY})
-			endif()
-		endif()
-	endif()
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default/Window.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default/Input.cpp
