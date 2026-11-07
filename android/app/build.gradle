@@ -11,6 +11,7 @@ configurations.all {
 // -PusePrebuiltLibs=true packages prebuilt jniLibs (CI); otherwise build via CMake.
 def prebuilt = project.hasProperty('usePrebuiltLibs') && project.usePrebuiltLibs.toBoolean()
 def vcpkgRoot = System.getenv('VCPKG_ROOT')
+def androidNdk = System.getenv('ANDROID_NDK') ?: System.getenv('ANDROID_NDK_HOME') ?: System.getenv('ANDROID_NDK_ROOT')
 def sdlJavaDir = layout.buildDirectory.dir('sdl3-src/android-project/app/src/main/java').get().asFile
 
 tasks.register('downloadSdl3Java') {
@@ -90,8 +91,11 @@ android {
                         args.add("-DCMAKE_TOOLCHAIN_FILE=${vcpkgRoot}/scripts/buildsystems/vcpkg.cmake")
                         args.add("-DVCPKG_OVERLAY_TRIPLETS=${rootDir}/../CMake/triplets")
                         args.add("-DVCPKG_TARGET_TRIPLET=arm64-android")
-                        args.add("-DVCPKG_CMAKE_SYSTEM_VERSION=${minSdk}")
-                        args.add("-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${android.ndkDirectory}/build/cmake/android.toolchain.cmake")
+                        if (androidNdk) {
+                            args.add("-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${androidNdk}/build/cmake/android.toolchain.cmake")
+                        } else {
+                            args.add("-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${android.ndkDirectory}/build/cmake/android.toolchain.cmake")
+                        }
                     }
                     if (project.hasProperty('cmakeArgs')) {
                         args.addAll(project.cmakeArgs.split(','))
