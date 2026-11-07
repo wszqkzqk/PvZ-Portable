@@ -112,6 +112,13 @@ jobs:
         fi
         echo "SDL3_TAG=$SDL3_TAG" >> "$GITHUB_ENV"
 
+        SDL3_MIXER_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL_mixer.git 'refs/tags/release-3.*' \
+          | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
+        if [ -z "$SDL3_MIXER_TAG" ]; then
+          SDL3_MIXER_TAG="3.2.4" # Fallback to a known stable version if tag retrieval fails
+        fi
+        echo "SDL3_MIXER_TAG=$SDL3_MIXER_TAG" >> "$GITHUB_ENV"
+
         OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
           | sed 's|.*refs/tags/libopenmpt-||' \
           | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
@@ -134,7 +141,7 @@ jobs:
         fi
         echo "JPEG_TURBO_VERSION=$JPEG_TURBO_VERSION" >> "$GITHUB_ENV"
 
-        echo "Using SDL3 $SDL3_TAG, libopenmpt $OPENMPT_TAG,"
+        echo "Using SDL3 $SDL3_TAG, SDL3_mixer $SDL3_MIXER_TAG, libopenmpt $OPENMPT_TAG,"
         echo "libpng $LIBPNG_VERSION, libjpeg-turbo $JPEG_TURBO_VERSION"
 
     - name: Restore Source-Built Deps Cache
@@ -143,7 +150,7 @@ jobs:
       with:
         path: ~/pvz-deps
         # Bump the -vN suffix when the dep build recipe changes
-        key: linux-static-deps-v4-${{ env.SDL3_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
+        key: linux-static-deps-v5-${{ env.SDL3_TAG }}-${{ env.SDL3_MIXER_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
 
     - name: Build SDL3 (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
@@ -167,6 +174,35 @@ jobs:
           "SDL3-${SDL3_TAG}"
         cmake --build build-sdl3 -j$(nproc)
         cmake --install build-sdl3
+
+    - name: Build SDL3_mixer (static)
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      run: |
+        wget -q "https://github.com/libsdl-org/SDL_mixer/releases/download/release-${SDL3_MIXER_TAG}/SDL3_mixer-${SDL3_MIXER_TAG}.tar.gz"
+        tar xf "SDL3_mixer-${SDL3_MIXER_TAG}.tar.gz"
+        cmake -G Ninja -B build-sdl3-mixer "SDL3_mixer-${SDL3_MIXER_TAG}" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$HOME/pvz-deps" \
+          -DCMAKE_PREFIX_PATH="$HOME/pvz-deps" \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DSDLMIXER_VENDORED=OFF \
+          -DSDLMIXER_DEPS_SHARED=OFF \
+          -DSDLMIXER_TESTS=OFF \
+          -DSDLMIXER_EXAMPLES=OFF \
+          -DSDLMIXER_AIFF=OFF \
+          -DSDLMIXER_VOC=OFF \
+          -DSDLMIXER_FLAC=OFF \
+          -DSDLMIXER_GME=OFF \
+          -DSDLMIXER_MOD=OFF \
+          -DSDLMIXER_MIDI=OFF \
+          -DSDLMIXER_OPUS=OFF \
+          -DSDLMIXER_WAVPACK=OFF \
+          -DSDLMIXER_MP3_MPG123=OFF \
+          -DSDLMIXER_VORBIS_STB=OFF \
+          -DSDLMIXER_VORBIS_VORBISFILE=ON \
+          -DSDLMIXER_VORBIS_TREMOR=OFF
+        cmake --build build-sdl3-mixer -j$(nproc)
+        cmake --install build-sdl3-mixer
 
     - name: Build libopenmpt (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
@@ -215,7 +251,7 @@ jobs:
       uses: actions/cache/save@v6
       with:
         path: ~/pvz-deps
-        key: linux-static-deps-v4-${{ env.SDL3_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
+        key: linux-static-deps-v5-${{ env.SDL3_TAG }}-${{ env.SDL3_MIXER_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
 
     - name: Build PvZ-Portable
       run: |
@@ -502,18 +538,6 @@ jobs:
           echo "ANDROID_NDK_HOME=${NDK_DIR%/}" >> "$GITHUB_ENV"
         fi
 
-    - name: Download SDL3 Source
-      run: |
-        SDL3_TAG=$(git ls-remote --tags https://github.com/libsdl-org/SDL.git 'refs/tags/release-3.*' \
-          | sed 's|.*refs/tags/release-||' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
-        if [ -z "$SDL3_TAG" ]; then
-          SDL3_TAG="3.4.20" # Fallback to a known stable version if tag retrieval fails
-        fi
-        echo "Using SDL3 version: $SDL3_TAG"
-        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_TAG}/SDL3-${SDL3_TAG}.tar.gz"
-        tar xf "SDL3-${SDL3_TAG}.tar.gz"
-        mv "SDL3-${SDL3_TAG}" sdl3-src
-
     # Key tracks the NDK version (compiler + chainload toolchain are in vcpkg's ABI hash) but not the system CMake version: vcpkg builds ports with its own pinned CMake.
     - name: Get toolchain ID for cache key
       run: |
@@ -534,27 +558,22 @@ jobs:
       with:
         vcpkgJsonGlob: vcpkg.json
 
-    - name: Build SDL3 Shared Library
+    - name: Download SDL3 Android Sources
       run: |
-        # On Android, SDL3 MUST be a shared library because the Java-side
-        # SDLActivity loads it via System.loadLibrary("SDL3").
-        cmake -B build-sdl3 \
-          -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
-          -DANDROID_ABI=arm64-v8a \
-          -DANDROID_PLATFORM=android-$ANDROID_API \
-          -DSDL_SHARED=ON \
-          -DSDL_STATIC=OFF \
-          -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/sdl3-android \
-          -DCMAKE_BUILD_TYPE=Release \
-          sdl3-src
-        cmake --build build-sdl3 -j$(nproc)
-        cmake --install build-sdl3
+        SDL3_TAG=$("$VCPKG_ROOT/vcpkg" search sdl3 2>/dev/null | awk '$1 == "sdl3" { print $2; exit }')
+        SDL3_TAG=${SDL3_TAG%%#*}
+        if [ -z "$SDL3_TAG" ]; then
+          SDL3_TAG="3.4.20"
+        fi
+        echo "Using SDL3 version: $SDL3_TAG"
+        wget -q "https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_TAG}/SDL3-${SDL3_TAG}.tar.gz"
+        tar xf "SDL3-${SDL3_TAG}.tar.gz"
+        mv "SDL3-${SDL3_TAG}" sdl3-src
 
     - name: Build Native Library with CMake
       run: |
         ABI=arm64-v8a
         BUILD_DIR=build-android-$ABI
-        SDL3_PREFIX=$GITHUB_WORKSPACE/sdl3-android
 
         cmake -B $BUILD_DIR \
           -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
@@ -563,34 +582,14 @@ jobs:
           -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
           -DANDROID_ABI=$ABI \
           -DANDROID_PLATFORM=android-$ANDROID_API \
-          -DSDL3_DIR=$SDL3_PREFIX/lib/cmake/SDL3 \
           -DCMAKE_BUILD_TYPE=Release
 
         cmake --build $BUILD_DIR -j$(nproc)
 
-        # Collect all shared libraries into jniLibs for Gradle to package
         JNILIBS=android/app/src/main/jniLibs/$ABI
         mkdir -p $JNILIBS
-        cp -L $BUILD_DIR/libmain.so $JNILIBS/
-
-        # Copy SDL3 shared libraries
-        cp -L $SDL3_PREFIX/lib/libSDL3*.so $JNILIBS/
-        cp -L $BUILD_DIR/_deps/sdl3_mixer-build/libSDL3_mixer*.so $JNILIBS/
-
-        # Copy any .so dependencies from vcpkg (manifest mode installs into build dir)
-        VCPKG_LIB=$BUILD_DIR/vcpkg_installed/arm64-android/lib
-        for so in "$VCPKG_LIB"/*.so; do
-          [ -f "$so" ] && cp -L "$so" $JNILIBS/
-        done
-
-        # Strip debug symbols to reduce APK size
-        STRIP=$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip
-        for so in "$JNILIBS"/*.so; do
-          "$STRIP" --strip-unneeded "$so"
-        done
-
-        echo "Collected .so files:"
-        ls -lh $JNILIBS/
+        cp $BUILD_DIR/libmain.so $JNILIBS/
+        $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded $JNILIBS/libmain.so
 
     - name: Decode release keystore
       env:
@@ -620,7 +619,6 @@ jobs:
         cd android
         echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-        # Use gradle wrapper; package pre-built native libraries into a release APK
         gradle wrapper
         ./gradlew assembleRelease -PusePrebuiltLibs=true --no-daemon
 
@@ -715,35 +713,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ninja-build
 
-    - name: Build libopenmpt for Emscripten
-      run: |
-        SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
-        OPENMPT_TAG=$(git ls-remote --tags https://github.com/OpenMPT/openmpt.git 'refs/tags/libopenmpt-*' \
-          | sed 's|.*refs/tags/libopenmpt-||' \
-          | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
-        if [ -z "$OPENMPT_TAG" ]; then
-          OPENMPT_TAG="0.8.4" # Fallback to a known stable version if tag retrieval fails
-        fi
-        echo "Using libopenmpt version: $OPENMPT_TAG"
-        git clone --depth=1 --branch "libopenmpt-${OPENMPT_TAG}" https://github.com/OpenMPT/openmpt.git /tmp/libopenmpt-src
-        cd /tmp/libopenmpt-src
-        emmake make CONFIG=emscripten \
-          STATIC_LIB=1 SHARED_LIB=0 \
-          EXAMPLES=0 OPENMPT123=0 TEST=0 \
-          NO_ZLIB=1 NO_MPG123=1 NO_OGG=1 NO_VORBIS=1 NO_VORBISFILE=1 \
-          NO_PORTAUDIO=1 NO_PORTAUDIOCPP=1 NO_PULSEAUDIO=1 \
-          NO_SDL2=1 NO_FLAC=1 NO_SNDFILE=1 \
-          -j$(nproc)
-        emmake make CONFIG=emscripten \
-          STATIC_LIB=1 SHARED_LIB=0 \
-          EXAMPLES=0 OPENMPT123=0 TEST=0 \
-          PREFIX="${SYSROOT}" install
-
     - name: Build PvZ-Portable for WebAssembly
-      run: |
-        mkdir build-wasm
-        emcmake cmake -G Ninja -B build-wasm -DCMAKE_BUILD_TYPE=Release
-        cmake --build build-wasm -j$(nproc)
+      run: ./wasm/build-wasm.sh --deps
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v7

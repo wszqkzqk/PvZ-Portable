@@ -139,10 +139,7 @@ public class PvZPortableActivity extends SDLActivity {
 
     @Override
     protected String[] getLibraries() {
-        return new String[]{
-            "SDL3",
-            "main"
-        };
+        return new String[]{"main"};
     }
 
     @Override

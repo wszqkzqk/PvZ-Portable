@@ -61,7 +61,6 @@ if(NINTENDO_SWITCH)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/switch
 	)
 elseif(EMSCRIPTEN)
-	# libopenmpt has no Emscripten port; must be pre-built with emmake.
 	find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
 	set(OPENMPT_LIB ${OPENMPT_LIBRARY})
 
@@ -133,7 +132,8 @@ else()
 	find_package(JPEG REQUIRED)
 	find_package(PNG REQUIRED)
 endif()
-include(CMake/Dependencies.cmake)
+find_package(SDL3 CONFIG REQUIRED)
+find_package(SDL3_mixer CONFIG REQUIRED)
 
 # Android requires a shared library loaded by SDLActivity; other platforms use an executable.
 if(ANDROID)
