@@ -119,10 +119,9 @@ bool SDLSoundManager::LoadSound(intptr_t theSfxID, const std::string& theFilenam
 		return false;
 
 	ReleaseSound(theSfxID);
+	mSourceFileNames[theSfxID] = theFilename;
 	if (!Initialized())
 		return true;
-
-	mSourceFileNames[theSfxID] = theFilename;
 
 #ifdef LOW_MEMORY
 	static constexpr const char* aFormats[] = { ".wav", ".mp3", ".ogg", ".au" };
