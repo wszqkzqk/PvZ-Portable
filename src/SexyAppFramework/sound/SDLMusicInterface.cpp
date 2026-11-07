@@ -34,6 +34,11 @@ SDLMusicInfo::SDLMusicInfo()
 	mStopOnFade = false;
 }
 
+static void ApplyMusicGain(const SDLMusicInfo& theMusic, float theGlobalVolume)
+{
+	MIX_SetTrackGain(theMusic.mTrack.get(), theMusic.mVolume * theGlobalVolume);
+}
+
 static bool InsertMusic(MIX_Mixer* theMixer, int theSongId, SDLMusicInfo&& theMusic, SDLMusicMap& theMap, float theGlobalVolume)
 {
 	theMusic.mTrack.reset(MIX_CreateTrack(theMixer));
@@ -46,8 +51,8 @@ static bool InsertMusic(MIX_Mixer* theMixer, int theSongId, SDLMusicInfo&& theMu
 	if (!aHasInput || !MIX_TagTrack(theMusic.mTrack.get(), "music"))
 		return false;
 
-	MIX_SetTagGain(theMixer, "music", theGlobalVolume);
 	theMap.emplace(theSongId, std::move(theMusic));
+	ApplyMusicGain(theMap.at(theSongId), theGlobalVolume);
 	return true;
 }
 
@@ -164,7 +169,7 @@ void SDLMusicInterface::PlayMusic(int theSongId, int theOffset, bool noLoop)
 	aMusicInfo.mVolume = aMusicInfo.mVolumeCap;
 	aMusicInfo.mVolumeAdd = 0.0;
 	aMusicInfo.mStopOnFade = noLoop;
-	MIX_SetTrackGain(aMusicInfo.mTrack.get(), static_cast<float>(aMusicInfo.mVolume));
+	ApplyMusicGain(aMusicInfo, mGlobalVolume);
 	StartMusic(aMusicInfo, theOffset, noLoop);
 }
 
@@ -278,7 +283,7 @@ void SDLMusicInterface::SetSongVolume(int theSongId, double theVolume)
 	if (anItr != mMusicMap.end())
 	{
 		anItr->second.mVolume = theVolume;
-		MIX_SetTrackGain(anItr->second.mTrack.get(), static_cast<float>(theVolume));
+		ApplyMusicGain(anItr->second, mGlobalVolume);
 	}
 }
 
@@ -291,7 +296,7 @@ void SDLMusicInterface::SetSongMaxVolume(int theSongId, double theMaxVolume)
 		SDLMusicInfo& aMusicInfo = anItr->second;
 		aMusicInfo.mVolumeCap = theMaxVolume;
 		aMusicInfo.mVolume = std::min(aMusicInfo.mVolume, theMaxVolume);
-		MIX_SetTrackGain(aMusicInfo.mTrack.get(), static_cast<float>(aMusicInfo.mVolume));
+		ApplyMusicGain(aMusicInfo, mGlobalVolume);
 	}
 }
 
@@ -305,8 +310,10 @@ bool SDLMusicInterface::IsPlaying(int theSongId)
 
 void SDLMusicInterface::SetVolume(double theVolume)
 {
+	std::scoped_lock anAutoCrit(mMusicMapMutex);
 	mGlobalVolume = static_cast<float>(theVolume * 0.8);
-	MIX_SetTagGain(mMixer, "music", mGlobalVolume);
+	for (auto& [aId, aMusicInfo] : mMusicMap)
+		ApplyMusicGain(aMusicInfo, mGlobalVolume);
 }
 
 void SDLMusicInterface::SetMusicAmplify(int, double)
@@ -334,7 +341,7 @@ void SDLMusicInterface::Update()
 			if (aMusicInfo.mStopOnFade)
 				MIX_StopTrack(aMusicInfo.mTrack.get(), 0);
 		}
-		MIX_SetTrackGain(aMusicInfo.mTrack.get(), static_cast<float>(aMusicInfo.mVolume));
+		ApplyMusicGain(aMusicInfo, mGlobalVolume);
 	}
 }
 
