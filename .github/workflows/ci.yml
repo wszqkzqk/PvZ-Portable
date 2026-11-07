@@ -35,6 +35,17 @@ jobs:
             switch-libvorbis \
             switch-pkg-config
 
+      - name: Fetch SDL3 Switch Patch
+        uses: actions/checkout@v6
+        with:
+          repository: neomody77/sdl3-switch
+          ref: 182e511214d7600e4bdab8606d7caf0ef744afd6
+          path: sdl3-switch
+          sparse-checkout: sdl3-switch.patch
+          sparse-checkout-cone-mode: false
+          filter: blob:none
+          fetch-depth: 1
+
       - name: Build SDL3 for Switch
         run: |
           source $DEVKITPRO/switchvars.sh
@@ -43,10 +54,7 @@ jobs:
           if [ -z "$SDL3_TAG" ]; then
             SDL3_TAG="3.4.20"
           fi
-          SDL3_SWITCH_COMMIT="182e511214d7600e4bdab8606d7caf0ef744afd6"
           git clone --depth=1 --branch "release-${SDL3_TAG}" https://github.com/libsdl-org/SDL.git "SDL3-${SDL3_TAG}"
-          git clone https://github.com/neomody77/sdl3-switch.git sdl3-switch
-          git -C sdl3-switch checkout --detach "$SDL3_SWITCH_COMMIT"
           echo "9f694599723d78b08c09d99f8203ddea52ee5178575a807263fe79f8ab1f28dc  sdl3-switch/sdl3-switch.patch" | sha256sum -c -
           (
             cd "SDL3-${SDL3_TAG}"
