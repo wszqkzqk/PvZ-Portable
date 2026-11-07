@@ -23,7 +23,6 @@ jobs:
       - name: Install Dependencies
         run: |
           dkp-pacman -Sy --noconfirm --needed \
-            curl \
             switch-mesa \
             switch-libdrm_nouveau \
             switch-libpng \
@@ -41,13 +40,13 @@ jobs:
             SDL3_TAG="3.4.20"
           fi
           SDL3_SWITCH_COMMIT="182e511214d7600e4bdab8606d7caf0ef744afd6"
-          curl -fsSLO "https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_TAG}/SDL3-${SDL3_TAG}.tar.gz"
-          curl -fsSLO "https://raw.githubusercontent.com/neomody77/sdl3-switch/${SDL3_SWITCH_COMMIT}/sdl3-switch.patch"
-          echo "9f694599723d78b08c09d99f8203ddea52ee5178575a807263fe79f8ab1f28dc  sdl3-switch.patch" | sha256sum -c -
-          tar xf "SDL3-${SDL3_TAG}.tar.gz"
+          git clone --depth=1 --branch "release-${SDL3_TAG}" https://github.com/libsdl-org/SDL.git "SDL3-${SDL3_TAG}"
+          git clone https://github.com/neomody77/sdl3-switch.git sdl3-switch
+          git -C sdl3-switch checkout --detach "$SDL3_SWITCH_COMMIT"
+          echo "9f694599723d78b08c09d99f8203ddea52ee5178575a807263fe79f8ab1f28dc  sdl3-switch/sdl3-switch.patch" | sha256sum -c -
           (
             cd "SDL3-${SDL3_TAG}"
-            git apply -p3 ../sdl3-switch.patch
+            git apply -p3 ../sdl3-switch/sdl3-switch.patch
           )
           aarch64-none-elf-cmake -G "Unix Makefiles" -S "SDL3-${SDL3_TAG}" -B build-sdl3 \
             -DCMAKE_BUILD_TYPE=Release \
@@ -69,8 +68,7 @@ jobs:
           if [ -z "$SDL3_MIXER_TAG" ]; then
             SDL3_MIXER_TAG="3.2.4"
           fi
-          curl -fsSLO "https://github.com/libsdl-org/SDL_mixer/releases/download/release-${SDL3_MIXER_TAG}/SDL3_mixer-${SDL3_MIXER_TAG}.tar.gz"
-          tar xf "SDL3_mixer-${SDL3_MIXER_TAG}.tar.gz"
+          git clone --depth=1 --branch "release-${SDL3_MIXER_TAG}" https://github.com/libsdl-org/SDL_mixer.git "SDL3_mixer-${SDL3_MIXER_TAG}"
           aarch64-none-elf-cmake -G "Unix Makefiles" -S "SDL3_mixer-${SDL3_MIXER_TAG}" -B build-sdl3-mixer \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$PORTLIBS_PREFIX" \
