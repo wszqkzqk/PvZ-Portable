@@ -445,18 +445,26 @@ function canSyncSaves() {
     return savesMounted && Module.FS && typeof Module.FS.syncfs === 'function';
 }
 
+function reportSaveSyncError(err) {
+    console.warn('IDBFS persist error:', err);
+}
+
 async function ensureSaveFsReady() {
     if (saveFsReadyPromise) return saveFsReadyPromise;
 
     saveFsReadyPromise = (async () => {
         await window.moduleReadyPromise;
         try { Module.FS.mkdir('/saves'); } catch (e) {}
-        try { Module.FS.mount(Module.FS.filesystems.IDBFS, {}, '/saves'); } catch (e) {}
+        Module.FS.mount(Module.IDBFS, {}, '/saves');
         savesMounted = true;
 
-        await new Promise(r => Module.FS.syncfs(true, err => {
-            if (err) console.warn('IDBFS initial sync error:', err);
-            r();
+        await new Promise((resolve, reject) => Module.FS.syncfs(true, err => {
+            if (err) {
+                console.warn('IDBFS initial sync error:', err);
+                reject(err);
+            } else {
+                resolve();
+            }
         }));
 
         lastSaveSyncAt = Date.now();
@@ -473,10 +481,12 @@ async function syncSaves() {
         return saveSyncInFlight;
     }
 
-    saveSyncInFlight = new Promise(resolve => Module.FS.syncfs(false, err => {
-        if (err) console.warn('IDBFS persist error:', err);
-        else lastSaveSyncAt = Date.now();
-        resolve();
+    saveSyncInFlight = new Promise((resolve, reject) => Module.FS.syncfs(false, err => {
+        if (err) reject(err);
+        else {
+            lastSaveSyncAt = Date.now();
+            resolve();
+        }
     }));
 
     try {
@@ -485,7 +495,7 @@ async function syncSaves() {
         saveSyncInFlight = null;
         if (saveSyncQueued) {
             saveSyncQueued = false;
-            void syncSaves();
+            void syncSaves().catch(reportSaveSyncError);
         }
     }
 }
@@ -493,7 +503,7 @@ async function syncSaves() {
 function startSaveAutosync() {
     if (saveSyncIntervalId !== null) return;
     saveSyncIntervalId = window.setInterval(() => {
-        void syncSaves();
+        void syncSaves().catch(reportSaveSyncError);
     }, SAVE_SYNC_INTERVAL_MS);
 }
 
@@ -739,17 +749,17 @@ uploadSaveClearBtn.addEventListener('click', () => {
 });
 
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') void syncSaves();
+    if (document.visibilityState === 'hidden') void syncSaves().catch(reportSaveSyncError);
 });
 
 window.addEventListener('pagehide', () => {
-    void syncSaves();
+    void syncSaves().catch(reportSaveSyncError);
 });
 
 window.addEventListener('beforeunload', e => {
     if (!gameStarted) return;
 
-    void syncSaves();
+    void syncSaves().catch(reportSaveSyncError);
     if (Date.now() - lastSaveSyncAt >= SAVE_CLOSE_WARNING_MS) {
         e.preventDefault();
         e.returnValue = 'Recent save data may still be syncing. Wait a moment or export saves before leaving.';
