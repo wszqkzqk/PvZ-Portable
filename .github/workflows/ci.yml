@@ -59,6 +59,7 @@ jobs:
             -DSDL_STATIC=ON \
             -DSDL_VIDEO=OFF \
             -DSDL_JOYSTICK=OFF \
+            -DSDL_HAPTIC=OFF \
             -DSDL_TESTS=OFF \
             -DSDL_EXAMPLES=OFF
           cmake --build build-sdl3 -j$(nproc)
