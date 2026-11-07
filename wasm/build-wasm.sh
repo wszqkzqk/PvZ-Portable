@@ -32,6 +32,11 @@ OPENMPT_PREFIX="${BUILD_DIR}/openmpt-prefix"
 MIXER_SRC="${BUILD_DIR}/SDL_mixer-src"
 SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
 
+if [[ "${1:-}" != "--deps" && ! -d "${MIXER_SRC}" ]]; then
+    echo "SDL3_mixer sources are missing. Run ./wasm/build-wasm.sh --deps first." >&2
+    exit 1
+fi
+
 embuilder build sdl3 vorbis
 
 if [[ "${1:-}" == "--deps" ]]; then
