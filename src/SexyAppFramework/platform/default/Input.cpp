@@ -176,8 +176,8 @@ using namespace Sexy;
 // Map SDL_Keycode to internal KeyCode (Windows VK-compatible).
 static KeyCode SDLKeyToKeyCode(SDL_Keycode theSDLKey)
 {
-	if (theSDLKey >= 'A' && theSDLKey <= 'Z')
-		return static_cast<KeyCode>(theSDLKey);
+	if (theSDLKey >= SDLK_A && theSDLKey <= SDLK_Z)
+		return static_cast<KeyCode>(theSDLKey - SDLK_A + 'A');
 
 	if (theSDLKey >= SDLK_0 && theSDLKey <= SDLK_9)
 		return static_cast<KeyCode>(theSDLKey);
@@ -265,18 +265,18 @@ static bool SDLSynthesizeAsciiCharFromKeyDown(const SDL_KeyboardEvent& theEvent,
 	if (aHasAlt || aHasGui)
 		return false;
 
-	if (aSym >= 'A' && aSym <= 'Z')
+	if (aSym >= SDLK_A && aSym <= SDLK_Z)
 	{
 		if (aHasCtrl)
 		{
-			theChar = static_cast<char>(aSym - 'A' + 1); // Ctrl+letter -> control code; SDL_EVENT_TEXT_INPUT is not guaranteed for Ctrl combos
+			theChar = static_cast<char>(aSym - SDLK_A + 1); // Ctrl+letter -> control code; SDL_EVENT_TEXT_INPUT is not guaranteed for Ctrl combos
 			return true;
 		}
 
 		if (aTextInputActive)
 			return false;
 
-		theChar = static_cast<char>(aHasShift ? aSym : aSym - 'A' + 'a');
+		theChar = static_cast<char>(aHasShift ? aSym - SDLK_A + 'A' : aSym);
 		return true;
 	}
 
