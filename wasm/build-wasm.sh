@@ -34,17 +34,42 @@ MIXER_PREFIX="${BUILD_DIR}/mixer-prefix"
 embuilder build sdl3 vorbis
 
 SYSROOT="$(em-config EMSCRIPTEN_ROOT)/cache/sysroot"
-SDL3_CONFIG_VERSION="${SYSROOT}/lib/cmake/SDL3/sdl3-config-version.cmake"
-if [ ! -f "${SDL3_CONFIG_VERSION}" ]; then
-    SDL3_VERSION=$(PKG_CONFIG_PATH="${SYSROOT}/lib/pkgconfig" pkg-config --modversion sdl3)
-    cat > "${SDL3_CONFIG_VERSION}" <<EOF
+SDL3_CMAKE_DIR="${BUILD_DIR}/sdl3-cmake"
+mkdir -p "${SDL3_CMAKE_DIR}"
+SDL3_VERSION=$(sed -n "s/^VERSION = '\([^']*\)'.*/\1/p" "$(em-config EMSCRIPTEN_ROOT)/tools/ports/sdl3.py")
+if [ -z "${SDL3_VERSION}" ]; then
+    echo "Could not determine the SDL3 version from the Emscripten port." >&2
+    exit 1
+fi
+
+cat > "${SDL3_CMAKE_DIR}/SDL3Config.cmake" <<'EOF'
+if(NOT TARGET SDL3::SDL3)
+  add_library(SDL3::Headers INTERFACE IMPORTED)
+  set_target_properties(SDL3::Headers PROPERTIES
+    INTERFACE_COMPILE_OPTIONS "-sUSE_SDL=3"
+  )
+
+  add_library(SDL3::SDL3-static INTERFACE IMPORTED)
+  set_target_properties(SDL3::SDL3-static PROPERTIES
+    INTERFACE_COMPILE_OPTIONS "-sUSE_SDL=3"
+    INTERFACE_LINK_LIBRARIES "-sUSE_SDL=3"
+  )
+
+  add_library(SDL3::SDL3 INTERFACE IMPORTED)
+  set_target_properties(SDL3::SDL3 PROPERTIES
+    INTERFACE_COMPILE_OPTIONS "-sUSE_SDL=3"
+    INTERFACE_LINK_LIBRARIES "-sUSE_SDL=3"
+  )
+endif()
+EOF
+
+cat > "${SDL3_CMAKE_DIR}/SDL3ConfigVersion.cmake" <<EOF
 set(PACKAGE_VERSION "${SDL3_VERSION}")
 set(PACKAGE_VERSION_COMPATIBLE FALSE)
 if(NOT PACKAGE_FIND_VERSION VERSION_GREATER PACKAGE_VERSION AND PACKAGE_FIND_VERSION_MAJOR STREQUAL "3")
     set(PACKAGE_VERSION_COMPATIBLE TRUE)
 endif()
 EOF
-fi
 
 if [[ "${1:-}" == "--deps" ]]; then
     if [ ! -f "${OPENMPT_PREFIX}/lib/libopenmpt.a" ]; then
@@ -89,6 +114,7 @@ if [[ "${1:-}" == "--deps" ]]; then
         emcmake cmake -S "${MIXER_SRC}" -B "${MIXER_BUILD}" -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="${MIXER_PREFIX}" \
+            -DSDL3_DIR="${SDL3_CMAKE_DIR}" \
             -DSDLMIXER_VENDORED=OFF \
             -DSDLMIXER_TESTS=OFF \
             -DSDLMIXER_EXAMPLES=OFF \
@@ -107,7 +133,8 @@ fi
 emcmake cmake -S "${PROJECT_DIR}" -B "${BUILD_DIR}" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_FIND_ROOT_PATH="${OPENMPT_PREFIX};${MIXER_PREFIX};${SYSROOT}" \
-    -DCMAKE_PREFIX_PATH="${MIXER_PREFIX}"
+    -DCMAKE_PREFIX_PATH="${MIXER_PREFIX}" \
+    -DSDL3_DIR="${SDL3_CMAKE_DIR}"
 
 cmake --build "${BUILD_DIR}" -j"${NPROC}"
 
