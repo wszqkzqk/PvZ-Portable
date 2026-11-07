@@ -26,7 +26,7 @@
 #define __SEXYAPPBASE_H__
 
 #include "Common.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include "misc/Rect.h"
 #include "graphics/Color.h"
 #include "widget/ButtonListener.h"
@@ -82,7 +82,7 @@ typedef std::map<std::string, int, std::less<>> StringIntMap;
 typedef std::map<std::string, double, std::less<>> StringDoubleMap;
 typedef std::map<std::string, std::vector<std::string>, std::less<>> StringStringVectorMap;
 using SDLWindowPtr = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
-using SDLGLContextPtr = std::unique_ptr<std::remove_pointer_t<SDL_GLContext>, decltype(&SDL_GL_DeleteContext)>;
+using SDLGLContextPtr = std::unique_ptr<std::remove_pointer_t<SDL_GLContext>, decltype(&SDL_GL_DestroyContext)>;
 
 enum
 {
@@ -154,7 +154,7 @@ public:
 	void*					mContext = nullptr;
 #else
 	SDLWindowPtr			mWindow{nullptr, &SDL_DestroyWindow};
-	SDLGLContextPtr			mContext{nullptr, &SDL_GL_DeleteContext};
+	SDLGLContextPtr			mContext{nullptr, &SDL_GL_DestroyContext};
 #endif
 	void*					mSurface = nullptr; // for EGL
 

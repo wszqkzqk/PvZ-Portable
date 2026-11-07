@@ -26,9 +26,9 @@
 #include "paklib/PakInterface.h"
 #include "../../PvzpLib/PvzpDebug.h"
 #include "../../PvzpLib/PvzpCommon.h"
-#include "sound/SDLMusicInterface.h"
+#include "sound/MusicInterface.h"
 
-#include <mutex>
+#include <vector>
 
 using namespace Sexy;
 
@@ -56,8 +56,6 @@ Music::Music()
 	mFadeOutDuration = 0;
 }
 
-MusicFileData gMusicFileData[MusicFile::NUM_MUSIC_FILES];
-
 struct MusicLoadEntry
 {
 	MusicFile					mMusicFile;
@@ -74,12 +72,9 @@ const int Music::MUSIC_LOADING_TASKS = MUSIC_LOADING_TASK_WEIGHT * static_cast<i
 
 bool Music::PvzpLoadMusic(MusicFile theMusicFile, std::string_view theFileName)
 {
-	Mix_Music* aHMusic = 0;
-	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
 	std::string aFileName(theFileName);
 	std::string anExt;
-
-	size_t aDot = aFileName.rfind('.');
+	const size_t aDot = aFileName.rfind('.');
 	if (aDot != std::string::npos)
 		anExt = StringToLower(aFileName.substr(aDot + 1));
 
@@ -88,31 +83,15 @@ bool Music::PvzpLoadMusic(MusicFile theMusicFile, std::string_view theFileName)
 		return false;
 
 	p_fseek(pFile, 0, SEEK_END);
-	int aSize = p_ftell(pFile);
+	const size_t aSize = p_ftell(pFile);
 	p_fseek(pFile, 0, SEEK_SET);
-	void* aData = operator new[](aSize);
-	p_fread(aData, sizeof(uint8_t), aSize, pFile);
+	std::vector<uint8_t> aData(aSize);
+	const size_t aReadSize = p_fread(aData.data(), 1, aSize, pFile);
 	p_fclose(pFile);
-
-	aHMusic = Mix_LoadMUS_RW(SDL_RWFromMem(aData, aSize), 1);
-	if (theMusicFile == MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN)
-	{
-		gMusicFileData[theMusicFile].mFileData = (unsigned int*)aData;
-	}
-	else
-	{
-		delete[] (char *)aData;
-	}
-
-	if (aHMusic == 0)
+	if (aReadSize != aSize)
 		return false;
 
-	SDLMusicInfo aMusicInfo;
-	aMusicInfo.mHMusic = aHMusic;
-
-	std::scoped_lock anAutoCrit(anSDL->mMusicMapMutex);
-	anSDL->mMusicMap.insert(SDLMusicMap::value_type(theMusicFile, aMusicInfo));
-	return true;
+	return mMusicInterface->LoadMusicFromMemory(theMusicFile, aData.data(), aData.size(), anExt);
 }
 
 void Music::SetupVolumeForTune(MusicTune theMusicTune, float theDrumsVolume, float theHihatsVolume)
@@ -148,7 +127,6 @@ void Music::SetupVolumeForTune(MusicTune theMusicTune, float theDrumsVolume, flo
 		break;
 	}
 
-	Mix_Music* aHMusic = GetMusicHandle(MusicFile::MUSIC_FILE_MAIN_MUSIC);
 	for (int aTrack = 0; aTrack < TRACK_COUNT; aTrack++)
 	{
 		float aVolume;
@@ -168,7 +146,7 @@ void Music::SetupVolumeForTune(MusicTune theMusicTune, float theDrumsVolume, flo
 			else
 				aVolume = 0.0f;
 		}
-		Mix_ModMusicStreamSetChannelVolume(aHMusic, aTrack, (int)(aVolume * 128));
+		mMusicInterface->SetChannelVolume(MusicFile::MUSIC_FILE_MAIN_MUSIC, aTrack, aVolume);
 	}
 }
 
@@ -198,10 +176,7 @@ void Music::MusicInit()
 
 void Music::MusicCreditScreenInit()
 {
-	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
-	std::scoped_lock anAutoCrit(anSDL->mMusicMapMutex);
-	if (anSDL->mMusicMap.find((int)MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN) == anSDL->mMusicMap.end())
-		LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
+	LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
 }
 
 void Music::StopAllMusic()
@@ -227,37 +202,17 @@ void Music::StopAllMusic()
 	mFadeOutCounter = 0;
 }
 
-Mix_Music* Music::GetMusicHandle(MusicFile theMusicFile)
-{
-	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
-	std::scoped_lock anAutoCrit(anSDL->mMusicMapMutex);
-	auto anItr = anSDL->mMusicMap.find((int)theMusicFile);
-	PVZP_ASSERT(anItr != anSDL->mMusicMap.end());
-	return anItr->second.mHMusic;
-}
-
 void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolume)
 {
-	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface.get();
-	std::scoped_lock anAutoCrit(anSDL->mMusicMapMutex);
-	auto anItr = anSDL->mMusicMap.find((int)theMusicFile);
-	PVZP_ASSERT(anItr != anSDL->mMusicMap.end());
-	SDLMusicInfo* aMusicInfo = &anItr->second;
-
 	if (mCurMusicTune == MusicTune::MUSIC_TUNE_CREDITS_ZOMBIES_ON_YOUR_LAWN)
 	{
-		bool aNoLoop = theMusicFile == MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN;
+		const bool aNoLoop = theMusicFile == MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN;
 		mMusicInterface->PlayMusic(theMusicFile, theOffset, aNoLoop);
 	}
 	else
 	{
-		Mix_HaltMusicStream(aMusicInfo->mHMusic);
-		aMusicInfo->mStopOnFade = false;
-		aMusicInfo->mVolume = aMusicInfo->mVolumeCap * theVolume;
-		aMusicInfo->mVolumeAdd = 0.0;
-		Mix_PlayMusicStream(aMusicInfo->mHMusic, -1);
-		Mix_ModMusicStreamJumpToOrder(aMusicInfo->mHMusic, theOffset);
-		Mix_VolumeMusicStream(aMusicInfo->mHMusic, (int)(aMusicInfo->mVolume*128));
+		mMusicInterface->PlayMusic(theMusicFile, theOffset, false);
+		mMusicInterface->SetSongVolume(theMusicFile, theVolume);
 		SetupVolumeForTune(mCurMusicTune, 0, 0);
 	}
 }
@@ -379,7 +334,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 unsigned long Music::GetMusicOrder(MusicFile theMusicFile)
 {
 	PVZP_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
-	return ((SDLMusicInterface*)mApp->mMusicInterface.get())->GetMusicOrder((int)theMusicFile);
+	return mMusicInterface->GetMusicOrder(theMusicFile);
 }
 
 void Music::StartBurst()
@@ -555,7 +510,7 @@ void Music::UpdateMusicBurst()
 		mMusicInterface->SetSongVolume(mCurMusicFileMain, aMainTrackVolume);
 		mMusicInterface->SetSongVolume(mCurMusicFileDrums, aDrumsVolume);
 		if (aDrumsJumpOrder != -1)
-			Mix_ModMusicStreamJumpToOrder(GetMusicHandle(mCurMusicFileDrums), aDrumsJumpOrder);
+			mMusicInterface->JumpToOrder(mCurMusicFileDrums, aDrumsJumpOrder);
 	}
 }
 
@@ -650,10 +605,9 @@ void Music::GameMusicPause(bool thePause)
 	{
 		if (mCurMusicTune != MusicTune::MUSIC_TUNE_NONE)
 		{
-			Mix_Music* aHandle = (mCurMusicFileMain != MusicFile::MUSIC_FILE_NONE) ?
-								  GetMusicHandle(mCurMusicFileMain) : nullptr;
-			if (mCurMusicTune == MusicTune::MUSIC_TUNE_CREDITS_ZOMBIES_ON_YOUR_LAWN ||
-				(aHandle && Mix_PlayingMusicStream(aHandle)))
+			const bool aIsPlaying = mCurMusicFileMain != MusicFile::MUSIC_FILE_NONE &&
+				mMusicInterface->IsPlaying(mCurMusicFileMain);
+			if (mCurMusicTune == MusicTune::MUSIC_TUNE_CREDITS_ZOMBIES_ON_YOUR_LAWN || aIsPlaying)
 			{
 				if (mCurMusicFileMain != MusicFile::MUSIC_FILE_NONE)
 					mMusicInterface->ResumeMusic(mCurMusicFileMain);

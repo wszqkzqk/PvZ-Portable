@@ -22,15 +22,9 @@
 #include "LawnApp.h"
 #include "Resources.h"
 #include "PvzpLib/PvzpStringFile.h"
-#include <SDL.h>
-#include <cstdlib>
-#include <vector>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 using namespace Sexy;
-
-#ifdef _WIN32
-#include <windows.h>
-#include <shellapi.h>
-#endif
 
 #ifdef __SWITCH__
 #include <switch.h>
@@ -40,57 +34,10 @@ using namespace Sexy;
 #include <emscripten.h>
 #endif
 
-#ifdef _WIN32
-static std::vector<std::string> gUtf8ArgsStorage;
-static std::vector<char*> gUtf8Argv;
-
-static void BuildUtf8ArgsFromWin32(int& argc, char**& argv)
-{
-	int aWideArgc = 0;
-	LPWSTR* aWideArgv = CommandLineToArgvW(GetCommandLineW(), &aWideArgc);
-	if (aWideArgv == nullptr || aWideArgc <= 0)
-		return;
-
-	gUtf8ArgsStorage.clear();
-	gUtf8Argv.clear();
-	gUtf8ArgsStorage.reserve(static_cast<size_t>(aWideArgc));
-	gUtf8Argv.reserve(static_cast<size_t>(aWideArgc));
-
-	for (int i = 0; i < aWideArgc; ++i)
-	{
-		const wchar_t* aWide = aWideArgv[i];
-		int aLen = WideCharToMultiByte(CP_UTF8, 0, aWide, -1, nullptr, 0, nullptr, nullptr);
-		if (aLen <= 0)
-		{
-			gUtf8ArgsStorage.emplace_back();
-		}
-		else
-		{
-			std::string aUtf8;
-			aUtf8.resize(static_cast<size_t>(aLen - 1));
-			WideCharToMultiByte(CP_UTF8, 0, aWide, -1, aUtf8.data(), aLen, nullptr, nullptr);
-			gUtf8ArgsStorage.emplace_back(std::move(aUtf8));
-		}
-	}
-
-	for (auto& aStr : gUtf8ArgsStorage)
-		gUtf8Argv.push_back(const_cast<char*>(aStr.c_str()));
-
-	argc = static_cast<int>(gUtf8Argv.size());
-	argv = gUtf8Argv.data();
-
-	LocalFree(aWideArgv);
-}
-#endif
-
 int main(int argc, char** argv)
 {
 #ifdef __SWITCH__
 	consoleDebugInit(debugDevice_SVC);
-#endif
-
-#ifdef _WIN32
-	BuildUtf8ArgsFromWin32(argc, argv);
 #endif
 
 	PvzpStringListSetColors(gLawnStringFormats, gLawnStringFormatCount);

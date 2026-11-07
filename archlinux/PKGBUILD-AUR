@@ -14,7 +14,8 @@ depends=(
     libopenmpt
     libpng
     libstdc++
-    sdl2-compat
+    sdl3
+    sdl3_mixer
     zlib
 )
 makedepends=(

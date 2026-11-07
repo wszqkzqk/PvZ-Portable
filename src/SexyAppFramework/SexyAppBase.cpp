@@ -44,7 +44,7 @@
 #include <tuple>
 #include <format>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #ifdef __SWITCH__
 #include <switch.h>
@@ -100,21 +100,21 @@ static SDL_SystemCursor CursorNumToSystemCursor(int theCursorNum)
 	switch (theCursorNum)
 	{
 		case CURSOR_HAND:
-			return SDL_SYSTEM_CURSOR_HAND;
+			return SDL_SYSTEM_CURSOR_POINTER;
 		case CURSOR_TEXT:
-			return SDL_SYSTEM_CURSOR_IBEAM;
+			return SDL_SYSTEM_CURSOR_TEXT;
 		case CURSOR_CIRCLE_SLASH:
-			return SDL_SYSTEM_CURSOR_NO;
+			return SDL_SYSTEM_CURSOR_NOT_ALLOWED;
 		case CURSOR_SIZEALL:
-			return SDL_SYSTEM_CURSOR_SIZEALL;
+			return SDL_SYSTEM_CURSOR_MOVE;
 		case CURSOR_SIZENESW:
-			return SDL_SYSTEM_CURSOR_SIZENESW;
+			return SDL_SYSTEM_CURSOR_NESW_RESIZE;
 		case CURSOR_SIZENS:
-			return SDL_SYSTEM_CURSOR_SIZENS;
+			return SDL_SYSTEM_CURSOR_NS_RESIZE;
 		case CURSOR_SIZENWSE:
-			return SDL_SYSTEM_CURSOR_SIZENWSE;
+			return SDL_SYSTEM_CURSOR_NWSE_RESIZE;
 		case CURSOR_SIZEWE:
-			return SDL_SYSTEM_CURSOR_SIZEWE;
+			return SDL_SYSTEM_CURSOR_EW_RESIZE;
 		case CURSOR_WAIT:
 			return SDL_SYSTEM_CURSOR_WAIT;
 		case CURSOR_DRAGGING:
@@ -122,7 +122,7 @@ static SDL_SystemCursor CursorNumToSystemCursor(int theCursorNum)
 		case CURSOR_NONE:
 		case CURSOR_CUSTOM:
 		default:
-			return SDL_SYSTEM_CURSOR_ARROW;
+			return SDL_SYSTEM_CURSOR_DEFAULT;
 	}
 }
 
@@ -136,18 +136,17 @@ static SDL_Cursor* CreateCursorFromMemoryImage(MemoryImage* theImage)
 	if (aWidth <= 0 || aHeight <= 0)
 		return nullptr;
 
-	SDL_Surface* aSurface = SDL_CreateRGBSurfaceWithFormatFrom(
-		theImage->mBits.get(),
+	SDL_Surface* aSurface = SDL_CreateSurfaceFrom(
 		aWidth,
 		aHeight,
-		32,
-		aWidth * static_cast<int>(sizeof(uint32_t)),
-		SDL_PIXELFORMAT_BGRA32);
+		SDL_PIXELFORMAT_BGRA32,
+		theImage->mBits.get(),
+		aWidth * static_cast<int>(sizeof(uint32_t)));
 	if (aSurface == nullptr)
 		return nullptr;
 
 	SDL_Cursor* aCursor = SDL_CreateColorCursor(aSurface, 0, 0);
-	SDL_FreeSurface(aSurface);
+	SDL_DestroySurface(aSurface);
 	return aCursor;
 }
 
@@ -164,8 +163,6 @@ SexyAppBase::SexyAppBase()
 {
 	gSexyAppBase = this;
 
-	SDL_Init(SDL_INIT_TIMER);
-
 	mNotifyGameMessage = 0;
 
 #ifdef PVZ_DEBUG
@@ -177,7 +174,7 @@ SexyAppBase::SexyAppBase()
 #ifdef __SWITCH__
 	mResourceDir = "sdmc:/switch/PvZPortable/";
 #elif defined(__ANDROID__) && !defined(__TERMUX__)
-	const char* aExtPath = SDL_AndroidGetExternalStoragePath();
+	const char* aExtPath = SDL_GetAndroidExternalStoragePath();
 	if (aExtPath)
 	{
 		mResourceDir = std::string(aExtPath) + "/";
@@ -188,30 +185,13 @@ SexyAppBase::SexyAppBase()
 	}
 #elif defined(__IPHONEOS__)
 	// iOS: use Documents directory (visible in Files app via UIFileSharingEnabled)
-	{
-		const char* aHome = std::getenv("HOME");
-		if (aHome != nullptr && aHome[0] != '\0')
-		{
-			mResourceDir = (std::filesystem::path(aHome) / "Documents").generic_string() + "/";
-		}
-		else
-		{
-			mResourceDir = "";
-		}
-	}
+	const char* aDocuments = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+	mResourceDir = aDocuments != nullptr ? aDocuments : "";
 #elif defined(__EMSCRIPTEN__)
 	mResourceDir = "/";
 #else
-	char* aBasePath = SDL_GetBasePath();
-	if (aBasePath)
-	{
-		mResourceDir = aBasePath;
-		SDL_free(aBasePath);
-	}
-	else
-	{
-		mResourceDir = "";
-	}
+	const char* aBasePath = SDL_GetBasePath();
+	mResourceDir = aBasePath != nullptr ? aBasePath : "";
 #endif
 
 	mNoDefer = false;
@@ -430,7 +410,7 @@ SexyAppBase::~SexyAppBase()
 	{
 		if (mSysCursors[aCursorIdx] != nullptr)
 		{
-			SDL_FreeCursor(mSysCursors[aCursorIdx]);
+			SDL_DestroyCursor(mSysCursors[aCursorIdx]);
 			mSysCursors[aCursorIdx] = nullptr;
 		}
 	}
@@ -2410,7 +2390,7 @@ void SexyAppBase::ResetCustomCursorCache()
 {
 	if (mCustomCursor != nullptr)
 	{
-		SDL_FreeCursor(mCustomCursor);
+		SDL_DestroyCursor(mCustomCursor);
 		mCustomCursor = nullptr;
 	}
 
@@ -2426,7 +2406,7 @@ void SexyAppBase::EnforceCursor()
 
 	if (aCursorNum == CURSOR_NONE)
 	{
-		SDL_ShowCursor(SDL_DISABLE);
+		SDL_HideCursor();
 		return;
 	}
 
@@ -2472,7 +2452,7 @@ void SexyAppBase::EnforceCursor()
 	if (aCursor != nullptr)
 		SDL_SetCursor(aCursor);
 
-	SDL_ShowCursor(SDL_ENABLE);
+	SDL_ShowCursor();
 }
 
 void SexyAppBase::ProcessSafeDeleteList()
@@ -2734,10 +2714,7 @@ bool SexyAppBase::Process(bool allowSleep)
 					++mSleepCount;
 
 #ifndef __EMSCRIPTEN__
-					timespec ts;
-					ts.tv_sec = aTimeToNextFrame / 1000;
-					ts.tv_nsec = (aTimeToNextFrame % 1000) * 1000000;
-					nanosleep(&ts, &ts);
+					SDL_DelayNS(static_cast<Uint64>(aTimeToNextFrame) * 1000000ULL);
 #endif
 
 					aCumSleepTime += aTimeToNextFrame;
@@ -2760,10 +2737,7 @@ bool SexyAppBase::Process(bool allowSleep)
 					return false;
 
 #ifndef __EMSCRIPTEN__
-				timespec ts;
-				ts.tv_sec = aLoadingYieldSleepTime / 1000;
-				ts.tv_nsec = (aLoadingYieldSleepTime % 1000) * 1000000;
-				nanosleep(&ts, &ts);
+				SDL_DelayNS(static_cast<Uint64>(aLoadingYieldSleepTime) * 1000000ULL);
 #endif
 			}
 		}
@@ -2861,10 +2835,7 @@ bool SexyAppBase::UpdateAppStep(bool* updated)
 			if (mStepMode==2)
 			{
 #ifndef __EMSCRIPTEN__
-				timespec ts;
-				ts.tv_sec = mFrameTime / 1000;
-				ts.tv_nsec = (mFrameTime % 1000) * 1000000;
-				nanosleep(&ts, &ts);
+				SDL_DelayNS(static_cast<Uint64>(mFrameTime) * 1000000ULL);
 #endif
 
 				mUpdateAppState = UPDATESTATE_PROCESS_DONE; // skip actual update until next step
@@ -3336,7 +3307,7 @@ MusicInterface* SexyAppBase::CreateMusicInterface()
 	if (mNoSoundNeeded)
 		return new DummyMusicInterface();
 	else
-		return new SDLMusicInterface();
+		return new SDLMusicInterface(static_cast<SDLSoundManager*>(mSoundManager.get()));
 }
 
 void SexyAppBase::InitPropertiesHook()
@@ -3386,7 +3357,7 @@ void SexyAppBase::Init()
 
 #if defined(__ANDROID__) && !defined(__TERMUX__)
 	{
-		const char* aExtPath = SDL_AndroidGetExternalStoragePath();
+		const char* aExtPath = SDL_GetAndroidExternalStoragePath();
 		if (aExtPath)
 		{
 			SetAppDataFolder(std::string(aExtPath) + "/");
@@ -3394,11 +3365,9 @@ void SexyAppBase::Init()
 	}
 #elif defined(__IPHONEOS__)
 	{
-		const char* aHome = std::getenv("HOME");
-		if (aHome != nullptr && aHome[0] != '\0')
-		{
-			SetAppDataFolder((std::filesystem::path(aHome) / "Documents").generic_string() + "/");
-		}
+		const char* aDocuments = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+		if (aDocuments != nullptr)
+			SetAppDataFolder(aDocuments);
 	}
 #elif defined(__EMSCRIPTEN__)
 	{

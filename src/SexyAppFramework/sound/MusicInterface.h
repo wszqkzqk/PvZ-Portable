@@ -58,6 +58,11 @@ public:
 	virtual void			SetVolume(double theVolume) = 0;
 	virtual void			SetMusicAmplify(int theSongId, double theAmp) = 0;
 	virtual void			Update() = 0;
+
+	virtual bool			LoadMusicFromMemory(int, const void*, size_t, std::string_view) { return false; }
+	virtual int				GetMusicOrder(int) { return -1; }
+	virtual bool			JumpToOrder(int, int) { return false; }
+	virtual bool			SetChannelVolume(int, int, double) { return false; }
 };
 }
 

@@ -32,7 +32,7 @@
 #include "misc/Debug.h"
 #include "../../PvzpLib/PvzpStringFile.h"
 #include "widget/WidgetManager.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <algorithm>
 #include <format>
 

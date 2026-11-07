@@ -1,10 +1,7 @@
 /*
- * Portions of this file are based on the PopCap Games Framework
- * Copyright (C) 2005-2009 PopCap Games, Inc.
- *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
- * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
+ * SPDX-License-Identifier: LGPL-3.0-or-later
  *
  * This file is part of PvZ-Portable.
  *
@@ -22,7 +19,7 @@
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <algorithm>
 
@@ -179,8 +176,8 @@ using namespace Sexy;
 // Map SDL_Keycode to internal KeyCode (Windows VK-compatible).
 static KeyCode SDLKeyToKeyCode(SDL_Keycode theSDLKey)
 {
-	if (theSDLKey >= SDLK_a && theSDLKey <= SDLK_z)
-		return static_cast<KeyCode>(theSDLKey - SDLK_a + 'A');
+	if (theSDLKey >= SDLK_A && theSDLKey <= SDLK_Z)
+		return static_cast<KeyCode>(theSDLKey - SDLK_A + 'A');
 
 	if (theSDLKey >= SDLK_0 && theSDLKey <= SDLK_9)
 		return static_cast<KeyCode>(theSDLKey);
@@ -257,29 +254,29 @@ static bool SDLSynthesizeAsciiCharFromKeyDown(const SDL_KeyboardEvent& theEvent,
 {
 	theChar = 0;
 
-	SDL_Keycode aSym = theEvent.keysym.sym;
-	SDL_Keymod aMods = static_cast<SDL_Keymod>(theEvent.keysym.mod);
-	const bool aHasCtrl = (aMods & KMOD_CTRL) != 0;
-	const bool aHasAlt = (aMods & KMOD_ALT) != 0;
-	const bool aHasGui = (aMods & KMOD_GUI) != 0;
-	const bool aHasShift = (aMods & KMOD_SHIFT) != 0;
-	const bool aTextInputActive = SDL_IsTextInputActive(); // printable chars arrive via SDL_TEXTINPUT then
+	SDL_Keycode aSym = theEvent.key;
+	SDL_Keymod aMods = theEvent.mod;
+	const bool aHasCtrl = (aMods & SDL_KMOD_CTRL) != 0;
+	const bool aHasAlt = (aMods & SDL_KMOD_ALT) != 0;
+	const bool aHasGui = (aMods & SDL_KMOD_GUI) != 0;
+	const bool aHasShift = (aMods & SDL_KMOD_SHIFT) != 0;
+	const bool aTextInputActive = SDL_TextInputActive(gSexyAppBase->mWindow.get()); // printable chars arrive via SDL_EVENT_TEXT_INPUT then
 
 	if (aHasAlt || aHasGui)
 		return false;
 
-	if (aSym >= SDLK_a && aSym <= SDLK_z)
+	if (aSym >= SDLK_A && aSym <= SDLK_Z)
 	{
 		if (aHasCtrl)
 		{
-			theChar = static_cast<char>(aSym - SDLK_a + 1); // Ctrl+letter -> control code; SDL_TEXTINPUT is not guaranteed for Ctrl combos
+			theChar = static_cast<char>(aSym - SDLK_A + 1); // Ctrl+letter -> control code; SDL_EVENT_TEXT_INPUT is not guaranteed for Ctrl combos
 			return true;
 		}
 
 		if (aTextInputActive)
 			return false;
 
-		theChar = static_cast<char>(aHasShift ? aSym - SDLK_a + 'A' : aSym);
+		theChar = static_cast<char>(aHasShift ? aSym - SDLK_A + 'A' : aSym);
 		return true;
 	}
 
@@ -320,11 +317,11 @@ static bool SDLSynthesizeAsciiCharFromKeyDown(const SDL_KeyboardEvent& theEvent,
 		case SDLK_RIGHTBRACKET: theChar = aHasShift ? '}' : ']'; return true;
 		case SDLK_BACKSLASH: theChar = aHasShift ? '|' : '\\'; return true;
 		case SDLK_SEMICOLON: theChar = aHasShift ? ':' : ';'; return true;
-		case SDLK_QUOTE: theChar = aHasShift ? '"' : '\''; return true;
+		case SDLK_APOSTROPHE: theChar = aHasShift ? '"' : '\''; return true;
 		case SDLK_COMMA: theChar = aHasShift ? '<' : ','; return true;
 		case SDLK_PERIOD: theChar = aHasShift ? '>' : '.'; return true;
 		case SDLK_SLASH: theChar = aHasShift ? '?' : '/'; return true;
-		case SDLK_BACKQUOTE: theChar = aHasShift ? '~' : '`'; return true;
+		case SDLK_GRAVE: theChar = aHasShift ? '~' : '`'; return true;
 		case SDLK_SPACE: theChar = ' '; return true;
 		default: return false;
 	}
@@ -373,61 +370,56 @@ static void RecordDemoEvent(SexyAppBase* theApp, const SDL_Event& theEvent)
 {
 	switch (theEvent.type)
 	{
-		case SDL_APP_WILLENTERBACKGROUND:
-		case SDL_APP_DIDENTERFOREGROUND:
+		case SDL_EVENT_WILL_ENTER_BACKGROUND:
+		case SDL_EVENT_DID_ENTER_FOREGROUND:
 			theApp->WriteDemoTimingBlock();
 			theApp->mDemoBuffer.WriteNumBits(0, 1);
 			theApp->mDemoBuffer.WriteNumBits(DEMO_SIZE, 5);
-			theApp->mDemoBuffer.WriteBoolean(theEvent.type == SDL_APP_WILLENTERBACKGROUND);
+			theApp->mDemoBuffer.WriteBoolean(theEvent.type == SDL_EVENT_WILL_ENTER_BACKGROUND);
 			break;
 
-		case SDL_WINDOWEVENT:
-			switch (theEvent.window.event)
+		case SDL_EVENT_WINDOW_MINIMIZED:
+		case SDL_EVENT_WINDOW_RESTORED:
+			theApp->WriteDemoTimingBlock();
+			theApp->mDemoBuffer.WriteNumBits(0, 1);
+			theApp->mDemoBuffer.WriteNumBits(DEMO_SIZE, 5);
+			theApp->mDemoBuffer.WriteBoolean(theEvent.type == SDL_EVENT_WINDOW_MINIMIZED);
+			break;
+
+		case SDL_EVENT_WINDOW_FOCUS_GAINED:
+		case SDL_EVENT_WINDOW_FOCUS_LOST:
+			theApp->WriteDemoTimingBlock();
+			theApp->mDemoBuffer.WriteNumBits(0, 1);
+			theApp->mDemoBuffer.WriteNumBits(DEMO_ACTIVATE_APP, 5);
+			theApp->mDemoBuffer.WriteNumBits(theEvent.type == SDL_EVENT_WINDOW_FOCUS_GAINED ? 1 : 0, 1);
+			break;
+
+		case SDL_EVENT_WINDOW_MOUSE_ENTER:
+		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+		{
+			bool aMouseIn = theEvent.type == SDL_EVENT_WINDOW_MOUSE_ENTER;
+			if (theApp->mMouseIn != aMouseIn)
 			{
-				case SDL_WINDOWEVENT_MINIMIZED:
-				case SDL_WINDOWEVENT_RESTORED:
-					theApp->WriteDemoTimingBlock();
-					theApp->mDemoBuffer.WriteNumBits(0, 1);
-					theApp->mDemoBuffer.WriteNumBits(DEMO_SIZE, 5);
-					theApp->mDemoBuffer.WriteBoolean(theEvent.window.event == SDL_WINDOWEVENT_MINIMIZED);
-					break;
-
-				case SDL_WINDOWEVENT_FOCUS_GAINED:
-				case SDL_WINDOWEVENT_FOCUS_LOST:
-					theApp->WriteDemoTimingBlock();
-					theApp->mDemoBuffer.WriteNumBits(0, 1);
-					theApp->mDemoBuffer.WriteNumBits(DEMO_ACTIVATE_APP, 5);
-					theApp->mDemoBuffer.WriteNumBits(theEvent.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ? 1 : 0, 1);
-					break;
-
-				case SDL_WINDOWEVENT_ENTER:
-				case SDL_WINDOWEVENT_LEAVE:
-				{
-					bool aMouseIn = theEvent.window.event == SDL_WINDOWEVENT_ENTER;
-					if (theApp->mMouseIn != aMouseIn)
-					{
-						theApp->WriteDemoTimingBlock();
-						theApp->mDemoBuffer.WriteNumBits(0, 1);
-						theApp->mDemoBuffer.WriteNumBits(aMouseIn ? DEMO_MOUSE_ENTER : DEMO_MOUSE_EXIT, 5);
-					}
-					break;
-				}
+				theApp->WriteDemoTimingBlock();
+				theApp->mDemoBuffer.WriteNumBits(0, 1);
+				theApp->mDemoBuffer.WriteNumBits(aMouseIn ? DEMO_MOUSE_ENTER : DEMO_MOUSE_EXIT, 5);
 			}
 			break;
+		}
 
-		case SDL_MOUSEMOTION:
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
+		case SDL_EVENT_MOUSE_MOTION:
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		case SDL_EVENT_MOUSE_BUTTON_UP:
 		{
-			int x = (theEvent.type == SDL_MOUSEMOTION) ? theEvent.motion.x : theEvent.button.x;
-			int y = (theEvent.type == SDL_MOUSEMOTION) ? theEvent.motion.y : theEvent.button.y;
+			int x = static_cast<int>((theEvent.type == SDL_EVENT_MOUSE_MOTION) ? theEvent.motion.x : theEvent.button.x);
+			int y = static_cast<int>((theEvent.type == SDL_EVENT_MOUSE_MOTION) ? theEvent.motion.y : theEvent.button.y);
 			theApp->mWidgetManager->RemapMouse(x, y);
 
 			RecordDemoMousePosition(theApp, x, y);
 
-			if (theEvent.type != SDL_MOUSEMOTION)
+			if (theEvent.type != SDL_EVENT_MOUSE_MOTION)
 			{
-				bool down = theEvent.type == SDL_MOUSEBUTTONDOWN;
+				bool down = theEvent.type == SDL_EVENT_MOUSE_BUTTON_DOWN;
 				int aBtnNum =
 					(theEvent.button.button == SDL_BUTTON_LEFT) ? 1 :
 					(theEvent.button.button == SDL_BUTTON_RIGHT) ? -1 :
@@ -451,25 +443,25 @@ static void RecordDemoEvent(SexyAppBase* theApp, const SDL_Event& theEvent)
 			break;
 		}
 
-		case SDL_MOUSEWHEEL:
+		case SDL_EVENT_MOUSE_WHEEL:
 			theApp->WriteDemoTimingBlock();
 			theApp->mDemoBuffer.WriteNumBits(0, 1);
 			theApp->mDemoBuffer.WriteNumBits(DEMO_MOUSE_WHEEL, 5);
-			theApp->mDemoBuffer.WriteNumBits(std::clamp(theEvent.wheel.y, -128, 127), 8);
+			theApp->mDemoBuffer.WriteNumBits(std::clamp(theEvent.wheel.integer_y, -128, 127), 8);
 			break;
 
-		case SDL_KEYDOWN:
+		case SDL_EVENT_KEY_DOWN:
 		{
 			if (theApp->mAllowAltEnter &&
-				theEvent.key.repeat == 0 &&
-				(theEvent.key.keysym.sym == SDLK_RETURN || theEvent.key.keysym.sym == SDLK_KP_ENTER) &&
-				(theEvent.key.keysym.mod & KMOD_ALT))
+				!theEvent.key.repeat &&
+				(theEvent.key.key == SDLK_RETURN || theEvent.key.key == SDLK_KP_ENTER) &&
+				(theEvent.key.mod & SDL_KMOD_ALT))
 				break; // screen-mode toggle, not delivered to the widget manager
 
 			theApp->WriteDemoTimingBlock();
 			theApp->mDemoBuffer.WriteNumBits(0, 1);
 			theApp->mDemoBuffer.WriteNumBits(DEMO_KEY_DOWN, 5);
-			theApp->mDemoBuffer.WriteNumBits(static_cast<int>(SDLKeyToKeyCode(theEvent.key.keysym.sym)), 8);
+			theApp->mDemoBuffer.WriteNumBits(static_cast<int>(SDLKeyToKeyCode(theEvent.key.key)), 8);
 
 			char aChar = 0;
 			if (SDLSynthesizeAsciiCharFromKeyDown(theEvent.key, aChar))
@@ -483,14 +475,14 @@ static void RecordDemoEvent(SexyAppBase* theApp, const SDL_Event& theEvent)
 			break;
 		}
 
-		case SDL_KEYUP:
+		case SDL_EVENT_KEY_UP:
 			theApp->WriteDemoTimingBlock();
 			theApp->mDemoBuffer.WriteNumBits(0, 1);
 			theApp->mDemoBuffer.WriteNumBits(DEMO_KEY_UP, 5);
-			theApp->mDemoBuffer.WriteNumBits(static_cast<int>(SDLKeyToKeyCode(theEvent.key.keysym.sym)), 8);
+			theApp->mDemoBuffer.WriteNumBits(static_cast<int>(SDLKeyToKeyCode(theEvent.key.key)), 8);
 			break;
 
-		case SDL_TEXTINPUT:
+		case SDL_EVENT_TEXT_INPUT:
 			if (theEvent.text.text[0] != 0) // delivered via KeyText, so record the whole UTF-8 string
 			{
 				theApp->WriteDemoTimingBlock();
@@ -504,7 +496,7 @@ static void RecordDemoEvent(SexyAppBase* theApp, const SDL_Event& theEvent)
 
 bool SexyAppBase::StartTextInput([[maybe_unused]] std::string& theInput)
 {
-	SDL_StartTextInput();
+	SDL_StartTextInput(mWindow.get());
 
 #ifdef __EMSCRIPTEN__
 	WasmStartSoftKeyboard();
@@ -515,7 +507,7 @@ bool SexyAppBase::StartTextInput([[maybe_unused]] std::string& theInput)
 
 void SexyAppBase::StopTextInput()
 {
-	SDL_StopTextInput();
+	SDL_StopTextInput(mWindow.get());
 
 #ifdef __EMSCRIPTEN__
 	WasmStopSoftKeyboard();
@@ -525,7 +517,7 @@ void SexyAppBase::StopTextInput()
 void SexyAppBase::SetTextInputRect(const Rect& theRect)
 {
 	const Rect& aLogical = mWidgetManager->mMouseDestRect;
-	const Rect& aPresent = mWidgetManager->mMouseSourceRect; // presentation/window pixels, inverse of RemapMouse
+	const Rect& aPresent = mWidgetManager->mMouseSourceRect; // presentation/window coordinates, inverse of RemapMouse
 	if (aLogical.mWidth <= 0 || aLogical.mHeight <= 0)
 		return;
 
@@ -534,7 +526,7 @@ void SexyAppBase::SetTextInputRect(const Rect& theRect)
 	aRect.y = (theRect.mY - aLogical.mY) * aPresent.mHeight / aLogical.mHeight + aPresent.mY;
 	aRect.w = theRect.mWidth * aPresent.mWidth / aLogical.mWidth;
 	aRect.h = theRect.mHeight * aPresent.mHeight / aLogical.mHeight;
-	SDL_SetTextInputRect(&aRect);
+	SDL_SetTextInputArea(mWindow.get(), &aRect, 0);
 }
 
 bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
@@ -554,7 +546,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 			}
 			mLastUserInputTick = mLastTimerTime;
 			mWidgetManager->KeyDown(static_cast<KeyCode>(aPendingKey));
-			return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+			return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 		}
 
 		int aPendingChar = WasmPopSoftKeyboardChar();
@@ -577,7 +569,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 			}
 			mLastUserInputTick = mLastTimerTime;
 			mWidgetManager->KeyText(aPendingText);
-			return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+			return WasmHasSoftKeyboardEvents() || SDL_HasEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 		}
 	}
 	else
@@ -598,109 +590,98 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 			// Input is replayed from the demo stream; only window-management events are handled
 			switch (event.type)
 			{
-				case SDL_QUIT:
+				case SDL_EVENT_QUIT:
+				case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 					CloseRequestAsync();
 					break;
 
-				case SDL_WINDOWEVENT:
-					if (event.window.event == SDL_WINDOWEVENT_CLOSE)
-						CloseRequestAsync();
-					else if (event.window.event == SDL_WINDOWEVENT_RESIZED)
-					{
-						mGLInterface->UpdateViewport();
-						mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
-						mWidgetManager->MarkAllDirty();
-					}
+				case SDL_EVENT_WINDOW_RESIZED:
+				case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+					mGLInterface->UpdateViewport();
+					mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
+					mWidgetManager->MarkAllDirty();
 					break;
 			}
 
-			return SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+			return SDL_HasEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 		}
 
 		switch(event.type)
 		{
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
+			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 				CloseRequestAsync();
 				break;
 
-			case SDL_APP_WILLENTERBACKGROUND:
+			case SDL_EVENT_WILL_ENTER_BACKGROUND:
 				mMinimized = true;
 				RehupFocus();
 				break;
 
-			case SDL_APP_DIDENTERFOREGROUND:
+			case SDL_EVENT_DID_ENTER_FOREGROUND:
 				mMinimized = false;
 				RehupFocus();
 				mWidgetManager->MarkAllDirty();
 				break;
 
-			case SDL_WINDOWEVENT:
-				switch(event.window.event)
+			case SDL_EVENT_WINDOW_RESIZED:
+			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+				mGLInterface->UpdateViewport();
+				mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
+				mWidgetManager->MarkAllDirty();
+				break;
+
+			case SDL_EVENT_WINDOW_MINIMIZED:
+				mMinimized = true;
+				RehupFocus();
+				break;
+
+			case SDL_EVENT_WINDOW_RESTORED:
+				mMinimized = false;
+				RehupFocus();
+				mWidgetManager->MarkAllDirty();
+				break;
+
+			case SDL_EVENT_WINDOW_FOCUS_GAINED:
+			case SDL_EVENT_WINDOW_FOCUS_LOST:
+				mActive = event.type == SDL_EVENT_WINDOW_FOCUS_GAINED;
+				RehupFocus();
+				break;
+
+			case SDL_EVENT_WINDOW_MOUSE_ENTER:
+				if (!mMouseIn)
 				{
-					case SDL_WINDOWEVENT_CLOSE:
-						CloseRequestAsync();
-						break;
-
-					case SDL_WINDOWEVENT_RESIZED:
-						mGLInterface->UpdateViewport();
-						mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
-						mWidgetManager->MarkAllDirty();
-						break;
-
-					case SDL_WINDOWEVENT_MINIMIZED:
-						mMinimized = true;
-						RehupFocus();
-						break;
-
-					case SDL_WINDOWEVENT_RESTORED:
-						mMinimized = false;
-						RehupFocus();
-						mWidgetManager->MarkAllDirty();
-						break;
-
-					case SDL_WINDOWEVENT_FOCUS_GAINED:
-					case SDL_WINDOWEVENT_FOCUS_LOST:
-						mActive = event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED;
-						RehupFocus();
-						break;
-
-					case SDL_WINDOWEVENT_ENTER:
-						if (!mMouseIn)
-						{
-							int x, y;
-							SDL_GetMouseState(&x, &y);
-							mWidgetManager->RemapMouse(x, y);
-							mMouseIn = true;
-							mWidgetManager->MouseMove(x, y);
-							EnforceCursor();
-						}
-						break;
-
-					case SDL_WINDOWEVENT_LEAVE:
-						if (mMouseIn)
-						{
-							mWidgetManager->MouseExit(mWidgetManager->mLastMouseX, mWidgetManager->mLastMouseY);
-							mMouseIn = false;
-							EnforceCursor();
-						}
-						break;
+					float x, y;
+					SDL_GetMouseState(&x, &y);
+					int aX = static_cast<int>(x), aY = static_cast<int>(y);
+					mWidgetManager->RemapMouse(aX, aY);
+					mMouseIn = true;
+					mWidgetManager->MouseMove(aX, aY);
+					EnforceCursor();
 				}
 				break;
 
-			case SDL_MOUSEWHEEL:
-			{
-				mLastUserInputTick = mLastTimerTime;
-				mWidgetManager->MouseWheel(event.wheel.y);
+			case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+				if (mMouseIn)
+				{
+					mWidgetManager->MouseExit(mWidgetManager->mLastMouseX, mWidgetManager->mLastMouseY);
+					mMouseIn = false;
+					EnforceCursor();
+				}
 				break;
-			}
 
-			case SDL_MOUSEMOTION:
+			case SDL_EVENT_MOUSE_WHEEL:
+				mLastUserInputTick = mLastTimerTime;
+				mWidgetManager->MouseWheel(event.wheel.integer_y);
+				break;
+
+			case SDL_EVENT_MOUSE_MOTION:
 			{
 				if (!mMouseIn)
 					mMouseIn = true;
 
-				int x = event.motion.x;
-				int y = event.motion.y;
+				int x = static_cast<int>(event.motion.x);
+				int y = static_cast<int>(event.motion.y);
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
@@ -709,13 +690,13 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				break;
 			}
 
-			case SDL_MOUSEBUTTONDOWN:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			{
 				if (!mMouseIn)
 					mMouseIn = true;
 
-				int x = event.button.x;
-				int y = event.button.y;
+				int x = static_cast<int>(event.button.x);
+				int y = static_cast<int>(event.button.y);
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
@@ -732,13 +713,13 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				break;
 			}
 
-			case SDL_MOUSEBUTTONUP:
+			case SDL_EVENT_MOUSE_BUTTON_UP:
 			{
 				if (!mMouseIn)
 					mMouseIn = true;
 
-				int x = event.button.x;
-				int y = event.button.y;
+				int x = static_cast<int>(event.button.x);
+				int y = static_cast<int>(event.button.y);
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
@@ -753,20 +734,20 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				break;
 			}
 
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 			{
 				mLastUserInputTick = mLastTimerTime;
 
 				if (mAllowAltEnter &&
-					event.key.repeat == 0 &&
-					(event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER) &&
-					(event.key.keysym.mod & KMOD_ALT))
+					!event.key.repeat &&
+					(event.key.key == SDLK_RETURN || event.key.key == SDLK_KP_ENTER) &&
+					(event.key.mod & SDL_KMOD_ALT))
 				{
 					SwitchScreenMode(!mIsWindowed);
 					break;
 				}
 
-				mWidgetManager->KeyDown(SDLKeyToKeyCode(event.key.keysym.sym));
+				mWidgetManager->KeyDown(SDLKeyToKeyCode(event.key.key));
 
 				char aSynthesizedChar = 0;
 				if (SDLSynthesizeAsciiCharFromKeyDown(event.key, aSynthesizedChar))
@@ -775,17 +756,17 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				break;
 			}
 
-			case SDL_KEYUP:
+			case SDL_EVENT_KEY_UP:
 				mLastUserInputTick = mLastTimerTime;
-				mWidgetManager->KeyUp(SDLKeyToKeyCode(event.key.keysym.sym));
+				mWidgetManager->KeyUp(SDLKeyToKeyCode(event.key.key));
 				break;
 
-			case SDL_TEXTINPUT:
+			case SDL_EVENT_TEXT_INPUT:
 				mLastUserInputTick = mLastTimerTime;
 				mWidgetManager->KeyText(std::string_view(event.text.text));
 				break;
 		}
 	}
 
-	return SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+	return SDL_HasEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 }

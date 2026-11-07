@@ -1,10 +1,7 @@
 /*
- * Portions of this file are based on the PopCap Games Framework
- * Copyright (C) 2005-2009 PopCap Games, Inc.
- *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
- * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
+ * SPDX-License-Identifier: LGPL-3.0-or-later
  *
  * This file is part of PvZ-Portable.
  *
@@ -26,86 +23,58 @@
 #define __SDLSOUNDINSTANCE_H__
 
 #include "SoundInstance.h"
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL3/SDL.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 namespace Sexy
 {
 
 class SDLSoundManager;
-class SDLSoundInstance;
-
-// SDL_mixer chunk pitching
-// https://gist.github.com/hydren/ea794e65e95c7713c00c88f74b71f8b1
-struct SDLSoundPitchHandler
-{
-	SDLSoundInstance* self;
-	const Mix_Chunk* chunk;
-	const float* speed;  /* ptr to the desired playback speed */
-	float position;  /* current position of the sound, in ms */
-	int altered;   /* false if this playback has never been pitched. */
-
-	// read-only!
-	int loop;       /* whether this is a looped playback */
-	int duration;   /* the duration of the sound, in ms */
-	int chunk_size;  /* the size of the sound, as a number of indexes (or sample points). thinks of this as a array size when using the proper array type (instead of just Uint8*). */
-	int self_halt;   /* flags whether playback should be halted by this callback when playback is finished */
-};
 
 class SDLSoundInstance : public SoundInstance
 {
 	friend class SDLSoundManager;
 
 protected:
-	SDLSoundManager*		mSoundManagerP;
-	Mix_Chunk*				mMixChunk;
-	bool					mAutoRelease;
-	bool					mHasPlayed;
-	bool					mReleased;
-	int						mReservedChannel;
-	int						mChannel;
+	SDLSoundManager* mSoundManagerP;
+	MIX_Audio* mAudio;
+	MIX_Track* mTrack;
+	int mDurationMs;
+	bool mAutoRelease;
+	bool mHasPlayed;
+	bool mReleased;
 
-	int						mBasePan;
-	double					mBaseVolume;
+	int mBasePan;
+	double mBaseVolume;
+	int mPan;
+	double mVolume;
+	float mPitch;
 
-	int						mPan;
-	double					mVolume;
-	float					mPitch;
-	SDLSoundPitchHandler	mPitchHandler;
-
-	uint32_t				mDefaultFrequency;
-
-	uint					mDemoEndUpdateCount; // demo sessions: first update tick at which playback is considered finished; 0 = not playing
-	bool					mDemoLooping; // demo sessions: looping flag of the current playback
+	uint mDemoEndUpdateCount;
+	bool mDemoLooping;
 
 protected:
-	void					RehupVolume();
-	void					RehupPan();
-	uint16_t				FormatSampleSize(uint16_t format);
-	int						GetChunkDurationMS(int chunkSize);
-	void					CreateSoundPitchHandler(const Mix_Chunk* chunk, const float* speed, int loop, int self_halt);
-	static void				PitchHandlerFuncCallback(int mix_channel, void* stream, int length, void* user_data);
+	void RehupVolume();
+	void RehupPan();
 
 public:
-	SDLSoundInstance(SDLSoundManager* theSoundManager, Mix_Chunk* theSourceSound, int theReservedChannel = -1);
+	SDLSoundInstance(SDLSoundManager* theSoundManager, MIX_Audio* theAudio, int theDurationMs = 0);
 	~SDLSoundInstance() override;
-	void					Release() override;
+	void Release() override;
 
-	void					SetBaseVolume(double theBaseVolume) override;
-	void					SetBasePan(int theBasePan) override;
+	void SetBaseVolume(double theBaseVolume) override;
+	void SetBasePan(int theBasePan) override;
+	void AdjustPitch(double theNumSteps) override;
+	void SetVolume(double theVolume) override;
+	void SetPan(int thePosition) override;
 
-	void					AdjustPitch(double theNumSteps) override;
-
-	void					SetVolume(double theVolume) override;
-	void					SetPan(int thePosition) override; //-hundredth db to +hundredth db = left to right
-
-	bool					Play(bool looping, bool autoRelease) override;
-	void					Stop() override;
-	bool					IsPlaying() override;
-	bool					IsReleased() override;
-	double					GetVolume() override;
+	bool Play(bool looping, bool autoRelease) override;
+	void Stop() override;
+	bool IsPlaying() override;
+	bool IsReleased() override;
+	double GetVolume() override;
 };
 
 }
 
-#endif //__SOUNDINSTANCE_H__
+#endif //__SDLSOUNDINSTANCE_H__

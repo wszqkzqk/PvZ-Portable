@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id 'com.android.application'
 }
@@ -8,8 +10,48 @@ configurations.all {
     exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
 }
 
-// -PusePrebuiltLibs=true packages prebuilt jniLibs (CI); otherwise build via CMake.
+// -PusePrebuiltLibs=true packages prebuilt native libraries; otherwise build via CMake.
 def prebuilt = project.hasProperty('usePrebuiltLibs') && project.usePrebuiltLibs.toBoolean()
+def vcpkgRoot = System.getenv('VCPKG_ROOT')
+def androidNdk = System.getenv('ANDROID_NDK') ?: System.getenv('ANDROID_NDK_HOME') ?: System.getenv('ANDROID_NDK_ROOT')
+def sdlJavaDir = layout.buildDirectory.dir('sdl3-src/android-project/app/src/main/java').get().asFile
+def sdlVersionFile = new File(sdlJavaDir, '.pvz-version')
+
+tasks.register('downloadSdl3Java') {
+    def config = new JsonSlurper().parseText(file("${rootDir}/../vcpkg-configuration.json").text)
+    def version = { ->
+        if (!vcpkgRoot) {
+            throw new GradleException('Set VCPKG_ROOT before building Android.')
+        }
+        def output = providers.exec {
+            commandLine 'git', '-C', vcpkgRoot, 'show', "${config['default-registry'].baseline}:ports/sdl3/vcpkg.json"
+        }.standardOutput.asText.get()
+        def versionLine = output.readLines().find { it.trim().startsWith('"version":') }
+        if (!versionLine) {
+            throw new GradleException('Could not determine SDL3 version from the vcpkg baseline.')
+        }
+        return versionLine.split(':')[1].trim().replaceAll('[",]', '')
+    }()
+    inputs.property('sdlVersion', version)
+    onlyIf { !sdlJavaDir.exists() || !sdlVersionFile.exists() || sdlVersionFile.text.trim() != version }
+    doFirst {
+        delete sdlJavaDir
+        def archive = new File(temporaryDir, "SDL3-${version}.tar.gz")
+        ant.get(src: "https://github.com/libsdl-org/SDL/releases/download/release-${version}/SDL3-${version}.tar.gz", dest: archive)
+        ant.untar(src: archive, compression: 'gzip', dest: temporaryDir)
+        copy {
+            from("${temporaryDir}/SDL3-${version}/android-project/app/src/main/java")
+            into sdlJavaDir
+        }
+        sdlVersionFile.text = version
+    }
+}
+
+afterEvaluate {
+    tasks.named('preBuild') {
+        dependsOn('downloadSdl3Java')
+    }
+}
 
 // Version from git, mirroring archlinux/PKGBUILD's pkgver(); fall back to 0.1/1 without git or tags.
 def gitVersionName = {
@@ -54,6 +96,16 @@ android {
             externalNativeBuild {
                 cmake {
                     def args = ["-DCMAKE_BUILD_TYPE=Release"]
+                    if (vcpkgRoot) {
+                        args.add("-DCMAKE_TOOLCHAIN_FILE=${vcpkgRoot}/scripts/buildsystems/vcpkg.cmake")
+                        args.add("-DVCPKG_OVERLAY_TRIPLETS=${rootDir}/../CMake/triplets")
+                        args.add("-DVCPKG_TARGET_TRIPLET=arm64-android")
+                        if (androidNdk) {
+                            args.add("-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${androidNdk}/build/cmake/android.toolchain.cmake")
+                        } else {
+                            args.add("-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${android.ndkDirectory}/build/cmake/android.toolchain.cmake")
+                        }
+                    }
                     if (project.hasProperty('cmakeArgs')) {
                         args.addAll(project.cmakeArgs.split(','))
                     }
@@ -96,7 +148,7 @@ android {
         main {
             java.srcDirs = [
                 'src/main/java',
-                "${project.rootDir}/../sdl2-src/android-project/app/src/main/java"
+                sdlJavaDir
             ]
         }
     }
