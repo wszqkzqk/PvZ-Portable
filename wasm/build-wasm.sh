@@ -62,14 +62,13 @@ if [[ "${1:-}" == "--deps" ]]; then
             git clone --depth=1 --branch "libopenmpt-${OPENMPT_TAG}" https://github.com/OpenMPT/openmpt.git "${OPENMPT_SRC}"
         fi
         cd "${OPENMPT_SRC}"
-        emmake make CONFIG=emscripten \
+        emmake make CONFIG=emscripten EMSCRIPTEN_PORTS=1 \
             STATIC_LIB=1 SHARED_LIB=0 \
             EXAMPLES=0 OPENMPT123=0 TEST=0 \
-            NO_ZLIB=1 NO_MPG123=1 NO_OGG=1 NO_VORBIS=1 NO_VORBISFILE=1 \
             NO_PORTAUDIO=1 NO_PORTAUDIOCPP=1 NO_PULSEAUDIO=1 \
             NO_SDL2=1 NO_FLAC=1 NO_SNDFILE=1 \
             -j"${NPROC}"
-        emmake make CONFIG=emscripten \
+        emmake make CONFIG=emscripten EMSCRIPTEN_PORTS=1 \
             STATIC_LIB=1 SHARED_LIB=0 \
             EXAMPLES=0 OPENMPT123=0 TEST=0 \
             PREFIX="${OPENMPT_PREFIX}" install
@@ -91,11 +90,6 @@ if [[ "${1:-}" == "--deps" ]]; then
         emcmake cmake -S "${MIXER_SRC}" -B "${MIXER_BUILD}" -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="${MIXER_PREFIX}" \
-            -DCMAKE_C_FLAGS="-sUSE_VORBIS=1" \
-            -DCMAKE_EXE_LINKER_FLAGS="-sUSE_VORBIS=1" \
-            -DVorbis_vorbisfile_LIBRARY="${SYSROOT}/lib/libvorbis.a" \
-            -DVorbis_vorbisfile_INCLUDE_PATH="${SYSROOT}/include" \
-            -DVorbis_vorbisfile_LINK_OPTIONS="-sUSE_OGG=1" \
             -DSDLMIXER_VENDORED=OFF \
             -DSDLMIXER_TESTS=OFF \
             -DSDLMIXER_EXAMPLES=OFF \
@@ -104,8 +98,8 @@ if [[ "${1:-}" == "--deps" ]]; then
             -DSDLMIXER_MOD=OFF -DSDLMIXER_MIDI=OFF \
             -DSDLMIXER_OPUS=OFF -DSDLMIXER_WAVPACK=OFF \
             -DSDLMIXER_MP3_MPG123=OFF \
-            -DSDLMIXER_VORBIS_STB=OFF \
-            -DSDLMIXER_VORBIS_VORBISFILE=ON
+            -DSDLMIXER_VORBIS_STB=ON \
+            -DSDLMIXER_VORBIS_VORBISFILE=OFF
         cmake --build "${MIXER_BUILD}" -j"${NPROC}"
         cmake --install "${MIXER_BUILD}"
     fi
