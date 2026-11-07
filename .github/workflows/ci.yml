@@ -82,7 +82,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          dkp-pacman -Sy --noconfirm --needed \
+          dkp-pacman -S --noconfirm --needed \
             switch-mesa \
             switch-libdrm_nouveau \
             switch-libpng \
