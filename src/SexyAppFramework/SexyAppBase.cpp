@@ -189,8 +189,16 @@ SexyAppBase::SexyAppBase()
 	mResourceDir = aDocuments != nullptr ? aDocuments : "";
 #elif defined(__OHOS__)
 	// HarmonyOS: SDL_GetBasePath() is "assets://", which fopen() can't open; resources are imported into the sandbox pref dir.
-	const char* aPrefPath = SDL_GetPrefPath("io.github.wszqkzqk", "PvZPortable");
-	mResourceDir = aPrefPath != nullptr ? aPrefPath : "";
+	char* aPrefPath = SDL_GetPrefPath("io.github.wszqkzqk", "PvZPortable");
+	if (aPrefPath)
+	{
+		mResourceDir = aPrefPath;
+		SDL_free(aPrefPath);
+	}
+	else
+	{
+		mResourceDir = "";
+	}
 #elif defined(__EMSCRIPTEN__)
 	mResourceDir = "/";
 #else

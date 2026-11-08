@@ -22,7 +22,7 @@
 #include "OhosBridge.h"
 
 #include <napi/native_api.h>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <mutex>
 
 static std::mutex gTerminateMutex;
@@ -111,14 +111,14 @@ static napi_value SendBackKey([[maybe_unused]] napi_env theEnv, [[maybe_unused]]
 		return nullptr;
 
 	SDL_Event anEvent{};
-	anEvent.type = SDL_KEYDOWN;
-	anEvent.key.state = SDL_PRESSED;
-	anEvent.key.keysym.scancode = SDL_SCANCODE_AC_BACK;
-	anEvent.key.keysym.sym = SDLK_AC_BACK;
+	anEvent.type = SDL_EVENT_KEY_DOWN;
+	anEvent.key.scancode = SDL_SCANCODE_AC_BACK;
+	anEvent.key.key = SDLK_AC_BACK;
+	anEvent.key.down = true;
 	SDL_PushEvent(&anEvent);
 
-	anEvent.type = SDL_KEYUP;
-	anEvent.key.state = SDL_RELEASED;
+	anEvent.type = SDL_EVENT_KEY_UP;
+	anEvent.key.down = false;
 	SDL_PushEvent(&anEvent);
 	return nullptr;
 }
