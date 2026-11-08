@@ -727,7 +727,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up HarmonyOS command line tools
-      uses: libsdl-org/SDL/.github/actions/setup-harmonyos-toolchain@c17963b8ff64ebd51cbc0bac7389dd48a57c1786
+      uses: libsdl-org/SDL/.github/actions/setup-harmonyos-toolchain@main
 
     - name: Configure HarmonyOS SDK environment
       run: |

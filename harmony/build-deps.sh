@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prepares native dependencies for the HarmonyOS build in harmony/deps/:
-#   - SDL3 (upstream, with its HarmonyOS backend) and sdl2-compat sources, built by the HAP's CMake;
+#   - SDL3 and SDL3_mixer sources, built by the HAP's CMake;
 #   - libpng, libjpeg-turbo and libopenmpt, cross-compiled here as static libraries per ABI.
 #
 # Usage: harmony/build-deps.sh [abi...]   (default: arm64-v8a; x86_64 is the emulator ABI)
@@ -15,9 +15,18 @@ DEPS_DIR="$SCRIPT_DIR/deps"
 SRC_DIR="$DEPS_DIR/src"
 WORK_DIR="$DEPS_DIR/work"
 
-# Follow upstream main by default; set explicit commits only when reproducing a build or debugging.
+latest_release_tag() {
+	git ls-remote --tags "https://github.com/$1.git" 'refs/tags/release-*' \
+		| sed 's|.*refs/tags/release-||' \
+		| grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' \
+		| sort -t. -k1,1n -k2,2n -k3,3n \
+		| tail -1
+}
+
+# Follow upstream main while OHOS support is unreleased; set explicit commits only when reproducing a build or debugging.
 SDL3_COMMIT=${SDL3_COMMIT:-main}
-SDL2_COMPAT_COMMIT=${SDL2_COMPAT_COMMIT:-main}
+SDL3_MIXER_TAG=${SDL3_MIXER_TAG:-$(latest_release_tag libsdl-org/SDL_mixer)}
+SDL3_MIXER_TAG=${SDL3_MIXER_TAG:-3.2.4}
 OPENMPT_VERSION=${OPENMPT_VERSION:-0.8.4}
 LIBPNG_VERSION=${LIBPNG_VERSION:-1.6.58}
 JPEG_TURBO_VERSION=${JPEG_TURBO_VERSION:-3.1.3}
@@ -105,9 +114,9 @@ fetch_tarball() {
 
 mkdir -p "$SRC_DIR"
 
-echo "==> Fetching SDL3 ($SDL3_COMMIT) and sdl2-compat ($SDL2_COMPAT_COMMIT)"
+echo "==> Fetching SDL3 ($SDL3_COMMIT) and SDL3_mixer ($SDL3_MIXER_TAG)"
 fetch_git_commit https://github.com/libsdl-org/SDL.git "$SDL3_COMMIT" "$SRC_DIR/SDL"
-fetch_git_commit https://github.com/libsdl-org/sdl2-compat.git "$SDL2_COMPAT_COMMIT" "$SRC_DIR/sdl2-compat"
+fetch_git_commit https://github.com/libsdl-org/SDL_mixer.git "release-${SDL3_MIXER_TAG}" "$SRC_DIR/SDL3_mixer"
 
 echo "==> Fetching libpng $LIBPNG_VERSION, libjpeg-turbo $JPEG_TURBO_VERSION, libopenmpt $OPENMPT_VERSION"
 fetch_tarball "https://github.com/pnggroup/libpng/archive/refs/tags/v${LIBPNG_VERSION}.tar.gz" "$SRC_DIR/libpng"
