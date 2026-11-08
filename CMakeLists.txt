@@ -134,7 +134,7 @@ if(EMSCRIPTEN AND PVZP_SDL3_MIXER_SOURCE_DIR)
 	include(CMake/EmscriptenSDL3.cmake)
 	add_subdirectory("${PVZP_SDL3_MIXER_SOURCE_DIR}" "${PROJECT_BINARY_DIR}/SDL3_mixer")
 else()
-	find_package(SDL3 CONFIG REQUIRED)
+	find_package(SDL3 3.2.12 CONFIG REQUIRED)
 	find_package(SDL3_mixer CONFIG REQUIRED)
 endif()
 
