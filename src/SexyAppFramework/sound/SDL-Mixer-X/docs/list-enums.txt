@@ -1,6 +1,0 @@
-@node Mix_Fading
-@node Mix_MusicType
-@node Mix_MIDI_Device
-@node Mix_ADLMIDI_VolumeModel
-@node Mix_ADLMIDI_Emulator
-@node Mix_OPNMIDI_Emulator

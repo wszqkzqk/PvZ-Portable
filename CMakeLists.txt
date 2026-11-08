@@ -52,6 +52,37 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 )
 
 option(LOW_MEMORY "Enable low memory mode" OFF)
+if(VCPKG_TOOLCHAIN)
+	find_package(libopenmpt CONFIG REQUIRED)
+	set(OPENMPT_LIB libopenmpt::libopenmpt)
+else()
+	find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
+	find_path(OPENMPT_INCLUDE_DIR libopenmpt/libopenmpt.h REQUIRED)
+	set(OPENMPT_LIB ${OPENMPT_LIBRARY})
+	if(NOT EMSCRIPTEN AND NOT NINTENDO_SWITCH AND OPENMPT_LIBRARY MATCHES "\\${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+		include(CheckCXXSourceCompiles)
+		include(CMakePushCheckState)
+		cmake_push_check_state()
+		set(CMAKE_REQUIRED_INCLUDES ${OPENMPT_INCLUDE_DIR})
+		set(CMAKE_REQUIRED_LIBRARIES ${OPENMPT_LIBRARY})
+		check_cxx_source_compiles("#include <libopenmpt/libopenmpt.h>
+int main() {
+	return openmpt_module_create_from_memory2(0, 0, 0, 0, 0, 0, 0, 0, 0) != 0;
+}" OPENMPT_LINKS_STANDALONE)
+		cmake_pop_check_state()
+		if(NOT OPENMPT_LINKS_STANDALONE)
+			find_library(MPG123_LIBRARY NAMES mpg123 libmpg123)
+			find_library(VORBISFILE_LIBRARY NAMES vorbisfile libvorbisfile)
+			find_library(VORBIS_LIBRARY NAMES vorbis libvorbis)
+			find_library(OGG_LIBRARY NAMES ogg libogg)
+			if(NOT MPG123_LIBRARY OR NOT VORBISFILE_LIBRARY OR NOT VORBIS_LIBRARY OR NOT OGG_LIBRARY)
+				message(FATAL_ERROR "Static libopenmpt does not link standalone and some of its dependencies were not found (see the configure log for details)")
+			endif()
+			list(APPEND OPENMPT_LIB ${MPG123_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARY})
+		endif()
+	endif()
+endif()
+
 if(NINTENDO_SWITCH)
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/switch/Window.cpp
@@ -61,10 +92,6 @@ if(NINTENDO_SWITCH)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/switch
 	)
 elseif(EMSCRIPTEN)
-	# libopenmpt has no Emscripten port; must be pre-built with emmake.
-	find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
-	set(OPENMPT_LIB ${OPENMPT_LIBRARY})
-
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/Window.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default/Input.cpp
@@ -73,36 +100,6 @@ elseif(EMSCRIPTEN)
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten
 	)
 else()
-	if(VCPKG_TOOLCHAIN)
-		find_package(libopenmpt CONFIG REQUIRED)
-		set(OPENMPT_LIB libopenmpt::libopenmpt)
-	else()
-		find_library(OPENMPT_LIBRARY NAMES openmpt libopenmpt REQUIRED)
-		set(OPENMPT_LIB ${OPENMPT_LIBRARY})
-		if(OPENMPT_LIBRARY MATCHES "\\${CMAKE_STATIC_LIBRARY_SUFFIX}$")
-			find_path(OPENMPT_INCLUDE_DIR libopenmpt/libopenmpt.h REQUIRED)
-			include(CheckCXXSourceCompiles)
-			include(CMakePushCheckState)
-			cmake_push_check_state()
-			set(CMAKE_REQUIRED_INCLUDES ${OPENMPT_INCLUDE_DIR})
-			set(CMAKE_REQUIRED_LIBRARIES ${OPENMPT_LIBRARY})
-			check_cxx_source_compiles("#include <libopenmpt/libopenmpt.h>
-int main() {
-	return openmpt_module_create_from_memory2(0, 0, 0, 0, 0, 0, 0, 0, 0) != 0;
-}" OPENMPT_LINKS_STANDALONE)
-			cmake_pop_check_state()
-			if(NOT OPENMPT_LINKS_STANDALONE)
-				find_library(MPG123_LIBRARY NAMES mpg123 libmpg123)
-				find_library(VORBISFILE_LIBRARY NAMES vorbisfile libvorbisfile)
-				find_library(VORBIS_LIBRARY NAMES vorbis libvorbis)
-				find_library(OGG_LIBRARY NAMES ogg libogg)
-				if(NOT MPG123_LIBRARY OR NOT VORBISFILE_LIBRARY OR NOT VORBIS_LIBRARY OR NOT OGG_LIBRARY)
-					message(FATAL_ERROR "Static libopenmpt does not link standalone and some of its dependencies were not found (see the configure log for details)")
-				endif()
-				list(APPEND OPENMPT_LIB ${MPG123_LIBRARY} ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARY})
-			endif()
-		endif()
-	endif()
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default/Window.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default/Input.cpp
@@ -125,55 +122,31 @@ option(CONSOLE "Show console on Windows" ${WIN_CONSOLE_DEFAULT})
 option(DO_FIX_BUGS "Define DO_FIX_BUGS macro (Community fixes for original game bugs of 1.2.0.1073 GOTY Edition)" OFF)
 
 if(EMSCRIPTEN)
-	list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_SDL=2 -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -fexceptions")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -sUSE_VORBIS=1 -sUSE_MPG123=1")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_ZLIB=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -sUSE_VORBIS=1 -sUSE_MPG123=1 -fexceptions")
 else()
 	find_package(Threads REQUIRED)
 	find_package(ZLIB REQUIRED)
 	find_package(JPEG REQUIRED)
 	find_package(PNG REQUIRED)
-	find_package(SDL2 REQUIRED)
 endif()
-
-function(_pvz_patch_sdl2_iface_libs target)
-	get_target_property(_libs ${target} INTERFACE_LINK_LIBRARIES)
-	if(NOT _libs)
-		return()
-	endif()
-	set(_patched)
-	foreach(_lib IN LISTS _libs)
-		if(_lib STREQUAL "SDL2::SDL2")
-			list(APPEND _patched SDL2::SDL2-static)
-		else()
-			list(APPEND _patched "${_lib}")
-		endif()
-	endforeach()
-	set_target_properties(${target} PROPERTIES INTERFACE_LINK_LIBRARIES "${_patched}")
-endfunction()
-
-if(BUILD_STATIC AND TARGET SDL2::SDL2-static)
-	if(TARGET SDL2::SDL2main)
-		_pvz_patch_sdl2_iface_libs(SDL2::SDL2main)
-	endif()
-	set(SDL2_LINK_TARGET SDL2::SDL2-static)
+if(EMSCRIPTEN AND PVZP_SDL3_MIXER_SOURCE_DIR)
+	include(CMake/EmscriptenSDL3.cmake)
+	add_subdirectory("${PVZP_SDL3_MIXER_SOURCE_DIR}" "${PROJECT_BINARY_DIR}/SDL3_mixer")
 else()
-	set(SDL2_LINK_TARGET SDL2::SDL2)
+	find_package(SDL3 3.2.12 CONFIG REQUIRED)
+	find_package(SDL3_mixer CONFIG REQUIRED)
 endif()
 
-set(SDL_MIXER_X_STATIC ON CACHE BOOL "Build static library of SDL Mixer X")
-set(SDL_MIXER_X_SHARED OFF CACHE BOOL "Build shared library of SDL Mixer X")
-set(USE_MIDI OFF CACHE BOOL "SDL Mixer X midi")
-set(USE_MODPLUG OFF CACHE BOOL "SDL Mixer X modplug")
-set(USE_XMP OFF CACHE BOOL "SDL Mixer X xmp")
-set(USE_OPUS OFF CACHE BOOL "SDL Mixer X opus")
-set(USE_DRFLAC OFF CACHE BOOL "SDL Mixer X flac")
-set(USE_PXTONE OFF CACHE BOOL "SDL Mixer X pxtone")
-add_subdirectory(src/SexyAppFramework/sound/SDL-Mixer-X)
-
-# Patch SDL-Mixer-X's transitive SDL2 dep without touching vendored CMake files
-if(BUILD_STATIC AND TARGET SDL2::SDL2-static)
-	_pvz_patch_sdl2_iface_libs(SDL2_mixer_ext_Static)
+set(PVZP_SDL3_TARGET SDL3::SDL3)
+set(PVZP_SDL3_MIXER_TARGET SDL3_mixer::SDL3_mixer)
+if(BUILD_STATIC)
+	if(TARGET SDL3::SDL3-static)
+		set(PVZP_SDL3_TARGET SDL3::SDL3-static)
+	endif()
+	if(TARGET SDL3_mixer::SDL3_mixer-static)
+		set(PVZP_SDL3_MIXER_TARGET SDL3_mixer::SDL3_mixer-static)
+	endif()
 endif()
 
 # Android requires a shared library loaded by SDLActivity; other platforms use an executable.
@@ -187,11 +160,10 @@ endif()
 
 target_include_directories(pvz-portable PRIVATE
 	${PLAT_INCLUDES}
+	${OPENMPT_INCLUDE_DIR}
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/src/SexyAppFramework
-	${PROJECT_SOURCE_DIR}/src/SexyAppFramework/sound/SDL-Mixer-X/include
-	${SDL2_INCLUDE_DIRS}
 )
 target_compile_definitions(pvz-portable PRIVATE
 	$<$<BOOL:${PVZ_DEBUG}>:PVZ_DEBUG>
@@ -204,19 +176,21 @@ if (LOW_MEMORY)
 	target_compile_definitions(pvz-portable PRIVATE LOW_MEMORY)
 endif()
 
+target_link_libraries(pvz-portable PRIVATE
+	${PVZP_SDL3_TARGET}
+	${PVZP_SDL3_MIXER_TARGET}
+	${OPENMPT_LIB}
+)
+
 if(EMSCRIPTEN)
 	set_property(TARGET pvz-portable APPEND PROPERTY LINK_DEPENDS
 		"${CMAKE_CURRENT_SOURCE_DIR}/wasm/shell.html"
 	)
-	target_link_libraries(pvz-portable PRIVATE
-		SDL2_mixer_ext_Static
-		${OPENMPT_LIB}
-	)
 	target_link_options(pvz-portable PRIVATE
-		"SHELL:-sUSE_SDL=2"
 		"SHELL:-sUSE_ZLIB=1"
 		"SHELL:-sUSE_LIBPNG=1"
 		"SHELL:-sUSE_LIBJPEG=1"
+		"SHELL:-sUSE_VORBIS=1 -sUSE_MPG123=1"
 		"SHELL:-fexceptions"
 		"SHELL:-sASYNCIFY"
 		"SHELL:-sALLOW_MEMORY_GROWTH=1"
@@ -231,13 +205,9 @@ if(EMSCRIPTEN)
 	set_target_properties(pvz-portable PROPERTIES SUFFIX ".html")
 else()
 	target_link_libraries(pvz-portable PRIVATE
-		SDL2_mixer_ext_Static 
-		${OPENMPT_LIB} 
 		PNG::PNG
 		JPEG::JPEG
 		ZLIB::ZLIB
-		SDL2::SDL2main
-		${SDL2_LINK_TARGET}
 		Threads::Threads
 	)
 endif()

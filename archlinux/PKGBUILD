@@ -14,7 +14,8 @@ depends=(
     libopenmpt
     libpng
     libstdc++
-    sdl2-compat
+    sdl3
+    sdl3_mixer
     zlib
 )
 makedepends=(
@@ -32,7 +33,7 @@ source=(
 )
 sha256sums=('SKIP'
             'SKIP'
-            'b9dd103e31c17f867dad75af2bd901682f76e8a461e64a00b2538df2f2c584a8'
+            '3793a8b4ceac2d7dd1f0a30882d4510274ab5209fb2f736e04544c8793f9118a'
             'c06a50aedf4698d7ad1368bc69fbcdbf2f00925688353bbf4b3ef4c288d5f36b')
 
 pkgver() {

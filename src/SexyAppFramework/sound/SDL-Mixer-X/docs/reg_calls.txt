@@ -1,8 +1,0 @@
-Functions and calls:
-
-extern +DECLSPEC +((?:const )?[ \w*]+) +\*?SDLCALL +([\w\n ]+)(\((?:\w|\(|\)| |\*|_|,|\n)*\));
-
-
-Enumerations
-
-typedef enum\n? ?{(?:\w|\(|\'|\)|\/|\[|\]| |\*|\!|=|\-|_|,|\n)*} ([a-zA-Z_\-]+);

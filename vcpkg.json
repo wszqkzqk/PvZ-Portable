@@ -3,10 +3,8 @@
     "libjpeg-turbo",
     "libopenmpt",
     "libpng",
-    {
-      "name": "sdl2",
-      "platform": "!android"
-    },
+    "sdl3",
+    "sdl3-mixer",
     "zlib"
   ]
 }

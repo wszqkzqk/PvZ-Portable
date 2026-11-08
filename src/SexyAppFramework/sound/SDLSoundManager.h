@@ -1,10 +1,7 @@
 /*
- * Portions of this file are based on the PopCap Games Framework
- * Copyright (C) 2005-2009 PopCap Games, Inc.
- *
  * Copyright (C) 2026 Zhou Qiankang <wszqkzqk@qq.com>
  *
- * SPDX-License-Identifier: LGPL-3.0-or-later AND LicenseRef-PopCap
+ * SPDX-License-Identifier: LGPL-3.0-or-later
  *
  * This file is part of PvZ-Portable.
  *
@@ -28,8 +25,8 @@
 #include "SoundManager.h"
 #include <memory>
 #include <atomic>
-#include <SDL.h>
-#include <SDL_mixer_ext/SDL_mixer_ext.h>
+#include <SDL3/SDL.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 namespace Sexy
 {
@@ -41,50 +38,49 @@ class SDLSoundManager : public SoundManager
 	friend class SDLSoundInstance;
 
 protected:
-	bool					mInitializedMixer;
-	std::atomic<Mix_Chunk*>		mSourceSounds[MAX_SOURCE_SOUNDS];
-	std::string				mSourceFileNames[MAX_SOURCE_SOUNDS];
-	double					mBaseVolumes[MAX_SOURCE_SOUNDS];
-	int						mBasePans[MAX_SOURCE_SOUNDS];
-	std::unique_ptr<SDLSoundInstance>	mPlayingSounds[MAX_CHANNELS];
-	double					mMasterVolume;
-	uint64_t				mLastReleaseTick;
-	int						mMixerFreq;
-	uint16_t				mMixerFormat;
-	int						mMixerChannels;
+	MIX_Mixer* mMixer;
+	bool mInitializedMixer;
+	std::atomic<MIX_Audio*> mSourceSounds[MAX_SOURCE_SOUNDS];
+	std::atomic<int> mSourceDurationMs[MAX_SOURCE_SOUNDS];
+	std::string mSourceFileNames[MAX_SOURCE_SOUNDS];
+	double mBaseVolumes[MAX_SOURCE_SOUNDS];
+	int mBasePans[MAX_SOURCE_SOUNDS];
+	std::unique_ptr<SDLSoundInstance> mPlayingSounds[MAX_CHANNELS];
+	double mMasterVolume;
+	uint64_t mLastReleaseTick;
 
 protected:
-	int						FindFreeChannel();
-	bool					LoadAUSound(intptr_t theSfxID, const std::string& theFilename);
-	bool					DecodeSound(intptr_t theSfxID, const std::string& theFilename);
-	void					ReleaseFreeChannels();
+	int FindFreeChannel();
+	bool DecodeSound(intptr_t theSfxID, const std::string& theFilename);
+	void ReleaseFreeChannels();
 
 public:
 	SDLSoundManager();
 	~SDLSoundManager() override;
 
-	bool					Initialized() override;
+	MIX_Mixer* GetMixer() const { return mMixer; }
+	bool Initialized() override;
 
-	bool					LoadSound(intptr_t theSfxID, const std::string& theFilename) override;
-	intptr_t				LoadSound(const std::string& theFilename) override;
-	void					ReleaseSound(intptr_t theSfxID) override;
+	bool LoadSound(intptr_t theSfxID, const std::string& theFilename) override;
+	intptr_t LoadSound(const std::string& theFilename) override;
+	void ReleaseSound(intptr_t theSfxID) override;
 
-	void					SetVolume(double theVolume) override;
-	bool					SetBaseVolume(intptr_t theSfxID, double theBaseVolume) override;
-	bool					SetBasePan(intptr_t theSfxID, int theBasePan) override;
+	void SetVolume(double theVolume) override;
+	bool SetBaseVolume(intptr_t theSfxID, double theBaseVolume) override;
+	bool SetBasePan(intptr_t theSfxID, int theBasePan) override;
 
-	SoundInstance*			GetSoundInstance(intptr_t theSfxID) override;
+	SoundInstance* GetSoundInstance(intptr_t theSfxID) override;
 
-	void					ReleaseSounds() override;
-	void					ReleaseChannels() override;
+	void ReleaseSounds() override;
+	void ReleaseChannels() override;
 
-	double					GetMasterVolume() override;
-	void					SetMasterVolume(double theVolume) override;
+	double GetMasterVolume() override;
+	void SetMasterVolume(double theVolume) override;
 
-	void					Flush() override;
-	void					StopAllSounds() override;
-	intptr_t				GetFreeSoundId() override;
-	int						GetNumSounds() override;
+	void Flush() override;
+	void StopAllSounds() override;
+	intptr_t GetFreeSoundId() override;
+	int GetNumSounds() override;
 };
 
 }

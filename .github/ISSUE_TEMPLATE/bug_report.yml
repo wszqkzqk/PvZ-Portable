@@ -71,7 +71,7 @@ body:
       label: Build Dependencies (self-compiled only)
       description: >
         If you compiled from source, list the versions of the key build dependencies.
-        Include at least: compiler (GCC/Clang/MSVC), CMake, SDL2, zlib, libjpeg, libpng,
+        Include at least: compiler (GCC/Clang/MSVC), CMake, SDL3, zlib, libjpeg, libpng,
         libopenmpt.
         You can get most of these from your package manager or `pkg-config --modversion`.
     validations:

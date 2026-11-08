@@ -31,7 +31,7 @@
 #include <chrono>
 #include <fstream>
 #include <mutex>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "misc/PerfTimer.h"
 

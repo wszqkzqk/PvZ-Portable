@@ -1,9 +1,0 @@
-@node Mix_ADLMIDI_getAdLibMode
-@node Mix_ADLMIDI_setAdLibMode
-@node Mix_ADLMIDI_getLogarithmicVolumes
-@node Mix_ADLMIDI_setLogarithmicVolumes
-@node Mix_GetMusicTotalTime
-@node Mix_Timidity_addToPathList
-@node Mix_GetMidiDevice
-@node Mix_GetNextMidiDevice
-@node Mix_SetMidiDevice

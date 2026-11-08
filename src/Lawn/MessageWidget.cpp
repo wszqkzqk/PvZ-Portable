@@ -29,7 +29,7 @@
 #include "../PvzpLib/Reanimator.h"
 #include "../PvzpLib/PvzpStringFile.h"
 #include <algorithm>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 MessageWidget::MessageWidget(LawnApp* theApp)
 {
