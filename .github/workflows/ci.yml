@@ -15,6 +15,11 @@ concurrency:
 env:
   # vcpkg binary cache; restored/saved per-OS via actions/cache below
   VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg-cache,readwrite
+  VCPKG_KEEP_ENV_VARS: CFLAGS;CXXFLAGS;LDFLAGS
+  CFLAGS: -flto
+  CXXFLAGS: -flto
+  LDFLAGS: -flto
+  EMCC_CFLAGS: -flto
 
 jobs:
   build-archlinux:
@@ -51,7 +56,7 @@ jobs:
 
     - name: Build PvZ-Portable
       run: |
-        sudo -u builder bash -lc '
+        sudo -u builder --preserve-env=CFLAGS,CXXFLAGS,LDFLAGS bash -lc '
           mkdir build
           cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build
@@ -163,7 +168,7 @@ jobs:
       with:
         path: ~/pvz-deps
         # Bump the -vN suffix when the dep build recipe changes
-        key: linux-static-deps-v7-${{ env.SDL3_TAG }}-${{ env.SDL3_MIXER_TAG }}-${{ env.OGG_TAG }}-${{ env.VORBIS_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
+        key: linux-static-deps-lto-v7-${{ env.SDL3_TAG }}-${{ env.SDL3_MIXER_TAG }}-${{ env.OGG_TAG }}-${{ env.VORBIS_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
 
     - name: Build SDL3 (static)
       if: steps.deps-cache.outputs.cache-hit != 'true'
@@ -288,7 +293,7 @@ jobs:
       uses: actions/cache/save@v6
       with:
         path: ~/pvz-deps
-        key: linux-static-deps-v7-${{ env.SDL3_TAG }}-${{ env.SDL3_MIXER_TAG }}-${{ env.OGG_TAG }}-${{ env.VORBIS_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
+        key: linux-static-deps-lto-v7-${{ env.SDL3_TAG }}-${{ env.SDL3_MIXER_TAG }}-${{ env.OGG_TAG }}-${{ env.VORBIS_TAG }}-${{ env.OPENMPT_TAG }}-${{ env.LIBPNG_VERSION }}-${{ env.JPEG_TURBO_VERSION }}
 
     - name: Build PvZ-Portable
       run: |
@@ -352,6 +357,10 @@ jobs:
   build-windows-msvc-x64:
     name: Build for Windows (MSVC x64)
     runs-on: windows-latest
+    env:
+      CFLAGS: /GL
+      CXXFLAGS: /GL
+      LDFLAGS: /LTCG
     steps:
     - uses: actions/checkout@v6
       with:
@@ -365,7 +374,7 @@ jobs:
       run: |
         $tc = $env:VCToolsVersion
         if (-not $tc) { $tc = "unknown" }
-        echo "VCPKG_TC=msvc-$tc" >> $env:GITHUB_ENV
+        echo "VCPKG_TC=msvc-$tc-lto" >> $env:GITHUB_ENV
 
     - name: Restore vcpkg binary cache
       uses: actions/cache@v6
@@ -375,7 +384,6 @@ jobs:
         key: vcpkg-windows-x64-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
         restore-keys: |
           vcpkg-windows-x64-${{ env.VCPKG_TC }}-
-          vcpkg-windows-x64-
 
     - name: Install Ninja
       run: choco install ninja -y
@@ -404,6 +412,10 @@ jobs:
   build-windows-msvc-x86:
     name: Build for Windows (MSVC x86)
     runs-on: windows-latest
+    env:
+      CFLAGS: /GL
+      CXXFLAGS: /GL
+      LDFLAGS: /LTCG
     steps:
     - uses: actions/checkout@v6
       with:
@@ -419,7 +431,7 @@ jobs:
       run: |
         $tc = $env:VCToolsVersion
         if (-not $tc) { $tc = "unknown" }
-        echo "VCPKG_TC=msvc-$tc" >> $env:GITHUB_ENV
+        echo "VCPKG_TC=msvc-$tc-lto" >> $env:GITHUB_ENV
 
     - name: Restore vcpkg binary cache
       uses: actions/cache@v6
@@ -429,7 +441,6 @@ jobs:
         key: vcpkg-windows-x86-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
         restore-keys: |
           vcpkg-windows-x86-${{ env.VCPKG_TC }}-
-          vcpkg-windows-x86-
 
     - name: Install Ninja
       run: choco install ninja -y
@@ -662,7 +673,7 @@ jobs:
     - name: Get toolchain ID for cache key
       run: |
         NDK_VER=$(grep -oP 'Pkg\.Revision = \K[\d.]+' "$ANDROID_NDK/source.properties" || echo unknown)
-        echo "VCPKG_TC=ndk-$NDK_VER" >> "$GITHUB_ENV"
+        echo "VCPKG_TC=ndk-$NDK_VER-lto" >> "$GITHUB_ENV"
 
     - name: Restore vcpkg binary cache
       uses: actions/cache@v6
@@ -671,7 +682,6 @@ jobs:
         key: vcpkg-android-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMake/triplets/arm64-android.cmake') }}
         restore-keys: |
           vcpkg-android-${{ env.VCPKG_TC }}-
-          vcpkg-android-
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
@@ -705,7 +715,8 @@ jobs:
         echo "sdk.dir=$ANDROID_HOME" > local.properties
 
         gradle wrapper
-        ./gradlew assembleRelease --no-daemon
+        ./gradlew assembleRelease --no-daemon \
+          -PcmakeArgs=-DCMAKE_C_FLAGS=-flto,-DCMAKE_CXX_FLAGS=-flto,-DCMAKE_SHARED_LINKER_FLAGS=-flto
 
     - name: Copy APK
       run: |
@@ -732,7 +743,7 @@ jobs:
     - name: Get toolchain ID for cache key
       run: |
         CLANG_VER=$(clang --version | head -1 | sed -nE 's/.*version ([0-9.]+).*/\1/p')
-        echo "VCPKG_TC=clang-${CLANG_VER:-unknown}" >> "$GITHUB_ENV"
+        echo "VCPKG_TC=clang-${CLANG_VER:-unknown}-lto" >> "$GITHUB_ENV"
 
     - name: Restore vcpkg binary cache
       uses: actions/cache@v6
@@ -741,7 +752,6 @@ jobs:
         key: vcpkg-ios-${{ env.VCPKG_TC }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMake/triplets/arm64-ios.cmake') }}
         restore-keys: |
           vcpkg-ios-${{ env.VCPKG_TC }}-
-          vcpkg-ios-
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
