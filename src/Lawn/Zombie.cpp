@@ -9752,11 +9752,7 @@ void Zombie::BossRVAttack()
 {
 	RemoveColdEffects();
 	mZombiePhase = ZombiePhase::PHASE_BOSS_DROP_RV;
-#ifdef DO_FIX_BUGS
 	mTargetRow = RandRangeInt(0, mBoard->StageHas6Rows() ? 4 : 3);  // pool boss compatibility
-#else
-	mTargetRow = RandRangeInt(0, 3);
-#endif
 	mTargetCol = RandRangeInt(0, 2);
 
 	PlayZombieReanim("anim_RV_1", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 16.0f);
@@ -9817,11 +9813,7 @@ void Zombie::BossSpawnAttack()
 	case 2:     aTrackName = "anim_spawn_3";    break;
 	case 3:     aTrackName = "anim_spawn_4";    break;
 	case 4:     aTrackName = "anim_spawn_5";    break;
-#ifdef DO_FIX_BUGS
 	default:    aTrackName = "anim_spawn_5";    break;  // compromise fix for the pool-stage spawn crash without editing the animation
-#else
-	default:    PVZP_ASSERT(false);                   break;
-#endif
 	}
 	PlayZombieReanim(aTrackName, ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 12.0f);
 	mApp->PlayFoley(FoleyType::FOLEY_HYDRAULIC_SHORT);
@@ -10002,11 +9994,7 @@ void Zombie::BossHeadSpit()
 	}
 
 	mZombiePhase = ZombiePhase::PHASE_BOSS_HEAD_SPIT;
-#ifdef DO_FIX_BUGS
 	mFireballRow = RandRangeInt(0, mBoard->StageHas6Rows() ? 5 : 4);  // pool boss compatibility
-#else
-	mFireballRow = RandRangeInt(0, 4);
-#endif
 	mIsFireBall = RandRangeInt(0, 1) == 0;
 
 	const char* aTrackName;
@@ -10017,11 +10005,7 @@ void Zombie::BossHeadSpit()
 	case 2:     aTrackName = "anim_head_attack_3";      break;
 	case 3:     aTrackName = "anim_head_attack_4";      break;
 	case 4:     aTrackName = "anim_head_attack_5";      break;
-#ifdef DO_FIX_BUGS
 	default:    aTrackName = "anim_head_attack_5";      break;  // compromise fix for the pool-stage ball spit without editing the animation
-#else
-	default:    PVZP_ASSERT(false);                           break;
-#endif
 	}
 	PlayZombieReanim(aTrackName, ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 12.0f);
 
