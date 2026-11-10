@@ -434,9 +434,9 @@ function resizeCanvas() {
     var vw = container.clientWidth;
     var vh = container.clientHeight;
     // Fit 4:3 aspect ratio inside the viewport
-    var scale = Math.min(vw / canvas.width, vh / canvas.height);
-    canvas.style.width  = Math.floor(canvas.width  * scale) + 'px';
-    canvas.style.height = Math.floor(canvas.height * scale) + 'px';
+    var scale = Math.min(vw / 800, vh / 600);
+    canvas.style.width  = Math.floor(800 * scale) + 'px';
+    canvas.style.height = Math.floor(600 * scale) + 'px';
 }
 
 window.addEventListener('fullscreenchange', resizeCanvas);
