@@ -795,6 +795,11 @@ jobs:
   build-wasm:
     name: Build for WebAssembly (Emscripten)
     runs-on: ubuntu-latest
+    env:
+      CFLAGS: -Os -flto
+      CXXFLAGS: -Os -flto
+      LDFLAGS: -Os -flto
+      EMCC_CFLAGS: -Os -flto
     steps:
     - uses: actions/checkout@v6
       with:
