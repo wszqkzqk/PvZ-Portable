@@ -54,7 +54,6 @@ public:
 	void					PreTerminate() override;
 
 	void					HandleCmdLineParam(std::string_view theParamName, std::string_view theParamValue) override;
-	std::string				GetGameSEHInfo() override;
 };
 
 extern SexyApp* gSexyApp;

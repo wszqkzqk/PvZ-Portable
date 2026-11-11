@@ -456,7 +456,6 @@ public:
 	virtual std::string		GetProductVersion(const std::string& thePath);
 
 	virtual void			SEHOccured();
-	virtual std::string		GetGameSEHInfo();
 	virtual void			GetSEHWebParams(DefinesMap* theDefinesMap);
 	virtual void			Shutdown();
 
