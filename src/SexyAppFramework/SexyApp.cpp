@@ -28,6 +28,8 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <cstdio>
+#include <format>
+#include <string_view>
 
 using namespace Sexy;
 
@@ -82,13 +84,13 @@ void SexyApp::HandleCmdLineParam(std::string_view theParamName, std::string_view
 	{
 		// Just print version info and then quit
 
-		std::string aVersionString =
-			"Product: " + mProdName + "\n" +
-			"Version: " + mProductVersion + "\n" +
-			"Build Num: " + std::to_string(mBuildNum) + "\n" +
-			"Commit Date: " + mCommitDate + "\n" +
-			CLI_LICENSE_SUMMARY;
-
+		const std::string aVersionString = std::format(
+			"Product: {}\n"
+			"Version: {}\n"
+			"Build Num: {}\n"
+			"Commit Date: {}\n"
+			"{}",
+			mProdName, mProductVersion, mBuildNum, mCommitDate, CLI_LICENSE_SUMMARY);
 		std::printf("%s\n", aVersionString.c_str());
 		DoExit(0);
 	}
@@ -99,15 +101,6 @@ void SexyApp::HandleCmdLineParam(std::string_view theParamName, std::string_view
 	}
 	else
 		SexyAppBase::HandleCmdLineParam(theParamName, theParamValue);
-}
-
-std::string SexyApp::GetGameSEHInfo()
-{
-	std::string anInfoString = SexyAppBase::GetGameSEHInfo() +
-		"Build Num: " + std::to_string(mBuildNum) + "\r\n" +
-		"Commit Date: " + mCommitDate + "\r\n";
-
-	return anInfoString;
 }
 
 void SexyApp::PreDisplayHook()

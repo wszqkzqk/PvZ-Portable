@@ -1523,21 +1523,6 @@ void SexyAppBase::SEHOccured()
 	EnforceCursor();
 }
 
-std::string SexyAppBase::GetGameSEHInfo()
-{
-	int aSecLoaded = (SDL_GetTicks() - mTimeLoaded) / 1000;
-
-	std::string anInfoString =
-		"Product: " + mProdName + "\r\n" +
-		"Version: " + mProductVersion + "\r\n";
-
-	anInfoString +=
-		"Time Loaded: " + std::format("{:02}:{:02}:{:02}", (aSecLoaded/60/60), (aSecLoaded/60)%60, aSecLoaded%60) + "\r\n"
-		"Fullscreen: " + (mIsWindowed ? std::string("No") : std::string("Yes")) + "\r\n";
-
-	return anInfoString;
-}
-
 void SexyAppBase::GetSEHWebParams(DefinesMap*){}
 
 void SexyAppBase::ShutdownHook()
