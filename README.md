@@ -242,7 +242,6 @@ Pass `-D<OPTION>=ON/OFF` during the `cmake -B build` step to customize the build
     - Allow mind-controlled Jalapeno zombies to clear Dr. Zomboss's ice/fireballs and ladder placements properly.
     - Synchronize Backup Dancer animations with the Dancing Zombie (fixes the "Maid" displacement glitch).
     - Fix visual glitch when a Ladder Zombie recovers its arm.
-    - Fix Dr. Zomboss's attack (RV smash, fireball/iceball) and zombie summon row ranges on 6-lane Pool/Fog levels.
 
 For example, to build an optimized Release binary with cheat keys enabled:
 
