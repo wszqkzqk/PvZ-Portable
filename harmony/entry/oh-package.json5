@@ -1,0 +1,12 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "PvZ Portable entry module",
+  "main": "",
+  "author": "",
+  "license": "LGPL-3.0-or-later",
+  "dependencies": {
+    "libSDL3.so": "file:./src/main/cpp/types/libSDL3",
+    "libmain.so": "file:./src/main/cpp/types/libmain"
+  }
+}

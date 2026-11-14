@@ -1,0 +1,6 @@
+{
+  "name": "libmain.so",
+  "types": "./Index.d.ts",
+  "version": "1.0.0",
+  "description": "PvZ Portable native interfaces callable from ArkTS (src/SexyAppFramework/platform/ohos/OhosBridge.cpp)."
+}
