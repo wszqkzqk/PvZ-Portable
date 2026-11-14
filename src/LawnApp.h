@@ -72,7 +72,7 @@ public:
 class LawnApp : public SexyApp
 {
 public:
-	Board*							mBoard;
+	std::unique_ptr<Board>			mBoard;
 	std::unique_ptr<TitleScreen>	mTitleScreen;
 	std::unique_ptr<GameSelector>	mGameSelector;
 	std::unique_ptr<SeedChooserScreen>	mSeedChooserScreen;
@@ -141,6 +141,7 @@ public:
 	LawnApp();
 	~LawnApp() override;
 
+	Board*							GetBoard() const { return mBoard.get(); }
 	bool							KillNewOptionsDialog();
 	void							GotFocus() override;
 	void							LostFocus() override;

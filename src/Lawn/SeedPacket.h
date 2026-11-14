@@ -70,7 +70,7 @@ public:
 	int32_t			    mConveyorBeltCounter;
 
 public:
-	SeedBank();
+	SeedBank(Board* theBoard);
 
 	void			    Draw(Graphics* g);
 	bool			    MouseHitTest(int x, int y, HitResult* theHitResult);
@@ -86,7 +86,7 @@ public:
 };
 
 void				    SeedPacketDrawSeed(Graphics* g, float x, float y, SeedType theSeedType, SeedType theImitaterType, float theOffsetX, float theOffsetY, float theScale);
-void				    DrawSeedPacket(Graphics* g, float x, float y, SeedType theSeedType, SeedType theImitaterType, float thePercentDark, int theGrayness, bool theDrawCost, bool theUseCurrentCost);
+void				    DrawSeedPacket(Graphics* g, Board* theBoard, float x, float y, SeedType theSeedType, SeedType theImitaterType, float thePercentDark, int theGrayness, bool theDrawCost, bool theUseCurrentCost);
 
 
 #endif

@@ -213,9 +213,9 @@ void LawnDialog::CheckboxChecked()
 
 void LawnDialog::KeyDown(KeyCode theKey)
 {
-	if (mId == DIALOG_PAUSED && mApp->mBoard)
+	if (mId == DIALOG_PAUSED && mApp->GetBoard())
 	{
-		mApp->mBoard->DoTypingCheck(theKey);
+		mApp->GetBoard()->DoTypingCheck(theKey);
 	}
 
 	if (mId != DIALOG_ALMANAC)
@@ -469,8 +469,8 @@ GameOverDialog::GameOverDialog(const std::string& theMessage, bool theShowChalle
 	mMenuButton = MakeButton(1, this, "[MAIN_MENU_BUTTON]");
 	mMenuButton->Resize(635 - mX, -10 - mY, 163, 46);
 
-	gLawnApp->mBoard->mShowShovel = false;
-	gLawnApp->mBoard->mMenuButton->mBtnNoDraw = true;
+	mApp->GetBoard()->mShowShovel = false;
+	mApp->GetBoard()->mMenuButton->mBtnNoDraw = true;
 }
 
 GameOverDialog::~GameOverDialog() = default;
