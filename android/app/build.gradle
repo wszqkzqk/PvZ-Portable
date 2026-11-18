@@ -14,6 +14,7 @@ configurations.all {
 def prebuilt = project.hasProperty('usePrebuiltLibs') && project.usePrebuiltLibs.toBoolean()
 def vcpkgRoot = System.getenv('VCPKG_ROOT')
 def androidNdk = System.getenv('ANDROID_NDK') ?: System.getenv('ANDROID_NDK_HOME') ?: System.getenv('ANDROID_NDK_ROOT')
+def androidNdkVersion = androidNdk ? new File(androidNdk).name : null
 def sdlJavaDir = layout.buildDirectory.dir('sdl3-src/android-project/app/src/main/java').get().asFile
 def sdlVersionFile = new File(sdlJavaDir, '.pvz-version')
 
@@ -79,12 +80,15 @@ def gitVersionCode = {
 
 android {
     namespace 'io.github.wszqkzqk.pvzportable'
-    compileSdk 36
+    compileSdk 37
+    if (androidNdkVersion) {
+        ndkVersion androidNdkVersion
+    }
 
     defaultConfig {
         applicationId "io.github.wszqkzqk.pvzportable"
         minSdk 24
-        targetSdk 36
+        targetSdk 37
         versionCode gitVersionCode
         versionName gitVersionName
 
@@ -163,7 +167,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.activity:activity:1.10.1'
-    implementation 'androidx.documentfile:documentfile:1.0.1'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'androidx.activity:activity:1.13.0'
+    implementation 'androidx.documentfile:documentfile:1.1.0'
 }

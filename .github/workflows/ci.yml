@@ -647,16 +647,17 @@ jobs:
       run: |
         # Use the latest NDK available on the runner
         if [ -n "$ANDROID_NDK_LATEST_HOME" ] && [ -d "$ANDROID_NDK_LATEST_HOME" ]; then
-          echo "ANDROID_NDK=$ANDROID_NDK_LATEST_HOME" >> "$GITHUB_ENV"
-          echo "ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME" >> "$GITHUB_ENV"
-          echo "Using pre-installed NDK: $ANDROID_NDK_LATEST_HOME"
+          NDK_DIR="$ANDROID_NDK_LATEST_HOME"
+          echo "Using pre-installed NDK: $NDK_DIR"
         else
           # Fallback: install via sdkmanager
-          yes | sdkmanager --install "ndk;$(sdkmanager --list 2>/dev/null | grep -oP 'ndk;\K[\d.]+' | sort -V | tail -1)" || true
+          yes | sdkmanager --install "ndk;$(sdkmanager --list 2>/dev/null | grep -oP 'ndk;\K[\d.]+' | sort -V | tail -1)"
           NDK_DIR=$(ls -d "$ANDROID_HOME"/ndk/*/ 2>/dev/null | sort -V | tail -1)
-          echo "ANDROID_NDK=${NDK_DIR%/}" >> "$GITHUB_ENV"
-          echo "ANDROID_NDK_HOME=${NDK_DIR%/}" >> "$GITHUB_ENV"
+          NDK_DIR="${NDK_DIR%/}"
         fi
+        echo "ANDROID_NDK=$NDK_DIR" >> "$GITHUB_ENV"
+        echo "ANDROID_NDK_HOME=$NDK_DIR" >> "$GITHUB_ENV"
+        echo "ANDROID_NDK_ROOT=$NDK_DIR" >> "$GITHUB_ENV"
 
     # Key tracks the NDK version (compiler + chainload toolchain are in vcpkg's ABI hash) but not the system CMake version: vcpkg builds ports with its own pinned CMake.
     - name: Get toolchain ID for cache key
