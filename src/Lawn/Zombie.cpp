@@ -647,6 +647,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 
 	case ZombieType::ZOMBIE_DANCER:
 		mScaleZombie = 0.8f;
+		aRenderOffset = 8;
 		if (!IsOnBoard())
 		{
 			PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
@@ -664,6 +665,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 
 	case ZombieType::ZOMBIE_BACKUP_DANCER:
 		mScaleZombie = 0.8f;
+		aRenderOffset = 8;
 		if (!IsOnBoard())
 		{
 			PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
@@ -3594,6 +3596,7 @@ void Zombie::DropHead(unsigned int theDamageFlags)
 			ReanimShowPrefix("Zombie_disco_chops", RENDER_GROUP_HIDDEN);
 			ReanimShowPrefix("Zombie_backup_stash", RENDER_GROUP_HIDDEN);
 			aParticle->OverrideImage(nullptr, IMAGE_ZOMBIEBACKUPDANCERHEAD);
+			aParticle->OverrideScale(nullptr, 1.05f);
 		}
 		else if (mZombieType == ZombieType::ZOMBIE_BOBSLED)
 		{
@@ -3711,6 +3714,7 @@ void Zombie::SetupReanimForLostArm(unsigned int theDamageFlags)
 	case ZombieType::ZOMBIE_DANCER:
 		ReanimShowTrack("Zombie_disco_outerarm_lower", RENDER_GROUP_HIDDEN);
 		ReanimShowTrack("Zombie_disco_outerhand_point", RENDER_GROUP_HIDDEN);
+		ReanimShowTrack("Zombie_disco_outerhand", RENDER_GROUP_HIDDEN);
 		break;
 	case ZombieType::ZOMBIE_BACKUP_DANCER:
 		ReanimShowTrack("Zombie_disco_outerarm_lower", RENDER_GROUP_HIDDEN);
