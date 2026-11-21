@@ -28,7 +28,6 @@
 #include <memory>
 using namespace Sexy;
 
-class Board;
 class LawnApp;
 class GameButton;
 class ToolTipWidget;
@@ -81,7 +80,6 @@ public:
 	std::unique_ptr<GameButton> mImitaterButton;
 	ChosenSeed              mChosenSeeds[NUM_SEED_TYPES];
 	LawnApp*                mApp;
-	Board*                  mBoard;
 	int                     mNumSeedsToChoose;
 	int                     mSeedChooserAge;
 	int                     mSeedsInFlight;

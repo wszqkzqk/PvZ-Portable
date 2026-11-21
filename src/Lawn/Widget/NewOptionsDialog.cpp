@@ -97,7 +97,7 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
 	{
 		mRestartButton->SetVisible(false);
 	}
-	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && !mApp->mBoard->mCutScene->IsSurvivalRepick())
+	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && !mApp->GetBoard()->mCutScene->IsSurvivalRepick())
 	{
 		mRestartButton->SetVisible(false);
 	}
@@ -282,9 +282,9 @@ void NewOptionsDialog::CheckboxChecked(int theId, bool checked)
 
 void NewOptionsDialog::KeyDown(Sexy::KeyCode theKey)
 {
-	if (mApp->mBoard)
+	if (mApp->GetBoard())
 	{
-		mApp->mBoard->DoTypingCheck(theKey);
+		mApp->GetBoard()->DoTypingCheck(theKey);
 	}
 
 	if (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN)
@@ -323,11 +323,11 @@ void NewOptionsDialog::ButtonDepress(int theId)
 			mApp->KillGameSelector();
 			mApp->ShowAwardScreen(AwardType::AWARD_CREDITS_ZOMBIENOTE, false);
 		}
-		else if (mApp->mBoard && mApp->mBoard->NeedSaveGame())
+		else if (mApp->GetBoard() && mApp->GetBoard()->NeedSaveGame())
 		{
 			mApp->DoConfirmBackToMain();
 		}
-		else if (mApp->mBoard && mApp->mBoard->mCutScene && mApp->mBoard->mCutScene->IsSurvivalRepick())
+		else if (mApp->GetBoard() && mApp->GetBoard()->mCutScene && mApp->GetBoard()->mCutScene->IsSurvivalRepick())
 		{
 			mApp->DoConfirmBackToMain();
 		}
@@ -341,7 +341,7 @@ void NewOptionsDialog::ButtonDepress(int theId)
 
 	case NewOptionsDialog::NewOptionsDialog_Restart:
 	{
-		if (mApp->mBoard)
+		if (mApp->GetBoard())
 		{
 			std::string aDialogTitle;
 			std::string aDialogMessage;
@@ -376,7 +376,7 @@ void NewOptionsDialog::ButtonDepress(int theId)
 				mApp->mSoundSystem->CancelPausedFoley();
 				mApp->KillNewOptionsDialog();
 				mApp->mBoardResult = BoardResult::BOARDRESULT_RESTART;
-				mApp->mSawYeti = mApp->mBoard->mKilledYeti;
+				mApp->mSawYeti = mApp->GetBoard()->mKilledYeti;
 				mApp->PreNewGame(mApp->mGameMode, false);
 			}
 		}

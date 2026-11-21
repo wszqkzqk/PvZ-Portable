@@ -31,6 +31,7 @@ constexpr const int MAX_MESSAGE_LENGTH = 128;
 constexpr const int MAX_REANIM_LINES = 5;
 
 class LawnApp;
+class Board;
 namespace Sexy
 {
 	class _Font;
@@ -41,6 +42,7 @@ class MessageWidget
 {
 public:
 	LawnApp*			mApp;
+	Board*				mBoard;
 	char				mLabel[MAX_MESSAGE_LENGTH];
 	int32_t				mDisplayTime;
 	int32_t				mDuration;
@@ -54,7 +56,7 @@ public:
 	MessageStyle		mMessageStyleNext;
 
 public:
-	MessageWidget(LawnApp* theApp);
+	MessageWidget(LawnApp* theApp, Board* theBoard);
 	~MessageWidget() { ClearReanim(); }
 
 	void		SetLabel(std::string_view theNewLabel, MessageStyle theMessageStyle);
