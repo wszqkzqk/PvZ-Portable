@@ -52,6 +52,7 @@
 | **Haiku** | Executable dir (resources); per-user app-data (saves/caches) | Partially works (no music) |
 | **Android** | `Android/data/io.github.wszqkzqk.pvzportable/files/` | Fully supported |
 | **iOS / iPadOS** | App Documents directory (via iOS Files app / Finder) | Supported (sideload via unsigned IPA) |
+| **HarmonyOS** | App sandbox (`files/PvZPortable/`) | Experimental (HarmonyOS 5.0.4+) |
 | **Web (WASM)** | Browser IndexedDB (saves); resources loaded locally at runtime | Fully supported (requires HTTP server) |
 | **Nintendo Switch** | `sdmc:/switch/PvZPortable` | Works on real hardware (Kenji-NX crashes on boot) |
 
@@ -119,6 +120,14 @@ Download the unsigned IPA from [Releases](https://github.com/wszqkzqk/PvZ-Portab
 
 1. **Sideload the IPA:** Install using [AltStore](https://altstore.io/), [TrollStore](https://github.com/opa334/TrollStore), or Xcode with a free Apple ID (note that free Apple ID signatures expire after 7 days, whereas TrollStore installations are permanent).
 2. **Copy Game Assets:** Open the iOS **Files** app (or Finder / iTunes file sharing on desktop) and copy `main.pak` and the `properties/` folder into the **PvZ Portable** Documents directory.
+
+### HarmonyOS (Experimental)
+
+Requires HarmonyOS 5.0.4 (API 16) or later. Download the unsigned HAP from [Releases](https://github.com/wszqkzqk/PvZ-Portable/releases), sign it with your own debug certificate and profile, then install it with `hdc` on a device listed in that profile. Build and signing instructions are in `harmony/README.md`.
+
+If you do not want to handle signing and sideloading, use the Android APK (including through 卓易通 on supported devices) or the [WebAssembly version](#play-in-your-browser-webassembly) instead.
+
+When no resources are found, import `main.pak` and `properties/` from a ZIP file or a folder. Long-press the app icon and choose **Manage Data** to re-import resources or import/export save data. Back gestures and touch behavior match the Android port.
 
 ### Web (Browser / WebAssembly)
 
