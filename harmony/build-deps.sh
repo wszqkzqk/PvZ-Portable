@@ -153,7 +153,7 @@ build_abi() {
 	# libpng runs the preprocessor by hand to generate pnglibconf.h, which drops the toolchain's
 	# CMAKE_C_COMPILER_TARGET, so repeat the target in the flags.
 	cmake_dep "$abi" libpng "$prefix" \
-		-DCMAKE_C_FLAGS="--target=$triple" \
+		-DCMAKE_C_FLAGS="--target=$triple ${CFLAGS:-}" \
 		-DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_EXECUTABLES=OFF -DPNG_TESTS=OFF
 
 	echo "==> [$abi] libjpeg-turbo"
@@ -172,8 +172,8 @@ build_abi() {
 		CXX="$LLVM_BIN/clang++ --target=$triple --sysroot=$SYSROOT" \
 		AR="$LLVM_BIN/llvm-ar" \
 		RANLIB="$LLVM_BIN/llvm-ranlib" \
-		CFLAGS="-O2 -fPIC" \
-		CXXFLAGS="-O2 -fPIC" \
+		CFLAGS="-O2 ${CFLAGS:-} -fPIC" \
+		CXXFLAGS="-O2 ${CXXFLAGS:-} -fPIC" \
 		PKG_CONFIG_LIBDIR="" \
 		"$SRC_DIR/libopenmpt/configure" \
 			--host="$host" \
