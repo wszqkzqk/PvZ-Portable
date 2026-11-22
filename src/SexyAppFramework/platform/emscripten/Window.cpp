@@ -45,6 +45,8 @@ void SexyAppBase::MakeWindow()
 	}
 	else
 	{
+		SDL_SetHint(SDL_HINT_EMSCRIPTEN_ASYNCIFY, "0");
+
 		if (!SDL_Init(SDL_INIT_VIDEO))
 		{
 			Sexy::LogErrorLn("Failed to initialize SDL video: {}", SDL_GetError());
@@ -72,7 +74,7 @@ void SexyAppBase::MakeWindow()
 			return;
 		}
 
-		SDL_GL_SetSwapInterval(0);
+		SDL_GL_SetSwapInterval(1);
 
 		mWindow = std::move(window);
 		mContext = std::move(context);
