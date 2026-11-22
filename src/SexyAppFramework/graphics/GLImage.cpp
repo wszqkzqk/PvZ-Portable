@@ -56,33 +56,6 @@ void GLImage::Create(int theWidth, int theHeight)
 	MemoryImage::Create(theWidth, theHeight);
 }
 
-void GLImage::FillScanLinesWithCoverage(Span* theSpans, int theSpanCount, const Color& theColor, int theDrawMode, const uint8_t* theCoverage, int theCoverX, int theCoverY, int theCoverWidth, int theCoverHeight)
-{
-	if (theSpanCount == 0) return;
-
-	int l = theSpans[0].mX, t = theSpans[0].mY;
-	int r = l + theSpans[0].mWidth, b = t;
-	for (int i = 1; i < theSpanCount; ++i)  // after the loop, Rect(l, t, r - l + 1, b - t + 1) is the bounding rect of all spans
-	{
-		l = std::min(theSpans[i].mX, l);
-		r = std::max(theSpans[i].mX + theSpans[i].mWidth - 1, r);
-		t = std::min(theSpans[i].mY, t);
-		b = std::max(theSpans[i].mY, b);
-	}
-	for (int i = 0; i < theSpanCount; ++i)  // make all span coordinates relative to that rect
-	{
-		theSpans[i].mX -= l;
-		theSpans[i].mY -= t;
-	}
-
-	MemoryImage aTempImage;
-	aTempImage.Create(r-l+1, b-t+1);
-	// theCoverX - l / theCoverY - t convert the coverage origin to temp-image coordinates
-	aTempImage.FillScanLinesWithCoverage(theSpans, theSpanCount, theColor, theDrawMode, theCoverage, theCoverX - l, theCoverY - t, theCoverWidth, theCoverHeight);
-	Blt(&aTempImage, l, t, Rect(0, 0, r-l+1, b-t+1), Color::White, theDrawMode);
-	return;
-}
-
 bool GLImage::Check3D(GLImage *theImage)
 {
 	return true;
@@ -104,23 +77,12 @@ void GLImage::PurgeBits()
 	MemoryImage::PurgeBits();
 }
 
-bool GLImage::PolyFill3D(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode, int tx, int ty)
-{
-	mGLInterface->FillPoly(theVertices,theNumVertices,theClipRect,theColor,theDrawMode,tx,ty);
-	return true;
-}
-
 void GLImage::FillRect(const Rect& theRect, const Color& theColor, int theDrawMode)
 {
 	mGLInterface->FillRect(theRect,theColor,theDrawMode);
 }
 
 void GLImage::DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor, int theDrawMode)
-{
-	mGLInterface->DrawLine(theStartX,theStartY,theEndX,theEndY,theColor,theDrawMode);
-}
-
-void GLImage::DrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor, int theDrawMode)
 {
 	mGLInterface->DrawLine(theStartX,theStartY,theEndX,theEndY,theColor,theDrawMode);
 }

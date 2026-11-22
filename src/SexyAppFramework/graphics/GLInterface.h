@@ -246,7 +246,6 @@ public:
 	void					DrawTrianglesTex(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor, int theDrawMode, Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
 	void					DrawTrianglesTexMixed(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor, Image *theTexture, const uint8_t* theDrawModes, float tx = 0, float ty = 0, bool blend = true);
 	void					DrawTrianglesTexStrip(const TriVertex theVertices[], int theNumTriangles, const Color &theColor, int theDrawMode, Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
-	void					FillPoly(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode, int tx, int ty);
 };
 
 }

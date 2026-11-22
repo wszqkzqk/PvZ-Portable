@@ -34,13 +34,6 @@
 namespace Sexy
 {
 
-struct Span
-{
-	int						mY;
-	int						mX;
-	int						mWidth;
-};
-
 enum AnimType
 {
 	AnimType_None,
@@ -105,15 +98,10 @@ public:
 	void					CopyAttributes(Image *from);
 	Graphics*				GetGraphics();
 
-	virtual bool			PolyFill3D(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode, int tx, int ty);
-
 	virtual void			FillRect(const Rect& theRect, const Color& theColor, int theDrawMode);
 	virtual void			DrawRect(const Rect& theRect, const Color& theColor, int theDrawMode);
 	virtual void			ClearRect(const Rect& theRect);
 	virtual void			DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor, int theDrawMode);
-	virtual void			DrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor, int theDrawMode);
-	virtual void			FillScanLines(Span* theSpans, int theSpanCount, const Color& theColor, int theDrawMode);
-	virtual void			FillScanLinesWithCoverage(Span* theSpans, int theSpanCount, const Color& theColor, int theDrawMode, const uint8_t* theCoverage, int theCoverX, int theCoverY, int theCoverWidth, int theCoverHeight);
 	virtual void			Blt(Image* theImage, int theX, int theY, const Rect& theSrcRect, const Color& theColor, int theDrawMode, bool linearFilter = true);
 	virtual void			BltF(Image* theImage, float theX, float theY, const Rect& theSrcRect, const Rect &theClipRect, const Color& theColor, int theDrawMode);
 	virtual void			BltRotated(Image* theImage, float theX, float theY, const Rect &theSrcRect, const Rect& theClipRect, const Color& theColor, int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY);
