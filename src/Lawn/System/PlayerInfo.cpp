@@ -29,6 +29,7 @@
 #include "../Widget/ChallengeScreen.h"
 #include "../../PvzpLib/PvzpDebug.h"
 #include "../../PvzpLib/PvzpCommon.h"
+#include "FileSystem.h"
 #include "misc/Buffer.h"
 #include "../../SexyAppFramework/SexyAppBase.h"
 

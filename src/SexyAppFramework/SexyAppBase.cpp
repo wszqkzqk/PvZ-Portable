@@ -43,6 +43,7 @@
 #include <system_error>
 #include <tuple>
 #include <format>
+#include "FileSystem.h"
 
 #include <SDL3/SDL.h>
 
@@ -653,10 +654,7 @@ void SexyAppBase::WriteDemoBuffer()
 			{
 				auto aDemoFiles = FindDemoFiles(mDemoPrefix, true);
 				for (size_t i = mDemoRecordFileLimit; i < aDemoFiles.size(); ++i)
-				{
-					std::error_code anError;
-					std::filesystem::remove(PathFromU8(aDemoFiles[i]), anError);
-				}
+					EraseDiskFile(PathFromU8(aDemoFiles[i]));
 			}
 		}
 	}
@@ -1513,7 +1511,7 @@ bool SexyAppBase::EraseFile(const std::string& theFileName)
 	if (mPlayingDemoBuffer)
 		return true;
 
-	return remove(theFileName.c_str()) == 0;
+	return EraseDiskFile(PathFromU8(theFileName));
 }
 
 void SexyAppBase::SEHOccured()
@@ -2975,7 +2973,7 @@ void SexyAppBase::ShowResourceError(bool doExit)
 	const std::string& aError = mResourceManager->GetErrorText();
 #if defined(__IPHONEOS__)
 	// Documents folder is only shown in the Files app / iTunes once it contains a file
-	const std::filesystem::path aResourceDir(GetResourceFolder());
+	const std::filesystem::path aResourceDir(PathFromU8(GetResourceFolder()));
 	const bool aHasGameResources = !aResourceDir.empty() &&
 		std::filesystem::is_regular_file(aResourceDir / "main.pak") &&
 		std::filesystem::is_directory(aResourceDir / "properties");

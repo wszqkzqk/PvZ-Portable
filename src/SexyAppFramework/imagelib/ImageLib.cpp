@@ -25,6 +25,7 @@
 #define XMD_H
 
 #include "Common.h"
+#include "FileSystem.h"
 #include "ImageLib.h"
 #include "png.h"
 #include <math.h>
@@ -33,8 +34,6 @@
 #include <cctype>
 #include <memory>
 #include <string_view>
-#include <mutex>
-#include <unordered_set>
 #include "paklib/PakInterface.h"
 
 extern "C"
@@ -723,7 +722,7 @@ bool ImageLib::WriteJPEGImage(const std::string& theFileName, Image* theImage)
 {
 	FILE *fp;
 
-	if ((fp = fopen(theFileName.c_str(), "wb")) == nullptr)
+	if ((fp = Sexy::OpenDiskFile(Sexy::PathFromU8(theFileName), "wb")) == nullptr)
 		return false;
 
 	struct jpeg_compress_struct cinfo{};
@@ -801,7 +800,7 @@ bool ImageLib::WritePNGImage(const std::string& theFileName, Image* theImage)
 
 	FILE *fp;
 
-	if ((fp = fopen(theFileName.c_str(), "wb")) == nullptr)
+	if ((fp = Sexy::OpenDiskFile(Sexy::PathFromU8(theFileName), "wb")) == nullptr)
 		return false;
 
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
@@ -871,7 +870,7 @@ bool ImageLib::WritePNGImage(const std::string& theFileName, Image* theImage)
 
 bool ImageLib::WriteTGAImage(const std::string& theFileName, Image* theImage)
 {
-	FILE* aTGAFile = fopen(theFileName.c_str(), "wb");
+	FILE* aTGAFile = Sexy::OpenDiskFile(Sexy::PathFromU8(theFileName), "wb");
 	if (aTGAFile == nullptr)
 		return false;
 
@@ -1146,51 +1145,15 @@ static bool EqualsIgnoreCase(std::string_view theLeft, std::string_view theRight
 	return true;
 }
 
-static std::mutex gMissingDirMutex;
-static std::unordered_set<std::string> gMissingDirCache;
-
 static bool CheckSinglePath(std::string_view thePath)
 {
 	if (thePath.empty())
 		return false;
 
-	if (gPakInterface)
-	{
-		if (gPakInterface->mPakRecordMap.contains(PakInterface::NormalizePakPath(thePath)))
-			return true;
-	}
+	if (gPakInterface && gPakInterface->Contains(thePath))
+		return true;
 
-	const std::string aPathString(thePath);
-	if (!Sexy::IsPathRooted(aPathString))
-	{
-		const auto& aResourceBase = Sexy::GetResourceFolder();
-		if (!aResourceBase.empty())
-		{
-			const std::string aDir = Sexy::GetFileDir(aPathString);
-			if (!aDir.empty())
-			{
-				std::scoped_lock lock(gMissingDirMutex);
-				if (gMissingDirCache.contains(aDir))
-					return false;
-			}
-
-			if (Sexy::FileExists(Sexy::GetResourcePath(aPathString)))
-				return true;
-
-			if (!aDir.empty())
-			{
-				if (!Sexy::FileExists(Sexy::GetResourcePath(aDir)))
-				{
-					std::scoped_lock lock(gMissingDirMutex);
-					gMissingDirCache.insert(aDir);
-				}
-			}
-
-			return false;
-		}
-	}
-
-	return Sexy::FileExists(aPathString);
+	return Sexy::ResourceFileExists(thePath);
 }
 
 static bool FastFileExists(std::string_view thePath)

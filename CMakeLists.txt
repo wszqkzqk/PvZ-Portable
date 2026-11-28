@@ -44,7 +44,6 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 	src/SexyAppFramework/paklib/*.cpp
 	src/SexyAppFramework/sound/*.cpp
 	src/SexyAppFramework/widget/*.cpp
-	src/SexyAppFramework/fcaseopen/*.c
 	src/PvzpLib/*.cpp
 	src/Lawn/*.cpp
 	src/Lawn/Widget/*.cpp
