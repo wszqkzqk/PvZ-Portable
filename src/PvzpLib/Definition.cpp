@@ -637,13 +637,8 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 
 bool IsFileInPakFile(const std::string& theFilePath)
 {
-	PFILE* pFile = p_fopen(theFilePath.c_str(), "rb");
-	bool aIsInPak = pFile && !pFile->mFP;  // files opened from the pak have no backing file, so mFP is null
-	if (pFile)
-	{
-		p_fclose(pFile);
-	}
-	return aIsInPak;
+	PFilePtr aFile = OpenPakFile(theFilePath.c_str(), "rb");
+	return aFile && !aFile->mFP;  // files opened from the pak have no backing file, so mFP is null
 }
 
 bool DefinitionIsCompiled(const std::string& theXMLFilePath)

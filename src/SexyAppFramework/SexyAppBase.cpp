@@ -1420,9 +1420,9 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 	}
 	else
 	{
-		PFILE* aFP = p_fopen(theFileName.c_str(), "rb");
+		auto aFP = OpenPakFile(theFileName.c_str(), "rb");
 
-		if (aFP == nullptr)
+		if (!aFP)
 		{
 			if ((mRecordingDemoBuffer) && (!dontWriteToDemo) && IsOnPrimaryThread())
 			{
@@ -1435,14 +1435,13 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 			return false;
 		}
 
-		p_fseek(aFP, 0, SEEK_END);
-		int aFileSize = p_ftell(aFP);
-		p_fseek(aFP, 0, SEEK_SET);
+		p_fseek(aFP.get(), 0, SEEK_END);
+		int aFileSize = p_ftell(aFP.get());
+		p_fseek(aFP.get(), 0, SEEK_SET);
 
 		ByteVector aData(aFileSize);
 
-		p_fread(aData.data(), 1, aFileSize, aFP);
-		p_fclose(aFP);
+		p_fread(aData.data(), 1, aFileSize, aFP.get());
 
 		theBuffer->Clear();
 		theBuffer->SetData(aData.data(), aFileSize);
@@ -1488,7 +1487,7 @@ bool SexyAppBase::FileExists(const std::string& theFileName)
 	}
 	else
 	{
-		PFILE* aFP = p_fopen(theFileName.c_str(), "rb");
+		auto aFP = OpenPakFile(theFileName.c_str(), "rb");
 
 		if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 		{
@@ -1498,11 +1497,7 @@ bool SexyAppBase::FileExists(const std::string& theFileName)
 			mDemoBuffer.WriteNumBits((aFP != nullptr) ? 1 : 0, 1);
 		}
 
-		if (aFP == nullptr)
-			return false;
-
-		p_fclose(aFP);
-		return true;
+		return aFP != nullptr;
 	}
 }
 

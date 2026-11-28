@@ -32,6 +32,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <mutex>
+#include <memory>
 #include <array>
 #include <span>
 #include "FileSystem.h"
@@ -138,6 +139,18 @@ public:
 };
 
 extern PakInterface* gPakInterface;
+
+struct PFileCloser
+{
+	void operator()(PFILE* theFile) const noexcept { gPakInterface->FClose(theFile); }
+};
+
+using PFilePtr = std::unique_ptr<PFILE, PFileCloser>;
+
+inline PFilePtr OpenPakFile(const char* theFileName, const char* theAccess)
+{
+	return PFilePtr(gPakInterface->FOpen(theFileName, theAccess));
+}
 
 [[maybe_unused]]
 static PFILE* p_fopen(const char* theFileName, const char* theAccess)

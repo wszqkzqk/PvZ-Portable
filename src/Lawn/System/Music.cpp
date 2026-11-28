@@ -78,16 +78,15 @@ bool Music::PvzpLoadMusic(MusicFile theMusicFile, std::string_view theFileName)
 	if (aDot != std::string::npos)
 		anExt = StringToLower(aFileName.substr(aDot + 1));
 
-	PFILE* pFile = p_fopen(aFileName.c_str(), "rb");
-	if (pFile == nullptr)
+	auto aFile = OpenPakFile(aFileName.c_str(), "rb");
+	if (!aFile)
 		return false;
 
-	p_fseek(pFile, 0, SEEK_END);
-	const size_t aSize = p_ftell(pFile);
-	p_fseek(pFile, 0, SEEK_SET);
+	p_fseek(aFile.get(), 0, SEEK_END);
+	const size_t aSize = p_ftell(aFile.get());
+	p_fseek(aFile.get(), 0, SEEK_SET);
 	std::vector<uint8_t> aData(aSize);
-	const size_t aReadSize = p_fread(aData.data(), 1, aSize, pFile);
-	p_fclose(pFile);
+	const size_t aReadSize = p_fread(aData.data(), 1, aSize, aFile.get());
 	if (aReadSize != aSize)
 		return false;
 

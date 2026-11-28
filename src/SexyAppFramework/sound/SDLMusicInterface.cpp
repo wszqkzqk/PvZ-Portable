@@ -62,7 +62,7 @@ static bool InsertMusic(MIX_Mixer* theMixer, int theSongId, SDLMusicInfo&& theMu
 
 static bool ReadMusicFile(const std::string& theFileName, std::vector<uint8_t>& theData)
 {
-	std::unique_ptr<PFILE, decltype(&p_fclose)> aFile(p_fopen(theFileName.c_str(), "rb"), &p_fclose);
+	auto aFile = OpenPakFile(theFileName.c_str(), "rb");
 	if (aFile == nullptr)
 		return false;
 
