@@ -43,24 +43,6 @@
 #include <intrin.h>
 #endif
 
-<<<<<<< HEAD
-#ifndef _WIN32
-#include <strings.h>
-=======
-#ifdef _WIN32
-#undef _WIN32_WINNT
-#undef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT 0x0500
-#undef _UNICODE
-#undef UNICODE
-#define NOMINMAX 1
-#include <windows.h>
-#include <shellapi.h>
-#include <mmsystem.h>
->>>>>>> d1d13d3f (Refactor: replace casecmp macros and legacy integer typedefs)
-#endif
-
 // Define unreachable()
 #ifdef _MSC_VER
 #define unreachable() __assume(0)
@@ -71,7 +53,6 @@
 #endif
 
 typedef std::map<std::string, std::string> DefinesMap;
-typedef std::vector<char> CharVector;
 
 namespace Sexy
 {
@@ -108,28 +89,10 @@ std::string			Lower(std::string_view theData);
 std::string			Trim(std::string_view theString);
 bool				StringToInt(const std::string& theString, int* theIntVal);
 bool				StringToDouble(const std::string& theString, double* theDoubleVal);
-int					StrFindNoCase(const char *theStr, const char *theFind);
-bool				StrPrefixNoCase(const char *theStr, const char *thePrefix, int maxLength = 10000000);
 std::string			CommaSeperate(int theValue);
 std::string			Evaluate(std::string_view theString, const DefinesMap& theDefinesMap);
 std::string			XMLDecodeString(std::string_view theString);
 std::string			XMLEncodeString(std::string_view theString);
-
-inline void			inlineLTrim(std::string &theData, std::string_view theChars = " \t\r\n")
-{
-	theData.erase(0, theData.find_first_not_of(theChars));
-}
-
-inline void			inlineRTrim(std::string &theData, std::string_view theChars = " \t\r\n")
-{
-	theData.resize(theData.find_last_not_of(theChars) + 1);
-}
-
-inline void			inlineTrim(std::string &theData, std::string_view theChars = " \t\r\n")
-{
-	inlineRTrim(theData, theChars);
-	inlineLTrim(theData, theChars);
-}
 
 // Decode next UTF-8 codepoint, advancing theOffset. Returns false on end/error.
 inline bool UTF8DecodeNext(std::string_view theString, size_t& theOffset, char32_t& theOutChar)

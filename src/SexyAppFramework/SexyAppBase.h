@@ -610,8 +610,7 @@ public:
 	void					RegistryEraseValue(const std::string& theValueName);
 
 	// File access methods
-	bool					WriteBufferToFile(const std::string& theFileName, const Buffer* theBuffer);
-	bool					ReadBufferFromFile(const std::string& theFileName, Buffer* theBuffer, bool dontWriteToDemo = false);//UNICODE
+	bool					ReadBufferFromFile(const std::string& theFileName, Buffer* theBuffer, bool dontWriteToDemo = false);
 	bool					ReadUTF8StringFromFile(const std::string& theFileName, std::string* theString);
 	bool					WriteBytesToFile(const std::string& theFileName, const void *theData, size_t theDataLen);
 	bool					FileExists(const std::string& theFileName);

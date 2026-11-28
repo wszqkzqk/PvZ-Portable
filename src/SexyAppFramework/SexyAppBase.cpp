@@ -1387,12 +1387,6 @@ bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *t
 	return true;
 }
 
-bool SexyAppBase::WriteBufferToFile(const std::string& theFileName, const Buffer* theBuffer)
-{
-	return WriteBytesToFile(theFileName,theBuffer->GetDataPtr(),theBuffer->GetDataLen());
-}
-
-
 bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* theBuffer, bool dontWriteToDemo)
 {
 	if ((mPlayingDemoBuffer) && (!dontWriteToDemo) && IsOnPrimaryThread())

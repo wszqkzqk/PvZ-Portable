@@ -358,48 +358,4 @@ std::string Sexy::Lower(std::string_view _data)
 	return StringToLower(_data);
 }
 
-int Sexy::StrFindNoCase(const char *theStr, const char *theFind)
-{
-	int p1, p2;
-	int cp = 0;
-	const int len1 = (int)strlen(theStr);
-	const int len2 = (int)strlen(theFind);
-	while (cp < len1)
-	{
-		p1 = cp;
-		p2 = 0;
-		while (p1 < len1 && p2 < len2)
-		{
-			if (ToLowerAscii(theStr[p1]) != ToLowerAscii(theFind[p2]))
-				break;
-
-			p1++; p2++;
-		}
-		if(p2==len2)
-			return p1-len2;
-
-		cp++;
-	}
-
-	return -1;
-}
-
-bool Sexy::StrPrefixNoCase(const char *theStr, const char *thePrefix, int maxLength)
-{
-	int i;
-	char c1 = 0, c2 = 0;
-	for (i=0; i<maxLength; i++)
-	{
-		c1 = ToLowerAscii(*theStr++);
-		c2 = ToLowerAscii(*thePrefix++);
-
-		if (c1==0 || c2==0)
-			break;
-
-		if (c1!=c2)
-			return false;
-	}
-
-	return c2==0 || i==maxLength;
-}
 
