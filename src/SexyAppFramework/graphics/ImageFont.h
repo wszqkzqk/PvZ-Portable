@@ -30,6 +30,7 @@
 #include "SexyAppBase.h"
 #include "SharedImage.h"
 #include <atomic>
+#include <memory>
 
 namespace Sexy
 {

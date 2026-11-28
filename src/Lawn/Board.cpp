@@ -23,6 +23,8 @@
 #include <algorithm>
 #include <SDL3/SDL.h>
 #include <format>
+#include <memory>
+#include <iterator>
 #include "ZenGarden.h"
 #include "BoardInclude.h"
 #include "LawnCommon.h"
@@ -4775,7 +4777,7 @@ void Board::SetupBungeeDrop(BungeeDropGrid* theBungeeDropGrid)
 			theBungeeDropGrid->mGridArray[aCount].mY = aGridY;
 			theBungeeDropGrid->mGridArray[aCount].mWeight = 10000;
 			theBungeeDropGrid->mGridArrayCount++;
-			PVZP_ASSERT(static_cast<size_t>(theBungeeDropGrid->mGridArrayCount) <= LENGTH(theBungeeDropGrid->mGridArray));
+			PVZP_ASSERT(static_cast<size_t>(theBungeeDropGrid->mGridArrayCount) <= std::size(theBungeeDropGrid->mGridArray));
 		}
 	}
 }

@@ -26,6 +26,7 @@
 #define __MEMORYIMAGE_H__
 
 #include <memory>
+#include <cstdint>
 
 #include "Image.h"
 

@@ -41,6 +41,7 @@
 #include "../../PvzpLib/PvzpStringFile.h"
 #include "widget/WidgetManager.h"
 #include <algorithm>
+#include <memory>
 
 SeedChooserScreen::SeedChooserScreen()
 {

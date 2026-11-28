@@ -28,6 +28,8 @@
 #include "graphics/GLInterface.h"
 #include <algorithm>
 #include <format>
+#include <memory>
+#include <cstdint>
 
 int gParticleDefCount;
 std::unique_ptr<PvzpParticleDefinition[]> gParticleDefArray;

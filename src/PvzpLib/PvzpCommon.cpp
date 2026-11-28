@@ -22,6 +22,8 @@
 #include "SexyAppBase.h"
 #include "PvzpList.h"
 #include <algorithm>
+#include <memory>
+#include <utility>
 #include "PvzpDebug.h"
 #include "PvzpCommon.h"
 #include "../LawnApp.h"

@@ -33,6 +33,7 @@
 #include <cstring>
 #include <mutex>
 #include <vector>
+#include <memory>
 
 constexpr const int MAX_VERTICES = 16384;
 

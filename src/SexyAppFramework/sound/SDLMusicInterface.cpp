@@ -23,6 +23,10 @@
 #include "SDLSoundManager.h"
 #include "paklib/PakInterface.h"
 #include <vector>
+#include <memory>
+#include <utility>
+#include <cstdint>
+#include <algorithm>
 
 using namespace Sexy;
 

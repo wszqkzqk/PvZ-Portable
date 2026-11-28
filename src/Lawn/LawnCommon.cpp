@@ -21,6 +21,7 @@
 
 #include <time.h>
 #include <format>
+#include <memory>
 #include "Board.h"
 #include "Plant.h"
 #include "../LawnApp.h"

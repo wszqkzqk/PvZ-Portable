@@ -23,6 +23,7 @@
  */
 
 #pragma once
+#include <cstdint>
 
 #include "Color.h"
 #include "MemoryImage.h"

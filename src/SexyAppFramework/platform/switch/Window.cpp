@@ -23,6 +23,7 @@
 #include <EGL/eglext.h> // EGL extensions
 
 #include <switch.h>
+#include <memory>
 
 #include "SexyAppBase.h"
 #include "graphics/GLInterface.h"

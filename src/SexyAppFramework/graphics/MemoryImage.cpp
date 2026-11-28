@@ -36,6 +36,7 @@
 #include "imagelib/ImageLib.h"
 
 #include <math.h>
+#include <memory>
 
 using namespace Sexy;
 

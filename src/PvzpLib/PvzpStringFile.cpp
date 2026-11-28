@@ -20,6 +20,8 @@
  */
 
 #include <format>
+#include <cstring>
+#include <algorithm>
 #include "PvzpDebug.h"
 #include "PvzpCommon.h"
 #include "PvzpStringFile.h"

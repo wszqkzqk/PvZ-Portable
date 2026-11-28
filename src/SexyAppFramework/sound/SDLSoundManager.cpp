@@ -24,6 +24,7 @@
 #include "paklib/PakInterface.h"
 #include <memory>
 #include <vector>
+#include <cstdint>
 
 using namespace Sexy;
 

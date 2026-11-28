@@ -27,6 +27,7 @@
 #include <map>
 #include <set>
 #include <SDL3/SDL.h>
+#include <cstdint>
 
 using namespace Sexy;
 

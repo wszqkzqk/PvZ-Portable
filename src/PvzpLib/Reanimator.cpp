@@ -34,6 +34,7 @@
 #include "graphics/MemoryImage.h"
 #include <algorithm>
 #include <format>
+#include <memory>
 
 constexpr const int NO_BASE_POSE = -2;
 

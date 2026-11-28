@@ -36,6 +36,8 @@
 #include "graphics/Font.h"
 #include <optional>
 #include <format>
+#include <memory>
+#include <iterator>
 
 static constexpr float CREDIT_SCREEN_ANIM_RATE = 0.3f;
 
@@ -309,7 +311,7 @@ static CreditsTiming gCreditsTiming[] = {
 	{ 1029.0f,      CreditWordType::WORD_AA ,         0,     CreditBrainType::BRAIN_OFF       },
 	{ 1033.0f,      CreditWordType::WORD_OFF,         0,     CreditBrainType::BRAIN_OFF       }
 };
-static int gCreditsTimingCount = LENGTH(gCreditsTiming);
+static int gCreditsTimingCount = std::size(gCreditsTiming);
 
 CreditsOverlay::CreditsOverlay(CreditScreen* theCreditScreen)
 {

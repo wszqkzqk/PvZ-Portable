@@ -24,6 +24,7 @@
 
 #ifndef __GLIMAGE_H__
 #define __GLIMAGE_H__
+#include <cstdint>
 
 #include "MemoryImage.h"
 

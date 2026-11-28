@@ -20,6 +20,9 @@
  */
 
 #include <algorithm>
+#include <cstring>
+#include <memory>
+#include <cstdint>
 #include "PvzpDebug.h"
 #include "PvzpCommon.h"
 #include "Reanimator.h"

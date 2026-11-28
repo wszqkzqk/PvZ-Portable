@@ -49,22 +49,15 @@
 
 // Define unreachable()
 #ifdef _MSC_VER
-#include <direct.h>
-#include <io.h>
 #define unreachable() __assume(0)
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
-#define getcwd _getcwd
-#define access _access
-#define F_OK 0
 
 #elif defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)) || defined(__clang__)
 #define unreachable() __builtin_unreachable()
 #else
 #define unreachable() ((void)0)
 #endif
-
-#define LENGTH(anyarray) (sizeof(anyarray) / sizeof(anyarray[0]))
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;

@@ -25,6 +25,10 @@
 #include <memory>
 #include <cassert>
 #include <format>
+#include <cstring>
+#include <utility>
+#include <cstdint>
+#include <algorithm>
 #include "ResourceManager.h"
 #include "FileSystem.h"
 #include "XMLParser.h"

@@ -25,6 +25,8 @@
 #include "Quantize.h"
 #include <assert.h>
 #include <math.h>
+#include <cstring>
+#include <cstdint>
 
 using namespace Sexy;
 

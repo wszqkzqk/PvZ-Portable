@@ -26,6 +26,7 @@
 #include "SexyAppFramework/SexyApp.h"
 #include "PvzpLib/PvzpFoley.h"
 #include <memory>
+#include <cstdint>
 
 class Board;
 class GameSelector;

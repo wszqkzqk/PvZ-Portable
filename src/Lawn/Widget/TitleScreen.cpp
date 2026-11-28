@@ -35,6 +35,8 @@
 #include "../../GameConstants.h"
 #include "../System/Music.h"
 #include <algorithm>
+#include <memory>
+#include <iterator>
 
 TitleScreen::TitleScreen(LawnApp* theApp)
 {
@@ -450,7 +452,7 @@ void TitleScreen::Update()
 		mTotalBarWidth * 0.91f
 	};
 
-	for (size_t i = 0; i < LENGTH(aTriggerPoint); i++)
+	for (size_t i = 0; i < std::size(aTriggerPoint); i++)
 	{
 		if (aPrevWidth < aTriggerPoint[i] && mCurBarWidth >= aTriggerPoint[i])
 		{

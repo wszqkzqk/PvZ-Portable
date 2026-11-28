@@ -39,6 +39,7 @@
 #include <algorithm>
 #include <cstring>
 #include <format>
+#include <memory>
 
 constexpr int ZOMBATAR_COLOR_NONE = -1;
 constexpr int ZOMBATAR_SKIN_COLOR_COUNT = 12;

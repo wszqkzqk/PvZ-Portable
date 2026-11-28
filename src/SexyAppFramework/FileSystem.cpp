@@ -28,6 +28,8 @@
 #include <mutex>
 #include <optional>
 #include <unordered_map>
+#include <utility>
+#include <cstdint>
 
 static std::filesystem::path gAppDataFolder;
 static std::filesystem::path gResourceFolder;

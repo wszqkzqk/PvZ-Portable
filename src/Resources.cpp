@@ -21,6 +21,7 @@
 
 #include <map>
 #include <cstring>
+#include <cstdint>
 #include "Resources.h"
 #include "misc/ResourceManager.h"
 

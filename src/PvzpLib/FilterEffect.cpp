@@ -25,6 +25,9 @@
 #include "graphics/Graphics.h"
 #include "graphics/MemoryImage.h"
 #include <algorithm>
+#include <cstring>
+#include <memory>
+#include <cstdint>
 
 void RGB_to_HSL(float r, float g, float b, float& h, float& s, float& l)
 {

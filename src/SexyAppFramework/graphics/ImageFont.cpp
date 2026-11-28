@@ -32,6 +32,8 @@
 #include <algorithm>
 #include <mutex>
 #include <format>
+#include <memory>
+#include <utility>
 
 using namespace Sexy;
 

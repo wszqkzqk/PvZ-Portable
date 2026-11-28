@@ -38,6 +38,7 @@
 #include "graphics/Graphics.h"
 
 #include <algorithm>
+#include <memory>
 
 using namespace Sexy;
 

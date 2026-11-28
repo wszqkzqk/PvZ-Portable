@@ -20,6 +20,7 @@
  */
 
 #include <format>
+#include <memory>
 #include "../Board.h"
 #include "../Plant.h"
 #include "../Zombie.h"

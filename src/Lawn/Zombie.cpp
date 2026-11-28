@@ -44,6 +44,7 @@
 #include "../PvzpLib/Attachment.h"
 #include "../PvzpLib/PvzpParticle.h"
 #include <algorithm>
+#include <iterator>
 
 constexpr const int ZOMBIE_START_RANDOM_OFFSET = 40;
 constexpr const int BUNGEE_ZOMBIE_HEIGHT = 3000;
@@ -9840,7 +9841,7 @@ void Zombie::BossSpawnContact()
 	}
 	else
 	{
-		int aZombieTypeCount = LENGTH(gBossZombieList);
+		int aZombieTypeCount = std::size(gBossZombieList);
 		if (mTargetRow == 0)
 		{
 			PVZP_ASSERT(gBossZombieList[aZombieTypeCount - 1] == ZombieType::ZOMBIE_GARGANTUAR);
@@ -10546,7 +10547,7 @@ void Zombie::PreloadZombieResources(ZombieType theZombieType)
 		ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_BOSS_FIREBALL, true);
 		ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_BOSS_ICEBALL, true);
 
-		for (size_t i = 0; i < LENGTH(gBossZombieList); i++)
+		for (size_t i = 0; i < std::size(gBossZombieList); i++)
 		{
 			const ZombieDefinition& aDef = GetZombieDefinition(gBossZombieList[i]);
 			ReanimatorEnsureDefinitionLoaded(aDef.mReanimationType, true);
