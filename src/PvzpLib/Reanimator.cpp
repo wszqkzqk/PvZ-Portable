@@ -511,7 +511,7 @@ void Reanimation::Update()
 			aTrack->mShakeY = RandRangeFloat(-aTrack->mShakeOverride, aTrack->mShakeOverride);
 		}
 
-		if (strncasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, "attacher__", 10) == 0)  // IsAttacher
+		if (Sexy::StrStartsWithIgnoreCase(mDefinition->mTracks.tracks[aTrackIndex].mName, "attacher__"))  // IsAttacher
 			UpdateAttacherTrack(aTrackIndex);
 
 		if (aTrack->mAttachmentID != AttachmentID::ATTACHMENTID_NULL)
@@ -747,7 +747,7 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, [[maybe_unused]] int
 	}
 	else
 	{
-		if (strcasecmp(mDefinition->mTracks.tracks[theTrackIndex].mName, "fullscreen"))  // no image and no text, and not the fullscreen track
+		if (!Sexy::StrEqualsIgnoreCase(mDefinition->mTracks.tracks[theTrackIndex].mName, "fullscreen"))  // no image and no text, and not the fullscreen track
 			return false;  // nothing to draw
 		aFullScreen = true;  // a screen-sized rect is filled later
 	}
@@ -965,7 +965,7 @@ void Reanimation::DrawAllRenderGroups(Graphics* g)
 int Reanimation::FindTrackIndex(const char* theTrackName)
 {
 	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
-		if (strcasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0)
+		if (Sexy::StrEqualsIgnoreCase(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName))
 			return aTrackIndex;
 
 	PvzpLogLn("Can't find track '{}'", theTrackName);
@@ -1072,7 +1072,7 @@ void Reanimation::SetFramesForLayer(const char* theTrackName)
 bool Reanimation::TrackExists(const char* theTrackName)
 {
 	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
-		if (strcasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0)
+		if (Sexy::StrEqualsIgnoreCase(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName))
 			return true;
 	return false;
 }
@@ -1262,14 +1262,14 @@ void Reanimation::ShowOnlyTrack(const char* theTrackName)
 {
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
 	{
-		mTrackInstances[i].mRenderGroup = strcasecmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0 ? RENDER_GROUP_NORMAL : RENDER_GROUP_HIDDEN;
+		mTrackInstances[i].mRenderGroup = Sexy::StrEqualsIgnoreCase(mDefinition->mTracks.tracks[i].mName, theTrackName) ? RENDER_GROUP_NORMAL : RENDER_GROUP_HIDDEN;
 	}
 }
 
 void Reanimation::AssignRenderGroupToTrack(const char* theTrackName, int theRenderGroup)
 {
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
-		if (strcasecmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0)
+		if (Sexy::StrEqualsIgnoreCase(mDefinition->mTracks.tracks[i].mName, theTrackName))
 		{
 			mTrackInstances[i].mRenderGroup = theRenderGroup;  // only the first exact match
 			return;
@@ -1278,11 +1278,10 @@ void Reanimation::AssignRenderGroupToTrack(const char* theTrackName, int theRend
 
 void Reanimation::AssignRenderGroupToPrefix(const char* theTrackName, int theRenderGroup)
 {
-	size_t aPrifixLength = strlen(theTrackName);
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
 	{
 		const char* const aTrackName = mDefinition->mTracks.tracks[i].mName;
-		if (strlen(aTrackName) >= aPrifixLength && !strncasecmp(aTrackName, theTrackName, aPrifixLength))  // the name must be at least as long as the prefix
+		if (Sexy::StrStartsWithIgnoreCase(aTrackName, theTrackName))
 			mTrackInstances[i].mRenderGroup = theRenderGroup;
 	}
 }
@@ -1436,7 +1435,7 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex)
 		for (unsigned int i = 0; i < gReanimationParamArraySize; i++)  // find the reanim type for this file name
 		{
 			const ReanimationParams* aParams = &gReanimationParamArray[i];
-			if (strcasecmp(aReanimFileName.c_str(), aParams->mReanimFileName) == 0)
+			if (Sexy::StrEqualsIgnoreCase(aReanimFileName, aParams->mReanimFileName))
 			{
 				aReanimationType = aParams->mReanimationType;
 				break;

@@ -50,7 +50,7 @@ protected:
 	double mVolume;
 	float mPitch;
 
-	uint mDemoEndUpdateCount;
+	uint32_t mDemoEndUpdateCount;
 	bool mDemoLooping;
 
 protected:

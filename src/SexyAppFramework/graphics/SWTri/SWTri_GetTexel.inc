@@ -46,10 +46,10 @@
 
 		unsigned int aUFactor = ((umid-umidfloor) & 0xFFFE) + 1; // aUFactor needs to be between 1 and 0xFFFF to avoid overflow
 		unsigned int aVFactor = ((vmid-vmidfloor) & 0xFFFE) + 1; // ditto for aVFactor
-		unsigned int a00 = ((t00 >> 24) * ((ulong) ((0x10000  - aUFactor) * (0x10000  - aVFactor)) >> 16)) >> 16;
-		unsigned int a10 = ((t10 >> 24) * ((ulong) ((           aUFactor) * (0x10000  - aVFactor)) >> 16)) >> 16;
-		unsigned int a01 = ((t01 >> 24) * ((ulong) ((0x10000  - aUFactor) * (           aVFactor)) >> 16)) >> 16;
-		unsigned int a11 = ((t11 >> 24) * ((ulong) ((           aUFactor) * (           aVFactor)) >> 16)) >> 16;
+		unsigned int a00 = ((t00 >> 24) * ((uint64_t) ((0x10000  - aUFactor) * (0x10000  - aVFactor)) >> 16)) >> 16;
+		unsigned int a10 = ((t10 >> 24) * ((uint64_t) ((           aUFactor) * (0x10000  - aVFactor)) >> 16)) >> 16;
+		unsigned int a01 = ((t01 >> 24) * ((uint64_t) ((0x10000  - aUFactor) * (           aVFactor)) >> 16)) >> 16;
+		unsigned int a11 = ((t11 >> 24) * ((uint64_t) ((           aUFactor) * (           aVFactor)) >> 16)) >> 16;
 		unsigned int r = (((t00&0x00FF0000)*a00 + (t10&0x00FF0000)*a10 + (t01&0x00FF0000)*a01 + (t11&0x00FF0000)*a11)>>8)&0xFF0000;
 		unsigned int g = (((t00&0x0000FF00)*a00 + (t10&0x0000FF00)*a10 + (t01&0x0000FF00)*a01 + (t11&0x0000FF00)*a11)>>8)&0x00FF00;
 		unsigned int b = (((t00&0x000000FF)*a00 + (t10&0x000000FF)*a10 + (t01&0x000000FF)*a01 + (t11&0x000000FF)*a11)>>8)&0x0000FF;

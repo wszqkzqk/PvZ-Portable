@@ -53,7 +53,7 @@ public:
 	uint32_t				mRenderFlags;	// see GLInterface.h for possible values
 
 	std::unique_ptr<uint32_t[]>		mColorTable;
-	std::unique_ptr<uchar[]>		mColorIndices;
+	std::unique_ptr<uint8_t[]>		mColorIndices;
 
 	bool					mForcedMode;
 	bool					mHasTrans;
@@ -63,8 +63,8 @@ public:
 	bool					mWantPal;
 
 	std::unique_ptr<uint32_t[]>		mNativeAlphaData;
-	std::unique_ptr<uchar[]>		mRLAlphaData;
-	std::unique_ptr<uchar[]>		mRLAdditiveData;
+	std::unique_ptr<uint8_t[]>		mRLAlphaData;
+	std::unique_ptr<uint8_t[]>		mRLAdditiveData;
 
 	bool					mBitsChanged;
 	SexyAppBase*			mApp;
@@ -74,8 +74,8 @@ private:
 
 public:
 	virtual void*			GetNativeAlphaData(NativeDisplay *theNative);
-	virtual uchar*			GetRLAlphaData();
-	virtual uchar*			GetRLAdditiveData(NativeDisplay *theNative);
+	virtual uint8_t*			GetRLAlphaData();
+	virtual uint8_t*			GetRLAdditiveData(NativeDisplay *theNative);
 	virtual void			PurgeBits();
 	virtual void			DeleteSWBuffers();
 	virtual void			Delete3DBuffers();

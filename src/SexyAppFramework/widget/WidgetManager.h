@@ -121,7 +121,7 @@ public:
 	void					LostFocus();
 	void					InitModalFlags(ModalFlags* theModalFlags);
 	void					DrawWidgetsTo(Graphics* g);
-	void					DoMouseUps(Widget* theWidget, ulong theDownCode);
+	void					DoMouseUps(Widget* theWidget, int theDownCode);
 	void					DoMouseUps();
 	void					DeferOverlay(Widget* theWidget, int thePriority);
 	void					FlushDeferredOverlayWidgets(int theMaxPriority);

@@ -49,8 +49,8 @@ constexpr const uint32_t UPPER_MASK = 0x80000000; /* most significant w-r bits *
 constexpr const uint32_t LOWER_MASK = 0x7fffffff; /* least significant r bits */
 
 /* Tempering parameters */
-constexpr const unsigned int TEMPERING_MASK_B = 0x9d2c5680;
-constexpr const unsigned int TEMPERING_MASK_C = 0xefc60000;
+constexpr uint32_t TEMPERING_MASK_B = 0x9d2c5680;
+constexpr uint32_t TEMPERING_MASK_C = 0xefc60000;
 constexpr uint32_t TEMPERING_SHIFT_U(uint32_t y) { return y >> 11; }
 constexpr uint32_t TEMPERING_SHIFT_S(uint32_t y) { return y << 7; }
 constexpr uint32_t TEMPERING_SHIFT_T(uint32_t y) { return y << 15; }
@@ -62,7 +62,7 @@ MTRand::MTRand(const std::string& theSerialData)
 	SRand(theSerialData);
 }
 
-MTRand::MTRand(unsigned long seed)
+MTRand::MTRand(uint32_t seed)
 {
 	SRand(seed);
 }
@@ -112,7 +112,7 @@ void MTRand::SRand(const std::string& theSerialData)
 		SRand(4357);
 }
 
-void MTRand::SRand(unsigned long seed)
+void MTRand::SRand(uint32_t seed)
 {
 	if (seed == 0)
 		seed = 4357;
@@ -121,30 +121,28 @@ void MTRand::SRand(unsigned long seed)
 	/* the generator Line 25 of Table 1 in          */
 	/* [KNUTH 1981, The Art of Computer Programming */
 	/*    Vol. 2 (2nd Ed.), pp102]                  */
-	mt[0]= seed & 0xffffffffUL;
+	mt[0] = seed;
 	for (mti=1; mti< MTRAND_N; mti++)
 	{
 		mt[mti] =
-			(1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);
+			(1812433253U * (mt[mti-1] ^ (mt[mti-1] >> 30)) + static_cast<uint32_t>(mti));
 		/* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
 		/* In the previous versions, MSBs of the seed affect   */
 		/* only MSBs of the array mt[].                        */
 		/* 2002/01/09 modified by Makoto Matsumoto             */
-		mt[mti] &= 0xffffffffUL;
-		/* for >32 bit machines */
 	}
 }
 
-unsigned long MTRand::Next()
+uint32_t MTRand::Next()
 {
 	DBG_ASSERT(gRandAllowed==0);
 	return NextNoAssert();
 }
 
-unsigned long MTRand::NextNoAssert()
+uint32_t MTRand::NextNoAssert()
 {
-	unsigned long y;
-	static unsigned long mag01[2]={0x0, MATRIX_A};
+	uint32_t y;
+	static uint32_t mag01[2]={0x0, MATRIX_A};
 	/* mag01[x] = x * MATRIX_A  for x=0,1 */
 
 	if (mti >= MTRAND_N) { /* generate MTRAND_N words at one time */
@@ -152,14 +150,14 @@ unsigned long MTRand::NextNoAssert()
 
 		for (kk=0;kk<MTRAND_N-MTRAND_M;kk++) {
 			y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-			mt[kk] = mt[kk+MTRAND_M] ^ (y >> 1) ^ mag01[y & 0x1UL];
+			mt[kk] = mt[kk+MTRAND_M] ^ (y >> 1) ^ mag01[y & 0x1U];
 		}
 		for (;kk<MTRAND_N-1;kk++) {
 			y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-			mt[kk] = mt[kk+(MTRAND_M-MTRAND_N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
+			mt[kk] = mt[kk+(MTRAND_M-MTRAND_N)] ^ (y >> 1) ^ mag01[y & 0x1U];
 		}
 		y = (mt[MTRAND_N-1]&UPPER_MASK)|(mt[0]&LOWER_MASK);
-		mt[MTRAND_N-1] = mt[MTRAND_M-1] ^ (y >> 1) ^ mag01[y & 0x1UL];
+		mt[MTRAND_N-1] = mt[MTRAND_M-1] ^ (y >> 1) ^ mag01[y & 0x1U];
 
 		mti = 0;
 	}
@@ -170,17 +168,15 @@ unsigned long MTRand::NextNoAssert()
 	y ^= TEMPERING_SHIFT_T(y) & TEMPERING_MASK_C;
 	y ^= TEMPERING_SHIFT_L(y);
 
-	y &= 0x7FFFFFFF;
-
-	return y;
+	return y & 0x7FFFFFFF;
 }
 
-unsigned long MTRand::NextNoAssert(unsigned long range)
+uint32_t MTRand::NextNoAssert(uint32_t range)
 {
 	return NextNoAssert() % range;
 }
 
-unsigned long MTRand::Next(unsigned long range)
+uint32_t MTRand::Next(uint32_t range)
 {
 	DBG_ASSERT(gRandAllowed==0);
 	return NextNoAssert( range );

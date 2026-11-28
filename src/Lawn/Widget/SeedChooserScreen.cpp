@@ -212,7 +212,7 @@ int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(PvzpWeightedArr
 		aTotalWeight += theArray[i].mWeight;
 	DBG_ASSERT(aTotalWeight > 0);
 
-	int aRndResult = theLevelRNG.Next((unsigned long)aTotalWeight);
+	int aRndResult = theLevelRNG.Next((uint32_t)aTotalWeight);
 	int aWeight = 0;
 	for (int j = 0; j < theCount; j++)
 	{
@@ -316,7 +316,7 @@ SeedChooserScreen::~SeedChooserScreen() = default;
 
 unsigned int SeedChooserScreen::SeedNotRecommendedToPick(SeedType theSeedType)
 {
-	uint aRecFlags = mBoard->SeedNotRecommendedForLevel(theSeedType);
+	uint32_t aRecFlags = mBoard->SeedNotRecommendedForLevel(theSeedType);
 	if (TestBit(aRecFlags, NOT_RECOMMENDED_NOCTURNAL) && PickedPlantType(SEED_INSTANT_COFFEE))
 		SetBit(aRecFlags, NOT_RECOMMENDED_NOCTURNAL, false);
 	return aRecFlags;
@@ -879,7 +879,7 @@ void SeedChooserScreen::ShowToolTip()
 			{
 				RemoveToolTip();
 				ChosenSeed& aChosenSeed = mChosenSeeds[aSeedType];
-				uint aRecFlags = SeedNotRecommendedToPick(aSeedType);
+				uint32_t aRecFlags = SeedNotRecommendedToPick(aSeedType);
 				if (SeedNotAllowedToPick(aSeedType))
 				{
 					mToolTip->SetWarningText("[NOT_ALLOWED_ON_THIS_LEVEL]");

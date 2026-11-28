@@ -248,15 +248,15 @@ public:
 	time_t					mLastTime;
 	uint32_t				mLastUserInputTick;
 
-	uint					mSleepCount;
-	uint					mDrawCount;
-	uint					mUpdateCount;
+	uint32_t					mSleepCount;
+	uint32_t					mDrawCount;
+	uint32_t					mUpdateCount;
 	uint32_t				mStartTick;
 	int						mUpdateAppState;
 	int						mUpdateAppDepth;
 	double					mUpdateMultiplier;
 	bool					mPaused;
-	uint					mFastForwardToUpdateNum;
+	uint32_t					mFastForwardToUpdateNum;
 	bool					mFastForwardToMarker;
 	bool					mFastForwardStep;
 	uint32_t				mLastDrawTick;
@@ -280,7 +280,7 @@ public:
 	uint64_t				mDrawTime;
 	bool					mShowFPS;
 	int						mShowFPSMode;
-	uint					mScreenBltTime;
+	uint32_t					mScreenBltTime;
 	bool					mAutoStartLoadingThread;
 	std::atomic<bool>		mLoadingThreadStarted;
 	std::atomic<bool>		mLoadingThreadCompleted;
@@ -306,20 +306,20 @@ public:
 	std::string				mDemoPrefix;
 	std::string				mDemoFileName;
 	bool					mHasCustomDemoFile; // an explicit file argument overrides automatic demo file selection
-	uint					mDemoRecordFileLimit;
+	uint32_t					mDemoRecordFileLimit;
 	size_t					mDemoPlayIndex; // -playnum: index into the timestamp/name-ordered recording list
 	Buffer					mDemoBuffer;
 	int						mLastDemoMouseX;
 	int						mLastDemoMouseY;
-	uint					mLastDemoUpdateCnt;
+	uint32_t					mLastDemoUpdateCnt;
 	uint64_t				mDemoStartTime; // wall clock at session start, base of the demo-synced clock
 	int32_t					mDemoTimeZoneOffset; // recorder's local time minus UTC in seconds, for demo-synced local time
 	bool					mDemoNeedsCommand;
 	bool					mDemoIsShortCmd;
 	int						mDemoCmdNum;
 	int						mDemoCmdBitPos;
-	uint					mDemoCmdUpdateCnt; // update tick before the current command header was read
-	uint					mDemoQueuedSince; // tick when a game-logic-owned command was queued
+	uint32_t					mDemoCmdUpdateCnt; // update tick before the current command header was read
+	uint32_t					mDemoQueuedSince; // tick when a game-logic-owned command was queued
 	bool					mDemoCommandQueued;
 	bool					mDemoLoadingComplete;
 
@@ -613,7 +613,7 @@ public:
 	bool					WriteBufferToFile(const std::string& theFileName, const Buffer* theBuffer);
 	bool					ReadBufferFromFile(const std::string& theFileName, Buffer* theBuffer, bool dontWriteToDemo = false);//UNICODE
 	bool					ReadUTF8StringFromFile(const std::string& theFileName, std::string* theString);
-	bool					WriteBytesToFile(const std::string& theFileName, const void *theData, unsigned long theDataLen);
+	bool					WriteBytesToFile(const std::string& theFileName, const void *theData, size_t theDataLen);
 	bool					FileExists(const std::string& theFileName);
 	bool					EraseFile(const std::string& theFileName);
 

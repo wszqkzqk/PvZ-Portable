@@ -91,7 +91,7 @@ int Sexy::Rand()
 
 int Sexy::Rand(int range)
 {
-	return gMTRand.Next((unsigned long)range);
+	return gMTRand.Next(static_cast<uint32_t>(range));
 }
 
 float Sexy::Rand(float range)
@@ -99,7 +99,7 @@ float Sexy::Rand(float range)
 	return gMTRand.Next(range);
 }
 
-void Sexy::SRand(ulong theSeed)
+void Sexy::SRand(uint32_t theSeed)
 {
 	gMTRand.SRand(theSeed);
 }

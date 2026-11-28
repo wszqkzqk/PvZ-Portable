@@ -61,7 +61,7 @@ public:
 		mRed(theRed), mGreen(theGreen), mBlue(theBlue), mAlpha(0xFF) {}
 	constexpr Color(int32_t theRed, int32_t theGreen, int32_t theBlue, int32_t theAlpha) :
 		mRed(theRed), mGreen(theGreen), mBlue(theBlue), mAlpha(theAlpha) {}
-	constexpr Color(const uchar* theElements) :
+	constexpr Color(const uint8_t* theElements) :
 		mRed(theElements[0]), mGreen(theElements[1]), mBlue(theElements[2]), mAlpha(0xFF) {}
 	constexpr Color(const int32_t* theElements) :
 		mRed(theElements[0]), mGreen(theElements[1]), mBlue(theElements[2]), mAlpha(0xFF) {}

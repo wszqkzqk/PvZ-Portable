@@ -199,7 +199,7 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority)
 	}
 }
 
-void WidgetManager::DoMouseUps(Widget* theWidget, ulong theDownCode)
+void WidgetManager::DoMouseUps(Widget* theWidget, int theDownCode)
 {
 	int aClickCountTable[3] = { 1,-1, 3 };
 	for (int i = 0; i < 3; i++)

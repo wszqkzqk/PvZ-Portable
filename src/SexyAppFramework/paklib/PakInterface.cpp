@@ -204,7 +204,7 @@ PFILE* PakInterface::FOpen(const char* theFileName, const char* anAccess)
 	if (theFileName == nullptr || anAccess == nullptr)
 		return nullptr;
 
-	if ((strcasecmp(anAccess, "r") == 0) || (strcasecmp(anAccess, "rb") == 0) || (strcasecmp(anAccess, "rt") == 0))
+	if (Sexy::StrEqualsIgnoreCase(anAccess, "r") || Sexy::StrEqualsIgnoreCase(anAccess, "rb") || Sexy::StrEqualsIgnoreCase(anAccess, "rt"))
 	{
 		if (const PakRecord* aRecord = FindRecord(theFileName))
 		{

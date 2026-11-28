@@ -1,6 +1,6 @@
 {
 
-	uchar* aWPtr = mRLAlphaData.get();
+	uint8_t* aWPtr = mRLAlphaData.get();
 
 	if (mWidth==1)
 	{

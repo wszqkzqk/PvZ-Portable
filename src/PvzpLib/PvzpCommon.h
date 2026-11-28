@@ -183,7 +183,7 @@ int			ColorComponentMultiply(int theColor1, int theColor2);
 Color					ColorsMultiply(const Color& theColor1, const Color& theColor2);
 Color					ColorAdd(const Color& theColor1, const Color& theColor2);
 
-inline void				SetBit(uint& theNum, int theIdx, bool theValue = true)		{ if (theValue) theNum |= 1 << theIdx; else theNum &= ~(1 << theIdx); }
-inline bool				TestBit(uint theNum, int theIdx)							{ return theNum & (1 << theIdx); }
+inline void				SetBit(uint32_t& theNum, int theIdx, bool theValue = true)		{ if (theValue) theNum |= 1 << theIdx; else theNum &= ~(1 << theIdx); }
+inline bool				TestBit(uint32_t theNum, int theIdx)							{ return theNum & (1 << theIdx); }
 //#define SetBit(num, idx, val) { if (val) (num) |= 1 << (idx); else (num) &= ~(1 << (idx)); }
 //#define TestBit(num, idx) ((num) & (1 - (idx)))

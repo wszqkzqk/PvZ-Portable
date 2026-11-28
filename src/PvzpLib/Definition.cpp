@@ -483,7 +483,7 @@ bool DefMapReadFromCache(void*& theReadPtr, const DefMap* theDefMap, void* theDe
 	return true;
 }
 
-uint DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap)
+uint32_t DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap)
 {
 	while (theSymbolMap->mSymbolName != nullptr)
 	{
@@ -494,7 +494,7 @@ uint DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap)
 	return aSchemaHash;
 }
 
-uint DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList<const DefMap*>& theProgressMaps)
+uint32_t DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList<const DefMap*>& theProgressMaps)
 {
 	for (PvzpListNode<const DefMap*>* aNode = theProgressMaps.mHead; aNode != nullptr; aNode = aNode->mNext)
 		if (aNode->mValue == theDefMap)
@@ -522,11 +522,11 @@ uint DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList
 	return aSchemaHash;
 }
 
-uint DefinitionCalcHash(const DefMap* theDefMap)
+uint32_t DefinitionCalcHash(const DefMap* theDefMap)
 {
 	// Uninitialised!!
 	PvzpList<const DefMap*> aProgressMaps = PvzpList<const DefMap*>();
-	uint aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef*)Z_NULL, 0) + 1, theDefMap, aProgressMaps);
+	uint32_t aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef*)Z_NULL, 0) + 1, theDefMap, aProgressMaps);
 
 	// PvzpList destructor is called upon it going out of scope.
 	return aResult;
@@ -550,7 +550,7 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
 	Bytef* aUncompressedBuffer = (Bytef*)DefinitionAlloc(aHeader->mUncompressedSize);
 	Bytef* aSrc = (Bytef*)((intptr_t)theCompressedBuffer + sizeof(CompressedDefinitionHeader));  // the compressed data starts right after the header
 	// BuGFIXX!!
-	ulong aUncompressedSizeResult = aHeader->mUncompressedSize;  // out-param receiving the actual uncompressed size
+	uLongf aUncompressedSizeResult = aHeader->mUncompressedSize;  // out-param receiving the actual uncompressed size
 	[[maybe_unused]] int aResult = uncompress(aUncompressedBuffer, &aUncompressedSizeResult, aSrc, theCompressedBufferSize - sizeof(CompressedDefinitionHeader));  // Compiler can't work out that this is used in the Debug build
 	PVZP_ASSERT(aResult == Z_OK);
 	PVZP_ASSERT(aUncompressedSizeResult == aHeader->mUncompressedSize);
@@ -606,8 +606,8 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 		static_cast<uint8_t*>(DefinitionUncompressCompiledBuffer(aCompressedBuffer.data(), aCompressedSize, aUncompressedSize, theCompiledFilePath)));
 	if (!aUncompressedBuffer) return false;
 
-	uint aDefHash = DefinitionCalcHash(theDefMap);  // CRC checked against the stored hash below
-	if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint)) {
+	uint32_t aDefHash = DefinitionCalcHash(theDefMap);  // CRC checked against the stored hash below
+	if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint32_t)) {
 		PvzpLogLn("Compiled file size too small: {}", theCompiledFilePath);
 		return false;
 	} // must hold the definition data plus the stored hash
@@ -615,8 +615,8 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 
 	// aBufferPtr advances while reading; the original pointer is kept to measure the read size
 	void* aBufferPtr = aUncompressedBuffer.get();
-	uint aCashHash;
-	SMemR(aBufferPtr, &aCashHash, sizeof(uint));  // read the stored CRC hash
+	uint32_t aCashHash;
+	SMemR(aBufferPtr, &aCashHash, sizeof(uint32_t));  // read the stored CRC hash
 	if (aCashHash != aDefHash) {
 		PvzpLogLn("Compiled file schema wrong: {}", theCompiledFilePath);
 		return false;
@@ -713,7 +713,7 @@ bool DefSymbolValueFromString(const DefSymbol* theSymbolMap, const char* theName
 {
 	while (theSymbolMap->mSymbolName != nullptr)
 	{
-		if (strcasecmp(theName, theSymbolMap->mSymbolName) == 0)
+		if (Sexy::StrEqualsIgnoreCase(theName, theSymbolMap->mSymbolName))
 		{
 			*theResultValue = theSymbolMap->mSymbolValue;
 			return true;
@@ -1020,7 +1020,7 @@ bool DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack*
 	return true;
 }
 
-bool DefinitionReadFlagField(XMLParser* theXmlParser, const std::string& theElementName, uint* theResultValue, const DefSymbol* theSymbolMap)
+bool DefinitionReadFlagField(XMLParser* theXmlParser, const std::string& theElementName, uint32_t* theResultValue, const DefSymbol* theSymbolMap)
 {
 	int aValue;
 	if (!DefSymbolValueFromString(theSymbolMap, theElementName.c_str(), &aValue))
@@ -1105,10 +1105,10 @@ bool DefinitionReadField(XMLParser* theXmlParser, const DefMap* theDefMap, void*
 	{
 		void* pVar = (void*)((uintptr_t)theDefinition + aField->mFieldOffset);
 		// Missing pvar field for some reason!
-		if (aField->mFieldType == DefFieldType::DT_FLAGS && DefinitionReadFlagField(theXmlParser, aXMLElement.mValue, (uint*)pVar, (const DefSymbol*)aField->mExtraData))
+		if (aField->mFieldType == DefFieldType::DT_FLAGS && DefinitionReadFlagField(theXmlParser, aXMLElement.mValue, (uint32_t*)pVar, (const DefSymbol*)aField->mExtraData))
 			return true;
 
-		if (strcasecmp(aXMLElement.mValue.c_str(), aField->mFieldName) == 0)
+		if (Sexy::StrEqualsIgnoreCase(aXMLElement.mValue, aField->mFieldName))
 		{
 			bool aSuccess;
 			switch (aField->mFieldType)
@@ -1253,9 +1253,9 @@ bool DefinitionWriteCompiledFile(const std::string& theCompiledFilePath, const D
 	unsigned int aDefSize = DefinitionGetSize(theDefMap, theDefinition) + sizeof(unsigned int);
 	std::vector<uint8_t> aDefBasePtr(aDefSize);
 	void* aDef = aDefBasePtr.data();
-	uint aDefHash = DefinitionCalcHash(theDefMap);
+	uint32_t aDefHash = DefinitionCalcHash(theDefMap);
 
-	SMemW(aDef, &aDefHash, sizeof(uint));
+	SMemW(aDef, &aDefHash, sizeof(uint32_t));
 	SMemW(aDef, theDefinition, theDefMap->mDefSize);
 	DefMapWriteToCache(aDef, theDefMap, theDefinition);
 	std::unique_ptr<uint8_t[]> aCompressedDef(

@@ -132,8 +132,8 @@
 	}
 	else
 	{
-		uchar* aSrcRLAlphaData = aSrcMemoryImage->GetRLAlphaData();
-		uchar* aRLAlphaDataRow = aSrcRLAlphaData + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
+		uint8_t* aSrcRLAlphaData = aSrcMemoryImage->GetRLAlphaData();
+		uint8_t* aRLAlphaDataRow = aSrcRLAlphaData + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
 
 		for (int y = 0; y < theSrcRect.mHeight; y++)
 		{
@@ -141,12 +141,12 @@
 
 			EACH_ROW;
 
-			uchar* aRLAlphaData = aRLAlphaDataRow;
+			uint8_t* aRLAlphaData = aRLAlphaDataRow;
 
 			for (int aSpanLeft = theSrcRect.mWidth; aSpanLeft > 0; )
 			{
 				uint32_t src = READ_SRC_COLOR;
-				uchar rl = *aRLAlphaData;
+				uint8_t rl = *aRLAlphaData;
 
 				if (rl > aSpanLeft)
 					rl = aSpanLeft;

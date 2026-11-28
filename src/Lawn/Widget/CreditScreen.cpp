@@ -1506,7 +1506,7 @@ void CreditScreen::TurnOffTongues(Reanimation* theReanim, int aParentTrack)
 	{
 		ReanimatorTrackInstance* aTrackInstance = &theReanim->mTrackInstances[aTrackIndex];
 		if (theReanim->mReanimationType == ReanimationType::REANIM_ZOMBIE_CREDITS_DANCE &&
-			aParentTrack % 4 != 1 && strcasecmp(theReanim->mDefinition->mTracks.tracks[aTrackIndex].mName, "anim_tongue") == 0)
+			aParentTrack % 4 != 1 && Sexy::StrEqualsIgnoreCase(theReanim->mDefinition->mTracks.tracks[aTrackIndex].mName, "anim_tongue"))
 		{
 			aTrackInstance->mRenderGroup = RENDER_GROUP_HIDDEN;
 		}

@@ -589,7 +589,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 						{
 							theElement->mType = XMLElement::TYPE_INSTRUCTION;
 						}
-						else if (::isspace((uchar) c))
+						else if (::isspace((uint8_t) c))
 						{
 							if (theElement->mValue != "")
 								hasSpace = true;
@@ -598,7 +598,7 @@ bool XMLParser::NextElement(XMLElement* theElement)
 							if ((theElement->mType == XMLElement::TYPE_START) && (theElement->mValue == "!--"))
 								theElement->mType = XMLElement::TYPE_COMMENT;
 						}
-						else if ((uchar) c > 32)
+						else if ((uint8_t) c > 32)
 						{
 							processChar = true;
 						}

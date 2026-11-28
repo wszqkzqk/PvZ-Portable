@@ -2250,7 +2250,7 @@ void Challenge::InitZombieWavesSurvival()
 	mBoard->mZombieAllowed[ZOMBIE_NORMAL] = true;
 	MTRand aLevelRNG = MTRand(mBoard->GetLevelRandSeed());
 
-	if (aLevelRNG.Next((unsigned long)5) == 0)
+	if (aLevelRNG.Next((uint32_t)5) == 0)
 	{
 		mBoard->mZombieAllowed[ZOMBIE_NEWSPAPER] = true;
 	}
@@ -2262,7 +2262,7 @@ void Challenge::InitZombieWavesSurvival()
 	int aCapacity = std::min(mSurvivalStage + 1, 9);
 	while (aCapacity > 0)
 	{
-		ZombieType aRandZombie = (ZombieType)aLevelRNG.Next((unsigned long)NUM_ZOMBIE_TYPES);
+		ZombieType aRandZombie = (ZombieType)aLevelRNG.Next((uint32_t)NUM_ZOMBIE_TYPES);
 		if (mBoard->mZombieAllowed[aRandZombie])																	continue;
 		if (mBoard->IsZombieTypePoolOnly(aRandZombie) && !mBoard->StageHasPool())									continue;
 		if (mBoard->StageHasRoof() && (aRandZombie == ZOMBIE_DIGGER || aRandZombie == ZOMBIE_DANCER))				continue;
@@ -2764,7 +2764,7 @@ void Challenge::SpawnZombieWave()
 void Challenge::DrawStormFlash(Graphics* g, int theTime, int theMaxAmount)
 {
 	MTRand aDrawRand = MTRand(mBoard->mMainCounter / 6);
-	int aDarkness = PvzpAnimateCurve(150, 0, theTime, 255 - theMaxAmount, 255, CURVE_LINEAR) + aDrawRand.NextNoAssert((unsigned long)64) - 32;
+	int aDarkness = PvzpAnimateCurve(150, 0, theTime, 255 - theMaxAmount, 255, CURVE_LINEAR) + aDrawRand.NextNoAssert((uint32_t)64) - 32;
 	g->SetColor(Color(0, 0, 0, std::clamp(aDarkness, 0, 255)));
 	g->FillRect(-1000, -1000, 2800, 2600);
 

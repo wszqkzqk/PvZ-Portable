@@ -152,7 +152,7 @@ bool                    DefinitionReadEnumField(XMLParser* theXmlParser, int* th
 bool                    DefinitionReadVector2Field(XMLParser* theXmlParser, SexyVector2* theValue);
 bool                    DefinitionReadArrayField(XMLParser* theXmlParser, DefinitionArrayDef* theArray, const DefField* theField);
 bool                    DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack* theTrack);
-bool                    DefinitionReadFlagField(XMLParser* theXmlParser, const std::string& theElementName, uint* theResultValue, const DefSymbol* theSymbolMap);
+bool                    DefinitionReadFlagField(XMLParser* theXmlParser, const std::string& theElementName, uint32_t* theResultValue, const DefSymbol* theSymbolMap);
 bool                    DefinitionReadImageField(XMLParser* theXmlParser, Image** theImage);
 bool                    DefinitionReadFontField(XMLParser* theXmlParser, _Font** theFont);
 bool                    DefinitionReadField(XMLParser* theXmlParser, const DefMap* theDefMap, void* theDefinition, bool* theDone);
@@ -178,9 +178,9 @@ unsigned int DefinitionGetDeepSize(const DefMap* theDefMap, void* theDefinition)
 unsigned int DefinitionGetSize(const DefMap* theDefMap, void* theDefinition);
 void*        DefinitionAlloc(int theSize);
 void*                   DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCompressedBufferSize, size_t& theUncompressedSize, const std::string& theCompiledFilePath);
-uint                    DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap);
-uint                    DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList<const DefMap*>& theProgressMaps);
-uint                    DefinitionCalcHash(const DefMap* theDefMap);
+uint32_t                    DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap);
+uint32_t                    DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList<const DefMap*>& theProgressMaps);
+uint32_t                    DefinitionCalcHash(const DefMap* theDefMap);
 inline bool             DefReadFromCacheString(void*& theReadPtr, const char** theString);
 inline bool             DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArray, const DefMap* theDefMap);
 inline bool             DefReadFromCacheImage(void*& theReadPtr, Image** theImage);

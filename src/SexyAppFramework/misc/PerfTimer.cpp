@@ -92,7 +92,7 @@ struct PerfInfo
 
 	PerfInfo(const char *theName) : mPerfName(theName), mStartTime(0), mDuration(0), mLongestCall(0), mStartCount(0), mCallCount(0) { }
 
-	bool operator<(const PerfInfo &theInfo) const { return strcasecmp(mPerfName,theInfo.mPerfName)<0; }
+	bool operator<(const PerfInfo &theInfo) const { return Sexy::StrCompareIgnoreCase(mPerfName, theInfo.mPerfName) < 0; }
 };
 
 typedef std::set<PerfInfo> PerfInfoSet;

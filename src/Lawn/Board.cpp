@@ -504,7 +504,7 @@ void Board::AddGraveStones(int theGridX, int theCount, MTRand& theLevelRNG)
 	int i = 0;
 	while (i < theCount)
 	{
-		int aGridY = theLevelRNG.Next((unsigned long)MAX_GRID_SIZE_Y);
+		int aGridY = theLevelRNG.Next((uint32_t)MAX_GRID_SIZE_Y);
 		//if (aAllowGraveStone[aGridY])
 		//{
 		//	aAllowGraveStone[aGridY] = false;

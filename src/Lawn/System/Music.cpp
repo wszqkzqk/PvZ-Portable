@@ -331,7 +331,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 	}
 }
 
-unsigned long Music::GetMusicOrder(MusicFile theMusicFile)
+int Music::GetMusicOrder(MusicFile theMusicFile)
 {
 	PVZP_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
 	return mMusicInterface->GetMusicOrder(theMusicFile);

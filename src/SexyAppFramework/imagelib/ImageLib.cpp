@@ -154,7 +154,7 @@ Image* GetPNGImage(const std::string& theFileName)
 
 	row_pointers = new png_bytep[height];
 	aBits = new uint32_t[width*height];
-	for (uint i = 0; i < height; i++)
+	for (uint32_t i = 0; i < height; i++)
 	{
 		row_pointers[i] = (png_bytep)(aBits + i*width);
 	}

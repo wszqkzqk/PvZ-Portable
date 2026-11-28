@@ -33,9 +33,9 @@ class NativeDisplay
 {
 public:
 	int						mRGBBits;
-	ulong					mRedMask;
-	ulong					mGreenMask;
-	ulong					mBlueMask;
+	uint32_t					mRedMask;
+	uint32_t					mGreenMask;
+	uint32_t					mBlueMask;
 	int						mRedBits;
 	int						mGreenBits;
 	int						mBlueBits;
