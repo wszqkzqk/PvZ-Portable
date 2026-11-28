@@ -40,7 +40,7 @@ public:
 	float                       y;
 	float                       u;
 	float                       v;
-	unsigned long               color;
+	uint32_t               color;
 };
 
 class PvzpTriangleGroup

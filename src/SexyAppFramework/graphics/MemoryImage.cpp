@@ -36,6 +36,7 @@
 #include "imagelib/ImageLib.h"
 
 #include <math.h>
+#include <memory>
 
 using namespace Sexy;
 
@@ -398,7 +399,7 @@ void MemoryImage::AdditiveDrawLine(double theStartX, double theStartY, double th
 	int aGreenShift = 8;
 	int aBlueShift = 0;
 
-	uchar* aMaxTable = mApp->mAdd8BitMaxTable;
+	uint8_t* aMaxTable = mApp->mAdd8BitMaxTable;
 	uint32_t *aSurface = GetBits();
 
 	if (true)//(mLockedSurfaceDesc.ddpfPixelFormat.dwRGBBitCount == 32)
@@ -720,7 +721,7 @@ void MemoryImage::CommitBits()
 
 			for (int i = 0; i < aSize; i++)
 			{
-				uchar anAlpha = (uchar) (*ptr++ >> 24);
+				uint8_t anAlpha = (uint8_t) (*ptr++ >> 24);
 
 				if (anAlpha == 0)
 					mHasTrans = true;
@@ -738,7 +739,7 @@ void MemoryImage::CommitBits()
 
 			for (int i = 0; i < aSize; i++)
 			{
-				uchar anAlpha = (uchar) (*ptr++ >> 24);
+				uint8_t anAlpha = (uint8_t) (*ptr++ >> 24);
 
 				if (anAlpha == 0)
 					mHasTrans = true;
@@ -848,13 +849,13 @@ void* MemoryImage::GetNativeAlphaData(NativeDisplay *theDisplay)
 }
 
 
-uchar* MemoryImage::GetRLAlphaData()
+uint8_t* MemoryImage::GetRLAlphaData()
 {
 	CommitBits();
 
 	if (mRLAlphaData == nullptr)
 	{
-		mRLAlphaData = std::make_unique<uchar[]>(mWidth*mHeight);
+		mRLAlphaData = std::make_unique<uint8_t[]>(mWidth*mHeight);
 
 		if (mColorTable == nullptr)
 		{
@@ -872,7 +873,7 @@ uchar* MemoryImage::GetRLAlphaData()
 		}
 		else
 		{
-			uchar* aSrcPtr = mColorIndices.get();
+			uint8_t* aSrcPtr = mColorIndices.get();
 			uint32_t* aColorTable = mColorTable.get();
 
 			#define NEXT_SRC_COLOR (aColorTable[*(aSrcPtr++)])
@@ -886,7 +887,7 @@ uchar* MemoryImage::GetRLAlphaData()
 	return mRLAlphaData.get();
 }
 
-uchar* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
+uint8_t* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
 {
 	if (mRLAdditiveData == nullptr)
 	{
@@ -894,9 +895,9 @@ uchar* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
 		{
 			uint32_t* aBits = (uint32_t*) GetNativeAlphaData(theNative);
 
-			mRLAdditiveData = std::make_unique<uchar[]>(mWidth*mHeight);
+			mRLAdditiveData = std::make_unique<uint8_t[]>(mWidth*mHeight);
 
-			uchar* aWPtr = mRLAdditiveData.get();
+			uint8_t* aWPtr = mRLAdditiveData.get();
 			uint32_t* aRPtr = aBits;
 
 			if (mWidth==1)
@@ -946,10 +947,10 @@ uchar* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
 		{
 			uint32_t* aNativeColorTable = (uint32_t*) GetNativeAlphaData(theNative);
 
-			mRLAdditiveData = std::make_unique<uchar[]>(mWidth*mHeight);
+			mRLAdditiveData = std::make_unique<uint8_t[]>(mWidth*mHeight);
 
-			uchar* aWPtr = mRLAdditiveData.get();
-			uchar* aRPtr = mColorIndices.get();
+			uint8_t* aWPtr = mRLAdditiveData.get();
+			uint8_t* aRPtr = mColorIndices.get();
 
 			if (mWidth==1)
 			{
@@ -1255,7 +1256,7 @@ void MemoryImage::AdditiveBlt(Image* theImage, int theX, int theY, const Rect& t
 
 	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
 
-	uchar* aMaxTable = mApp->mAdd8BitMaxTable;
+	uint8_t* aMaxTable = mApp->mAdd8BitMaxTable;
 
 	if (aSrcMemoryImage != nullptr)
 	{
@@ -1274,10 +1275,10 @@ void MemoryImage::AdditiveBlt(Image* theImage, int theX, int theY, const Rect& t
 		else
 		{
 			uint32_t* aColorTable = aSrcMemoryImage->mColorTable.get();
-			uchar* aSrcBits = aSrcMemoryImage->mColorIndices.get();
+			uint8_t* aSrcBits = aSrcMemoryImage->mColorIndices.get();
 
 			#define NEXT_SRC_COLOR		(aColorTable[*(aSrcPtr++)])
-			#define SRC_TYPE uchar
+			#define SRC_TYPE uint8_t
 
 			#include "inc_routines/MI_AdditiveBlt.inc"
 
@@ -1315,11 +1316,11 @@ void MemoryImage::NormalBlt(Image* theImage, int theX, int theY, const Rect& the
 		else
 		{
 			uint32_t* aColorTable = aSrcMemoryImage->mColorTable.get();
-			uchar* aSrcPixelsRow = aSrcMemoryImage->mColorIndices.get() + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
+			uint8_t* aSrcPixelsRow = aSrcMemoryImage->mColorIndices.get() + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
 
 			#define NEXT_SRC_COLOR		(aColorTable[*(aSrcPtr++)])
 			#define READ_SRC_COLOR		(aColorTable[*(aSrcPtr)])
-			#define EACH_ROW			uchar* aSrcPtr = aSrcPixelsRow
+			#define EACH_ROW			uint8_t* aSrcPtr = aSrcPixelsRow
 
 			#include "inc_routines/MI_NormalBlt.inc"
 
@@ -1447,7 +1448,7 @@ void MemoryImage::BltRotated(Image* theImage, float theX, float theY, const Rect
 		return;
 
 	MemoryImage* aMemoryImage = dynamic_cast<MemoryImage*>(theImage);
-	uchar* aMaxTable = mApp->mAdd8BitMaxTable;
+	uint8_t* aMaxTable = mApp->mAdd8BitMaxTable;
 
 	if (aMemoryImage != nullptr)
 	{
@@ -1473,9 +1474,9 @@ void MemoryImage::BltRotated(Image* theImage, float theX, float theY, const Rect
 		else
 		{
 			uint32_t* aColorTable = aMemoryImage->mColorTable.get();
-			uchar* aSrcBits = aMemoryImage->mColorIndices.get() + theSrcRect.mX + theSrcRect.mY*aMemoryImage->mWidth;
+			uint8_t* aSrcBits = aMemoryImage->mColorIndices.get() + theSrcRect.mX + theSrcRect.mY*aMemoryImage->mWidth;
 
-			#define SRC_TYPE uchar
+			#define SRC_TYPE uint8_t
 			#define READ_COLOR(ptr) (aColorTable[*(ptr)])
 
 			if (theDrawMode == Graphics::DRAWMODE_NORMAL)
@@ -1523,9 +1524,9 @@ void MemoryImage::SlowStretchBlt(Image* theImage, const Rect& theDestRect, const
 		else
 		{
 			uint32_t* aColorTable = aSrcMemoryImage->mColorTable.get();
-			uchar* aSrcBits = aSrcMemoryImage->mColorIndices.get();
+			uint8_t* aSrcBits = aSrcMemoryImage->mColorIndices.get();
 
-			#define SRC_TYPE uchar
+			#define SRC_TYPE uint8_t
 			#define READ_COLOR(ptr) (aColorTable[*(ptr)])
 
 			#include "inc_routines/MI_SlowStretchBlt.inc"
@@ -1758,7 +1759,7 @@ bool MemoryImage::Palletize()
 	if (mBits == nullptr)
 		return false;
 
-	mColorIndices = std::make_unique<uchar[]>(mWidth*mHeight);
+	mColorIndices = std::make_unique<uint8_t[]>(mWidth*mHeight);
 	mColorTable = std::make_unique<uint32_t[]>(256);
 
 	if (!Quantize8Bit(mBits.get(), mWidth, mHeight, mColorIndices.get(), mColorTable.get()))

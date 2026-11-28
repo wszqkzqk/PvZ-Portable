@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
+#include <memory>
 
 #include "../Plant.h"
 #include "GameButton.h"
@@ -123,7 +124,7 @@ void ImitaterDialog::ShowToolTip()
 	else if (aSeedType != mToolTipSeed)
 	{
 		RemoveToolTip();
-		uint aRecFlags = mApp->mSeedChooserScreen->SeedNotRecommendedToPick(aSeedType);
+		uint32_t aRecFlags = mApp->mSeedChooserScreen->SeedNotRecommendedToPick(aSeedType);
 		if (mApp->mSeedChooserScreen->SeedNotAllowedToPick(aSeedType))
 		{
 			mToolTip->SetWarningText("[NOT_ALLOWED_ON_THIS_LEVEL]");

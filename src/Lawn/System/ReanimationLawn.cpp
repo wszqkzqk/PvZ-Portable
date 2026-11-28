@@ -18,6 +18,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
+#include <memory>
+#include <iterator>
 
 #include "../Plant.h"
 #include "../Zombie.h"
@@ -47,7 +49,7 @@ void ReanimatorCache::UpdateReanimationForVariation(Reanimation* theReanim, Draw
 			Color(180, 255, 105)
 		};
 
-		PVZP_ASSERT(aVariationIndex >= 0 && aVariationIndex < LENGTH(MARIGOLD_VARIATIONS));
+		PVZP_ASSERT(aVariationIndex >= 0 && aVariationIndex < std::size(MARIGOLD_VARIATIONS));
 		theReanim->GetTrackInstanceByName("Marigold_petals")->mTrackColor = MARIGOLD_VARIATIONS[aVariationIndex];
 	}
 	else

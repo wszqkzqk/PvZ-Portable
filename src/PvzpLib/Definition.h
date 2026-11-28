@@ -152,19 +152,12 @@ bool                    DefinitionReadEnumField(XMLParser* theXmlParser, int* th
 bool                    DefinitionReadVector2Field(XMLParser* theXmlParser, SexyVector2* theValue);
 bool                    DefinitionReadArrayField(XMLParser* theXmlParser, DefinitionArrayDef* theArray, const DefField* theField);
 bool                    DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack* theTrack);
-bool                    DefinitionReadFlagField(XMLParser* theXmlParser, const std::string& theElementName, uint* theResultValue, const DefSymbol* theSymbolMap);
+bool                    DefinitionReadFlagField(XMLParser* theXmlParser, const std::string& theElementName, uint32_t* theResultValue, const DefSymbol* theSymbolMap);
 bool                    DefinitionReadImageField(XMLParser* theXmlParser, Image** theImage);
 bool                    DefinitionReadFontField(XMLParser* theXmlParser, _Font** theFont);
 bool                    DefinitionReadField(XMLParser* theXmlParser, const DefMap* theDefMap, void* theDefinition, bool* theDone);
 bool                    DefinitionWriteCompiledFile(const std::string& theCompiledFilePath, const DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionCompileFile(const std::string& theXMLFilePath, const std::string& theCompiledFilePath, const DefMap* theDefMap, void* theDefinition);
-
-void                    DefMapWriteToCache(void*& theWritePtr, const DefMap* theDefMap, void* theDefinition);
-void                    DefWriteToCacheString(void*& theWritePtr, const char** theValue);
-void                    DefWriteToCacheArray(void*& theWritePtr, DefinitionArrayDef* theValue, const DefMap* theDefMap);
-void                    DefWriteToCacheFloatTrack(void*& theWritePtr, FloatParameterTrack* theValue);
-void                    DefWriteToCacheImage(void*& theWritePtr, Image** theValue);
-void                    DefWriteToCacheFont(void*& theWritePtr, _Font** theValue);
 
 void*                   DefinitionCompressCompiledBuffer(void* theBuffer, unsigned int theBufferSize, unsigned int* theResultSize);
 
@@ -178,15 +171,9 @@ unsigned int DefinitionGetDeepSize(const DefMap* theDefMap, void* theDefinition)
 unsigned int DefinitionGetSize(const DefMap* theDefMap, void* theDefinition);
 void*        DefinitionAlloc(int theSize);
 void*                   DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCompressedBufferSize, size_t& theUncompressedSize, const std::string& theCompiledFilePath);
-uint                    DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap);
-uint                    DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList<const DefMap*>& theProgressMaps);
-uint                    DefinitionCalcHash(const DefMap* theDefMap);
-inline bool             DefReadFromCacheString(void*& theReadPtr, const char** theString);
-inline bool             DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArray, const DefMap* theDefMap);
-inline bool             DefReadFromCacheImage(void*& theReadPtr, Image** theImage);
-inline bool             DefReadFromCacheFont(void*& theReadPtr, _Font** theFont);
-inline bool             DefReadFromCacheFloatTrack(void*& theReadPtr, FloatParameterTrack* theTrack);
-bool                    DefMapReadFromCache(void*& theReadPtr, const DefMap* theDefMap, void* theDefinition);
+uint32_t                    DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap);
+uint32_t                    DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList<const DefMap*>& theProgressMaps);
+uint32_t                    DefinitionCalcHash(const DefMap* theDefMap);
 bool                    DefinitionCompileAndLoad(const std::string& theXMLFilePath, const DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionLoadMap(XMLParser* theXmlParser, const DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionLoadImage(Image** theImage, const std::string& theName);

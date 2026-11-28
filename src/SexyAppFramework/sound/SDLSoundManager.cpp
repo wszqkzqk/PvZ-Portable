@@ -24,6 +24,7 @@
 #include "paklib/PakInterface.h"
 #include <memory>
 #include <vector>
+#include <cstdint>
 
 using namespace Sexy;
 
@@ -81,16 +82,15 @@ bool SDLSoundManager::DecodeSound(intptr_t theSfxID, const std::string& theFilen
 	for (const char* aFormat : aFormats)
 	{
 		std::string aFilename = theFilename + aFormat;
-		PFILE* fp = p_fopen(aFilename.c_str(), "rb");
-		if (fp == nullptr)
+		auto aFile = OpenPakFile(aFilename.c_str(), "rb");
+		if (!aFile)
 			continue;
 
-		p_fseek(fp, 0, SEEK_END);
-		const size_t aFileSize = p_ftell(fp);
-		p_fseek(fp, 0, SEEK_SET);
+		p_fseek(aFile.get(), 0, SEEK_END);
+		const size_t aFileSize = p_ftell(aFile.get());
+		p_fseek(aFile.get(), 0, SEEK_SET);
 		std::vector<uint8_t> aData(aFileSize);
-		const size_t aReadSize = p_fread(aData.data(), 1, aFileSize, fp);
-		p_fclose(fp);
+		const size_t aReadSize = p_fread(aData.data(), 1, aFileSize, aFile.get());
 		if (aReadSize != aFileSize)
 			continue;
 
@@ -127,11 +127,8 @@ bool SDLSoundManager::LoadSound(intptr_t theSfxID, const std::string& theFilenam
 	static constexpr const char* aFormats[] = { ".wav", ".mp3", ".ogg", ".au" };
 	for (const char* aFormat : aFormats)
 	{
-		if (PFILE* fp = p_fopen((theFilename + aFormat).c_str(), "rb"))
-		{
-			p_fclose(fp);
+		if (auto aFile = OpenPakFile((theFilename + aFormat).c_str(), "rb"))
 			return true;
-		}
 	}
 	mSourceFileNames[theSfxID].clear();
 	return false;

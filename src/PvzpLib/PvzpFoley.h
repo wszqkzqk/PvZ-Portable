@@ -187,7 +187,7 @@ public:
 	SoundInstance*      mInstance;
 	int                 mRefCount;
 	bool                mPaused;
-	uint                mStartTime;
+	uint32_t                mStartTime;
 	int                 mPauseOffset;
 
 public:

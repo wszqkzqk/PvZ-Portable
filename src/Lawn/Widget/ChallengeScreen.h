@@ -58,7 +58,7 @@ public:
 	float                       mLockShakeY;
 	bool                        mLimboPageUnlocked;
 	int                         mClickCount;
-	uint                        mLastClickUpdateCnt;
+	uint32_t                        mLastClickUpdateCnt;
 
 public:
 	ChallengeScreen(LawnApp* theApp, ChallengePage thePage);

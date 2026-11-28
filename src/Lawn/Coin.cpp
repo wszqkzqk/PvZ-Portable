@@ -22,6 +22,7 @@
 #include "Coin.h"
 #include "Board.h"
 #include <algorithm>
+#include <iterator>
 #include "Cutscene.h"
 #include "ZenGarden.h"
 #include "Challenge.h"
@@ -219,7 +220,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 				SeedType::SEED_CHOMPER
 			};
 
-			SeedType aSeedType = PvzpPickFromArray(aSeedList, LENGTH(aSeedList));
+			SeedType aSeedType = PvzpPickFromArray(aSeedList, std::size(aSeedList));
 			mPottedPlantSpec.InitializePottedPlant(aSeedType);
 		}
 		else if (mBoard->mBackground == BackgroundType::BACKGROUND_2_NIGHT)
@@ -235,7 +236,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 				SeedType::SEED_DOOMSHROOM
 			};
 
-			SeedType aSeedType = PvzpPickFromArray(aSeedList, LENGTH(aSeedList));
+			SeedType aSeedType = PvzpPickFromArray(aSeedList, std::size(aSeedList));
 			mPottedPlantSpec.InitializePottedPlant(aSeedType);
 		}
 		else if (mBoard->mBackground == BackgroundType::BACKGROUND_3_POOL)
@@ -251,7 +252,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 				SeedType::SEED_TALLNUT
 			};
 
-			SeedType aSeedType = PvzpPickFromArray(aSeedList, LENGTH(aSeedList));
+			SeedType aSeedType = PvzpPickFromArray(aSeedList, std::size(aSeedList));
 			mPottedPlantSpec.InitializePottedPlant(aSeedType);
 		}
 		else if (mBoard->mBackground == BackgroundType::BACKGROUND_4_FOG)
@@ -267,7 +268,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 				SeedType::SEED_MAGNETSHROOM
 			};
 
-			SeedType aSeedType = PvzpPickFromArray(aSeedList, LENGTH(aSeedList));
+			SeedType aSeedType = PvzpPickFromArray(aSeedList, std::size(aSeedList));
 			mPottedPlantSpec.InitializePottedPlant(aSeedType);
 		}
 		else if (mBoard->mBackground == BackgroundType::BACKGROUND_5_ROOF)
@@ -281,7 +282,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 				SeedType::SEED_MELONPULT
 			};
 
-			SeedType aSeedType = PvzpPickFromArray(aSeedList, LENGTH(aSeedList));
+			SeedType aSeedType = PvzpPickFromArray(aSeedList, std::size(aSeedList));
 			mPottedPlantSpec.InitializePottedPlant(aSeedType);
 		}
 		else

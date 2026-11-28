@@ -154,7 +154,7 @@ Image* GetPNGImage(const std::string& theFileName)
 
 	row_pointers = new png_bytep[height];
 	aBits = new uint32_t[width*height];
-	for (uint i = 0; i < height; i++)
+	for (uint32_t i = 0; i < height; i++)
 	{
 		row_pointers[i] = (png_bytep)(aBits + i*width);
 	}
@@ -180,58 +180,55 @@ Image* GetPNGImage(const std::string& theFileName)
 
 Image* GetTGAImage(const std::string& theFileName)
 {
-	PFILE* aTGAFile = p_fopen(theFileName.c_str(), "rb");
-	if (aTGAFile == nullptr)
+	auto aTGAFile = OpenPakFile(theFileName.c_str(), "rb");
+	if (!aTGAFile)
 		return nullptr;
 
 	uint8_t aHeaderIDLen;
-	p_fread(&aHeaderIDLen, sizeof(uint8_t), 1, aTGAFile);
+	p_fread(&aHeaderIDLen, sizeof(uint8_t), 1, aTGAFile.get());
 
 	uint8_t aColorMapType;
-	p_fread(&aColorMapType, sizeof(uint8_t), 1, aTGAFile);
+	p_fread(&aColorMapType, sizeof(uint8_t), 1, aTGAFile.get());
 
 	uint8_t anImageType;
-	p_fread(&anImageType, sizeof(uint8_t), 1, aTGAFile);
+	p_fread(&anImageType, sizeof(uint8_t), 1, aTGAFile.get());
 
 	uint16_t aFirstEntryIdx;
-	p_fread(&aFirstEntryIdx, sizeof(uint16_t), 1, aTGAFile);
+	p_fread(&aFirstEntryIdx, sizeof(uint16_t), 1, aTGAFile.get());
 	aFirstEntryIdx = Sexy::FromLE16(aFirstEntryIdx);
 
 	uint16_t aColorMapLen;
-	p_fread(&aColorMapLen, sizeof(uint16_t), 1, aTGAFile);
+	p_fread(&aColorMapLen, sizeof(uint16_t), 1, aTGAFile.get());
 	aColorMapLen = Sexy::FromLE16(aColorMapLen);
 
 	uint8_t aColorMapEntrySize;
-	p_fread(&aColorMapEntrySize, sizeof(uint8_t), 1, aTGAFile);
+	p_fread(&aColorMapEntrySize, sizeof(uint8_t), 1, aTGAFile.get());
 
 	uint16_t anXOrigin;
-	p_fread(&anXOrigin, sizeof(uint16_t), 1, aTGAFile);
+	p_fread(&anXOrigin, sizeof(uint16_t), 1, aTGAFile.get());
 	anXOrigin = Sexy::FromLE16(anXOrigin);
 
 	uint16_t aYOrigin;
-	p_fread(&aYOrigin, sizeof(uint16_t), 1, aTGAFile);
+	p_fread(&aYOrigin, sizeof(uint16_t), 1, aTGAFile.get());
 	aYOrigin = Sexy::FromLE16(aYOrigin);
 
 	uint16_t anImageWidth;
-	p_fread(&anImageWidth, sizeof(uint16_t), 1, aTGAFile);
+	p_fread(&anImageWidth, sizeof(uint16_t), 1, aTGAFile.get());
 	anImageWidth = Sexy::FromLE16(anImageWidth);
 
 	uint16_t anImageHeight;
-	p_fread(&anImageHeight, sizeof(uint16_t), 1, aTGAFile);
+	p_fread(&anImageHeight, sizeof(uint16_t), 1, aTGAFile.get());
 	anImageHeight = Sexy::FromLE16(anImageHeight);
 
 	uint8_t aBitCount = 32;
-	p_fread(&aBitCount, sizeof(uint8_t), 1, aTGAFile);
+	p_fread(&aBitCount, sizeof(uint8_t), 1, aTGAFile.get());
 
 	uint8_t anImageDescriptor = 8 | (1<<5);
-	p_fread(&anImageDescriptor, sizeof(uint8_t), 1, aTGAFile);
+	p_fread(&anImageDescriptor, sizeof(uint8_t), 1, aTGAFile.get());
 
 	if ((aBitCount != 32) ||
 		(anImageDescriptor != (8 | (1<<5))))
-	{
-		p_fclose(aTGAFile);
 		return nullptr;
-	}
 
 	Image* anImage = new Image();
 
@@ -239,7 +236,7 @@ Image* GetTGAImage(const std::string& theFileName)
 	anImage->mHeight = anImageHeight;
 	anImage->mBits = std::make_unique<uint32_t[]>(anImageWidth*anImageHeight);
 
-	p_fread(anImage->mBits.get(), 4, anImage->mWidth*anImage->mHeight, aTGAFile);
+	p_fread(anImage->mBits.get(), 4, anImage->mWidth*anImage->mHeight, aTGAFile.get());
 
 	// TGA stores BGRA in LE; on BE need to byteswap each pixel
 	if constexpr (std::endian::native == std::endian::big)
@@ -248,8 +245,6 @@ Image* GetTGAImage(const std::string& theFileName)
 		for (int i = 0; i < anImageWidth * anImageHeight; i++, ptr++)
 			*ptr = Sexy::ByteSwap32(*ptr);
 	}
-
-	p_fclose(aTGAFile);
 
 	return anImage;
 }
@@ -290,7 +285,7 @@ Image* GetGIFImage(const std::string& theFileName)
 	Open image file.
 	*/
 
-	std::unique_ptr<PFILE, decltype(&p_fclose)> fp(p_fopen(theFileName.c_str(), "rb"), &p_fclose);
+	auto fp = OpenPakFile(theFileName.c_str(), "rb");
 
 	if (fp == nullptr)
 		return nullptr;

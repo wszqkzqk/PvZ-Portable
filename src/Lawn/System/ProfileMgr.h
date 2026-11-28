@@ -35,8 +35,8 @@ class ProfileMgr
 {
 protected:
 	ProfileMap			mProfileMap;
-	unsigned long		mNextProfileId;
-	unsigned long		mNextProfileUseSeq;
+	uint32_t		mNextProfileId;
+	uint32_t		mNextProfileUseSeq;
 
 protected:
 	void				SyncState(DataSync& theSync);

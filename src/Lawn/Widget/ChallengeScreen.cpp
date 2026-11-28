@@ -35,6 +35,7 @@
 #include <SDL3/SDL.h>
 #include <algorithm>
 #include <format>
+#include <memory>
 
 constinit const ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
 	{ .mChallengeMode = GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1, .mChallengeIconIndex = 0, .mPage = ChallengePage::CHALLENGE_PAGE_SURVIVAL, .mRow = 0, .mCol = 0, .mChallengeName = "[SURVIVAL_DAY_NORMAL]" },
@@ -753,10 +754,10 @@ void ChallengeScreen::MouseDown(int x, int y, int theClickCount)
 	if (mLimboPageUnlocked)
 		return;
 
-	constexpr uint MAX_GAP_TICKS = 20; // 200 ms at 100 update ticks/sec
+	constexpr uint32_t MAX_GAP_TICKS = 20; // 200 ms at 100 update ticks/sec
 	constexpr int CLICKS_NEEDED = 5;
 
-	uint aNow = mApp->mUpdateCount;
+	uint32_t aNow = mApp->mUpdateCount;
 	if (aNow - mLastClickUpdateCnt > MAX_GAP_TICKS)
 		mClickCount = 0;
 	mLastClickUpdateCnt = aNow;

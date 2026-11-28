@@ -32,6 +32,8 @@
 #include <algorithm>
 #include <mutex>
 #include <format>
+#include <memory>
+#include <utility>
 
 using namespace Sexy;
 
@@ -275,7 +277,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 	bool literalError = false;
 	bool sizeMismatch = false;
 
-	if (strcasecmp(aCmd.c_str(), "Define") == 0)
+	if (Sexy::StrEqualsIgnoreCase(aCmd, "Define"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -318,7 +320,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "CreateHorzSpanRectList") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "CreateHorzSpanRectList"))
 	{
 		if (theParams.mElementVector.size() == 4)
 		{
@@ -364,7 +366,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "SetDefaultPointSize") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "SetDefaultPointSize"))
 	{
 		if (theParams.mElementVector.size() == 2)
 		{
@@ -381,7 +383,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "SetCharMap") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "SetCharMap"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -412,7 +414,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "CreateLayer") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "CreateLayer"))
 	{
 		if (theParams.mElementVector.size() == 2)
 		{
@@ -434,7 +436,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "CreateLayerFrom") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "CreateLayerFrom"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -458,7 +460,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerRequireTags") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerRequireTags"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -477,7 +479,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerExcludeTags") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerExcludeTags"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -496,7 +498,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerPointRange") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerPointRange"))
 	{
 		if (theParams.mElementVector.size() == 4)
 		{
@@ -523,7 +525,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetPointSize") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetPointSize"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -545,7 +547,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetHeight") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetHeight"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -567,7 +569,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetImage") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetImage"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -600,7 +602,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetDrawMode") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetDrawMode"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -622,7 +624,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetColorMult") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetColorMult"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -638,7 +640,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetColorAdd") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetColorAdd"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -654,7 +656,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetAscent") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetAscent"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -676,7 +678,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetAscentPadding") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetAscentPadding"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -698,7 +700,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetLineSpacingOffset") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetLineSpacingOffset"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -720,7 +722,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetOffset") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetOffset"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -738,7 +740,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetCharWidths") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetCharWidths"))
 	{
 		if (theParams.mElementVector.size() == 4)
 		{
@@ -767,7 +769,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetSpacing") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetSpacing"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -792,7 +794,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetImageMap") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetImageMap"))
 	{
 		if (theParams.mElementVector.size() == 4)
 		{
@@ -857,7 +859,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetCharOffsets") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetCharOffsets"))
 	{
 		if (theParams.mElementVector.size() == 4)
 		{
@@ -895,7 +897,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetKerningPairs") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetKerningPairs"))
 	{
 		if (theParams.mElementVector.size() == 4)
 		{
@@ -930,7 +932,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetBaseOrder") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetBaseOrder"))
 	{
 		if (theParams.mElementVector.size() == 3)
 		{
@@ -952,7 +954,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetCharOrders") == 0)
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetCharOrders"))
 	{
 		if (theParams.mElementVector.size() == 4)
 		{
@@ -985,7 +987,7 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 		else
 			invalidNumParams = true;
 	}
-	else if (strcasecmp(aCmd.c_str(), "LayerSetExInfo") == 0) {}
+	else if (Sexy::StrEqualsIgnoreCase(aCmd, "LayerSetExInfo")) {}
 	else
 	{
 		Error("Unknown Command");

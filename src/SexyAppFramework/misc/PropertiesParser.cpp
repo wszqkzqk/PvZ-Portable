@@ -26,6 +26,7 @@
 #include "XMLParser.h"
 #include <stdlib.h>
 #include <format>
+#include <memory>
 
 using namespace Sexy;
 

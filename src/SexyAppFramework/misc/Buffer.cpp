@@ -27,6 +27,9 @@
 #include <array>
 #include <bit>
 #include <format>
+#include <cstring>
+#include <cstdint>
+#include <algorithm>
 constexpr const long POLYNOMIAL = 0x04c11db7L;
 
 using namespace Sexy;

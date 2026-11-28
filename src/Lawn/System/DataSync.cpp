@@ -18,9 +18,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PvZ-Portable. If not, see <https://www.gnu.org/licenses/>.
  */
+#include <cstring>
+#include <cstdint>
+#include <algorithm>
 
 #include "DataSync.h"
-#include "FileSystem.h"
 
 using Sexy::FromLE16;
 using Sexy::FromLE32;
@@ -29,38 +31,8 @@ using Sexy::ToLE16;
 using Sexy::ToLE32;
 using Sexy::ToLE64;
 
-DataReader::DataReader()
-{
-	mFile = nullptr;
-	mData = nullptr;
-	mDataLen = 0;
-	mDataPos = 0;
-}
-
-DataReader::~DataReader()
-{
-	if (mFile)
-	{
-		fclose(mFile);
-		mFile = nullptr;
-	}
-}
-
-bool DataReader::OpenFile(const std::string& theFileName)
-{
-	mDataPos = 0;
-	mFile = Sexy::OpenDiskFile(Sexy::PathFromU8(theFileName), "rb");
-	return mFile;
-}
-
 void DataReader::OpenMemory(const void* theData, uint32_t theDataLen, bool takeOwnership)
 {
-	if (mFile)
-	{
-		fclose(mFile);
-		mFile = nullptr;
-	}
-
 	if (takeOwnership)
 		mOwnedData.reset(const_cast<uint8_t*>(static_cast<const uint8_t*>(theData)));
 	else
@@ -71,37 +43,13 @@ void DataReader::OpenMemory(const void* theData, uint32_t theDataLen, bool takeO
 	mDataPos = 0;
 }
 
-void DataReader::Close()
-{
-	if (mFile)
-	{
-		fclose(mFile);
-		mFile = nullptr;
-	}
-}
-
 void DataReader::ReadBytes(void* theMem, uint32_t theNumBytes)
 {
-	if (mData)
-	{
-		mDataPos += theNumBytes;
-		if (mDataPos > mDataLen)
-		{
-			throw DataReaderException();
-		}
-
-		memcpy(theMem, mData + mDataPos - theNumBytes, theNumBytes);
-	}
-	else if (!mFile || fread(theMem, sizeof(uint8_t), theNumBytes, mFile) != theNumBytes)
-	{
+	if (!mData || theNumBytes > mDataLen - mDataPos)
 		throw DataReaderException();
-	}
-}
 
-void DataReader::Rewind(uint32_t theNumBytes)
-{
-	theNumBytes = std::min(theNumBytes, mDataPos);
-	mDataPos -= theNumBytes;
+	std::memcpy(theMem, mData + mDataPos, theNumBytes);
+	mDataPos += theNumBytes;
 }
 
 uint16_t DataReader::ReadUInt16()
@@ -165,25 +113,13 @@ void DataReader::ReadString(std::string& theStr)
 }
 
 DataSync::DataSync(DataReader& theReader)
+	: mReader(&theReader)
 {
-	Reset();
-	mReader = &theReader;
 }
 
 DataSync::DataSync(DataWriter& theWriter)
+	: mWriter(&theWriter)
 {
-	Reset();
-	mWriter = &theWriter;
-}
-
-DataSync::~DataSync()
-{
-}
-
-void DataSync::Reset()
-{
-	mReader = nullptr;
-	mWriter = nullptr;
 }
 
 void DataSync::SyncBytes(void* theData, uint32_t theDataLen)
@@ -294,57 +230,16 @@ void DataSync::SyncString(std::string& theStr)
 	}
 }
 
-DataWriter::DataWriter()
-{
-	mFile = nullptr;
-}
-
-DataWriter::~DataWriter()
-{
-	if (mFile)
-	{
-		fclose(mFile);
-		mFile = nullptr;
-	}
-}
-
-bool DataWriter::OpenFile(const std::string& theFileName)
-{
-	mFile = Sexy::OpenDiskFile(Sexy::PathFromU8(theFileName), "wb");
-	return mFile;
-}
-
-void DataWriter::Close()
-{
-	if (mFile)
-	{
-		fclose(mFile);
-		mFile = nullptr;
-	}
-}
-
 void DataWriter::OpenMemory(uint32_t theReserveAmount)
 {
-	if (mFile)
-	{
-		fclose(mFile);
-		mFile = nullptr;
-	}
 	mData.clear();
 	mData.reserve(std::max<uint32_t>(theReserveAmount, 32));
 }
 
 void DataWriter::WriteBytes(const void* theData, uint32_t theDataLen)
 {
-	if (mFile)
-	{
-		fwrite(theData, sizeof(uint8_t), theDataLen, mFile);
-	}
-	else
-	{
-		const uint8_t* aData = static_cast<const uint8_t*>(theData);
-		mData.insert(mData.end(), aData, aData + theDataLen);
-	}
+	const uint8_t* aData = static_cast<const uint8_t*>(theData);
+	mData.insert(mData.end(), aData, aData + theDataLen);
 }
 
 void DataWriter::WriteUInt32(uint32_t theUInt32)

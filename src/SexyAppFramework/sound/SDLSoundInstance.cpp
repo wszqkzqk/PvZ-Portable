@@ -112,7 +112,7 @@ bool SDLSoundInstance::Play(bool looping, bool autoRelease)
 	{
 		mDemoLooping = looping;
 		mDemoEndUpdateCount = gSexyAppBase->mUpdateCount +
-			static_cast<uint>(mDurationMs / (10.0 * mPitch)) + 1;
+			static_cast<uint32_t>(mDurationMs / (10.0 * mPitch)) + 1;
 	}
 
 	if (mAudio == nullptr || mTrack == nullptr)

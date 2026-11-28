@@ -70,6 +70,8 @@
 #include "widget/WidgetManager.h"
 #include "misc/ResourceManager.h"
 #include <algorithm>
+#include <memory>
+#include <iterator>
 
 #include "widget/Checkbox.h"
 #include "widget/Dialog.h"
@@ -1685,16 +1687,16 @@ void LawnApp::LoadingThreadProc()
 	mZenGarden = std::make_unique<ZenGarden>();
 	mReanimatorCache = std::make_unique<ReanimatorCache>();
 	mReanimatorCache->ReanimatorCacheInitialize();
-	PvzpFoleyInitialize(gLawnFoleyParamArray, LENGTH(gLawnFoleyParamArray));
+	PvzpFoleyInitialize(gLawnFoleyParamArray, std::size(gLawnFoleyParamArray));
 
 	PvzpLogLn("loading '{}' {} ms", "stuff", static_cast<int>(aTimer.GetDuration()));
 	aTimer.Start();
 
-	TrailLoadDefinitions(gLawnTrailArray, LENGTH(gLawnTrailArray));
+	TrailLoadDefinitions(gLawnTrailArray, std::size(gLawnTrailArray));
 	PvzpLogLn("loading '{}' {} ms", "trail", static_cast<int>(aTimer.GetDuration()));
 	aTimer.Start();
 
-	PvzpParticleLoadDefinitions(gLawnParticleArray, LENGTH(gLawnParticleArray));
+	PvzpParticleLoadDefinitions(gLawnParticleArray, std::size(gLawnParticleArray));
 	//aDuration = max(aTimer.GetDuration(), 0.0);
 	aTimer.Start();
 

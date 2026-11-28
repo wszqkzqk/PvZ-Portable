@@ -60,8 +60,8 @@ void ProfileMgr::SyncState(DataSync& theSync)
 		{
 			mProfileMap.clear();
 
-			ulong aMaxProfileId = 0;
-			ulong aMaxUseSeq = 0;
+			uint32_t aMaxProfileId = 0;
+			uint32_t aMaxUseSeq = 0;
 			for (int aProfileCount = aReader->ReadUInt16(); aProfileCount > 0; aProfileCount--)
 			{
 				PlayerInfo aProfile;
@@ -145,7 +145,7 @@ bool ProfileMgr::RenameProfile(const std::string& theOldName, const std::string&
 	else
 	{
 		// rename in place when the name only differs in case; otherwise move the profile to the new name
-		if (strcasecmp(theOldName.c_str(), theNewName.c_str()) == 0)
+		if (Sexy::StrEqualsIgnoreCase(theOldName, theNewName))
 			anOldItr->second.mName = theNewName;
 		else
 		{

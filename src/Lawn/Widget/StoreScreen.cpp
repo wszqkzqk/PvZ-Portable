@@ -44,6 +44,7 @@
 #include "widget/WidgetManager.h"
 #include "AchievementsScreen.h"
 #include <algorithm>
+#include <memory>
 
 constexpr const int STORESCREEN_ITEMOFFSET_1_X = 422;
 constexpr const int STORESCREEN_ITEMOFFSET_1_Y = 206;

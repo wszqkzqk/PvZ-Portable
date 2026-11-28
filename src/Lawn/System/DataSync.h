@@ -29,23 +29,19 @@
 class DataReader
 {
 protected:
-	FILE*					mFile;
-	const uint8_t*			mData;
-	uint32_t				mDataLen;
-	uint32_t				mDataPos;
+	const uint8_t*			mData = nullptr;
+	uint32_t				mDataLen = 0;
+	uint32_t				mDataPos = 0;
 	std::unique_ptr<uint8_t[]>	mOwnedData;
 
 public:
-	DataReader();
+	DataReader() = default;
 	DataReader(const DataReader& theDataReader) = delete;
 	DataReader& operator=(const DataReader& theDataReader) = delete;
-	virtual ~DataReader();
+	~DataReader() = default;
 
-	bool					OpenFile(const std::string& theFileName);
 	void					OpenMemory(const void* theData, uint32_t theDataLen, bool takeOwnership);
-	void					Close();
 	void					ReadBytes(void* theMem, uint32_t theNumBytes);
-	void					Rewind(uint32_t theNumBytes);
 	uint64_t				ReadUInt64();
 	uint32_t				ReadUInt32();
 	uint16_t				ReadUInt16();
@@ -62,19 +58,15 @@ class DataReaderException : public std::exception
 class DataWriter
 {
 protected:
-	FILE*					mFile;
 	std::vector<uint8_t>		mData;
 
 public:
-	DataWriter();
+	DataWriter() = default;
 	DataWriter(const DataWriter& theDataWriter) = delete;
 	DataWriter& operator=(const DataWriter& theDataWriter) = delete;
-	virtual ~DataWriter();
+	~DataWriter() = default;
 
-	bool					OpenFile(const std::string& theFileName);
 	void					OpenMemory(uint32_t theReserveAmount = 0x20);
-	void					Close();
-	inline bool				WriteToFile(const std::string& theFileName);
 	void					WriteBytes(const void* theData, uint32_t theDataLen);
 	void					WriteUInt64(uint64_t theUInt64);
 	void					WriteUInt32(uint32_t theUInt32);
@@ -84,7 +76,6 @@ public:
 	void					WriteFloat(float theFloat);
 	void					WriteDouble(double theDouble);
 	void					WriteString(std::string_view theStr);
-	inline uint32_t			GetPos();
 	inline void*			GetDataPtr() { return mData.data(); }
 	inline uint32_t			GetDataLen() { return static_cast<uint32_t>(mData.size()); }
 };
@@ -92,17 +83,14 @@ public:
 class DataSync
 {
 protected:
-	DataReader*				mReader;
-	DataWriter*				mWriter;
-	int						mVersion;
-
-protected:
-	void Reset();
+	DataReader*				mReader = nullptr;
+	DataWriter*				mWriter = nullptr;
+	int						mVersion = 0;
 
 public:
 	DataSync(DataReader& theReader);
 	DataSync(DataWriter& theWriter);
-	virtual ~DataSync();
+	~DataSync() = default;
 
 	inline void				SetReader(DataReader* theReader) { mReader = theReader; }
 	inline void				SetWriter(DataWriter* theWriter) { mWriter = theWriter; }

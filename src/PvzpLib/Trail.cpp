@@ -23,6 +23,8 @@
 #include "Definition.h"
 #include <algorithm>
 #include <format>
+#include <cstring>
+#include <memory>
 #include "graphics/Graphics.h"
 #include "graphics/TriVertex.h"
 

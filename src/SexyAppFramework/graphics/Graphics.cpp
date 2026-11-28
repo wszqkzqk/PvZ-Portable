@@ -32,6 +32,9 @@
 #include "misc/SexyMatrix.h"
 #include <math.h>
 #include <vector>
+#include <cstring>
+#include <cstdint>
+#include <algorithm>
 
 using namespace Sexy;
 

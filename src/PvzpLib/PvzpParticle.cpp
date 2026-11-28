@@ -28,6 +28,8 @@
 #include "graphics/GLInterface.h"
 #include <algorithm>
 #include <format>
+#include <memory>
+#include <cstdint>
 
 int gParticleDefCount;
 std::unique_ptr<PvzpParticleDefinition[]> gParticleDefArray;
@@ -1116,7 +1118,7 @@ void PvzpParticleSystem::OverrideColor(const char* theEmitterName, const Color& 
 	for (PvzpListNode<ParticleEmitterID>* aNode = mEmitterList.mHead; aNode != nullptr; aNode = aNode->mNext)
 	{
 		PvzpParticleEmitter* aEmitter = mParticleHolder->mEmitters.DataArrayGet(static_cast<unsigned int>(aNode->mValue));
-		if (theEmitterName == nullptr || strcasecmp(theEmitterName, aEmitter->mEmitterDef->mName) == 0)
+		if (theEmitterName == nullptr || Sexy::StrEqualsIgnoreCase(theEmitterName, aEmitter->mEmitterDef->mName))
 			aEmitter->mColorOverride = theColor;
 	}
 }
@@ -1126,7 +1128,7 @@ void PvzpParticleSystem::OverrideExtraAdditiveDraw(const char* theEmitterName, b
 	for (PvzpListNode<ParticleEmitterID>* aNode = mEmitterList.mHead; aNode != nullptr; aNode = aNode->mNext)
 	{
 		PvzpParticleEmitter* aEmitter = mParticleHolder->mEmitters.DataArrayGet(static_cast<unsigned int>(aNode->mValue));
-		if (theEmitterName == nullptr || strcasecmp(theEmitterName, aEmitter->mEmitterDef->mName) == 0)
+		if (theEmitterName == nullptr || Sexy::StrEqualsIgnoreCase(theEmitterName, aEmitter->mEmitterDef->mName))
 			aEmitter->mExtraAdditiveDrawOverride = theEnableExtraAdditiveDraw;
 	}
 }
@@ -1136,7 +1138,7 @@ void PvzpParticleSystem::OverrideImage(const char* theEmitterName, Image* theIma
 	for (PvzpListNode<ParticleEmitterID>* aNode = mEmitterList.mHead; aNode != nullptr; aNode = aNode->mNext)
 	{
 		PvzpParticleEmitter* aEmitter = mParticleHolder->mEmitters.DataArrayGet(static_cast<unsigned int>(aNode->mValue));
-		if (theEmitterName == nullptr || strcasecmp(theEmitterName, aEmitter->mEmitterDef->mName) == 0)
+		if (theEmitterName == nullptr || Sexy::StrEqualsIgnoreCase(theEmitterName, aEmitter->mEmitterDef->mName))
 			aEmitter->mImageOverride = theImage;
 	}
 }
@@ -1146,7 +1148,7 @@ void PvzpParticleSystem::OverrideFrame(const char* theEmitterName, int theFrame)
 	for (PvzpListNode<ParticleEmitterID>* aNode = mEmitterList.mHead; aNode != nullptr; aNode = aNode->mNext)
 	{
 		PvzpParticleEmitter* aEmitter = mParticleHolder->mEmitters.DataArrayGet(static_cast<unsigned int>(aNode->mValue));
-		if (theEmitterName == nullptr || strcasecmp(theEmitterName, aEmitter->mEmitterDef->mName) == 0)
+		if (theEmitterName == nullptr || Sexy::StrEqualsIgnoreCase(theEmitterName, aEmitter->mEmitterDef->mName))
 			aEmitter->mFrameOverride = theFrame;
 	}
 }
@@ -1156,7 +1158,7 @@ void PvzpParticleSystem::OverrideScale(const char* theEmitterName, float theScal
 	for (PvzpListNode<ParticleEmitterID>* aNode = mEmitterList.mHead; aNode != nullptr; aNode = aNode->mNext)
 	{
 		PvzpParticleEmitter* aEmitter = mParticleHolder->mEmitters.DataArrayGet(static_cast<unsigned int>(aNode->mValue));
-		if (theEmitterName == nullptr || strcasecmp(theEmitterName, aEmitter->mEmitterDef->mName) == 0)
+		if (theEmitterName == nullptr || Sexy::StrEqualsIgnoreCase(theEmitterName, aEmitter->mEmitterDef->mName))
 			aEmitter->mScaleOverride = theScale;
 	}
 }
@@ -1166,7 +1168,7 @@ PvzpParticleEmitter* PvzpParticleSystem::FindEmitterByName(const char* theEmitte
 	for (PvzpListNode<ParticleEmitterID>* aNode = mEmitterList.mHead; aNode != nullptr; aNode = aNode->mNext)
 	{
 		PvzpParticleEmitter* aEmitter = mParticleHolder->mEmitters.DataArrayGet(static_cast<unsigned int>(aNode->mValue));
-		if (strcasecmp(theEmitterName, aEmitter->mEmitterDef->mName) == 0)
+		if (Sexy::StrEqualsIgnoreCase(theEmitterName, aEmitter->mEmitterDef->mName))
 			return aEmitter;
 	}
 	return nullptr;
@@ -1177,7 +1179,7 @@ PvzpEmitterDefinition* PvzpParticleSystem::FindEmitterDefByName(const char* theE
 	for (int i = 0; i < mParticleDef->mEmitterDefCount; i++)
 	{
 		PvzpEmitterDefinition* aEmitterDef = &mParticleDef->mEmitterDefs[i];
-		if (strcasecmp(theEmitterName, aEmitterDef->mName) == 0)
+		if (Sexy::StrEqualsIgnoreCase(theEmitterName, aEmitterDef->mName))
 			return aEmitterDef;
 	}
 	return nullptr;

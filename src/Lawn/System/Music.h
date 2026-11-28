@@ -123,7 +123,7 @@ public:
 	void				MakeSureMusicIsPlaying(MusicTune theMusicTune);
 	void				FadeOut(int theFadeOutDuration);
 	void						SetupVolumeForTune(MusicTune theMusicTune, float theDrumsVolume, float theHihatsVolume);
-	unsigned long				GetMusicOrder(MusicFile theMusicFile);
+	int				GetMusicOrder(MusicFile theMusicFile);
 	void						MusicCreditScreenInit();
 };
 

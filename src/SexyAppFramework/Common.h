@@ -43,42 +43,21 @@
 #include <intrin.h>
 #endif
 
-#ifndef _WIN32
-#include <strings.h>
-#endif
-
 // Define unreachable()
 #ifdef _MSC_VER
-#include <direct.h>
-#include <io.h>
 #define unreachable() __assume(0)
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#define getcwd _getcwd
-#define access _access
-#define F_OK 0
-
 #elif defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)) || defined(__clang__)
 #define unreachable() __builtin_unreachable()
 #else
 #define unreachable() ((void)0)
 #endif
 
-#define LENGTH(anyarray) (sizeof(anyarray) / sizeof(anyarray[0]))
-
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned int uint;
-typedef unsigned long ulong;
-typedef int64_t int64;
-
 typedef std::map<std::string, std::string> DefinesMap;
-typedef std::vector<char> CharVector;
 
 namespace Sexy
 {
 
-const ulong SEXY_RAND_MAX = 0x7FFFFFFF;
+inline constexpr uint32_t SEXY_RAND_MAX = 0x7FFFFFFF;
 
 extern bool			gDebug;
 
@@ -102,7 +81,7 @@ void				LogErrorLn(std::format_string<Args...> theFmt, Args&&... theArgs)
 int					Rand();
 int					Rand(int range);
 float				Rand(float range);
-void				SRand(ulong theSeed);
+void				SRand(uint32_t theSeed);
 std::string			StringToUpper(std::string_view theString);
 std::string			StringToLower(std::string_view theString);
 std::string			Upper(std::string_view theData);
@@ -110,35 +89,10 @@ std::string			Lower(std::string_view theData);
 std::string			Trim(std::string_view theString);
 bool				StringToInt(const std::string& theString, int* theIntVal);
 bool				StringToDouble(const std::string& theString, double* theDoubleVal);
-int					StrFindNoCase(const char *theStr, const char *theFind);
-bool				StrPrefixNoCase(const char *theStr, const char *thePrefix, int maxLength = 10000000);
 std::string			CommaSeperate(int theValue);
 std::string			Evaluate(std::string_view theString, const DefinesMap& theDefinesMap);
 std::string			XMLDecodeString(std::string_view theString);
 std::string			XMLEncodeString(std::string_view theString);
-
-// Read memory and then move the pointer
-void				SMemR(void*& _Src, void* _Dst, size_t _Size);
-void				SMemRStr(void*& _Src, std::string& theString);
-// Write memory and then move the pointer
-void				SMemW(void*& _Dst, const void* _Src, size_t _Size);
-void				SMemWStr(void*& _Dst, std::string_view theString);
-
-inline void			inlineLTrim(std::string &theData, std::string_view theChars = " \t\r\n")
-{
-	theData.erase(0, theData.find_first_not_of(theChars));
-}
-
-inline void			inlineRTrim(std::string &theData, std::string_view theChars = " \t\r\n")
-{
-	theData.resize(theData.find_last_not_of(theChars) + 1);
-}
-
-inline void			inlineTrim(std::string &theData, std::string_view theChars = " \t\r\n")
-{
-	inlineRTrim(theData, theChars);
-	inlineLTrim(theData, theChars);
-}
 
 // Decode next UTF-8 codepoint, advancing theOffset. Returns false on end/error.
 inline bool UTF8DecodeNext(std::string_view theString, size_t& theOffset, char32_t& theOutChar)
@@ -379,7 +333,40 @@ inline constexpr uint32_t ToBE32(uint32_t v) noexcept { return EndianConvert<uin
 inline constexpr uint64_t FromBE64(uint64_t v) noexcept { return EndianConvert<uint64_t, std::endian::big>(v); }
 inline constexpr uint64_t ToBE64(uint64_t v) noexcept { return EndianConvert<uint64_t, std::endian::big>(v); }
 
-struct StringLessNoCase { bool operator()(const std::string &s1, const std::string &s2) const { return strcasecmp(s1.c_str(),s2.c_str())<0; } };
+// Locale-independent ASCII case-insensitive comparison helpers.
+inline int StrCompareIgnoreCase(std::string_view theLeft, std::string_view theRight) noexcept
+{
+	const size_t aCommonLen = std::min(theLeft.size(), theRight.size());
+	for (size_t i = 0; i < aCommonLen; ++i)
+	{
+		unsigned char aLeft = static_cast<unsigned char>(theLeft[i]);
+		unsigned char aRight = static_cast<unsigned char>(theRight[i]);
+		if (aLeft >= 'A' && aLeft <= 'Z') aLeft += 'a' - 'A';
+		if (aRight >= 'A' && aRight <= 'Z') aRight += 'a' - 'A';
+		if (aLeft != aRight)
+			return (aLeft < aRight) ? -1 : 1;
+	}
+	if (theLeft.size() != theRight.size())
+		return (theLeft.size() < theRight.size()) ? -1 : 1;
+	return 0;
+}
+
+inline bool StrEqualsIgnoreCase(std::string_view theLeft, std::string_view theRight) noexcept
+{
+	return theLeft.size() == theRight.size() && StrCompareIgnoreCase(theLeft, theRight) == 0;
+}
+
+inline bool StrStartsWithIgnoreCase(std::string_view theStr, std::string_view thePrefix) noexcept
+{
+	return theStr.size() >= thePrefix.size() &&
+		StrCompareIgnoreCase(theStr.substr(0, thePrefix.size()), thePrefix) == 0;
+}
+
+struct StringLessNoCase
+{
+	using is_transparent = void;
+	bool operator()(std::string_view s1, std::string_view s2) const noexcept { return StrCompareIgnoreCase(s1, s2) < 0; }
+};
 
 }
 

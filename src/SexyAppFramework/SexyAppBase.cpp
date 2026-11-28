@@ -1337,7 +1337,7 @@ void SexyAppBase::ReadFromRegistry()
 		RegistryWriteInteger("InProgress", 1);
 }
 
-bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *theData, unsigned long theDataLen)
+bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *theData, size_t theDataLen)
 {
 	if ((mPlayingDemoBuffer) && IsOnPrimaryThread())
 	{
@@ -1387,12 +1387,6 @@ bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *t
 	return true;
 }
 
-bool SexyAppBase::WriteBufferToFile(const std::string& theFileName, const Buffer* theBuffer)
-{
-	return WriteBytesToFile(theFileName,theBuffer->GetDataPtr(),theBuffer->GetDataLen());
-}
-
-
 bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* theBuffer, bool dontWriteToDemo)
 {
 	if ((mPlayingDemoBuffer) && (!dontWriteToDemo) && IsOnPrimaryThread())
@@ -1420,9 +1414,9 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 	}
 	else
 	{
-		PFILE* aFP = p_fopen(theFileName.c_str(), "rb");
+		auto aFP = OpenPakFile(theFileName.c_str(), "rb");
 
-		if (aFP == nullptr)
+		if (!aFP)
 		{
 			if ((mRecordingDemoBuffer) && (!dontWriteToDemo) && IsOnPrimaryThread())
 			{
@@ -1435,14 +1429,13 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 			return false;
 		}
 
-		p_fseek(aFP, 0, SEEK_END);
-		int aFileSize = p_ftell(aFP);
-		p_fseek(aFP, 0, SEEK_SET);
+		p_fseek(aFP.get(), 0, SEEK_END);
+		int aFileSize = p_ftell(aFP.get());
+		p_fseek(aFP.get(), 0, SEEK_SET);
 
 		ByteVector aData(aFileSize);
 
-		p_fread(aData.data(), 1, aFileSize, aFP);
-		p_fclose(aFP);
+		p_fread(aData.data(), 1, aFileSize, aFP.get());
 
 		theBuffer->Clear();
 		theBuffer->SetData(aData.data(), aFileSize);
@@ -1488,7 +1481,7 @@ bool SexyAppBase::FileExists(const std::string& theFileName)
 	}
 	else
 	{
-		PFILE* aFP = p_fopen(theFileName.c_str(), "rb");
+		auto aFP = OpenPakFile(theFileName.c_str(), "rb");
 
 		if ((mRecordingDemoBuffer) && IsOnPrimaryThread())
 		{
@@ -1498,11 +1491,7 @@ bool SexyAppBase::FileExists(const std::string& theFileName)
 			mDemoBuffer.WriteNumBits((aFP != nullptr) ? 1 : 0, 1);
 		}
 
-		if (aFP == nullptr)
-			return false;
-
-		p_fclose(aFP);
-		return true;
+		return aFP != nullptr;
 	}
 }
 
@@ -2505,7 +2494,7 @@ bool SexyAppBase::Process(bool allowSleep)
 			while (mUpdateCount < mFastForwardToUpdateNum || mFastForwardToMarker)
 			{
 				ClearUpdateBacklog();
-				uint aLastUpdateCount = mUpdateCount;
+				uint32_t aLastUpdateCount = mUpdateCount;
 
 				// Actual updating code below
 
@@ -2833,7 +2822,7 @@ bool SexyAppBase::UpdateAppStep(bool* updated)
 		}
 		else
 		{
-			uint anOldUpdateCnt = mUpdateCount;
+			uint32_t anOldUpdateCnt = mUpdateCount;
 			Process();
 			if (updated != nullptr)
 				*updated = mUpdateCount != anOldUpdateCnt;
@@ -3229,7 +3218,7 @@ void SexyAppBase::HandleCmdLineParam(std::string_view theParamName, std::string_
 			std::from_chars(theParamValue.data(), theParamValue.data() + theParamValue.size(), aNum);
 			if (aNum <= 0)
 				aNum = 5;
-			mDemoRecordFileLimit = static_cast<uint>(aNum);
+			mDemoRecordFileLimit = static_cast<uint32_t>(aNum);
 		}
 		else
 		{

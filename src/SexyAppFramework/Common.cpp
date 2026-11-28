@@ -91,7 +91,7 @@ int Sexy::Rand()
 
 int Sexy::Rand(int range)
 {
-	return gMTRand.Next((unsigned long)range);
+	return gMTRand.Next(static_cast<uint32_t>(range));
 }
 
 float Sexy::Rand(float range)
@@ -99,7 +99,7 @@ float Sexy::Rand(float range)
 	return gMTRand.Next(range);
 }
 
-void Sexy::SRand(ulong theSeed)
+void Sexy::SRand(uint32_t theSeed)
 {
 	gMTRand.SRand(theSeed);
 }
@@ -358,75 +358,4 @@ std::string Sexy::Lower(std::string_view _data)
 	return StringToLower(_data);
 }
 
-int Sexy::StrFindNoCase(const char *theStr, const char *theFind)
-{
-	int p1, p2;
-	int cp = 0;
-	const int len1 = (int)strlen(theStr);
-	const int len2 = (int)strlen(theFind);
-	while (cp < len1)
-	{
-		p1 = cp;
-		p2 = 0;
-		while (p1 < len1 && p2 < len2)
-		{
-			if (ToLowerAscii(theStr[p1]) != ToLowerAscii(theFind[p2]))
-				break;
 
-			p1++; p2++;
-		}
-		if(p2==len2)
-			return p1-len2;
-
-		cp++;
-	}
-
-	return -1;
-}
-
-bool Sexy::StrPrefixNoCase(const char *theStr, const char *thePrefix, int maxLength)
-{
-	int i;
-	char c1 = 0, c2 = 0;
-	for (i=0; i<maxLength; i++)
-	{
-		c1 = ToLowerAscii(*theStr++);
-		c2 = ToLowerAscii(*thePrefix++);
-
-		if (c1==0 || c2==0)
-			break;
-
-		if (c1!=c2)
-			return false;
-	}
-
-	return c2==0 || i==maxLength;
-}
-
-void Sexy::SMemR(void*& _Src, void* _Dst, size_t _Size)
-{
-	memcpy(_Dst, _Src, _Size);
-	_Src = (void*)((uintptr_t)_Src + _Size);
-}
-
-void Sexy::SMemRStr(void*& _Src, std::string& theString)
-{
-	size_t aStrLen;
-	SMemR(_Src, &aStrLen, sizeof(aStrLen));
-	theString.resize(aStrLen);
-	if (aStrLen > 0)
-		SMemR(_Src, &theString[0], aStrLen);
-}
-
-void Sexy::SMemW(void*& _Dst, const void* _Src, size_t _Size)
-{
-	memcpy(_Dst, _Src, _Size);
-	_Dst = (void*)((uintptr_t)_Dst + _Size);
-}
-
-void Sexy::SMemWStr(void*& _Dst, std::string_view theString)
-{
-	size_t aStrLen = theString.size();
-	SMemW(_Dst, &aStrLen, sizeof(aStrLen));
-	SMemW(_Dst, theString.data(), aStrLen);
-}

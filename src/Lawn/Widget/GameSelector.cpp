@@ -45,6 +45,7 @@
 #include "widget/WidgetManager.h"
 #include <algorithm>
 #include <format>
+#include <memory>
 
 static float gFlowerCenter[3][2] = { { 765.0f, 483.0f }, { 663.0f, 455.0f }, { 701.0f, 439.0f } };
 
@@ -1164,7 +1165,7 @@ void GameSelector::ClickedAdventure()
 	mHandReanimID = mApp->ReanimationGetID(aHandReanim);
 	mApp->PlayFoley(FoleyType::FOLEY_DIRT_RISE);
 	for (int i = 0; i < aHandReanim->mDefinition->mTracks.count; i++)
-		if (!strncasecmp(aHandReanim->mDefinition->mTracks.tracks[i].mName, "rock", 4))
+		if (Sexy::StrStartsWithIgnoreCase(aHandReanim->mDefinition->mTracks.tracks[i].mName, "rock"))
 			aHandReanim->mTrackInstances[i].mIgnoreClipRect = true;
 }
 

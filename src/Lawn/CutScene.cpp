@@ -49,6 +49,7 @@
 #include "widget/WidgetManager.h"
 #include <algorithm>
 #include <format>
+#include <memory>
 
 static const int	TimePanRightStart				= 1500;
 static const int	TimePanRightEnd					= 3500;

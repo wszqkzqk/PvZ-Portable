@@ -26,6 +26,7 @@
 #include "widget/ButtonListener.h"
 #include "../System/Zombatar.h"
 #include <memory>
+#include <cstdint>
 
 class GameSelector;
 class LawnApp;

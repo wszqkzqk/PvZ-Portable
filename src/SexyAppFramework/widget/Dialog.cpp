@@ -29,6 +29,7 @@
 #include "WidgetManager.h"
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#include <memory>
 #endif
 #include "graphics/Font.h"
 

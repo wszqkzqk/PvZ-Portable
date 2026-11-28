@@ -25,6 +25,10 @@
 #include <memory>
 #include <cassert>
 #include <format>
+#include <cstring>
+#include <utility>
+#include <cstdint>
+#include <algorithm>
 #include "ResourceManager.h"
 #include "FileSystem.h"
 #include "XMLParser.h"
@@ -332,10 +336,10 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement)
 	{
 		const char *aType = anItr->second.c_str();
 
-		if (strcasecmp(aType,"none")==0) anAnimType = AnimType_None;
-		else if (strcasecmp(aType,"once")==0) anAnimType = AnimType_Once;
-		else if (strcasecmp(aType,"loop")==0) anAnimType = AnimType_Loop;
-		else if (strcasecmp(aType,"pingpong")==0) anAnimType = AnimType_PingPong;
+		if (Sexy::StrEqualsIgnoreCase(aType, "none")) anAnimType = AnimType_None;
+		else if (Sexy::StrEqualsIgnoreCase(aType, "once")) anAnimType = AnimType_Once;
+		else if (Sexy::StrEqualsIgnoreCase(aType, "loop")) anAnimType = AnimType_Loop;
+		else if (Sexy::StrEqualsIgnoreCase(aType, "pingpong")) anAnimType = AnimType_PingPong;
 		else
 		{
 			Fail("Invalid animation type.");
