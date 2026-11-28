@@ -33,7 +33,6 @@
 #include <cstdint>
 #include <cstdarg>
 #include <ctime>
-#include <filesystem>
 #include <string_view>
 #include <type_traits>
 #include <bit>
@@ -44,24 +43,9 @@
 #include <intrin.h>
 #endif
 
-#ifdef _WIN32
-#undef _WIN32_WINNT
-#undef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT 0x0500
-#undef _UNICODE
-#undef UNICODE
-#define NOMINMAX 1
-#include <windows.h>
-#include <shellapi.h>
-#include <mmsystem.h>
-#else
+#ifndef _WIN32
 #include <strings.h>
 #endif
-
-// fallback if NOMINMAX fails (somehow?)
-#undef min
-#undef max
 
 // Define unreachable()
 #ifdef _MSC_VER
@@ -119,12 +103,6 @@ int					Rand();
 int					Rand(int range);
 float				Rand(float range);
 void				SRand(ulong theSeed);
-std::string			GetAppDataFolder();
-void				SetAppDataFolder(std::string_view thePath);
-std::string			GetAppDataPath(std::string_view theRelativePath);
-const std::string&	GetResourceFolder();
-void				SetResourceFolder(std::string_view thePath);
-std::string			GetResourcePath(std::string_view theRelativePath);
 std::string			StringToUpper(std::string_view theString);
 std::string			StringToLower(std::string_view theString);
 std::string			Upper(std::string_view theData);
@@ -138,18 +116,6 @@ std::string			CommaSeperate(int theValue);
 std::string			Evaluate(std::string_view theString, const DefinesMap& theDefinesMap);
 std::string			XMLDecodeString(std::string_view theString);
 std::string			XMLEncodeString(std::string_view theString);
-
-bool				Deltree(std::string_view thePath);
-bool				FileExists(std::string_view theFileName);
-void				MkDir(std::string_view theDir);
-std::string			GetFileName(std::string_view thePath, bool noExtension = false);
-std::string			GetFileDir(std::string_view thePath, bool withSlash = false);
-std::string			RemoveTrailingSlash(std::string_view theDirectory);
-std::string			GetCurDir();
-std::string			GetFullPath(std::string_view theRelPath);
-std::string			GetPathFrom(std::string_view theRelPath, std::string_view theDir);
-bool				IsPathRooted(std::string_view thePath);
-bool				AllowAllAccess(std::string_view theFileName);
 
 // Read memory and then move the pointer
 void				SMemR(void*& _Src, void* _Dst, size_t _Size);
@@ -330,23 +296,6 @@ inline bool IsAutoBreakChar(char32_t theChar)
 		(theChar >= 0x1F300 && theChar <= 0x1FAFF) || // Emoji Symbols & Pictographs
 		(theChar >= 0x20000 && theChar <= 0x2FA1F);  // CJK Extension B-F & Supplements
 }
-
-// UTF-8 path conversion helpers for Windows Unicode path support
-#ifdef _WIN32
-inline std::filesystem::path PathFromU8(std::string_view s)
-{
-	return std::filesystem::path(std::u8string_view(reinterpret_cast<const char8_t*>(s.data()), s.size()));
-}
-
-inline std::string PathToU8(const std::filesystem::path& p)
-{
-	auto u8 = p.generic_u8string();
-	return std::string(u8.begin(), u8.end());
-}
-#else
-inline std::filesystem::path PathFromU8(std::string_view s) { return std::filesystem::path(s); }
-inline std::string PathToU8(const std::filesystem::path& p) { return p.string(); }
-#endif
 
 // Byte swap helpers
 inline constexpr uint16_t ByteSwap16(uint16_t v) noexcept

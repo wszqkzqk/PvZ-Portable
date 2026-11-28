@@ -27,11 +27,11 @@
 #include "Image.h"
 #include "SexyAppBase.h"
 #include "MemoryImage.h"
+#include "FileSystem.h"
 #include "graphics/GLImage.h"
 #include <algorithm>
 #include <mutex>
 #include <format>
-#include "fcaseopen/fcaseopen.h"
 
 using namespace Sexy;
 
@@ -1056,9 +1056,7 @@ bool FontData::LoadLegacy(Image* theFontImage, const std::string& theFontDescFil
 
 	int aCharPos = 0;
 
-	// Use GetResourcePath to handle resource folder prefix
-	std::string aFilePath = GetResourcePath(theFontDescFileName);
-	FILE* aStream = fcaseopen(aFilePath.c_str(), "r");
+	FILE* aStream = OpenResourceFile(theFontDescFileName, "r");
 
 	if (aStream == nullptr)
 		return false;

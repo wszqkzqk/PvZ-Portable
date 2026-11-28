@@ -26,6 +26,7 @@
 
 #include "RegEmu.h"
 #include "Common.h"
+#include "FileSystem.h"
 
 #include <map>
 #include <cstdio>

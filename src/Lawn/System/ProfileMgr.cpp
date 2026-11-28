@@ -22,6 +22,7 @@
 #include "DataSync.h"
 #include "ProfileMgr.h"
 #include "PlayerInfo.h"
+#include "FileSystem.h"
 #include "../../SexyAppFramework/SexyAppBase.h"
 
 using namespace Sexy;

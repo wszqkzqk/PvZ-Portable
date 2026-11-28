@@ -20,7 +20,7 @@
  */
 
 #include "DataSync.h"
-#include "fcaseopen/fcaseopen.h"
+#include "FileSystem.h"
 
 using Sexy::FromLE16;
 using Sexy::FromLE32;
@@ -49,7 +49,7 @@ DataReader::~DataReader()
 bool DataReader::OpenFile(const std::string& theFileName)
 {
 	mDataPos = 0;
-	mFile = fcaseopen(theFileName.c_str(), "rb");
+	mFile = Sexy::OpenDiskFile(Sexy::PathFromU8(theFileName), "rb");
 	return mFile;
 }
 
@@ -310,7 +310,7 @@ DataWriter::~DataWriter()
 
 bool DataWriter::OpenFile(const std::string& theFileName)
 {
-	mFile = fcaseopen(theFileName.c_str(), "wb");
+	mFile = Sexy::OpenDiskFile(Sexy::PathFromU8(theFileName), "wb");
 	return mFile;
 }
 

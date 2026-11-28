@@ -26,6 +26,7 @@
 #include <cassert>
 #include <format>
 #include "ResourceManager.h"
+#include "FileSystem.h"
 #include "XMLParser.h"
 #include "sound/SoundManager.h"
 #include "graphics/GLImage.h"

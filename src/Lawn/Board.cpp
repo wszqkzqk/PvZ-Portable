@@ -26,6 +26,7 @@
 #include "ZenGarden.h"
 #include "BoardInclude.h"
 #include "LawnCommon.h"
+#include "FileSystem.h"
 #include "System/Music.h"
 #include "System/SaveGame.h"
 #include "Widget/LawnDialog.h"

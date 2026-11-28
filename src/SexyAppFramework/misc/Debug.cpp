@@ -23,6 +23,7 @@
  */
 
 #include "Common.h"
+#include "FileSystem.h"
 #include "Debug.h"
 
 #include <format>
@@ -100,7 +101,7 @@ void SexyDumpUnfreed()
 	int index = 0;
 #endif
 
-	FILE* f = fopen("mem_leaks.txt", "wt");
+	FILE* f = OpenDiskFile(PathFromU8("mem_leaks.txt"), "wt");
 	if (!f)
 		return;
 

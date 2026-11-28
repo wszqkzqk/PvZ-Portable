@@ -26,7 +26,6 @@
 #include <filesystem>
 #include "Common.h"
 #include "PakInterface.h"
-#include "fcaseopen/fcaseopen.h"
 
 enum
 {
@@ -43,44 +42,38 @@ PakInterface::~PakInterface()
 {
 }
 
-// Normalize path for pak lookup.
+// Normalize path for pak lookup: forward slashes, lexically resolved, relative to resource folder.
 std::string PakInterface::NormalizePakPath(std::string_view theFileName)
 {
-	std::filesystem::path aFilePath = Sexy::PathFromU8(theFileName);
-
-	// Make rooted paths relative to resource folder.
-	if (Sexy::IsPathRooted(theFileName))
+	if (Sexy::IsPathRooted(theFileName) && !Sexy::GetResourceFolder().empty())
 	{
-		const std::string& aResourceFolder = Sexy::GetResourceFolder();
-		if (!aResourceFolder.empty())
-		{
-			std::filesystem::path aResPath = Sexy::PathFromU8(aResourceFolder);
-			auto [aResEnd, aFileIt] = std::mismatch(aResPath.begin(), aResPath.end(),
-												   aFilePath.begin(), aFilePath.end());
-			if (aResEnd == aResPath.end())
-			{
-				std::filesystem::path aRelativePath;
-				for (; aFileIt != aFilePath.end(); ++aFileIt)
-					aRelativePath /= *aFileIt;
-				aFilePath = aRelativePath;
-			}
-		}
+		const auto aResourceRoot = Sexy::PathFromU8(Sexy::GetResourceFolder());
+		const auto aRel = Sexy::PathFromU8(theFileName).lexically_normal().lexically_relative(aResourceRoot);
+		if (!aRel.empty() && *aRel.begin() != "..")
+			return Sexy::CanonicalizePath(Sexy::PathToU8(aRel));
 	}
 
-	std::string aResult = Sexy::PathToU8(aFilePath.lexically_normal());
+	return Sexy::CanonicalizePath(theFileName);
+}
 
-	if (aResult.size() >= 2 && aResult[0] == '.' && aResult[1] == '/')
-		aResult = aResult.substr(2);
+const PakRecord* PakInterface::FindRecord(std::string_view theFileName) const
+{
+	if (theFileName.empty())
+		return nullptr;
 
-	std::transform(aResult.begin(), aResult.end(), aResult.begin(),
-				   [](uint8_t c) { return std::toupper(c); });
+	if (Sexy::IsCanonicalRelativePath(theFileName))
+	{
+		auto anItr = mPakRecordMap.find(theFileName);
+		return anItr != mPakRecordMap.end() ? &anItr->second : nullptr;
+	}
 
-	return aResult;
+	auto anItr = mPakRecordMap.find(NormalizePakPath(theFileName));
+	return anItr != mPakRecordMap.end() ? &anItr->second : nullptr;
 }
 
 bool PakInterface::AddPakFile(const std::string& theFileName)
 {
-	FILE *aFileHandle = fcaseopen(theFileName.c_str(), "rb");
+	FILE *aFileHandle = Sexy::OpenResourceFile(theFileName, "rb");
 	if (!aFileHandle)
 		return false;
 
@@ -182,12 +175,6 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 		FRead(&aFileTime, sizeof(int64_t), 1, aFP);
 		aFileTime = static_cast<int64_t>(Sexy::FromLE64(static_cast<uint64_t>(aFileTime)));
 
-		for (int i = 0; i < aNameWidth; i++)
-		{
-			if (aName[i] == '\\')
-				aName[i] = '/';
-		}
-
 		std::string aKey = NormalizePakPath(aName);
 		auto aRecordItr = mPakRecordMap.emplace(aKey, PakRecord()).first;
 		PakRecord* aPakRecord = &aRecordItr->second;
@@ -214,14 +201,15 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 
 PFILE* PakInterface::FOpen(const char* theFileName, const char* anAccess)
 {
+	if (theFileName == nullptr || anAccess == nullptr)
+		return nullptr;
+
 	if ((strcasecmp(anAccess, "r") == 0) || (strcasecmp(anAccess, "rb") == 0) || (strcasecmp(anAccess, "rt") == 0))
 	{
-		std::string aKey = NormalizePakPath(theFileName);
-		auto anItr = mPakRecordMap.find(aKey);
-		if (anItr != mPakRecordMap.end())
+		if (const PakRecord* aRecord = FindRecord(theFileName))
 		{
 			PFILE* aPFP = new PFILE;
-			aPFP->mRecord = &anItr->second;
+			aPFP->mRecord = aRecord;
 			aPFP->mPos = 0;
 			aPFP->mFP = nullptr;
 #ifdef LOW_MEMORY
@@ -232,17 +220,7 @@ PFILE* PakInterface::FOpen(const char* theFileName, const char* anAccess)
 		}
 	}
 
-	const std::string& aResourceBase = Sexy::GetResourceFolder();
-	FILE* aFP = nullptr;
-	if (!aResourceBase.empty() && !Sexy::IsPathRooted(theFileName))
-	{
-		aFP = fcaseopenat(aResourceBase.c_str(), theFileName, anAccess);
-	}
-	else
-	{
-		aFP = fcaseopen(theFileName, anAccess);
-	}
-
+	FILE* aFP = Sexy::OpenResourceFile(theFileName, anAccess);
 	if (aFP == nullptr)
 		return nullptr;
 
@@ -375,40 +353,4 @@ int PakInterface::UnGetC(int theChar, PFILE* theFile)
 	}
 
 	return ungetc(theChar, theFile->mFP);
-}
-
-char* PakInterface::FGetS(char* thePtr, int theSize, PFILE* theFile)
-{
-	if (theFile->mRecord != nullptr)
-	{
-		int anIdx = 0;
-		while (anIdx < theSize - 1) // fgets semantics: at most theSize-1 chars plus the NUL
-		{
-			if (theFile->mPos >= theFile->mRecord->mSize)
-			{
-				if (anIdx == 0)
-					return nullptr;
-				break;
-			}
-			char aChar;
-			if (ReadRecordBytes(theFile, &aChar, 1) == 0)
-				break;
-			if (aChar != '\r')
-				thePtr[anIdx++] = aChar;
-			if (aChar == '\n')
-				break;
-		}
-		thePtr[anIdx] = 0;
-		return thePtr;
-	}
-
-	return fgets(thePtr, theSize, theFile->mFP);
-}
-
-int PakInterface::FEof(PFILE* theFile)
-{
-	if (theFile->mRecord != nullptr)
-		return theFile->mPos >= theFile->mRecord->mSize;
-	else
-		return feof(theFile->mFP);
 }

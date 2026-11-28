@@ -33,6 +33,7 @@
 #include "PvzpDebug.h"
 #include "Definition.h"
 #include "zlib.h"
+#include "FileSystem.h"
 #include "paklib/PakInterface.h"
 #include "misc/PerfTimer.h"
 #include "misc/XMLParser.h"

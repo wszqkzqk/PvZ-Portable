@@ -23,6 +23,7 @@
  */
 
 #include "Common.h"
+#include "FileSystem.h"
 #include "misc/MTRand.h"
 #include <algorithm>
 #include <cctype>
@@ -37,17 +38,6 @@
 
 bool Sexy::gDebug = false;
 static Sexy::MTRand gMTRand;
-namespace Sexy
-{
-	std::filesystem::path gAppDataFolder;
-	std::filesystem::path gResourceFolder;
-	std::string gResourceFolderStr; // Cached string to avoid repeated conversions
-}
-
-static inline char ToLowerAscii(char c)
-{
-	return (char)std::tolower((unsigned char)c);
-}
 
 static inline bool IsUnicodeSpace(char32_t theChar)
 {
@@ -112,37 +102,6 @@ float Sexy::Rand(float range)
 void Sexy::SRand(ulong theSeed)
 {
 	gMTRand.SRand(theSeed);
-}
-
-std::string Sexy::GetAppDataFolder()
-{
-	return PathToU8(Sexy::gAppDataFolder);
-}
-
-void Sexy::SetAppDataFolder(std::string_view thePath)
-{
-	Sexy::gAppDataFolder = PathFromU8(thePath);
-}
-
-std::string Sexy::GetAppDataPath(std::string_view theRelativePath)
-{
-	return PathToU8(Sexy::gAppDataFolder / PathFromU8(theRelativePath));
-}
-
-const std::string& Sexy::GetResourceFolder()
-{
-	return Sexy::gResourceFolderStr;
-}
-
-void Sexy::SetResourceFolder(std::string_view thePath)
-{
-	Sexy::gResourceFolder = PathFromU8(thePath);
-	Sexy::gResourceFolderStr = PathToU8(Sexy::gResourceFolder);
-}
-
-std::string Sexy::GetResourcePath(std::string_view theRelativePath)
-{
-	return PathToU8(Sexy::gResourceFolder / PathFromU8(theRelativePath));
 }
 
 std::string Sexy::StringToUpper(std::string_view theString)
@@ -260,133 +219,6 @@ std::string Sexy::CommaSeperate(int theValue)
 		aCurString = '-' + aCurString;
 
 	return aCurString;
-}
-
-std::string Sexy::GetCurDir()
-{
-	std::error_code ec;
-	std::filesystem::path cur = std::filesystem::current_path(ec);
-	if (ec)
-		return std::string();
-	return PathToU8(cur);
-}
-
-std::string Sexy::GetFullPath(std::string_view theRelPath)
-{
-	return GetPathFrom(theRelPath, GetCurDir());
-}
-
-std::string Sexy::GetPathFrom(std::string_view theRelPath, std::string_view theDir)
-{
-	std::filesystem::path relPath = PathFromU8(theRelPath);
-	if (IsPathRooted(theRelPath))
-		return PathToU8(relPath.lexically_normal());
-
-	std::filesystem::path baseDir;
-	if (!theDir.empty())
-		baseDir = PathFromU8(theDir);
-	else
-	{
-		std::error_code ec;
-		baseDir = std::filesystem::current_path(ec);
-		if (ec)
-			return PathToU8(relPath.lexically_normal());
-	}
-
-	return PathToU8((baseDir / relPath).lexically_normal());
-}
-
-bool Sexy::IsPathRooted(std::string_view thePath)
-{
-	if (thePath.empty())
-		return false;
-
-	const std::filesystem::path aPath = PathFromU8(thePath);
-	if (aPath.has_root_path())
-		return true;
-
-#if defined(__SWITCH__)
-	const size_t aColonPos = thePath.find(':');
-	if (aColonPos == std::string_view::npos || aColonPos == 0 || aColonPos + 1 >= thePath.size())
-		return false;
-
-	const char aSeparator = thePath[aColonPos + 1];
-	if (aSeparator != '/' && aSeparator != '\\')
-		return false;
-
-	for (size_t i = 0; i < aColonPos; i++)
-	{
-		const unsigned char aChar = static_cast<unsigned char>(thePath[i]);
-		if (!std::isalnum(aChar) && aChar != '_')
-			return false;
-	}
-
-	return true;
-#endif
-
-	return false;
-}
-
-bool Sexy::AllowAllAccess(std::string_view theFileName)
-{
-	return false;
-}
-
-bool Sexy::Deltree(std::string_view thePath)
-{
-	std::error_code ec;
-	std::filesystem::path path = PathFromU8(thePath);
-	if (!std::filesystem::exists(path, ec))
-		return false;
-
-	std::filesystem::remove_all(path, ec);
-	return !ec;
-}
-
-bool Sexy::FileExists(std::string_view theFileName)
-{
-	std::error_code ec;
-	return std::filesystem::exists(PathFromU8(theFileName), ec);
-}
-
-void Sexy::MkDir(std::string_view theDir)
-{
-	std::error_code ec;
-	std::filesystem::create_directories(PathFromU8(theDir), ec);
-}
-
-std::string Sexy::GetFileName(std::string_view thePath, bool noExtension)
-{
-	std::filesystem::path path = PathFromU8(thePath);
-	if (!path.has_filename())
-		return "";
-
-	if (noExtension)
-		return PathToU8(path.stem());
-
-	return PathToU8(path.filename());
-}
-
-std::string Sexy::GetFileDir(std::string_view thePath, bool withSlash)
-{
-	std::filesystem::path path = PathFromU8(thePath);
-	std::filesystem::path parent = path.parent_path();
-	if (parent.empty())
-		return "";
-
-	std::string result = PathToU8(parent);
-	if (withSlash && !result.empty())
-		result += '/';
-
-	return result;
-}
-
-std::string Sexy::RemoveTrailingSlash(std::string_view theDirectory)
-{
-	if (theDirectory.empty())
-		return std::string(theDirectory);
-
-	return PathToU8(PathFromU8(theDirectory).lexically_normal());
 }
 
 std::string Sexy::Evaluate(std::string_view theString, const DefinesMap& theDefinesMap)

@@ -25,7 +25,7 @@
 #ifndef __PAKINTERFACE_H__
 #define __PAKINTERFACE_H__
 
-#include <map>
+#include <unordered_map>
 #include <list>
 #include <string>
 #include <string_view>
@@ -34,6 +34,7 @@
 #include <mutex>
 #include <array>
 #include <span>
+#include "FileSystem.h"
 
 class PakCollection;
 
@@ -50,7 +51,7 @@ public:
 	int						mSize;					//+0x2C: size in bytes
 };
 
-typedef std::map<std::string, PakRecord> PakRecordMap;
+typedef std::unordered_map<std::string, PakRecord, Sexy::CaseInsensitiveHash, Sexy::CaseInsensitiveEqual> PakRecordMap;
 
 // a PakCollection represents one pak file's storage
 class PakCollection
@@ -87,7 +88,7 @@ typedef std::list<PakCollection> PakCollectionList;
 
 struct PFILE
 {
-	PakRecord*				mRecord;
+	const PakRecord*		mRecord;
 	int						mPos;
 	FILE*					mFP;
 #ifdef LOW_MEMORY
@@ -108,8 +109,6 @@ public:
 	virtual size_t			FRead(void* thePtr, int theElemSize, int theCount, PFILE* theFile) = 0;
 	virtual int				FGetC(PFILE* theFile) = 0;
 	virtual int				UnGetC(int theChar, PFILE* theFile) = 0;
-	virtual char*			FGetS(char* thePtr, int theSize, PFILE* theFile) = 0;
-	virtual int				FEof(PFILE* theFile) = 0;
 };
 
 class PakInterface : public PakInterfaceBase
@@ -126,6 +125,8 @@ public:
 	~PakInterface();
 
 	bool					AddPakFile(const std::string& theFileName);
+	const PakRecord*		FindRecord(std::string_view theFileName) const;
+	bool					Contains(std::string_view theFileName) const { return FindRecord(theFileName) != nullptr; }
 	PFILE*					FOpen(const char* theFileName, const char* theAccess) override;
 	int						FClose(PFILE* theFile) override;
 	int						FSeek(PFILE* theFile, long theOffset, int theOrigin) override;
@@ -133,8 +134,6 @@ public:
 	size_t					FRead(void* thePtr, int theElemSize, int theCount, PFILE* theFile) override;
 	int						FGetC(PFILE* theFile) override;
 	int						UnGetC(int theChar, PFILE* theFile) override;
-	char*					FGetS(char* thePtr, int theSize, PFILE* theFile) override;
-	int						FEof(PFILE* theFile) override;
 
 };
 
@@ -171,14 +170,6 @@ static size_t p_fread(void* thePtr, int theSize, int theCount, PFILE* theFile)
 }
 
 [[maybe_unused]]
-static size_t p_fwrite(const void* thePtr, int theSize, int theCount, PFILE* theFile)
-{
-	if (theFile->mFP == nullptr)
-		return 0;
-	return fwrite(thePtr, theSize, theCount, theFile->mFP);
-}
-
-[[maybe_unused]]
 static int p_fgetc(PFILE* theFile)
 {
 	return gPakInterface->FGetC(theFile);
@@ -188,18 +179,6 @@ static int p_fgetc(PFILE* theFile)
 static int p_ungetc(int theChar, PFILE* theFile)
 {
 	return gPakInterface->UnGetC(theChar, theFile);
-}
-
-[[maybe_unused]]
-static char* p_fgets(char* thePtr, int theSize, PFILE* theFile)
-{
-	return gPakInterface->FGetS(thePtr, theSize, theFile);
-}
-
-[[maybe_unused]]
-static int p_feof(PFILE* theFile)
-{
-	return gPakInterface->FEof(theFile);
 }
 
 #endif //__PAKINTERFACE_H__

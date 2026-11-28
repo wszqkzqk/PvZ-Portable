@@ -28,6 +28,7 @@
 #include "../Resources.h"
 #include "../GameConstants.h"
 #include "../PvzpLib/PvzpCommon.h"
+#include "FileSystem.h"
 #include "graphics/Font.h"
 #include "widget/Dialog.h"
 #include "misc/SexyMatrix.h"
