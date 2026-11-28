@@ -58,7 +58,7 @@ public:
 	std::vector<std::string> mLoadedResourceNames;
 
 public:
-	CutScene();
+	CutScene(Board* theBoard);
 	~CutScene();
 
 	void                        StartLevelIntro();
