@@ -159,13 +159,6 @@ bool                    DefinitionReadField(XMLParser* theXmlParser, const DefMa
 bool                    DefinitionWriteCompiledFile(const std::string& theCompiledFilePath, const DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionCompileFile(const std::string& theXMLFilePath, const std::string& theCompiledFilePath, const DefMap* theDefMap, void* theDefinition);
 
-void                    DefMapWriteToCache(void*& theWritePtr, const DefMap* theDefMap, void* theDefinition);
-void                    DefWriteToCacheString(void*& theWritePtr, const char** theValue);
-void                    DefWriteToCacheArray(void*& theWritePtr, DefinitionArrayDef* theValue, const DefMap* theDefMap);
-void                    DefWriteToCacheFloatTrack(void*& theWritePtr, FloatParameterTrack* theValue);
-void                    DefWriteToCacheImage(void*& theWritePtr, Image** theValue);
-void                    DefWriteToCacheFont(void*& theWritePtr, _Font** theValue);
-
 void*                   DefinitionCompressCompiledBuffer(void* theBuffer, unsigned int theBufferSize, unsigned int* theResultSize);
 
 unsigned int DefGetSizeString(const char** theValue);
@@ -181,12 +174,6 @@ void*                   DefinitionUncompressCompiledBuffer(void* theCompressedBu
 uint32_t                    DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol* theSymbolMap);
 uint32_t                    DefinitionCalcHashDefMap(int aSchemaHash, const DefMap* theDefMap, PvzpList<const DefMap*>& theProgressMaps);
 uint32_t                    DefinitionCalcHash(const DefMap* theDefMap);
-inline bool             DefReadFromCacheString(void*& theReadPtr, const char** theString);
-inline bool             DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArray, const DefMap* theDefMap);
-inline bool             DefReadFromCacheImage(void*& theReadPtr, Image** theImage);
-inline bool             DefReadFromCacheFont(void*& theReadPtr, _Font** theFont);
-inline bool             DefReadFromCacheFloatTrack(void*& theReadPtr, FloatParameterTrack* theTrack);
-bool                    DefMapReadFromCache(void*& theReadPtr, const DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionCompileAndLoad(const std::string& theXMLFilePath, const DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionLoadMap(XMLParser* theXmlParser, const DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionLoadImage(Image** theImage, const std::string& theName);

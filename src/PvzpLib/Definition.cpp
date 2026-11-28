@@ -29,6 +29,8 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <span>
+#include <cstddef>
 #include <format>
 #include "PvzpDebug.h"
 #include "Definition.h"
@@ -376,11 +378,59 @@ bool DefinitionLoadXML(const std::string& theFileName, const DefMap* theDefMap, 
 	return DefinitionCompileAndLoad(theFileName, theDefMap, theDefinition);
 }
 
-inline bool DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArray, const DefMap* theDefMap)
+class ByteSpanReader
+{
+	std::span<const std::byte> mRemaining;
+
+public:
+	ByteSpanReader(const void* theData, size_t theSize) noexcept
+		: mRemaining(static_cast<const std::byte*>(theData), theSize) {}
+
+	bool Read(void* theDst, size_t theSize) noexcept
+	{
+		if (theSize > mRemaining.size())
+			return false;
+		if (theSize > 0)
+			std::memcpy(theDst, mRemaining.data(), theSize);
+		mRemaining = mRemaining.subspan(theSize);
+		return true;
+	}
+
+	template <typename T>
+	bool Read(T& theValue) noexcept { return Read(&theValue, sizeof(T)); }
+
+	size_t Remaining() const noexcept { return mRemaining.size(); }
+};
+
+class ByteSpanWriter
+{
+	std::span<std::byte> mRemaining;
+
+public:
+	ByteSpanWriter(void* theData, size_t theSize) noexcept
+		: mRemaining(static_cast<std::byte*>(theData), theSize) {}
+
+	bool Write(const void* theSrc, size_t theSize) noexcept
+	{
+		if (theSize > mRemaining.size())
+			return false;
+		if (theSize > 0)
+			std::memcpy(mRemaining.data(), theSrc, theSize);
+		mRemaining = mRemaining.subspan(theSize);
+		return true;
+	}
+
+	template <typename T>
+	bool Write(const T& theValue) noexcept { return Write(&theValue, sizeof(T)); }
+};
+
+static bool DefMapReadFromCache(ByteSpanReader& theReader, const DefMap* theDefMap, void* theDefinition);
+static void DefMapWriteToCache(ByteSpanWriter& theWriter, const DefMap* theDefMap, void* theDefinition);
+
+static bool DefReadFromCacheArray(ByteSpanReader& theReader, DefinitionArrayDef* theArray, const DefMap* theDefMap)
 {
 	int aDefSize;
-	SMemR(theReadPtr, &aDefSize, sizeof(int));  // read the cached definition struct size
-	if (aDefSize != theDefMap->mDefSize)
+	if (!theReader.Read(aDefSize) || aDefSize != theDefMap->mDefSize)
 	{
 		PvzpLogLn("cache has old def: array size");
 		return false;
@@ -388,90 +438,103 @@ inline bool DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArra
 	if (theArray->mArrayCount == 0)
 		return true;
 
-	int aArraySize = aDefSize * theArray->mArrayCount;
-	theArray->mArrayData = DefinitionAlloc(aArraySize);
-	SMemR(theReadPtr, theArray->mArrayData, aArraySize);  // bulk-read the raw data; pointers are fixed below via theDefMap
+	const size_t aArraySize = static_cast<size_t>(aDefSize) * static_cast<size_t>(theArray->mArrayCount);
+	if (aArraySize > theReader.Remaining())
+		return false;
+
+	theArray->mArrayData = DefinitionAlloc(static_cast<int>(aArraySize));
+	theReader.Read(theArray->mArrayData, aArraySize);  // bulk-read the raw data; pointers are fixed below via theDefMap
 	for (int i = 0; i < theArray->mArrayCount; i++)
-		if (!DefMapReadFromCache(theReadPtr, theDefMap, (void*)((intptr_t)theArray->mArrayData + theDefMap->mDefSize * i)))  // the last argument is pData[i]
+		if (!DefMapReadFromCache(theReader, theDefMap, static_cast<std::byte*>(theArray->mArrayData) + theDefMap->mDefSize * i))
 			return false;
 	return true;
 }
 
-inline bool DefReadFromCacheFloatTrack(void*& theReadPtr, FloatParameterTrack* theTrack)
+static bool DefReadFromCacheFloatTrack(ByteSpanReader& theReader, FloatParameterTrack* theTrack)
 {
 	int& aCountNodes = theTrack->mCountNodes;
-	SMemR(theReadPtr, &aCountNodes, sizeof(int));
+	if (!theReader.Read(aCountNodes) || aCountNodes < 0)
+		return false;
 	if (aCountNodes > 0)
 	{
-		int aSize = aCountNodes * sizeof(FloatParameterTrackNode);
-		FloatParameterTrackNode* aPtr = (FloatParameterTrackNode*)DefinitionAlloc(aSize);
+		if (static_cast<size_t>(aCountNodes) > theReader.Remaining() / sizeof(FloatParameterTrackNode))
+			return false;
+		auto aPtr = static_cast<FloatParameterTrackNode*>(DefinitionAlloc(aCountNodes * sizeof(FloatParameterTrackNode)));
 		theTrack->mNodes = aPtr;
-		SMemR(theReadPtr, aPtr, aSize);
+		theReader.Read(aPtr, static_cast<size_t>(aCountNodes) * sizeof(FloatParameterTrackNode));
 	}
 	return true;
 }
 
-inline bool DefReadFromCacheString(void*& theReadPtr, const char** theString)
+static bool ReadCacheLength(ByteSpanReader& theReader, int& theLen)
+{
+	return theReader.Read(theLen) && theLen >= 0 && static_cast<size_t>(theLen) <= theReader.Remaining();
+}
+
+static bool DefReadFromCacheString(ByteSpanReader& theReader, const char** theString)
 {
 	int aLen;
-	SMemR(theReadPtr, &aLen, sizeof(int));
+	if (!ReadCacheLength(theReader, aLen))
+		return false;
 	if (aLen == 0)
 		*theString = "";
 	else
 	{
 		auto aPtr = static_cast<char*>(DefinitionAlloc(aLen + 1));
 		*theString = aPtr;
-		SMemR(theReadPtr, aPtr, aLen);
+		theReader.Read(aPtr, static_cast<size_t>(aLen));
 		aPtr[aLen] = '\0';
 	}
 	return true;
 }
 
-inline bool DefReadFromCacheImage(void*& theReadPtr, Image** theImage)
+static bool DefReadFromCacheImage(ByteSpanReader& theReader, Image** theImage)
 {
 	int aLen;
-	SMemR(theReadPtr, &aLen, sizeof(int));
-	std::string aImageName(aLen, '\0');
-	SMemR(theReadPtr, aImageName.data(), aLen);
+	if (!ReadCacheLength(theReader, aLen))
+		return false;
+	std::string aImageName(static_cast<size_t>(aLen), '\0');
+	theReader.Read(aImageName.data(), static_cast<size_t>(aLen));
 
 	*theImage = nullptr;
-	return aImageName[0] == '\0' || DefinitionLoadImage(theImage, aImageName);
+	return aImageName.empty() || DefinitionLoadImage(theImage, aImageName);
 }
 
-inline bool DefReadFromCacheFont(void*& theReadPtr, _Font** theFont)
+static bool DefReadFromCacheFont(ByteSpanReader& theReader, _Font** theFont)
 {
 	int aLen;
-	SMemR(theReadPtr, &aLen, sizeof(int));
-	std::string aFontName(aLen, '\0');
-	SMemR(theReadPtr, aFontName.data(), aLen);
+	if (!ReadCacheLength(theReader, aLen))
+		return false;
+	std::string aFontName(static_cast<size_t>(aLen), '\0');
+	theReader.Read(aFontName.data(), static_cast<size_t>(aLen));
 
 	*theFont = nullptr;
-	return aFontName[0] == '\0' || DefinitionLoadFont(theFont, aFontName);
+	return aFontName.empty() || DefinitionLoadFont(theFont, aFontName);
 }
 
-bool DefMapReadFromCache(void*& theReadPtr, const DefMap* theDefMap, void* theDefinition)
+static bool DefMapReadFromCache(ByteSpanReader& theReader, const DefMap* theDefMap, void* theDefinition)
 {
 	// Fix up the pointer-typed members of theDefinition
 	for (const DefField* aField = theDefMap->mMapFields; *aField->mFieldName != '\0'; aField++)
 	{
 		bool aSucceed = true;
-		void* aDest = (void*)((intptr_t)theDefinition + aField->mFieldOffset);
+		void* aDest = static_cast<std::byte*>(theDefinition) + aField->mFieldOffset;
 		switch (aField->mFieldType)
 		{
 		case DefFieldType::DT_STRING:
-			aSucceed = DefReadFromCacheString(theReadPtr, (const char**)aDest);
+			aSucceed = DefReadFromCacheString(theReader, (const char**)aDest);
 			break;
 		case DefFieldType::DT_ARRAY:
-			aSucceed = DefReadFromCacheArray(theReadPtr, (DefinitionArrayDef*)aDest, (const DefMap*)aField->mExtraData);
+			aSucceed = DefReadFromCacheArray(theReader, (DefinitionArrayDef*)aDest, (const DefMap*)aField->mExtraData);
 			break;
 		case DefFieldType::DT_IMAGE:
-			aSucceed = DefReadFromCacheImage(theReadPtr, (Image**)aDest);
+			aSucceed = DefReadFromCacheImage(theReader, (Image**)aDest);
 			break;
 		case DefFieldType::DT_FONT:
-			aSucceed = DefReadFromCacheFont(theReadPtr, (_Font**)aDest);
+			aSucceed = DefReadFromCacheFont(theReader, (_Font**)aDest);
 			break;
 		case DefFieldType::DT_TRACK_FLOAT:
-			aSucceed = DefReadFromCacheFloatTrack(theReadPtr, (FloatParameterTrack*)aDest);
+			aSucceed = DefReadFromCacheFloatTrack(theReader, (FloatParameterTrack*)aDest);
 			break;
 		default:
 			break;
@@ -613,10 +676,9 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 	} // must hold the definition data plus the stored hash
 
 
-	// aBufferPtr advances while reading; the original pointer is kept to measure the read size
-	void* aBufferPtr = aUncompressedBuffer.get();
+	ByteSpanReader aReader(aUncompressedBuffer.get(), aUncompressedSize);
 	uint32_t aCashHash;
-	SMemR(aBufferPtr, &aCashHash, sizeof(uint32_t));  // read the stored CRC hash
+	aReader.Read(aCashHash);  // read the stored CRC hash
 	if (aCashHash != aDefHash) {
 		PvzpLogLn("Compiled file schema wrong: {}", theCompiledFilePath);
 		return false;
@@ -624,11 +686,10 @@ bool DefinitionReadCompiledFile(const std::string& theCompiledFilePath, const De
 
 	// Bulk-read the raw definition data: non-pointer members are read correctly,
 	// while pointer members become wild pointers fixed up by DefMapReadFromCache() below
-	SMemR(aBufferPtr, theDefinition, theDefMap->mDefSize);
+	aReader.Read(theDefinition, theDefMap->mDefSize);
 	// Fix up the wild pointers; the result is returned below
-	bool aResult = DefMapReadFromCache(aBufferPtr, theDefMap, theDefinition);
-	size_t aReadMemSize = (uintptr_t)aBufferPtr - (uintptr_t)aUncompressedBuffer.get();
-	if (aResult && aReadMemSize != aUncompressedSize) {
+	bool aResult = DefMapReadFromCache(aReader, theDefMap, theDefinition);
+	if (aResult && aReader.Remaining() != 0) {
 		PvzpLogLn("Compiled file wrong size: {}", theCompiledFilePath);
 		return false;
 	}
@@ -1165,67 +1226,69 @@ bool DefinitionLoadMap(XMLParser* theXmlParser, const DefMap* theDefMap, void* t
 	return true;
 }
 
-void DefWriteToCacheString(void*& theWritePtr, const char** theValue) {
-	unsigned int aStringSize = strlen(*theValue);
-	SMemW(theWritePtr, &aStringSize, sizeof(unsigned int));
+static void DefWriteToCacheString(ByteSpanWriter& theWriter, const char** theValue) {
+	uint32_t aStringSize = static_cast<uint32_t>(strlen(*theValue));
+	theWriter.Write(aStringSize);
 	if (aStringSize > 0)
-		SMemW(theWritePtr, *theValue, aStringSize);
+		theWriter.Write(*theValue, aStringSize);
 }
 
-void DefWriteToCacheArray(void*& theWritePtr, DefinitionArrayDef* theValue, const DefMap* theDefMap) {
-	SMemW(theWritePtr, &theDefMap->mDefSize, sizeof(unsigned int));
-	SMemW(theWritePtr, theValue->mArrayData, theDefMap->mDefSize * theValue->mArrayCount);
+static void DefWriteToCacheArray(ByteSpanWriter& theWriter, DefinitionArrayDef* theValue, const DefMap* theDefMap) {
+	uint32_t aDefSize = static_cast<uint32_t>(theDefMap->mDefSize);
+	theWriter.Write(aDefSize);
+	theWriter.Write(theValue->mArrayData, static_cast<size_t>(aDefSize) * theValue->mArrayCount);
 	for (int i = 0; i < theValue->mArrayCount; ++i)
-		DefMapWriteToCache(theWritePtr, theDefMap, (void*)((intptr_t)theValue->mArrayData + i * theDefMap->mDefSize));
+		DefMapWriteToCache(theWriter, theDefMap, static_cast<std::byte*>(theValue->mArrayData) + i * theDefMap->mDefSize);
 }
 
-void DefWriteToCacheFloatTrack(void*& theWritePtr, FloatParameterTrack* theValue) {
-	SMemW(theWritePtr, &theValue->mCountNodes, sizeof(unsigned int));
-	if (theValue->mCountNodes > 0)
-		SMemW(theWritePtr, theValue->mNodes, theValue->mCountNodes * sizeof(FloatParameterTrackNode));
+static void DefWriteToCacheFloatTrack(ByteSpanWriter& theWriter, FloatParameterTrack* theValue) {
+	uint32_t aCountNodes = static_cast<uint32_t>(theValue->mCountNodes);
+	theWriter.Write(aCountNodes);
+	if (aCountNodes > 0)
+		theWriter.Write(theValue->mNodes, static_cast<size_t>(aCountNodes) * sizeof(FloatParameterTrackNode));
 }
 
-void DefWriteToCacheImage(void*& theWritePtr, Image** theValue) {
+static void DefWriteToCacheImage(ByteSpanWriter& theWriter, Image** theValue) {
 	std::string aImageName{};
 	if (*theValue)
 		PvzpFindImagePath(*theValue, &aImageName);
 
-	unsigned int aImageSize = aImageName.length();
-	SMemW(theWritePtr, &aImageSize, sizeof(unsigned int));
+	uint32_t aImageSize = static_cast<uint32_t>(aImageName.length());
+	theWriter.Write(aImageSize);
 	if (aImageSize > 0)
-		SMemW(theWritePtr, aImageName.c_str(), aImageSize);
+		theWriter.Write(aImageName.data(), aImageSize);
 }
 
-void DefWriteToCacheFont(void*& theWritePtr, _Font** theValue) {
+static void DefWriteToCacheFont(ByteSpanWriter& theWriter, _Font** theValue) {
 	std::string aFontName{};
 	if (*theValue) {
 		PvzpFindFontPath(*theValue, &aFontName);
 	}
 
-	unsigned int aFontSize = aFontName.length();
-	SMemW(theWritePtr, &aFontSize, sizeof(unsigned int));
+	uint32_t aFontSize = static_cast<uint32_t>(aFontName.length());
+	theWriter.Write(aFontSize);
 	if (aFontSize > 0)
-		SMemW(theWritePtr, aFontName.c_str(), aFontSize);
+		theWriter.Write(aFontName.data(), aFontSize);
 }
 
-void DefMapWriteToCache(void*& theWritePtr, const DefMap* theDefMap, void* theDefinition) {
+static void DefMapWriteToCache(ByteSpanWriter& theWriter, const DefMap* theDefMap, void* theDefinition) {
 	for (const DefField* aField = theDefMap->mMapFields; *aField->mFieldName != '\0'; aField++) {
-		void* aDest = (void*)((intptr_t)theDefinition + aField->mFieldOffset);
+		void* aDest = static_cast<std::byte*>(theDefinition) + aField->mFieldOffset;
 		switch (aField->mFieldType) {
 		case DefFieldType::DT_STRING:
-			DefWriteToCacheString(theWritePtr, (const char**)aDest);
+			DefWriteToCacheString(theWriter, (const char**)aDest);
 			break;
 		case DefFieldType::DT_ARRAY:
-			DefWriteToCacheArray(theWritePtr, (DefinitionArrayDef*)aDest, (const DefMap*)aField->mExtraData);
+			DefWriteToCacheArray(theWriter, (DefinitionArrayDef*)aDest, (const DefMap*)aField->mExtraData);
 			break;
 		case DefFieldType::DT_TRACK_FLOAT:
-			DefWriteToCacheFloatTrack(theWritePtr, (FloatParameterTrack*)aDest);
+			DefWriteToCacheFloatTrack(theWriter, (FloatParameterTrack*)aDest);
 			break;
 		case DefFieldType::DT_IMAGE:
-			DefWriteToCacheImage(theWritePtr, (Image**)aDest);
+			DefWriteToCacheImage(theWriter, (Image**)aDest);
 			break;
 		case DefFieldType::DT_FONT:
-			DefWriteToCacheFont(theWritePtr, (_Font**)aDest);
+			DefWriteToCacheFont(theWriter, (_Font**)aDest);
 			break;
 		default:
 			break;
@@ -1245,14 +1308,14 @@ void* DefinitionCompressCompiledBuffer(void* theBuffer, unsigned int theBufferSi
 
 bool DefinitionWriteCompiledFile(const std::string& theCompiledFilePath, const DefMap* theDefMap, void* theDefinition) {
 	unsigned int aCompressedSize = 0;
-	unsigned int aDefSize = DefinitionGetSize(theDefMap, theDefinition) + sizeof(unsigned int);
+	uint32_t aDefSize = DefinitionGetSize(theDefMap, theDefinition) + sizeof(uint32_t);
 	std::vector<uint8_t> aDefBasePtr(aDefSize);
-	void* aDef = aDefBasePtr.data();
 	uint32_t aDefHash = DefinitionCalcHash(theDefMap);
 
-	SMemW(aDef, &aDefHash, sizeof(uint32_t));
-	SMemW(aDef, theDefinition, theDefMap->mDefSize);
-	DefMapWriteToCache(aDef, theDefMap, theDefinition);
+	ByteSpanWriter aWriter(aDefBasePtr.data(), aDefBasePtr.size());
+	aWriter.Write(aDefHash);
+	aWriter.Write(theDefinition, theDefMap->mDefSize);
+	DefMapWriteToCache(aWriter, theDefMap, theDefinition);
 	std::unique_ptr<uint8_t[]> aCompressedDef(
 		static_cast<uint8_t*>(DefinitionCompressCompiledBuffer(aDefBasePtr.data(), aDefSize, &aCompressedSize)));
 

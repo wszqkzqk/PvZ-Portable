@@ -403,30 +403,3 @@ bool Sexy::StrPrefixNoCase(const char *theStr, const char *thePrefix, int maxLen
 	return c2==0 || i==maxLength;
 }
 
-void Sexy::SMemR(void*& _Src, void* _Dst, size_t _Size)
-{
-	memcpy(_Dst, _Src, _Size);
-	_Src = (void*)((uintptr_t)_Src + _Size);
-}
-
-void Sexy::SMemRStr(void*& _Src, std::string& theString)
-{
-	size_t aStrLen;
-	SMemR(_Src, &aStrLen, sizeof(aStrLen));
-	theString.resize(aStrLen);
-	if (aStrLen > 0)
-		SMemR(_Src, &theString[0], aStrLen);
-}
-
-void Sexy::SMemW(void*& _Dst, const void* _Src, size_t _Size)
-{
-	memcpy(_Dst, _Src, _Size);
-	_Dst = (void*)((uintptr_t)_Dst + _Size);
-}
-
-void Sexy::SMemWStr(void*& _Dst, std::string_view theString)
-{
-	size_t aStrLen = theString.size();
-	SMemW(_Dst, &aStrLen, sizeof(aStrLen));
-	SMemW(_Dst, theString.data(), aStrLen);
-}
