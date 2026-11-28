@@ -38,14 +38,6 @@ class _Font;
 class SexyMatrix3;
 class Transform;
 
-struct Edge
-{
-	double mX;
-	double mDX;
-	int i;
-	double b;
-};
-
 class Graphics;
 
 class GraphicsState
@@ -84,19 +76,9 @@ public:
 		DRAWMODE_ADDITIVE
 	};
 
-	Edge*					mPFActiveEdgeList;
-	int						mPFNumActiveEdges;
-	static const Point*		mPFPoints;
-	int						mPFNumVertices;
-
 	GraphicsStateList		mStateStack;
 
 protected:
-	static int				PFCompareInd(const void* u, const void* v);
-	static int				PFCompareActive(const void* u, const void* v);
-	void					PFDelete(int i);
-	void					PFInsert(int i, int y);
-
 	void					DrawImageTransformHelper(Image* theImage, const Transform &theTransform, const Rect &theSrcRect, float x, float y, bool useFloat);
 
 public:
@@ -139,9 +121,6 @@ private:
 	bool					DrawLineClipHelper(double* theStartX, double* theStartY, double *theEndX, double* theEndY);
 public:
 	void					DrawLine(int theStartX, int theStartY, int theEndX, int theEndY);
-	void					DrawLineAA(int theStartX, int theStartY, int theEndX, int theEndY);
-	void					PolyFill(const Point *theVertexList, int theNumVertices, bool convex = false);
-	void					PolyFillAA(const Point *theVertexList, int theNumVertices, bool convex = false);
 
 	void					DrawImage(Image* theImage, int theX, int theY);
 	void					DrawImage(Image* theImage, int theX, int theY, const Rect& theSrcRect);

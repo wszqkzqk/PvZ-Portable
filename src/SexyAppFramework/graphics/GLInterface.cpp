@@ -1700,36 +1700,3 @@ void GLInterface::DrawTrianglesTexStrip(const TriVertex theVertices[], int theNu
 		DrawTrianglesTex(batch, n, theColor, theDrawMode, theTexture, tx, ty, blend);
 	}
 }
-
-void GLInterface::FillPoly(const Point theVertices[], int theNumVertices,
-	const Rect *theClipRect, const Color &theColor, int theDrawMode, int tx, int ty)
-{
-	if (theNumVertices < 3) return;
-	if (!PreDraw()) return;
-	SetDrawMode(theDrawMode);
-
-	uint32_t c = theColor.ToGLColor();
-	gDrawState.useTexture = 0;
-
-	VertexList vl;
-	for (int i = 0; i < theNumVertices; i++)
-	{
-		GLVertex v = { theVertices[i].mX + (float)tx, theVertices[i].mY + (float)ty, 0, c, 0, 0 };
-		if (!mTransformStack.empty())
-		{
-			SexyVector2 p(v.sx, v.sy);
-			p = mTransformStack.back() * p;
-			v.sx = p.x; v.sy = p.y;
-		}
-		vl.push_back(v);
-	}
-
-	if (theClipRect)
-		DrawPolyClipped(theClipRect, vl);
-	else
-	{
-		GfxBegin(GL_TRIANGLE_FAN);
-		GfxAddVertices(vl);
-		GfxEnd();
-	}
-}

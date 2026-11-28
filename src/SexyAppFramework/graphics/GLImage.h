@@ -42,8 +42,6 @@ public:
 	GLInterface*			mGLInterface;
 
 public:
-	void					FillScanLinesWithCoverage(Span* theSpans, int theSpanCount, const Color& theColor, int theDrawMode, const uint8_t* theCoverage, int theCoverX, int theCoverY, int theCoverWidth, int theCoverHeight) override;
-
 	static bool				Check3D(GLImage *theImage);
 	static bool				Check3D(Image *theImage);
 
@@ -54,10 +52,8 @@ public:
 
 	void					Create(int theWidth, int theHeight) override;
 
-	bool					PolyFill3D(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode, int tx, int ty) override;
 	void					FillRect(const Rect& theRect, const Color& theColor, int theDrawMode) override;
 	void					DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor, int theDrawMode) override;
-	void					DrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor, int theDrawMode) override;
 	void					Blt(Image* theImage, int theX, int theY, const Rect& theSrcRect, const Color& theColor, int theDrawMode, bool linearFilter = true) override;
 	void					BltF(Image* theImage, float theX, float theY, const Rect& theSrcRect, const Rect &theClipRect, const Color& theColor, int theDrawMode) override;
 	void					BltRotated(Image* theImage, float theX, float theY, const Rect &theSrcRect, const Rect& theClipRect, const Color& theColor, int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY) override;
